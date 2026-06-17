@@ -6,11 +6,11 @@ Hunter Futures Pro
 
 ## Version
 
-0.3.0-dev
+0.4.0-dev
 
 ## Current Phase
 
-MVP-4 — Execution Bridge Step 1 complete. Step 2 pending.
+MVP-4 — Execution Bridge Step 2 complete. Step 3 pending.
 
 ## Current Status
 
@@ -49,15 +49,37 @@ MVP-4 Execution Bridge Step 1 is complete:
 - No live trading exists.
 - No API keys exist.
 
+MVP-4 Execution Bridge Step 2 is complete:
+- `src/hunter/execution/engine.py` created with deterministic execution bridge engine.
+- `build_execution_context()` — main entry point implementing all 15 fail-closed rules from SPEC-005 in priority order.
+- `validate_execution_inputs()` — validates DecisionOutput against all safety constraints.
+- `is_stale_decision()` — checks DecisionOutput age against stale_decision_minutes threshold.
+- `map_decision_to_execution_mode()` — maps DecisionAction to ExecutionMode.
+- `build_safety_flags()` — constructs ExecutionSafetyFlags with all defaults safe.
+- All successful paths produce DRY_RUN_ONLY (ENABLED reserved for future).
+- All blocked paths produce BLOCKED + BLOCK_ALL + dry_run=True.
+- Missing/invalid/stale/unsafe inputs all block by default.
+- input_refs populated with decision timestamp and source on successful paths.
+- 45 execution engine tests, all passing.
+- Full test suite: 488 tests passing.
+- No Execution Writer exists yet.
+- No config YAML exists yet.
+- No JSON Schema validation exists yet.
+- No DecisionOutput JSON reading exists.
+- No Binance integration exists.
+- No Freqtrade runtime integration exists.
+- No trading logic exists.
+- No live trading exists.
+- No API keys exist.
+
 ## Next Step
 
-MVP-4 Step 2 — Execution Bridge Engine.
-- Create `build_execution_context(decision_output, config)` function.
-- Implement all 15 fail-closed rules in priority order.
-- Implement stale decision detection.
-- Implement safety flags population.
-- Create `tests/test_execution/test_engine.py` with rule tests.
-- Target: 50+ tests, all passing.
+MVP-4 Step 3 — Execution Bridge Writer.
+- Create `execution_to_dict()` function for JSON serialization.
+- Create `write_execution_output()` function with atomic writes.
+- Target: `data/execution/current_execution_context.json` default path.
+- Create `tests/test_execution/test_writer.py` with serialization tests.
+- Target: 15+ tests, all passing.
 
 ## Current Status
 

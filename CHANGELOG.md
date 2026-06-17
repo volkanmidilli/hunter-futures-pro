@@ -2,6 +2,71 @@
 
 All important project changes will be recorded in this file.
 
+## 0.4.0-dev — MVP-4 Step 2 — Execution Bridge Engine (Complete)
+
+### Added
+
+- `src/hunter/execution/engine.py` created with deterministic execution bridge engine.
+- `build_execution_context()` — main entry point implementing all 15 fail-closed rules from SPEC-005 in priority order.
+- `validate_execution_inputs()` — validates DecisionOutput against all safety constraints.
+- `is_stale_decision()` — checks DecisionOutput age against `stale_decision_minutes` threshold.
+- `map_decision_to_execution_mode()` — maps DecisionAction to ExecutionMode.
+- `build_safety_flags()` — constructs ExecutionSafetyFlags with all defaults safe.
+- All successful paths produce `DRY_RUN_ONLY` (ENABLED reserved for future).
+- All blocked paths produce `BLOCKED` + `BLOCK_ALL` + `dry_run=True`.
+- Missing/invalid/stale/unsafe inputs all block by default.
+- `input_refs` populated with decision timestamp and source on successful paths.
+- 45 execution engine tests, all passing.
+- Full test suite: 488 tests passing.
+
+### Safety
+
+- No Binance integration.
+- No Freqtrade runtime integration.
+- No strategy class.
+- No trading logic.
+- No live trading.
+- No API keys.
+- No network calls.
+- No JSON reading or writing.
+- No exchange connection.
+- No order execution.
+
+### Next
+
+- MVP-4 Step 3 — Execution Bridge Writer.
+
+## 0.4.0-dev — MVP-4 Step 1 — Execution Bridge Models (Complete)
+
+### Added
+
+- `src/hunter/execution/models.py` created with immutable execution bridge models.
+- `ExecutionState` enum: ENABLED, BLOCKED, DRY_RUN_ONLY, UNKNOWN.
+- `ExecutionMode` enum: LONG_RESEARCH_ONLY, SHORT_RESEARCH_ONLY, BLOCK_ALL, DRY_RUN_ONLY.
+- `ExecutionBridgeConfig` with MVP-4 safety validation (dry_run_required=True, live_trading_enabled=False, etc.).
+- `ExecutionInputRefs` for audit trail references to decision output.
+- `ExecutionSafetyFlags` with `human_override_required` (default false) and `max_context_age_seconds` (default 300).
+- `ExecutionContext` with `version` field default `"1.0"` for backward-compatible contract evolution.
+- `ExecutionContext.blocked()` fail-closed factory producing BLOCKED + BLOCK_ALL + dry_run True + version "1.0".
+- All models frozen/immutable with `__post_init__` validation.
+- 49 execution model tests, all passing.
+- Full test suite: 443 tests passing.
+
+### Safety
+
+- No Binance integration.
+- No Freqtrade runtime integration.
+- No strategy class.
+- No trading logic.
+- No live trading.
+- No API keys.
+- No network calls.
+- No JSON reading or writing.
+
+### Next
+
+- MVP-4 Step 2 — Execution Bridge Engine.
+
 ## 0.4.0-dev — MVP-4 Execution Bridge (Design Complete)
 
 ### Added
