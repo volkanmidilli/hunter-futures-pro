@@ -1,5 +1,6 @@
 import logging
 import json
+import sys
 import pytest
 
 from hunter.core.logging import JSONFormatter, RedactingFilter, setup_logging
@@ -201,8 +202,9 @@ class TestSetupLogging:
     def test_sets_log_level(self, tmp_path):
         log_dir = tmp_path / "test_logs"
         setup_logging(log_level="DEBUG", log_dir=str(log_dir))
-        logger = logging.getLogger("hunter")
-        assert logger.level == logging.DEBUG
+        # setup_logging configures root logger via basicConfig
+        root_logger = logging.getLogger()
+        assert root_logger.level == logging.DEBUG
 
     def test_json_console_format(self, tmp_path, capsys):
         log_dir = tmp_path / "test_logs"

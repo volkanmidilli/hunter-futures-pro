@@ -1,7 +1,7 @@
 import pytest
 
-from hunter.config.loader import ConfigLoadError, validate_config
-from hunter.config.models import HunterConfig, TradingConfig
+from hunter.config.loader import ConfigLoadError, _contains_secrets, validate_config
+from hunter.config.models import HunterConfig
 
 
 class TestValidateConfig:
@@ -33,39 +33,73 @@ class TestValidateConfig:
 
     def test_secret_api_key_raises(self):
         config = HunterConfig()
-        config.trading.api_key = "secret123"
+        config_dict = config.model_dump()
+        config_dict["trading"]["api_key"] = "secret123"
         with pytest.raises(ConfigLoadError, match="secret keys"):
-            validate_config(config)
+            validate_config(config, raw_dict=config_dict)
 
     def test_secret_api_secret_raises(self):
         config = HunterConfig()
-        config.trading.api_secret = "secret123"
+        config_dict = config.model_dump()
+        config_dict["trading"]["api_secret"] = "secret123"
         with pytest.raises(ConfigLoadError, match="secret keys"):
-            validate_config(config)
+            validate_config(config, raw_dict=config_dict)
 
     def test_secret_secret_key_raises(self):
         config = HunterConfig()
-        config.trading.secret_key = "secret123"
+        config_dict = config.model_dump()
+        config_dict["trading"]["secret_key"] = "secret123"
         with pytest.raises(ConfigLoadError, match="secret keys"):
-            validate_config(config)
+            validate_config(config, raw_dict=config_dict)
 
     def test_secret_private_key_raises(self):
         config = HunterConfig()
-        config.trading.private_key = "secret123"
+        config_dict = config.model_dump()
+        config_dict["trading"]["private_key"] = "secret123"
         with pytest.raises(ConfigLoadError, match="secret keys"):
-            validate_config(config)
+            validate_config(config, raw_dict=config_dict)
 
     def test_nested_secret_raises(self):
         config = HunterConfig()
-        config.collection.api_key = "secret123"
+        config_dict = config.model_dump()
+        config_dict["collection"]["extra"] = {"api_key": "secret123"}
         with pytest.raises(ConfigLoadError, match="secret keys"):
-            validate_config(config)
+            validate_config(config, raw_dict=config_dict)
 
     def test_list_secret_raises(self):
         config = HunterConfig()
-        config.trading.secrets = ["api_key", "secret_value"]
+        config_dict = config.model_dump()
+        config_dict["trading"]["extra_list"] = [{"api_key": "secret123"}]
         with pytest.raises(ConfigLoadError, match="secret keys"):
-            validate_config(config)
+            validate_config(config, raw_dict=config_dict)
+
+
+class TestContainsSecrets:
+    """_contains_secrets detects secret keys in nested structures."""
+
+    def test_detects_api_key_in_dict(self):
+        assert _contains_secrets({"api_key": "secret"})
+
+    def test_detects_api_secret_in_dict(self):
+        assert _contains_secrets({"api_secret": "secret"})
+
+    def test_detects_secret_key_in_dict(self):
+        assert _contains_secrets({"secret_key": "secret"})
+
+    def test_detects_private_key_in_dict(self):
+        assert _contains_secrets({"private_key": "secret"})
+
+    def test_detects_nested_secret(self):
+        assert _contains_secrets({"nested": {"api_key": "secret"}})
+
+    def test_detects_secret_in_list(self):
+        assert _contains_secrets([{"api_key": "secret"}, {"safe": "ok"}])
+
+    def test_no_secret_in_safe_dict(self):
+        assert not _contains_secrets({"safe": "value", "level": "INFO"})
+
+    def test_no_secret_in_empty_dict(self):
+        assert not _contains_secrets({})
 
 
 class TestLoadConfig:
@@ -87,6 +121,7 @@ class TestLoadConfig:
             "logging:\n  level: DEBUG\n"
         )
         config = load_config(str(yaml_path))
+        assert isinstance(config, HunterConfig)
         assert config.logging.level == "DEBUG"
         assert config.trading.enabled is False
 

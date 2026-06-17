@@ -34,7 +34,7 @@ def _contains_secrets(data: Any) -> bool:
     return False
 
 
-def validate_config(config: HunterConfig) -> HunterConfig:
+def validate_config(config: HunterConfig, raw_dict: dict | None = None) -> HunterConfig:
     """Validate config safety constraints.
 
     Raises:
@@ -56,9 +56,9 @@ def validate_config(config: HunterConfig) -> HunterConfig:
             "Live trading is not allowed in MVP-1."
         )
 
-    # Dump to dict and scan for secret keys
-    config_dict = config.model_dump()
-    if _contains_secrets(config_dict):
+    # Scan for secret keys — prefer raw dict if available, else dump
+    scan_target = raw_dict if raw_dict is not None else config.model_dump()
+    if _contains_secrets(scan_target):
         raise ConfigLoadError(
             "Configuration contains secret keys (api_key, api_secret, "
             "secret_key, or private_key). Secrets must not be stored in "
@@ -85,13 +85,28 @@ def load_config(path: str | None = None) -> HunterConfig:
     """
     config = HunterConfig()
 
+    def _merge_yaml(data: dict) -> HunterConfig:
+        """Safely merge YAML dict into HunterConfig, preserving nested models."""
+        if not data:
+            return config
+        # Validate secrets before Pydantic strips them
+        merged = config.model_dump()
+        _deep_update(merged, data)
+        if _contains_secrets(merged):
+            raise ConfigLoadError(
+                "Configuration contains secret keys (api_key, api_secret, "
+                "secret_key, or private_key). Secrets must not be stored in "
+                "config files. Use environment variables instead."
+            )
+        return HunterConfig.model_validate(merged)
+
     # Load default YAML if it exists
     default_path = CONFIG_DIR / "data.yaml"
     if default_path.exists():
         with open(default_path) as f:
             default_data = yaml.safe_load(f)
         if default_data:
-            config = HunterConfig(**default_data)
+            config = _merge_yaml(default_data)
 
     # Load optional override file
     if path is not None:
@@ -100,7 +115,7 @@ def load_config(path: str | None = None) -> HunterConfig:
             with open(override_path) as f:
                 override_data = yaml.safe_load(f)
             if override_data:
-                config = config.model_copy(update=override_data)
+                config = _merge_yaml(override_data)
     else:
         # Check for local.yaml override
         local_path = CONFIG_DIR / "local.yaml"
@@ -108,16 +123,25 @@ def load_config(path: str | None = None) -> HunterConfig:
             with open(local_path) as f:
                 local_data = yaml.safe_load(f)
             if local_data:
-                config = config.model_copy(update=local_data)
+                config = _merge_yaml(local_data)
 
     # Environment variable override (HUNTER_CONFIG as JSON/YAML string)
     env_config = os.getenv("HUNTER_CONFIG")
     if env_config:
         env_data = yaml.safe_load(env_config)
         if env_data:
-            config = config.model_copy(update=env_data)
+            config = _merge_yaml(env_data)
 
     # Safety validation — fail closed
     validate_config(config)
 
     return config
+
+
+def _deep_update(base: dict, override: dict) -> None:
+    """Recursively update base dict with override dict values."""
+    for key, value in override.items():
+        if key in base and isinstance(base[key], dict) and isinstance(value, dict):
+            _deep_update(base[key], value)
+        else:
+            base[key] = value
