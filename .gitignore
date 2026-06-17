@@ -1,1 +1,33 @@
-.wrongstack/
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+*.egg-info/
+dist/
+build/
+
+# Secrets and local config
+config/local.yaml
+.env
+*.key
+*.pem
+*.secret
+
+# Runtime data and logs
+data/
+logs/
+*.db
+*.sqlite
+*.sqlite3
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db

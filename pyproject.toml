@@ -1,0 +1,19 @@
+[project]
+name = "hunter-futures-pro"
+version = "0.2.0"
+description = "Agent-first crypto futures research and execution-control platform"
+requires-python = ">=3.11"
+dependencies = [
+    "pydantic>=2.0.0",
+    "pyyaml>=6.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.0.0",
+    "pytest-asyncio>=0.21.0",
+    "factory-boy>=3.3.0",
+]
+
+[project.scripts]
+hunter = "hunter.core.cli:main"
