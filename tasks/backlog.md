@@ -17,12 +17,13 @@
 
 ## MVP-1 — Data Foundation
 
-- [ ] Create Python project structure
-- [ ] Create config structure
-- [ ] Create logging structure
-- [ ] Create Binance Futures data collector plan
-- [ ] Create SQLite schema plan
-- [ ] Create test structure
+- [x] Create Python project structure
+- [x] Create config structure
+- [x] Create logging structure
+- [x] Create Binance Futures data collector plan
+- [x] Create SQLite schema plan
+- [x] Create test structure
+- [x] Create SPEC-002 MVP-1 Data Foundation design
 
 ## MVP-2 — Market State
 
