@@ -353,6 +353,18 @@ All important project changes will be recorded in this file.
 - No storage integration exists yet.
 - No report templates exist yet.
 
+### MVP-2 Complete
+
+MVP-2 Market State implementation is fully complete. All 6 steps finished:
+- Step 1: Market State Models (37 tests)
+- Step 2: Indicator Utilities (50 tests)
+- Step 3: Regime Engine (37 tests)
+- Step 4: Breadth Engine (44 tests)
+- Step 5: JSON Output Writers (19 tests)
+- Step 6: Final review and polish
+- Version bumped to 0.3.0-dev
+- Full test suite: 278 tests passing
+
 ### Next
 
-- MVP-2 Step 6 — Final review and polish.
+- MVP-3 — Decision Layer (pending SPEC-004 and planning).

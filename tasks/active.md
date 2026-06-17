@@ -2,46 +2,28 @@
 
 ## Current Task
 
-MVP-2 Implementation Planning — Market State Models.
+MVP-3 Planning — Decision Layer (SPEC-004).
 
 ## Status
 
-Ready to start.
-
-## Note
-
-MVP-1 Data Foundation is complete. All 91 tests pass.
-
-SPEC-003 MVP-2 Market State design is complete and finalized:
-- Regime Engine design with deterministic scoring formulas
-- Market Breadth Engine design with universe filtering and invalid symbol rules
-- JSON output contracts defined with field ranges
-- Fail-closed behavior defined for all failure modes
-- Pipeline order defined: Breadth Engine first, then Regime Engine
-- Test plan defined for regime, breadth, and safety tests
-- No MVP-2 code has been implemented yet
+MVP-2 is complete. All 278 tests pass. Version 0.3.0-dev.
 
 ## Previous Task
 
-MVP-1 Data Foundation — Complete.
+MVP-2 Market State — Complete.
 
 ## Goal
 
-Implement the Market State layer: Regime Engine and Market Breadth Engine, following SPEC-003 design.
+Design the Decision Layer: how market state signals (regime, breadth) are translated into execution-ready decisions without trading logic. This is the bridge between Market State (MVP-2) and Execution (MVP-4).
 
 ## Current Scope
 
-MVP-2 implementation steps (from SPEC-003):
-
-1. Step 1 — Create Market State Models
-2. Step 2 — Create Indicator Utilities
-3. Step 3 — Create Regime Engine
-4. Step 4 — Create Breadth Engine
-5. Step 5 — Create JSON Output Writers
-6. Step 6 — Create Report Templates
-7. Step 7 — Update Project Memory
-
-Immediate next step: Plan MVP-2 Step 1 — Market State Models.
+MVP-3 design only (no code yet):
+- SPEC-004 — Decision Layer design document
+- Signal aggregation from regime + breadth outputs
+- Decision contract (what Freqtrade would consume)
+- Risk constraints (position sizing limits, not execution)
+- Fail-closed behavior when signals are invalid
 
 ## Do Not Do Yet
 
@@ -52,20 +34,19 @@ Immediate next step: Plan MVP-2 Step 1 — Market State Models.
 - Do not enable live trading.
 - Do not create production trading rules.
 - Do not implement actual data collection.
+- Do not implement MVP-3 code until SPEC-004 is approved.
 
 ## Definition of Done
 
-MVP-2 is done when:
-
-- Regime Engine exists and produces deterministic outputs
-- Market Breadth Engine exists and produces deterministic outputs
-- JSON outputs can be generated from local/test data
-- Fail-closed behavior works for all failure modes
-- Tests pass for regime, breadth, indicators, and safety
-- No Binance integration exists
+MVP-3 design is done when:
+- SPEC-004 exists and is reviewed
+- Decision contract is defined (JSON output for execution layer)
+- Risk constraints are defined (max position, not execution logic)
+- Fail-closed behavior is defined
+- No trading execution logic exists
 - No Freqtrade integration exists
-- No trading execution exists
+- No live trading is enabled
 
-## Next Step After MVP-2
+## Next Step After MVP-3
 
-MVP-3 — Strength and Futures Positioning: Relative Strength Engine and Open Interest Engine design.
+MVP-4 — Execution Integration (Freqtrade bridge, still no live trading).
