@@ -154,3 +154,47 @@ Risks:
 Next step:
 
 Begin MVP-1 implementation: create Python project structure from SPEC-002.
+
+---
+
+### 0.2.0-dev — MVP-1 Step 1: Python Project Skeleton
+
+Date: 2026-06-17
+
+Agent: WrongStack
+
+Task: Create MVP-1 Python project skeleton (directories, __init__.py, pyproject.toml, .gitignore).
+
+Files changed:
+
+- src/hunter/__init__.py (updated __version__ to "0.2.0-dev")
+- src/hunter/config/__init__.py (created)
+- src/hunter/data/__init__.py (created)
+- src/hunter/core/__init__.py (created)
+- src/hunter/engines/__init__.py (created)
+- tests/__init__.py (created)
+- tests/test_config/__init__.py (created)
+- tests/test_data/__init__.py (created)
+- tests/test_core/__init__.py (created)
+- tests/fixtures/__init__.py (created)
+- pyproject.toml (created with metadata and dependencies)
+- requirements.txt (created)
+- requirements-dev.txt (created)
+- .gitignore (updated per SPEC-002)
+- CHANGELOG.md (updated)
+
+Summary:
+
+Created Python project skeleton following SPEC-002 section 1. Package structure includes hunter (config, data, core, engines) and tests at repo root. Dependencies: pydantic>=2.0.0, pyyaml>=6.0, pytest>=7.0.0, pytest-asyncio>=0.21.0. .gitignore excludes secrets, runtime data, and local config. No CLI, no config loader, no logging, no collector, no storage created yet.
+
+Risks:
+
+- Trading logic must not be added yet.
+- Binance integration must not be added yet.
+- Freqtrade integration must not be added yet.
+- Live trading must stay disabled.
+- No actual data collection implemented (collection.enabled: false by design).
+
+Next step:
+
+MVP-1 Step 2: Implement config Pydantic models and loader with validate_config().

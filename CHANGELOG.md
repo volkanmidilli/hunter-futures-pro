@@ -36,3 +36,30 @@ All important project changes will be recorded in this file.
 - Review MVP-0 cleanup.
 - Commit initial foundation.
 - Plan MVP-1 Data Foundation.
+
+## 0.2.0-dev — MVP-1 Data Foundation (In Progress)
+
+### Added
+
+- Python project structure: `src/hunter/` package with `config`, `data`, `core`, `engines` modules
+- `pyproject.toml` with project metadata, `pydantic` and `pyyaml` dependencies
+- `requirements.txt` and `requirements-dev.txt` with pytest dependencies
+- `.gitignore` excluding Python cache, secrets, runtime data, and local config
+- `tests/` directory at repo root with `test_config`, `test_data`, `test_core`, `fixtures`
+- `__version__ = "0.2.0-dev"` in `src/hunter/__init__.py`
+
+### Safety
+
+- No trading logic exists yet.
+- No Binance connection exists yet.
+- No Freqtrade integration exists yet.
+- No live trading is enabled.
+- No API keys or exchange secrets stored in repository.
+- `.gitignore` prevents accidental commit of `config/local.yaml`, `.env`, `*.key`, `*.pem`.
+
+### Next
+
+- Implement config Pydantic models and loader with `validate_config()`.
+- Implement logging setup with JSON formatter and `RedactingFilter`.
+- Implement SQLite schema and `DataStorage` / `SQLiteStorage` stubs.
+- Write safety tests for config validation and logging redaction.
