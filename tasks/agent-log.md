@@ -237,28 +237,29 @@ MVP-1 Step 3 — Logging structure.
 
 ---
 
-### 0.2.0-dev — MVP-1 Step 4: Data Collector Interface
+### 0.2.0-dev — MVP-1 Step 5: SQLite Storage Layer
 
 Date: 2026-06-17
 
 Agent: WrongStack
 
-Task: MVP-1 Step 4 — Data Collector Interface.
+Task: MVP-1 Step 5 — SQLite Storage Layer.
 
-Commit: c574395
+Commit: 1cedb92
 
 Files changed:
 
-- src/hunter/data/collector.py (created)
-- src/hunter/data/__init__.py (created)
-- tests/test_data/test_collector.py (created)
-- .gitignore (fixed to not ignore src/hunter/data/)
+- src/hunter/data/schema.sql (created)
+- src/hunter/data/storage.py (created)
+- src/hunter/data/__init__.py (updated)
+- tests/test_data/test_storage.py (created)
 
 Summary:
 
-Added DataCollector abstract interface, immutable market data models and BinanceFuturesCollector skeleton.
-BinanceFuturesCollector does not connect to Binance and all methods raise NotImplementedError.
-Added tests for abstract behavior, skeleton behavior, immutability and no network calls.
+Added SQLite schema with 5 tables and DataStorage abstract interface.
+Implemented SQLiteStorage using Python stdlib sqlite3 only.
+SQLiteStorage creates tables from schema.sql, saves and reads local data objects.
+Added 19 tests using temporary SQLite database files.
 
 Safety:
 
@@ -271,4 +272,4 @@ Safety:
 
 Next step:
 
-MVP-1 Step 5 — SQLite storage layer.
+MVP-1 Step 6 — Final safety tests and MVP-1 completion.

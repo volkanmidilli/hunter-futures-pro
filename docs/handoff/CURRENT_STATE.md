@@ -52,9 +52,19 @@ MVP-1 Step 4 (Data Collector Interface) is complete and committed:
 - 5 frozen dataclass data models: KlineData, FundingRateData, OpenInterestData, MarkPriceData, Ticker24hData
 - tests/test_data/test_collector.py with 18 tests for abstract behavior, skeleton behavior, immutability, no network calls
 
-No storage layer exists yet.
+MVP-1 Step 5 (SQLite Storage Layer) is complete and committed:
+- src/hunter/data/schema.sql with 5 tables (market_symbols, candles, funding_rates, open_interest, collection_metadata)
+- DataStorage ABC with 9 abstract methods (initialize, save_klines, get_klines, get_latest_kline, save_funding_rates, get_funding_rates, save_collection_metadata, get_collection_metadata, is_data_fresh)
+- SQLiteStorage implementation using Python stdlib sqlite3 only
+- SQLiteStorage creates tables from schema.sql, saves and reads local data objects
+- tests/test_data/test_storage.py with 19 tests using temporary SQLite database files
+- All 19 tests pass, no network calls, no Binance connection, no Freqtrade connection
 
 No CLI exists yet.
+
+No data collection is running yet.
+
+MVP-1 is not fully complete yet.
 
 ## Existing Files
 
@@ -84,6 +94,8 @@ No CLI exists yet.
 - src/hunter/core/logging.py
 - src/hunter/core/__init__.py
 - src/hunter/data/collector.py
+- src/hunter/data/schema.sql
+- src/hunter/data/storage.py
 - src/hunter/data/__init__.py
 - src/hunter/engines/__init__.py
 - configs/data.yaml
@@ -93,6 +105,7 @@ No CLI exists yet.
 - tests/test_config/test_loader.py
 - tests/test_core/test_logging.py
 - tests/test_data/test_collector.py
+- tests/test_data/test_storage.py
 - tests/test_data/__init__.py
 - tests/test_core/__init__.py
 - tests/test_config/__init__.py
@@ -155,4 +168,4 @@ Unknown market regime should block execution in future trading logic.
 
 ## Next Step
 
-MVP-1 Step 5 — SQLite storage layer.
+MVP-1 Step 6 — Final safety tests and MVP-1 completion.
