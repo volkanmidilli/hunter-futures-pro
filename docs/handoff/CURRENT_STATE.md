@@ -6,7 +6,7 @@ Hunter Futures Pro
 
 ## Version
 
-0.2.0-dev
+0.3.0-dev
 
 ## Current Phase
 
@@ -82,8 +82,29 @@ No Freqtrade integration exists yet.
 
 No live trading is enabled.
 
-MVP-2 implementation has started. Steps 1, 2, 3, 4, and 5 complete.
+MVP-2 implementation is complete. All steps finished:
+- Step 1: Market State Models (37 tests)
+- Step 2: Indicator Utilities (50 tests)
+- Step 3: Regime Engine (37 tests)
+- Step 4: Breadth Engine (44 tests)
+- Step 5: JSON Output Writers (19 tests)
+- Step 6: Final review and polish
+- Version bumped to 0.3.0-dev
+
+No JSON schema validation exists yet.
+
+No storage integration exists yet.
+
+No report templates exist yet.
+
+No trading logic exists yet.
+
+No Binance connection exists yet.
+
+No Freqtrade integration exists yet.
+
+No live trading is enabled.
 
 ## Next Step
 
-MVP-2 Step 6 — Final review and polish.
+MVP-3 — Decision Layer (pending SPEC-004 and planning).

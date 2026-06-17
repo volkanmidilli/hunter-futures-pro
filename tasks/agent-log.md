@@ -518,7 +518,7 @@ Safety:
 
 Next step:
 
-MVP-2 Step 6 — Final review and polish.
+MVP-3 — Decision Layer (pending SPEC-004 and planning).
 
 ---
 
@@ -569,7 +569,7 @@ Safety:
 
 Next step:
 
-MVP-2 Step 6 — Final review and polish.
+MVP-3 — Decision Layer (pending SPEC-004 and planning).
 
 ---
 
