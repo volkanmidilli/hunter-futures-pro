@@ -9,7 +9,7 @@ dist/
 build/
 
 # Secrets and local config
-config/local.yaml
+configs/local.yaml
 .env
 *.key
 *.pem

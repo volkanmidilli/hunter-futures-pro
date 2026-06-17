@@ -6,7 +6,7 @@ import yaml
 
 from .models import HunterConfig
 
-CONFIG_DIR = Path("config")
+CONFIG_DIR = Path("configs")
 
 
 class ConfigLoadError(Exception):
