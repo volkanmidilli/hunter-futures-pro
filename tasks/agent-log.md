@@ -108,3 +108,49 @@ Risks:
 Next step:
 
 MVP-1 planning: Data Foundation.
+
+---
+
+### 0.2.0-dev — SPEC-002 Review
+
+Date: 2026-06-17
+
+Agent: WrongStack (Director-led multi-agent review)
+
+Task: Review SPEC-002 MVP-1 Data Foundation design.
+
+Files changed:
+
+- specs/SPEC-002-MVP-1-Data-Foundation.md (reviewed and updated)
+- docs/handoff/CURRENT_STATE.md (updated)
+
+Summary:
+
+SPEC-002 was reviewed by three internal roles:
+- Architect Agent: Confirmed architecture fit, Freqtrade remains execution-only, no trading logic
+- Data Engineer Agent: Verified implementability, identified 8 fixes needed
+- Review Agent: Confirmed all safety constraints met, no Binance/keys/live trading
+
+All 8 fixes applied:
+1. .gitignore specification added
+2. Test directory moved to repo root (standard pytest)
+3. DataStorage ABC interface defined with SQLite stub
+4. validate_config() extracted for testable safety checks
+5. Config merge uses safe Pydantic model_copy
+6. Missing SQLite index on long_short_ratio added
+7. Dependencies specified (pydantic, pyyaml, pytest, etc.)
+8. CLI entry point and __version__ export defined
+
+SPEC-002 is now ready for implementation.
+
+Risks:
+
+- Trading logic must not be added yet.
+- Binance integration must not be added yet.
+- Freqtrade integration must not be added yet.
+- Live trading must stay disabled.
+- Implementation must follow SPEC-002 design without deviation from safety rules.
+
+Next step:
+
+Begin MVP-1 implementation: create Python project structure from SPEC-002.
