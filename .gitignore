@@ -16,7 +16,6 @@ configs/local.yaml
 *.secret
 
 # Runtime data and logs
-data/
 logs/
 *.db
 *.sqlite
