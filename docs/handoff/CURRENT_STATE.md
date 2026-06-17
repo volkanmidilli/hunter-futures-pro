@@ -10,7 +10,7 @@ Hunter Futures Pro
 
 ## Current Phase
 
-MVP-2 — Market State design complete, implementation planning pending.
+MVP-3 — Decision Layer complete. MVP-4 planning pending.
 
 ## Current Status
 
@@ -244,6 +244,20 @@ No Freqtrade integration exists yet.
 
 No live trading is enabled.
 
+MVP-3 Step 5 is complete:
+- Final review passed with no issues found
+- All 20 checklist items verified and passing
+- No fixes applied
+- Version remains 0.3.0-dev
+
+MVP-3 Decision Layer is fully complete. All 5 steps finished:
+- Step 1: Decision Models (32 tests)
+- Step 2: Decision Engine (50 tests)
+- Step 3: Decision Writer (19 tests)
+- Step 4: Integration Tests (15 tests)
+- Step 5: Final review and polish
+- Full test suite: 394 tests passing
+
 ## Next Step
 
-MVP-3 Step 5 — Final review and polish.
+MVP-4 planning (Execution Bridge / Freqtrade Integration) — design only, no implementation yet.

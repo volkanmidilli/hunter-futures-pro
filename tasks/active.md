@@ -2,50 +2,49 @@
 
 ## Current Task
 
-MVP-3 Step 1 — Decision Models.
+MVP-4 Planning — Execution Bridge / Freqtrade Integration design.
 
 ## Status
 
-Ready to start.
+Pending. Waiting for human approval to begin MVP-4 planning.
 
 ## Previous Task
 
-MVP-3 Planning — Decision Layer (SPEC-004). Complete.
+MVP-3 — Decision Layer. Complete. All 5 steps finished, 394 tests passing.
 
 ## Goal
 
-Implement the Decision Layer models: DecisionState, DecisionAction, DecisionOutput, and DecisionConfig.
+Design the Execution Bridge that connects Hunter Futures Pro decision outputs to Freqtrade.
+This is a design-only phase — no implementation yet.
 
 ## Current Scope
 
-MVP-3 Step 1 only:
-- Create DecisionState enum (ALLOW, BLOCK, REVIEW, UNKNOWN)
-- Create DecisionAction enum (ENABLE_LONG_ONLY_RESEARCH, ENABLE_SHORT_ONLY_RESEARCH, BLOCK_ALL, MANUAL_REVIEW)
-- Create DecisionOutput frozen dataclass with all 14 fields
-- Create DecisionConfig frozen dataclass with defaults
-- Add tests for model defaults, immutability, and field types
+MVP-4 planning only:
+- Review PROJECT.md for MVP-4 scope
+- Identify integration points between Decision Layer and Freqtrade
+- Define signal format and handoff protocol
+- Design fail-closed behavior for bridge layer
+- Create SPEC-005 if needed
 
 ## Do Not Do Yet
 
-- Do not implement Decision Engine (Step 2).
-- Do not implement Decision JSON Writer (Step 3).
-- Do not write trading logic.
-- Do not connect to Binance.
-- Do not connect to Freqtrade.
-- Do not create API keys.
+- Do not implement Freqtrade integration.
+- Do not create Freqtrade strategy files.
 - Do not enable live trading.
-- Do not create production trading rules.
+- Do not connect to Binance.
+- Do not create API keys.
+- Do not write trading execution logic.
 - Do not implement actual data collection.
 
 ## Definition of Done
 
-Step 1 is done when:
-- All decision models exist and are frozen
-- Tests pass for defaults, custom values, and immutability
-- No Binance integration exists
-- No Freqtrade integration exists
-- No trading execution exists
+MVP-4 planning is done when:
+- Design document exists (SPEC-005 or equivalent)
+- Integration points are defined
+- Signal format is specified
+- Fail-closed behavior is documented
+- Safety constraints are preserved
 
-## Next Step After Step 1
+## Next Step After Planning
 
-MVP-3 Step 2 — Decision Engine.
+MVP-4 Step 1 — Execution Bridge Models (after design approval).
