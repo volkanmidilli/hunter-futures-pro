@@ -141,6 +141,43 @@ No Freqtrade integration exists yet.
 
 No live trading is enabled.
 
+MVP-3 Step 2 is complete:
+- `src/hunter/decision/engine.py` created with fail-closed Decision Engine
+- `make_decision()` implements all 14 priority rules from SPEC-004
+- `validate_decision_inputs()` checks 8 fail-closed conditions in order
+- `is_stale_output()` checks oldest timestamp against stale threshold
+- `detect_regime_breadth_conflict()` detects 4 conflict conditions
+- `calculate_decision_confidence()` uses min(regime_conf, breadth/100)
+- BULL + LONG_ONLY + healthy breadth → ENABLE_LONG_ONLY_RESEARCH
+- BEAR + SHORT_ONLY + weak breadth → ENABLE_SHORT_ONLY_RESEARCH
+- All other conditions → BLOCK_ALL by default
+- Data quality aggregated from both inputs (logical OR)
+- Input refs populated with timestamps and source labels
+- 50 decision engine tests, all passing
+- Full test suite: 360 tests passing (310 existing + 50 new)
+
+Decision Models exist from Step 1.
+
+No Decision Writer exists yet.
+
+No config YAML exists yet.
+
+No JSON reading or writing in Decision Engine.
+
+No JSON schema validation exists yet.
+
+No storage integration exists yet.
+
+No report templates exist yet.
+
+No trading logic exists yet.
+
+No Binance connection exists yet.
+
+No Freqtrade integration exists yet.
+
+No live trading is enabled.
+
 ## Next Step
 
-MVP-3 Step 2 — Decision Engine.
+MVP-3 Step 3 — Decision Writer.

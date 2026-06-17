@@ -423,6 +423,54 @@ MVP-2 Market State implementation is fully complete. All 6 steps finished:
 - No Decision Writer exists yet.
 - No config YAML exists yet.
 
+### MVP-3 Step 2 — Decision Engine (Complete)
+
+- `src/hunter/decision/engine.py` created with deterministic fail-closed Decision Engine:
+  - `make_decision(regime_output, breadth_output, config)` — main entry point implementing all 14 priority rules from SPEC-004
+  - `validate_decision_inputs(regime, breadth, config)` — fail-closed validation in priority order:
+    - Missing RegimeOutput → BLOCK_ALL (MISSING_REGIME)
+    - Missing BreadthOutput → BLOCK_ALL (MISSING_BREADTH)
+    - Invalid RegimeOutput status → BLOCK_ALL (INVALID_REGIME)
+    - Invalid BreadthOutput status → BLOCK_ALL (INVALID_BREADTH)
+    - UNKNOWN regime → BLOCK_ALL (UNKNOWN_REGIME)
+    - allowed_mode NONE → BLOCK_ALL (ALLOWED_MODE_NONE)
+    - Low regime confidence → BLOCK_ALL (LOW_REGIME_CONFIDENCE)
+    - Stale inputs → BLOCK_ALL (STALE_INPUT)
+  - `is_stale_output(regime, breadth, stale_input_minutes)` — checks oldest timestamp against threshold
+  - `detect_regime_breadth_conflict(regime, breadth)` — detects 4 conflict conditions per SPEC-004:
+    - BULL + RISK_OFF, BEAR + RISK_ON, BULL + score < 50, BEAR + score > 50
+  - `calculate_decision_confidence(regime, breadth)` — min(regime_confidence, breadth_score / 100)
+  - Decision rules (after all fail-closed checks pass):
+    - BULL + LONG_ONLY + breadth_score >= min_breadth_score_for_long → ALLOW + ENABLE_LONG_ONLY_RESEARCH
+    - BEAR + SHORT_ONLY + breadth_score <= max_breadth_score_for_short → ALLOW + ENABLE_SHORT_ONLY_RESEARCH
+    - SIDEWAYS → BLOCK_ALL (SIDEWAYS_NO_DIRECTION)
+    - TRANSITION → BLOCK_ALL (TRANSITION_UNCERTAIN) or custom transition_action
+    - Conflicts → BLOCK_ALL (CONFLICTING_SIGNALS) or custom conflict_action
+    - Default → BLOCK_ALL (DEFAULT_BLOCK)
+  - Data quality aggregation: logical OR of RegimeOutput and BreadthOutput data_quality flags
+  - Input refs populated with timestamps and source labels for audit trail
+- `tests/test_decision/test_engine.py` with 50 tests:
+  - validate_decision_inputs: missing regime, missing breadth, invalid status, UNKNOWN, NONE mode, low confidence, stale, valid, data quality aggregation
+  - is_stale_output: fresh, old regime, old breadth, uses oldest timestamp
+  - detect_conflict: bull+risk_off, bear+risk_on, bull+low_score, bear+high_score, no conflict cases
+  - calculate_confidence: high/high, low/high, high/low, perfect, zero
+  - make_decision fail-closed: all 8 fail-closed conditions produce BLOCK_ALL
+  - make_decision allow: bull+healthy_breadth allows long, bear+weak_breadth allows short
+  - make_decision special: sideways blocks, transition blocks, custom actions, conflicts, default block, input refs, confidence calculation
+  - Safety: no network calls, no trading execution logic
+- Full test suite: 360 tests passing (310 existing + 50 new)
+
+### Safety
+
+- No trading logic exists yet.
+- No Binance connection exists yet.
+- No Freqtrade integration exists yet.
+- No live trading is enabled.
+- No API keys or exchange secrets stored in repository.
+- No Decision Writer exists yet.
+- No config YAML exists yet.
+- No JSON reading or writing in Decision Engine.
+
 ### Next
 
-- MVP-3 Step 2 — Decision Engine.
+- MVP-3 Step 3 — Decision Writer.

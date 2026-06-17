@@ -83,9 +83,40 @@ Safety:
 - No API keys.
 - No network calls.
 
+---
+
+### 0.3.0-dev — MVP-3 Step 2 — Decision Engine
+
+Date: 2026-06-17
+
+Agent: WrongStack
+
+Task: MVP-3 Step 2 — Decision Engine
+
+Files changed:
+
+- src/hunter/decision/engine.py
+- tests/test_decision/test_engine.py
+
+Summary:
+
+Added fail-closed Decision Engine consuming in-memory RegimeOutput and BreadthOutput.
+Implemented deterministic BLOCK_ALL rules, stale checks, conflict detection, decision confidence calculation and long/short research-enable outcomes.
+Full test suite passes with 360 tests (310 existing + 50 new).
+
+Safety:
+
+- No Binance connection.
+- No Freqtrade integration.
+- No trading logic.
+- No live trading.
+- No API keys.
+- No network calls.
+- No JSON reading or writing.
+
 Next step:
 
-MVP-3 Step 2 — Decision Engine.
+MVP-3 Step 3 — Decision Writer.
 
 ---
 
