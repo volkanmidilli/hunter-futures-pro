@@ -237,34 +237,38 @@ MVP-1 Step 3 — Logging structure.
 
 ---
 
-### 0.2.0-dev — MVP-1 Step 3: Logging Structure
+### 0.2.0-dev — MVP-1 Step 4: Data Collector Interface
 
 Date: 2026-06-17
 
 Agent: WrongStack
 
-Task: MVP-1 Step 3 — Logging Structure.
+Task: MVP-1 Step 4 — Data Collector Interface.
 
-Commit: e9fb25b
+Commit: c574395
 
 Files changed:
 
-- src/hunter/core/logging.py (created)
-- src/hunter/core/__init__.py (updated)
-- tests/test_core/test_logging.py (created)
+- src/hunter/data/collector.py (created)
+- src/hunter/data/__init__.py (created)
+- tests/test_data/test_collector.py (created)
+- .gitignore (fixed to not ignore src/hunter/data/)
 
 Summary:
 
-Added structured logging with JSONFormatter, RedactingFilter and setup_logging(). Added tests for formatting, nested secret redaction and setup behavior.
+Added DataCollector abstract interface, immutable market data models and BinanceFuturesCollector skeleton.
+BinanceFuturesCollector does not connect to Binance and all methods raise NotImplementedError.
+Added tests for abstract behavior, skeleton behavior, immutability and no network calls.
 
 Safety:
 
 - No Binance connection.
+- No HTTP requests.
 - No Freqtrade integration.
 - No live trading.
 - No API keys.
-- Logging redacts secret-like fields.
+- No trading logic.
 
 Next step:
 
-MVP-1 Step 4 — Data collector interface.
+MVP-1 Step 5 — SQLite storage layer.

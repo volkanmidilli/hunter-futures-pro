@@ -45,7 +45,12 @@ MVP-1 Step 3 (Logging Structure) is complete and committed:
 - tests/test_core/test_logging.py with 18 tests for formatting, redaction, and setup behavior
 - Log secret redaction applied to file handler only
 
-No data collector exists yet.
+MVP-1 Step 4 (Data Collector Interface) is complete and committed:
+- src/hunter/data/collector.py with abstract DataCollector interface (6 methods)
+- BinanceFuturesCollector skeleton that does NOT connect to Binance
+- All BinanceFuturesCollector methods raise NotImplementedError
+- 5 frozen dataclass data models: KlineData, FundingRateData, OpenInterestData, MarkPriceData, Ticker24hData
+- tests/test_data/test_collector.py with 18 tests for abstract behavior, skeleton behavior, immutability, no network calls
 
 No storage layer exists yet.
 
@@ -72,6 +77,30 @@ No CLI exists yet.
 - tasks/agent-log.md
 - CHANGELOG.md
 - VERSION
+- src/hunter/__init__.py
+- src/hunter/config/models.py
+- src/hunter/config/loader.py
+- src/hunter/config/__init__.py
+- src/hunter/core/logging.py
+- src/hunter/core/__init__.py
+- src/hunter/data/collector.py
+- src/hunter/data/__init__.py
+- src/hunter/engines/__init__.py
+- configs/data.yaml
+- configs/local.example.yaml
+- tests/__init__.py
+- tests/test_config/test_models.py
+- tests/test_config/test_loader.py
+- tests/test_core/test_logging.py
+- tests/test_data/test_collector.py
+- tests/test_data/__init__.py
+- tests/test_core/__init__.py
+- tests/test_config/__init__.py
+- tests/fixtures/__init__.py
+- pyproject.toml
+- requirements.txt
+- requirements-dev.txt
+- .gitignore
 
 ## Main Project Direction
 
@@ -126,4 +155,4 @@ Unknown market regime should block execution in future trading logic.
 
 ## Next Step
 
-MVP-1 Step 4 — Data collector interface.
+MVP-1 Step 5 — SQLite storage layer.
