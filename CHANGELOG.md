@@ -48,6 +48,19 @@ All important project changes will be recorded in this file.
 - `tests/` directory at repo root with `test_config`, `test_data`, `test_core`, `fixtures`
 - `__version__ = "0.2.0-dev"` in `src/hunter/__init__.py`
 
+### MVP-1 Step 2 — Config Models and Validation (Complete)
+
+- Pydantic config models: `TradingConfig`, `CollectionConfig`, `StorageConfig`, `LoggingConfig`, `HunterConfig`
+- Config loader with safe override hierarchy (YAML file, env var)
+- `validate_config()` with fail-closed validation:
+  - Raises `ConfigLoadError` if `trading.enabled` is `true`
+  - Raises `ConfigLoadError` if `trading.live_enabled` is `true`
+  - Raises `ConfigLoadError` if secrets (`api_key`, `api_secret`, `secret_key`, `private_key`) detected
+- Safe defaults: `trading.enabled: false`, `trading.live_enabled: false`, `collection.enabled: false`
+- Config files: `configs/data.yaml` (safe defaults), `configs/local.example.yaml` (warnings)
+- Config directory standard: `configs/` (not `config/`)
+- Config tests: 23 tests for safe defaults, validation failures, and YAML loading
+
 ### Safety
 
 - No trading logic exists yet.
@@ -55,11 +68,11 @@ All important project changes will be recorded in this file.
 - No Freqtrade integration exists yet.
 - No live trading is enabled.
 - No API keys or exchange secrets stored in repository.
-- `.gitignore` prevents accidental commit of `config/local.yaml`, `.env`, `*.key`, `*.pem`.
+- `.gitignore` prevents accidental commit of `configs/local.yaml`, `.env`, `*.key`, `*.pem`.
 
 ### Next
 
-- Implement config Pydantic models and loader with `validate_config()`.
-- Implement logging setup with JSON formatter and `RedactingFilter`.
-- Implement SQLite schema and `DataStorage` / `SQLiteStorage` stubs.
-- Write safety tests for config validation and logging redaction.
+- MVP-1 Step 3: Implement logging setup with JSON formatter and `RedactingFilter`.
+- MVP-1 Step 4: Implement data collector interface (ABC only).
+- MVP-1 Step 5: Implement SQLite schema and `DataStorage` / `SQLiteStorage` stubs.
+- MVP-1 Step 6: Write safety tests for logging redaction and storage schema.

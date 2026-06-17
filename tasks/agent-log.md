@@ -198,3 +198,39 @@ Risks:
 Next step:
 
 MVP-1 Step 2: Implement config Pydantic models and loader with validate_config().
+
+---
+
+### 0.2.0-dev — MVP-1 Step 2: Config Models and Validation
+
+Date: 2026-06-17
+
+Agent: WrongStack
+
+Task: MVP-1 Step 2 — Config Models and Validation.
+
+Files changed:
+
+- src/hunter/config/models.py (created)
+- src/hunter/config/loader.py (created)
+- src/hunter/config/__init__.py (updated)
+- configs/data.yaml (created)
+- configs/local.example.yaml (created)
+- tests/test_config/test_models.py (created)
+- tests/test_config/test_loader.py (created)
+
+Summary:
+
+Added Pydantic config models, config loader, validate_config(), safe defaults, fail-closed checks, config examples and config tests. Renamed config/ to configs/ to match project standard.
+
+Safety:
+
+- No Binance connection.
+- No Freqtrade integration.
+- No live trading.
+- No API keys.
+- trading.enabled and trading.live_enabled fail closed if true.
+
+Next step:
+
+MVP-1 Step 3 — Logging structure.

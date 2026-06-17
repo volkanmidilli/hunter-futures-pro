@@ -16,17 +16,18 @@ MVP-1 — Data Foundation (design complete, implementation pending)
 
 MVP-0 foundation is complete and committed.
 
-SPEC-002 MVP-1 Data Foundation design is complete and reviewed. All 8 review fixes applied:
-- .gitignore specification added
-- DataStorage ABC interface defined
-- Missing SQLite index added
-- validate_config() extracted for testability
-- Config merge uses safe model_copy
-- Dependencies specified (pydantic, pyyaml, pytest)
-- CLI entry point and __version__ export defined
-- Test directory standardized to repo root
+MVP-1 Step 1 (Python Project Skeleton) is complete and committed.
 
-The project currently contains documentation and design specifications only.
+MVP-1 Step 2 (Config Models and Validation) is complete and committed:
+- Pydantic config models: TradingConfig, CollectionConfig, StorageConfig, LoggingConfig, HunterConfig
+- Config loader with safe override hierarchy (YAML file, env var)
+- validate_config() with fail-closed validation (trading.enabled, trading.live_enabled, secrets)
+- Safe defaults: trading.enabled: false, trading.live_enabled: false, collection.enabled: false
+- Config files: configs/data.yaml (safe defaults), configs/local.example.yaml (warnings)
+- Config directory standard: configs/ (not config/)
+- Config tests: 23 tests for safe defaults, validation failures, and YAML loading
+
+The project currently contains documentation, design specifications, and config implementation only.
 
 No trading logic exists yet.
 
@@ -35,6 +36,14 @@ No Binance connection exists yet.
 No Freqtrade integration exists yet.
 
 No live trading is enabled.
+
+No logging setup exists yet.
+
+No data collector exists yet.
+
+No storage layer exists yet.
+
+No CLI exists yet.
 
 ## Existing Files
 
@@ -111,4 +120,4 @@ Unknown market regime should block execution in future trading logic.
 
 ## Next Step
 
-MVP-1 planning: Data Foundation.
+MVP-1 Step 3 — Logging structure.
