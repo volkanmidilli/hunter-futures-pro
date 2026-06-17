@@ -178,6 +178,37 @@ No Freqtrade integration exists yet.
 
 No live trading is enabled.
 
+MVP-3 Step 3 is complete:
+- `src/hunter/decision/writer.py` created with JSON serialization and atomic output writer
+- `decision_to_dict()` serializes all 14 DecisionOutput fields to JSON-compatible dict
+- `atomic_write_json()` uses temp-file + os.replace for atomic writes
+- `write_decision_output()` writes to `data/decision/current_decision.json` by default
+- ISO-8601 timestamps, enum strings, input refs, data quality, reason codes all preserved
+- 19 writer tests, all passing
+- Full test suite: 379 tests passing (360 existing + 19 new)
+
+Decision Engine exists from Step 2.
+
+Decision Models exist from Step 1.
+
+No config YAML exists yet.
+
+No JSON Schema validation exists yet.
+
+No JSON input reading in Decision Writer.
+
+No storage integration exists yet.
+
+No report templates exist yet.
+
+No trading logic exists yet.
+
+No Binance connection exists yet.
+
+No Freqtrade integration exists yet.
+
+No live trading is enabled.
+
 ## Next Step
 
-MVP-3 Step 3 — Decision Writer.
+MVP-3 Step 4 — Integration Tests.

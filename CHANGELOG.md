@@ -471,6 +471,41 @@ MVP-2 Market State implementation is fully complete. All 6 steps finished:
 - No config YAML exists yet.
 - No JSON reading or writing in Decision Engine.
 
+### MVP-3 Step 3 — Decision Writer (Complete)
+
+- `src/hunter/decision/writer.py` created with JSON serialization and atomic output writer:
+  - `decision_to_dict(output)` — Serializes `DecisionOutput` to JSON-compatible dict:
+    - ISO-8601 timestamps with Z suffix (e.g., `2026-06-17T12:00:00Z`)
+    - Enum values serialized as strings (e.g., `ALLOW`, `BLOCK_ALL`, `LONG_ONLY`)
+    - `DecisionInputRefs` with regime/breadth timestamps and source labels
+    - `DataQuality` with all 4 boolean flags
+    - `reason_codes` preserved as list
+  - `atomic_write_json(data, target_path)` — Atomic file write:
+    - Writes to temp file in same directory first
+    - Uses `os.replace()` for atomic rename
+    - Creates parent directories if missing
+    - Cleans up temp file on failure (no partial output)
+    - Uses `fsync` for durability
+  - `write_decision_output(output, target_path)` — Writes to `data/decision/current_decision.json` by default
+  - Output matches SPEC-004 JSON contract exactly
+- `tests/test_decision/test_writer.py` with 19 tests:
+  - decision_to_dict: valid decision, block decision, ISO-8601 format, naive datetime, enum strings, input refs, data quality, reason codes, JSON roundtrip
+  - atomic_write_json: writes file, creates directories, no partial on failure, unicode encoding
+  - write_decision_output: default path, parent directories, default path constant, invalid path fails
+  - Safety: no network calls, no trading logic
+- Full test suite: 379 tests passing (360 existing + 19 new)
+
+### Safety
+
+- No trading logic exists yet.
+- No Binance connection exists yet.
+- No Freqtrade integration exists yet.
+- No live trading is enabled.
+- No API keys or exchange secrets stored in repository.
+- No config YAML exists yet.
+- No JSON schema validation exists yet.
+- No JSON input reading in Decision Writer.
+
 ### Next
 
-- MVP-3 Step 3 — Decision Writer.
+- MVP-3 Step 4 — Integration Tests.

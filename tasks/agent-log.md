@@ -114,9 +114,40 @@ Safety:
 - No network calls.
 - No JSON reading or writing.
 
+---
+
+### 0.3.0-dev — MVP-3 Step 3 — Decision Writer
+
+Date: 2026-06-17
+
+Agent: WrongStack
+
+Task: MVP-3 Step 3 — Decision Writer
+
+Files changed:
+
+- src/hunter/decision/writer.py
+- tests/test_decision/test_writer.py
+
+Summary:
+
+Added JSON serialization and atomic output writer for DecisionOutput.
+Writer produces data/decision/current_decision.json by default.
+Full test suite passes with 379 tests (360 existing + 19 new).
+
+Safety:
+
+- No Binance connection.
+- No Freqtrade integration.
+- No trading logic.
+- No live trading.
+- No API keys.
+- No network calls.
+- No JSON input reading.
+
 Next step:
 
-MVP-3 Step 3 — Decision Writer.
+MVP-3 Step 4 — Integration Tests.
 
 ---
 
