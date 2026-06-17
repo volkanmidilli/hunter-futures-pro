@@ -35,6 +35,13 @@ No live trading is enabled.
 
 The Regime Engine and Market Breadth Engine will later use local data structures and storage created in MVP-1.
 
+MVP-2 engines should read local data through:
+
+- DataStorage ABC (from MVP-1)
+- SQLiteStorage (from MVP-1)
+- KlineData model (from MVP-1)
+- HunterConfig / config loader (from MVP-1)
+
 ## Requirements
 
 ### Must Have
@@ -169,6 +176,58 @@ Breadth confirmation metrics:
 - advancing percentage
 - outperforming BTC percentage
 
+### Scoring Formulas
+
+All scores are deterministic. No ML. No optimization. No curve fitting.
+
+**btc_trend_score** (0–100):
+
+```
+btc_trend_score = bullish_conditions_met / total_btc_conditions * 100
+```
+
+Where `total_btc_conditions` is the count of all BTC trend conditions evaluated (close vs EMA20, close vs EMA50, EMA20 slope, EMA50 slope, recent return direction). `bullish_conditions_met` is the count of conditions that signal bullish.
+
+For bearish assessment:
+
+```
+bearish_btc_trend_score = bearish_conditions_met / total_btc_conditions * 100
+```
+
+**eth_trend_score** (0–100):
+
+Same formula applied to ETH conditions. If ETH data is missing, `eth_trend_score = 0` and the reason code `ETH_DATA_UNAVAILABLE` is added.
+
+**breadth_confirmation_score** (0–100):
+
+```
+breadth_confirmation_score = confirming_conditions_met / total_breadth_conditions * 100
+```
+
+Where confirming conditions depend on regime direction. For bull: breadth_score > risk_on_threshold, majority_above_ema20, advancing_pct > 0.5. For bear: breadth_score < risk_off_threshold, majority_below_ema20, declining_pct > 0.5.
+
+**confidence** (0.0–1.0):
+
+```
+confidence = min(primary_score, confirmation_score) / 100
+```
+
+Where `primary_score` is the regime-direction score (btc_trend_score or bearish_btc_trend_score) and `confirmation_score` is the supporting score (eth_trend_score or breadth_confirmation_score). If no confirmation is available, `confidence = primary_score / 100`.
+
+**breadth_score** (0–100):
+
+```
+breadth_score =
+  above_ema20_pct       * 25
+  + above_ema50_pct     * 20
+  + ema20_rising_pct    * 20
+  + ema50_rising_pct    * 15
+  + advancing_pct       * 10
+  + outperforming_btc_7d_pct * 10
+```
+
+All percentages are 0.0–1.0. The result is clamped to 0–100.
+
 ### Initial Regime Logic
 
 Bull candidate:
@@ -209,6 +268,25 @@ Unknown:
 - insufficient history
 - calculation error
 
+### EMA Slope Formula
+
+```
+ema_slope_pct = ((ema_current - ema_n_candles_ago) / ema_n_candles_ago) * 100
+```
+
+Where `ema_n_candles_ago` is the EMA value at `t - slope_lookback` candles.
+
+**Rising:** `ema_slope_pct > slope_threshold_pct`
+
+**Falling:** `ema_slope_pct < -slope_threshold_pct`
+
+**Flat:** `abs(ema_slope_pct) <= slope_threshold_pct`
+
+Default `slope_lookback`: 5 candles.
+Default `slope_threshold_pct`: 0.5.
+
+Slope direction is used in regime logic and breadth metrics (percent with EMA rising).
+
 ### Output File
 
 data/regime/current_regime.json
@@ -239,6 +317,12 @@ Example valid output:
     "insufficient_history": false
   }
 }
+
+**Field ranges:**
+
+- `confidence`: 0.0 to 1.0
+- `btc_trend_score`, `eth_trend_score`, `breadth_confirmation_score`: 0 to 100
+- `reason_codes`: non-empty array for valid outputs
 
 ### Fail-Closed Output Example
 
@@ -302,6 +386,39 @@ Binance Futures USDT perpetual universe
 
 Because real Binance integration does not exist yet, MVP-2 design assumes data is read from local storage or test fixtures.
 
+### Universe Filtering Rules
+
+**Include:**
+
+- USDT perpetual futures symbols
+- Active trading status (if metadata available)
+- Sufficient local candle history for EMA calculation
+- Quote volume above `min_quote_volume` if metadata is available
+
+**Exclude:**
+
+- Stablecoin-only pairs (e.g., USDT/USDC, BUSD/USDT)
+- Leveraged tokens if present (symbols containing UP, DOWN, BULL, BEAR)
+- BUSD quote pairs
+- Symbols with missing required candles
+- Symbols with zero or negative close price
+- Symbols with zero volume in last N candles
+- Symbols with calculation failures
+
+### Invalid Symbol Definition
+
+A symbol is invalid if any of the following is true:
+
+- Required candles are missing
+- History is insufficient for EMA calculation
+- Latest candle is stale (see stale data rules)
+- Close price <= 0
+- Volume < 0
+- Required timeframe is missing
+- Calculation fails (e.g., division by zero, NaN)
+
+Invalid symbols are counted in `invalid_symbol_count` and excluded from percentage calculations.
+
 ### Suggested Metrics
 
 Breadth metrics:
@@ -353,6 +470,12 @@ Example valid output:
     "insufficient_universe": false
   }
 }
+
+**Field ranges:**
+
+- `breadth_score`: 0 to 100
+- Percentage fields (`above_ema20_pct`, etc.): 0.0 to 1.0
+- `reason_codes`: non-empty array for valid outputs
 
 ### Fail-Closed Output Example
 
@@ -471,8 +594,9 @@ Future execution systems must treat allowed_mode = NONE as a hard block.
 
 Future MVP-2 config files may include:
 
-- configs/regime.yaml
-- configs/breadth.yaml
+- configs/market_state.yaml
+
+Use one config file for MVP-2. Do not create separate regime.yaml and breadth.yaml unless later justified.
 
 ### Regime Config
 
@@ -482,7 +606,9 @@ Example settings:
 - ema_slow_period: 50
 - ema_long_period: 200
 - slope_lookback: 5
-- stale_threshold_minutes: 120
+- slope_threshold_pct: 0.5
+- stale_threshold_candles: 2
+- max_breadth_age_minutes: 120
 - min_history_candles: 200
 - bull_score_threshold: 70
 - bear_score_threshold: 70
@@ -498,9 +624,30 @@ Example settings:
 - ema_long_period: 200
 - outperform_btc_short_days: 7
 - outperform_btc_long_days: 30
-- stale_threshold_minutes: 120
+- stale_threshold_candles: 2
 - risk_on_threshold: 65
 - risk_off_threshold: 35
+- min_quote_volume: 1000000
+
+### Stale Data Definition
+
+Data is stale when:
+
+```
+now - latest_candle_close_time > timeframe_duration * stale_threshold_candles
+```
+
+Where `timeframe_duration` is the candle interval in minutes (e.g., 60 for 1h, 240 for 4h).
+
+Default `stale_threshold_candles`: 2.
+
+This makes stale checks timeframe-aware. Two missing 1h candles = 120 minutes. Two missing 4h candles = 480 minutes.
+
+Breadth data consumed by the Regime Engine must also be fresh. Maximum age:
+
+- `max_breadth_age_minutes`: 120 (default)
+
+If breadth output is older than this, the Regime Engine treats it as unavailable.
 
 Thresholds must be config-driven.
 
@@ -591,9 +738,52 @@ Test cases:
 
 ---
 
+## 8. Pipeline Order
+
+MVP-2 engines run in this order:
+
+1. Validate local candle data (check missing, stale, insufficient)
+2. Run Breadth Engine first
+3. Write `data/breadth/current_breadth.json`
+4. Run Regime Engine
+5. Regime Engine may consume latest breadth output if valid and fresh (within `max_breadth_age_minutes`)
+6. Write `data/regime/current_regime.json`
+
+Breadth must complete before Regime. Regime does not block on breadth if breadth is invalid, but will have lower confidence.
+
+---
+
+## 9. JSON Schema Design
+
+Do not create schema files yet. Future implementation should create:
+
+- `schemas/regime.schema.json`
+- `schemas/breadth.schema.json`
+
+Schemas must validate:
+
+- required fields present
+- enum values for `market_regime`, `allowed_mode`, `risk_state`, `market_health`, `status`
+- numeric ranges:
+  - `confidence`: 0.0 to 1.0
+  - `btc_trend_score`, `eth_trend_score`, `breadth_confirmation_score`, `breadth_score`: 0 to 100
+  - percentage fields: 0.0 to 1.0
+- `reason_codes` is an array of strings, non-empty for valid outputs
+- `data_quality` object with required boolean fields
+
+---
+
 ## Implementation
 
 MVP-2 should be implemented later in small steps.
+
+### Step 0 — Apply SPEC-003 Fixes and Re-Review
+
+Before any code is written:
+
+1. Apply the fixes listed in this specification update
+2. Re-review SPEC-003 for completeness
+3. Only then begin MVP-2 implementation planning
 
 ### Step 1 — Create Market State Models
 
