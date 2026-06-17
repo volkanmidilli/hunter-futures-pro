@@ -521,6 +521,7 @@ Reason codes must be deterministic and machine-readable.
 - INSUFFICIENT_HISTORY
 - INSUFFICIENT_UNIVERSE
 - CALCULATION_ERROR
+- ETH_DATA_UNAVAILABLE
 
 ### Regime Reason Codes
 
@@ -622,6 +623,7 @@ Example settings:
 - ema_fast_period: 20
 - ema_slow_period: 50
 - ema_long_period: 200
+- recent_return_days: 7
 - outperform_btc_short_days: 7
 - outperform_btc_long_days: 30
 - stale_threshold_candles: 2
