@@ -111,6 +111,36 @@ No Freqtrade integration exists yet.
 
 No live trading is enabled.
 
+MVP-3 Step 1 is complete:
+- `src/hunter/decision/models.py` created with immutable decision models
+- `DecisionState` enum: ALLOW, BLOCK, REVIEW, UNKNOWN
+- `DecisionAction` enum: ENABLE_LONG_ONLY_RESEARCH, ENABLE_SHORT_ONLY_RESEARCH, BLOCK_ALL, MANUAL_REVIEW
+- `DecisionConfig` with frozen defaults and validation (min_regime_confidence 0.60, stale_input_minutes 120)
+- `DecisionInputRefs` for audit trail references to consumed inputs
+- `DecisionOutput` with 14 fields, `block_all()` fail-closed factory (BLOCK + BLOCK_ALL + confidence 0.0)
+- 32 decision model tests, all passing
+- Full test suite: 310 tests passing (278 existing + 32 new)
+
+No Decision Engine exists yet.
+
+No Decision Writer exists yet.
+
+No config YAML exists yet.
+
+No JSON schema validation exists yet.
+
+No storage integration exists yet.
+
+No report templates exist yet.
+
+No trading logic exists yet.
+
+No Binance connection exists yet.
+
+No Freqtrade integration exists yet.
+
+No live trading is enabled.
+
 ## Next Step
 
-MVP-3 Step 1 — Decision Models.
+MVP-3 Step 2 — Decision Engine.

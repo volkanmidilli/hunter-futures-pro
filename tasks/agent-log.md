@@ -53,9 +53,39 @@ Safety:
 - No storage integration yet.
 - No report templates yet.
 
+---
+
+### 0.3.0-dev — MVP-3 Step 1 — Decision Models
+
+Date: 2026-06-17
+
+Agent: WrongStack
+
+Task: MVP-3 Step 1 — Decision Models
+
+Files changed:
+
+- src/hunter/decision/__init__.py
+- src/hunter/decision/models.py
+- tests/test_decision/test_models.py
+
+Summary:
+
+Added immutable decision models and fail-closed DecisionOutput.block_all() factory.
+Full test suite passes with 310 tests (278 existing + 32 new).
+
+Safety:
+
+- No Binance connection.
+- No Freqtrade integration.
+- No trading logic.
+- No live trading.
+- No API keys.
+- No network calls.
+
 Next step:
 
-MVP-3 Step 1 — Decision Models.
+MVP-3 Step 2 — Decision Engine.
 
 ---
 

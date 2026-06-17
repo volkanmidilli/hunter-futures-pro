@@ -385,6 +385,44 @@ MVP-2 Market State implementation is fully complete. All 6 steps finished:
 - No trading logic
 - No live trading
 
+### MVP-3 Step 1 — Decision Models (Complete)
+
+- `src/hunter/decision/__init__.py` created
+- `src/hunter/decision/models.py` created with frozen dataclasses:
+  - Enums: `DecisionState` (ALLOW, BLOCK, REVIEW, UNKNOWN)
+  - Enums: `DecisionAction` (ENABLE_LONG_ONLY_RESEARCH, ENABLE_SHORT_ONLY_RESEARCH, BLOCK_ALL, MANUAL_REVIEW)
+  - `DecisionConfig` — frozen dataclass with `__post_init__` validation:
+    - min_regime_confidence: 0.60 (range 0.0–1.0)
+    - min_breadth_score_for_long: 60 (range 0–100)
+    - max_breadth_score_for_short: 40 (range 0–100)
+    - stale_input_minutes: 120 (positive integer)
+    - transition_action: BLOCK_ALL, conflict_action: BLOCK_ALL
+  - `DecisionInputRefs` — frozen dataclass for audit trail references to consumed inputs
+  - `DecisionOutput` — frozen output model with `__post_init__` validation:
+    - confidence range: 0.0–1.0
+    - regime_confidence range: 0.0–1.0
+    - breadth_score range: 0–100
+    - `DecisionOutput.block_all()` fail-closed factory: BLOCK + BLOCK_ALL + confidence 0.0
+- `tests/test_decision/test_models.py` with 32 tests:
+  - Enum value verification
+  - DecisionConfig defaults, custom values, and boundary validation
+  - Valid DecisionOutput creation with all 14 fields
+  - Validation failures (out-of-range confidence, regime_confidence, breadth_score)
+  - Fail-closed factory defaults and custom overrides
+  - Immutability (frozen dataclass)
+- Full test suite: 310 tests passing (278 existing + 32 new)
+
+### Safety
+
+- No trading logic exists yet.
+- No Binance connection exists yet.
+- No Freqtrade integration exists yet.
+- No live trading is enabled.
+- No API keys or exchange secrets stored in repository.
+- No Decision Engine logic exists yet.
+- No Decision Writer exists yet.
+- No config YAML exists yet.
+
 ### Next
 
-- MVP-3 Step 1 — Decision Models.
+- MVP-3 Step 2 — Decision Engine.
