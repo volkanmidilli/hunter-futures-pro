@@ -36,7 +36,38 @@ All important project changes will be recorded in this file.
 
 ### Next
 
-- MVP-4 Step 1 — Execution Bridge Models.
+- MVP-4 Step 2 — Execution Bridge Engine.
+
+## 0.4.0-dev — MVP-4 Step 1 — Execution Bridge Models (Complete)
+
+### Added
+
+- `src/hunter/execution/models.py` created with immutable execution bridge models.
+- `ExecutionState` enum: ENABLED, BLOCKED, DRY_RUN_ONLY, UNKNOWN.
+- `ExecutionMode` enum: LONG_RESEARCH_ONLY, SHORT_RESEARCH_ONLY, BLOCK_ALL, DRY_RUN_ONLY.
+- `ExecutionBridgeConfig` with MVP-4 safety validation (dry_run_required=True, live_trading_enabled=False, etc.).
+- `ExecutionInputRefs` for audit trail references to decision output.
+- `ExecutionSafetyFlags` with `human_override_required` (default false) and `max_context_age_seconds` (default 300).
+- `ExecutionContext` with `version` field default `"1.0"` for backward-compatible contract evolution.
+- `ExecutionContext.blocked()` fail-closed factory producing BLOCKED + BLOCK_ALL + dry_run True + version "1.0".
+- All models frozen/immutable with `__post_init__` validation.
+- 49 execution model tests, all passing.
+- Full test suite: 443 tests passing.
+
+### Safety
+
+- No Binance integration.
+- No Freqtrade runtime integration.
+- No strategy class.
+- No trading logic.
+- No live trading.
+- No API keys.
+- No network calls.
+- No JSON reading or writing.
+
+### Next
+
+- MVP-4 Step 2 — Execution Bridge Engine.
 
 ## 0.3.0-dev — MVP-3 Decision Layer (Complete)
 

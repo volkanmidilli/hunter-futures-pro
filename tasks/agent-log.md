@@ -226,7 +226,43 @@ Safety:
 
 Next step:
 
-MVP-4 Step 1 — Execution Bridge Models.
+MVP-4 Step 2 — Execution Bridge Engine.
+
+---
+
+### 0.4.0-dev — MVP-4 Step 1 — Execution Bridge Models
+
+Date: 2026-06-17
+
+Agent: WrongStack
+
+Task: MVP-4 Step 1 — Execution Bridge Models
+
+Files changed:
+
+- src/hunter/execution/__init__.py
+- src/hunter/execution/models.py
+- tests/test_execution/__init__.py
+- tests/test_execution/test_models.py
+
+Summary:
+
+Added immutable execution bridge models and fail-closed ExecutionContext.blocked() factory.
+Full test suite passes with 443 tests (394 existing + 49 new).
+
+Safety:
+
+- No Binance connection.
+- No Freqtrade runtime integration.
+- No trading logic.
+- No live trading.
+- No API keys.
+- No network calls.
+- No JSON reading or writing.
+
+Next step:
+
+MVP-4 Step 2 — Execution Bridge Engine.
 
 ---
 

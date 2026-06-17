@@ -10,7 +10,54 @@ Hunter Futures Pro
 
 ## Current Phase
 
-MVP-4 — Execution Bridge design complete. Implementation planning pending.
+MVP-4 — Execution Bridge Step 1 complete. Step 2 pending.
+
+## Current Status
+
+MVP-0 foundation is complete and committed.
+
+MVP-1 Data Foundation is complete and committed. All 91 tests pass.
+
+MVP-2 Market State is complete and committed. All 278 tests pass.
+- Market State Models, Indicator Utilities, Regime Engine, Breadth Engine, JSON Output Writers all implemented.
+- No Binance integration. No Freqtrade integration. No live trading.
+
+MVP-3 Decision Layer is complete and committed. All 394 tests pass.
+- Decision Models, Decision Engine, Decision Writer, Integration Tests all implemented.
+- No Binance integration. No Freqtrade integration. No live trading. No JSON input reading.
+
+MVP-4 Execution Bridge Step 1 is complete:
+- `src/hunter/execution/models.py` created with immutable execution bridge models.
+- ExecutionState enum: ENABLED, BLOCKED, DRY_RUN_ONLY, UNKNOWN.
+- ExecutionMode enum: LONG_RESEARCH_ONLY, SHORT_RESEARCH_ONLY, BLOCK_ALL, DRY_RUN_ONLY.
+- ExecutionBridgeConfig with MVP-4 safety validation (dry_run_required=True, live_trading_enabled=False, etc.).
+- ExecutionInputRefs for audit trail references to decision output.
+- ExecutionSafetyFlags with human_override_required (default false) and max_context_age_seconds (default 300).
+- ExecutionContext with version field default "1.0" for backward-compatible contract evolution.
+- ExecutionContext.blocked() fail-closed factory producing BLOCKED + BLOCK_ALL + dry_run True + version "1.0".
+- All models frozen/immutable with __post_init__ validation.
+- 49 execution model tests, all passing.
+- Full test suite: 443 tests passing.
+- No Execution Bridge Engine exists yet.
+- No Execution Writer exists yet.
+- No config YAML exists yet.
+- No JSON Schema validation exists yet.
+- No DecisionOutput JSON reading exists.
+- No Binance integration exists.
+- No Freqtrade runtime integration exists.
+- No trading logic exists.
+- No live trading exists.
+- No API keys exist.
+
+## Next Step
+
+MVP-4 Step 2 — Execution Bridge Engine.
+- Create `build_execution_context(decision_output, config)` function.
+- Implement all 15 fail-closed rules in priority order.
+- Implement stale decision detection.
+- Implement safety flags population.
+- Create `tests/test_execution/test_engine.py` with rule tests.
+- Target: 50+ tests, all passing.
 
 ## Current Status
 
