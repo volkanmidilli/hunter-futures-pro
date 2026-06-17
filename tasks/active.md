@@ -2,44 +2,46 @@
 
 ## Current Task
 
-MVP-1 Data Foundation — Complete.
+MVP-2 Implementation Planning — Market State Models.
 
 ## Status
 
-Done.
+Ready to start.
 
 ## Note
 
-All 91 tests pass.
+MVP-1 Data Foundation is complete. All 91 tests pass.
 
-MVP-1 implementation is complete:
-- Python project structure exists and is importable
-- Config loads with safe defaults and validates trading is disabled
-- Logging outputs structured JSON with secret redaction
-- SQLite schema is creatable and testable
-- DataStorage ABC is defined with SQLiteStorage implementation
-- BinanceFuturesCollector raises NotImplementedError on all methods
-- All code follows SPEC-002 design without deviation
-- No trading logic, Binance connection, or live trading exists
+SPEC-003 MVP-2 Market State design is complete and finalized:
+- Regime Engine design with deterministic scoring formulas
+- Market Breadth Engine design with universe filtering and invalid symbol rules
+- JSON output contracts defined with field ranges
+- Fail-closed behavior defined for all failure modes
+- Pipeline order defined: Breadth Engine first, then Regime Engine
+- Test plan defined for regime, breadth, and safety tests
+- No MVP-2 code has been implemented yet
 
 ## Previous Task
 
-MVP-0 Project Foundation — Done.
+MVP-1 Data Foundation — Complete.
 
 ## Goal
 
-Build the data infrastructure that all future engines will depend on, following SPEC-002 design.
+Implement the Market State layer: Regime Engine and Market Breadth Engine, following SPEC-003 design.
 
 ## Current Scope
 
-MVP-1 components implemented:
+MVP-2 implementation steps (from SPEC-003):
 
-1. Python project structure (directories, __init__.py, pyproject.toml)
-2. Config structure (Pydantic models, loader, validation)
-3. Logging structure (JSON formatter, redaction, rotation)
-4. Data collector interface (ABC, not connected to Binance)
-5. SQLite storage layer (schema, DataStorage ABC, SQLiteStorage)
-6. Test structure (pytest, fixtures, safety tests)
+1. Step 1 — Create Market State Models
+2. Step 2 — Create Indicator Utilities
+3. Step 3 — Create Regime Engine
+4. Step 4 — Create Breadth Engine
+5. Step 5 — Create JSON Output Writers
+6. Step 6 — Create Report Templates
+7. Step 7 — Update Project Memory
+
+Immediate next step: Plan MVP-2 Step 1 — Market State Models.
 
 ## Do Not Do Yet
 
@@ -49,22 +51,21 @@ MVP-1 components implemented:
 - Do not create API keys.
 - Do not enable live trading.
 - Do not create production trading rules.
-- Do not implement actual data collection (design only, collection.enabled: false).
+- Do not implement actual data collection.
 
 ## Definition of Done
 
-MVP-1 is done when:
+MVP-2 is done when:
 
-- Python project structure exists and is importable
-- Config loads with safe defaults and validates trading is disabled
-- Logging outputs structured JSON with secret redaction
-- SQLite schema is creatable and testable
-- DataStorage ABC is defined with SQLiteStorage implementation
-- BinanceFuturesCollector raises NotImplementedError on all methods
-- Tests pass for config safety, logging redaction, and storage schema
-- All code follows SPEC-002 design without deviation
-- No trading logic, Binance connection, or live trading exists
+- Regime Engine exists and produces deterministic outputs
+- Market Breadth Engine exists and produces deterministic outputs
+- JSON outputs can be generated from local/test data
+- Fail-closed behavior works for all failure modes
+- Tests pass for regime, breadth, indicators, and safety
+- No Binance integration exists
+- No Freqtrade integration exists
+- No trading execution exists
 
-## Next Step After MVP-1
+## Next Step After MVP-2
 
-MVP-2 — Market State: Regime Engine and Market Breadth Engine design.
+MVP-3 — Strength and Futures Positioning: Relative Strength Engine and Open Interest Engine design.

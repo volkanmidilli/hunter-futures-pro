@@ -272,3 +272,65 @@ Safety:
 Next step:
 
 MVP-2 Market State design.
+
+---
+
+### 0.3.0-dev — SPEC-003 MVP-2 Market State Design
+
+Date: 2026-06-17
+
+Agent: WrongStack
+
+Task: SPEC-003 — MVP-2 Market State Design.
+
+Files changed:
+
+- specs/SPEC-003-Market-State-Regime-Breadth.md (created and refined)
+- CHANGELOG.md (updated)
+- docs/handoff/CURRENT_STATE.md (updated)
+- tasks/active.md (updated)
+
+Summary:
+
+Created and refined SPEC-003 for Regime Engine and Market Breadth Engine.
+
+Added deterministic scoring formulas:
+- btc_trend_score = bullish_conditions_met / total_btc_conditions * 100
+- bearish_btc_trend_score = bearish_conditions_met / total_btc_conditions * 100
+- eth_trend_score (same formula, 0 if ETH missing)
+- breadth_confirmation_score = confirming_conditions_met / total_breadth_conditions * 100
+- confidence = min(primary_score, confirmation_score) / 100
+- breadth_score = weighted sum of 6 percentage metrics, clamped 0-100
+
+Added EMA slope formula: ema_slope_pct = ((ema_current - ema_n_candles_ago) / ema_n_candles_ago) * 100
+
+Added pipeline order: Breadth Engine first, then Regime Engine with breadth age guard.
+
+Added timeframe-aware stale data: stale_threshold_candles: 2 with timeframe_duration multiplier.
+
+Added universe filtering rules (include USDT perpetuals, exclude stablecoins/leveraged tokens/BUSD).
+
+Added invalid symbol definition (7 conditions).
+
+Added configs/market_state.yaml as single config standard.
+
+Added JSON Schema design section for future schema files.
+
+Added MVP-1 interface references (DataStorage ABC, SQLiteStorage, KlineData, HunterConfig).
+
+Added ETH_DATA_UNAVAILABLE to reason codes.
+
+Added recent_return_days: 7 to config.
+
+Safety:
+
+- No code implemented.
+- No Binance connection.
+- No Freqtrade integration.
+- No trading logic.
+- No live trading.
+- Fail-closed behavior preserved: all bad data → UNKNOWN + NONE + confidence 0.
+
+Next step:
+
+MVP-2 Step 1 — Market State Models.

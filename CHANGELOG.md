@@ -125,3 +125,37 @@ All important project changes will be recorded in this file.
 ### Next
 
 - MVP-2 Market State: Regime Engine and Market Breadth Engine design.
+
+## 0.3.0-dev — MVP-2 Market State Design (Complete)
+
+### Added
+
+- `specs/SPEC-003-Market-State-Regime-Breadth.md` with complete MVP-2 design:
+  - Regime Engine design with 5 states (BULL, BEAR, SIDEWAYS, TRANSITION, UNKNOWN)
+  - Market Breadth Engine design with universe filtering and invalid symbol rules
+  - Deterministic scoring formulas (no ML, no optimization, no curve fitting):
+    - `btc_trend_score`, `bearish_btc_trend_score`, `eth_trend_score` (0–100)
+    - `breadth_confirmation_score` (0–100)
+    - `breadth_score` (0–100) with weighted component formula
+    - `confidence` (0.0–1.0) = min(primary_score, confirmation_score) / 100
+  - EMA slope formula: `ema_slope_pct = ((ema_current - ema_n_candles_ago) / ema_n_candles_ago) * 100`
+  - Fail-closed behavior: all bad data → UNKNOWN + NONE + confidence 0
+  - Pipeline order: Breadth Engine runs first, Regime Engine consumes breadth output
+  - Timeframe-aware stale data: `stale_threshold_candles: 2` with `timeframe_duration` multiplier
+  - `configs/market_state.yaml` as single config standard (no separate regime/breadth YAML)
+  - JSON Schema design section for future `schemas/regime.schema.json` and `schemas/breadth.schema.json`
+  - Test plan for regime, breadth, and safety tests
+  - MVP-1 interface references: DataStorage ABC, SQLiteStorage, KlineData, HunterConfig
+
+### Safety
+
+- No trading logic exists yet.
+- No Binance connection exists yet.
+- No Freqtrade integration exists yet.
+- No live trading is enabled.
+- No API keys or exchange secrets stored in repository.
+- No code implemented yet — design only.
+
+### Next
+
+- MVP-2 implementation planning: Step 1 — Market State Models.
