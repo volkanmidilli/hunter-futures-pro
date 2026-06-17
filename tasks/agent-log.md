@@ -456,7 +456,71 @@ Safety:
 
 Next step:
 
-MVP-2 Step 4 — Breadth Engine.
+MVP-2 Step 5 — JSON Output Writers.
+
+---
+
+### 0.3.0-dev — MVP-2 Step 4: Breadth Engine
+
+Date: 2026-06-17
+
+Agent: WrongStack
+
+Task: MVP-2 Step 4 — Breadth Engine.
+
+Files changed:
+
+- src/hunter/market_state/breadth.py (created)
+- tests/test_market_state/test_breadth.py (created)
+
+Summary:
+
+Added deterministic Market Breadth Engine with universe validation, EMA breadth metrics, advancing/declining percentages, BTC outperformance metrics, breadth score calculation and fail-closed invalid output behavior.
+
+Functions created:
+- BreadthConfig: frozen dataclass with SPEC-003 defaults (min_universe_size, EMA periods, thresholds, lookbacks)
+- filter_valid_symbols: validates symbols per SPEC-003 rules, returns (valid, invalid_count, reasons)
+- calculate_percent_above_ema: percentage of symbols with close > EMA(period)
+- calculate_percent_ema_rising: percentage of symbols with rising EMA slope
+- calculate_advancing_declining_pct: advancing vs declining percentages (flat excluded)
+- calculate_outperforming_btc_pct: percentage outperforming BTC return over lookback
+- calculate_breadth_score: weighted formula per SPEC-003, clamped 0-100
+- calculate_breadth: main breadth function with fail-closed behavior:
+  - Missing universe → INVALID + UNKNOWN health + score 0
+  - Missing BTC → INVALID + UNKNOWN health + score 0
+  - Insufficient universe (< min_universe_size) → INVALID + UNKNOWN health + score 0
+  - Invalid BTC values → INVALID + UNKNOWN health + score 0
+  - Valid data → VALID + market health (RISK_ON/RISK_OFF/NEUTRAL) + breadth_score 0-100
+
+44 tests added covering:
+- BreadthConfig defaults, custom values, frozen immutability
+- filter_valid_symbols: all valid, missing excluded, insufficient excluded, invalid price excluded, negative excluded
+- calculate_percent_above_ema: all above, none above, half above, empty
+- calculate_percent_ema_rising: all rising, none rising, empty
+- calculate_advancing_declining_pct: all advancing, all declining, mixed, empty, flat excluded
+- calculate_outperforming_btc_pct: all outperform, none outperform, half, empty, missing BTC, insufficient BTC
+- calculate_breadth_score: max 100, min 0, mixed, clamped above 100, clamped below 0, deterministic
+- calculate_breadth: missing universe, missing BTC, insufficient universe, invalid BTC, valid calculation, score range, reason codes, risk_on, risk_off, invalid symbols counted
+- Safety: no network calls, no trading logic
+
+Full test suite: 259 tests passing (215 existing + 44 new).
+
+Safety:
+
+- No Binance connection.
+- No Freqtrade integration.
+- No trading logic.
+- No live trading.
+- No API keys.
+- No JSON writers yet.
+- Bad data returns INVALID + UNKNOWN + score 0.
+- Pure standard-library functions only.
+
+Next step:
+
+MVP-2 Step 5 — JSON Output Writers.
+
+---
 
 Date: 2026-06-17
 

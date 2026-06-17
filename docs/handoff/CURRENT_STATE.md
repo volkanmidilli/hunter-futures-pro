@@ -45,9 +45,22 @@ MVP-2 Step 3 is complete:
 - 37 regime tests, all passing
 - Full test suite: 215 tests passing (178 existing + 37 new)
 
-No Breadth Engine logic exists yet.
+MVP-2 Step 4 is complete:
+- `src/hunter/market_state/breadth.py` created with deterministic Market Breadth Engine
+- `BreadthConfig` with frozen defaults (min_universe_size, EMA periods, thresholds)
+- `filter_valid_symbols` with universe validation (missing, insufficient, invalid excluded)
+- `calculate_percent_above_ema` for EMA20/EMA50 breadth metrics
+- `calculate_percent_ema_rising` for rising EMA slope percentages
+- `calculate_advancing_declining_pct` for market direction percentages
+- `calculate_outperforming_btc_pct` for BTC relative performance
+- `calculate_breadth_score` with SPEC-003 weighted formula, clamped 0-100
+- `calculate_breadth` with fail-closed behavior (INVALID + UNKNOWN + score 0 on bad data)
+- 44 breadth tests, all passing
+- Full test suite: 259 tests passing (215 existing + 44 new)
 
 No JSON writers exist yet.
+
+No schema files exist yet.
 
 No trading logic exists yet.
 
@@ -57,8 +70,8 @@ No Freqtrade integration exists yet.
 
 No live trading is enabled.
 
-MVP-2 implementation has started. Steps 1, 2, and 3 complete.
+MVP-2 implementation has started. Steps 1, 2, 3, and 4 complete.
 
 ## Next Step
 
-MVP-2 Step 4 — Breadth Engine.
+MVP-2 Step 5 — JSON Output Writers.

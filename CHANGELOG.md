@@ -271,6 +271,49 @@ All important project changes will be recorded in this file.
 - No Breadth Engine logic exists yet.
 - No JSON writers exist yet.
 
+### MVP-2 Step 4 — Breadth Engine (Complete)
+
+- `src/hunter/market_state/breadth.py` created with deterministic Market Breadth Engine:
+  - `BreadthConfig` — frozen dataclass with all SPEC-003 defaults (min_universe_size, EMA periods, thresholds, lookbacks)
+  - `filter_valid_symbols(universe_candles, config)` — validates symbols per SPEC-003 rules:
+    - Exclude missing candles, insufficient history, close ≤ 0, negative volume, calculation failures
+    - Returns (valid_symbols, invalid_count, reason_codes)
+  - `calculate_percent_above_ema(valid_candles, ema_period)` — percentage of symbols with close > EMA
+  - `calculate_percent_ema_rising(valid_candles, ema_period, lookback, threshold)` — percentage with rising EMA slope
+  - `calculate_advancing_declining_pct(valid_candles)` — advancing vs declining percentages (flat excluded)
+  - `calculate_outperforming_btc_pct(valid_candles, btc_closes, lookback_days)` — percentage outperforming BTC return
+  - `calculate_breadth_score(...)` — weighted formula per SPEC-003, clamped 0–100:
+    - above_ema20_pct * 25 + above_ema50_pct * 20 + ema20_rising_pct * 20 + ema50_rising_pct * 15 + advancing_pct * 10 + outperforming_btc_7d_pct * 10
+  - `calculate_breadth(universe_candles, btc_closes, ...)` — main breadth function with fail-closed behavior:
+    - Missing universe → `INVALID` + `UNKNOWN` health + score 0
+    - Missing BTC → `INVALID` + `UNKNOWN` health + score 0
+    - Insufficient universe (< min_universe_size) → `INVALID` + `UNKNOWN` health + score 0
+    - Invalid BTC values → `INVALID` + `UNKNOWN` health + score 0
+    - Valid data → `VALID` + market health (RISK_ON/RISK_OFF/NEUTRAL) + breadth_score 0–100
+  - Uses `exponential_moving_average`, `ema_slope_pct`, `percent_change` from indicators.py
+  - No ML, no optimization, no curve fitting
+- `tests/test_market_state/test_breadth.py` with 44 tests:
+  - BreadthConfig defaults, custom values, frozen immutability
+  - filter_valid_symbols: all valid, missing excluded, insufficient excluded, invalid price excluded, negative excluded
+  - calculate_percent_above_ema: all above, none above, half above, empty
+  - calculate_percent_ema_rising: all rising, none rising, empty
+  - calculate_advancing_declining_pct: all advancing, all declining, mixed, empty, flat excluded
+  - calculate_outperforming_btc_pct: all outperform, none outperform, half, empty, missing BTC, insufficient BTC
+  - calculate_breadth_score: max 100, min 0, mixed, clamped above 100, clamped below 0, deterministic
+  - calculate_breadth: missing universe, missing BTC, insufficient universe, invalid BTC, valid calculation, score range, reason codes, risk_on, risk_off, invalid symbols counted
+  - Safety: no network calls, no trading logic
+- Full test suite: 259 tests passing (215 existing + 44 new)
+
+### Safety
+
+- No trading logic exists yet.
+- No Binance connection exists yet.
+- No Freqtrade integration exists yet.
+- No live trading is enabled.
+- No API keys or exchange secrets stored in repository.
+- No JSON writers exist yet.
+- No schema files exist yet.
+
 ### Next
 
-- MVP-2 Step 4 — Breadth Engine.
+- MVP-2 Step 5 — JSON Output Writers.
