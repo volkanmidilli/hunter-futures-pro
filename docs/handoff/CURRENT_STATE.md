@@ -52,19 +52,32 @@ MVP-1 Step 4 (Data Collector Interface) is complete and committed:
 - 5 frozen dataclass data models: KlineData, FundingRateData, OpenInterestData, MarkPriceData, Ticker24hData
 - tests/test_data/test_collector.py with 18 tests for abstract behavior, skeleton behavior, immutability, no network calls
 
-MVP-1 Step 5 (SQLite Storage Layer) is complete and committed:
-- src/hunter/data/schema.sql with 5 tables (market_symbols, candles, funding_rates, open_interest, collection_metadata)
-- DataStorage ABC with 9 abstract methods (initialize, save_klines, get_klines, get_latest_kline, save_funding_rates, get_funding_rates, save_collection_metadata, get_collection_metadata, is_data_fresh)
-- SQLiteStorage implementation using Python stdlib sqlite3 only
-- SQLiteStorage creates tables from schema.sql, saves and reads local data objects
-- tests/test_data/test_storage.py with 19 tests using temporary SQLite database files
-- All 19 tests pass, no network calls, no Binance connection, no Freqtrade connection
+MVP-1 Data Foundation is complete and committed.
+
+All 91 tests pass.
+
+MVP-1 components implemented:
+- Python project structure exists and is importable
+- Config models/loader/validation exist with safe defaults
+- Logging structure exists with JSONFormatter and RedactingFilter
+- Data collector interface exists (DataCollector ABC, BinanceFuturesCollector skeleton)
+- BinanceFuturesCollector does NOT connect to Binance — all methods raise NotImplementedError
+- SQLite schema/storage exists (5 tables, DataStorage ABC, SQLiteStorage using stdlib sqlite3)
+- Test structure exists with pytest, fixtures, and safety tests
 
 No CLI exists yet.
 
 No data collection is running yet.
 
-MVP-1 is not fully complete yet.
+No Binance integration exists yet.
+
+No Freqtrade integration exists yet.
+
+No trading logic exists yet.
+
+No live trading is enabled.
+
+MVP-2 has not started yet.
 
 ## Existing Files
 
@@ -168,4 +181,4 @@ Unknown market regime should block execution in future trading logic.
 
 ## Next Step
 
-MVP-1 Step 6 — Final safety tests and MVP-1 completion.
+MVP-2 — Market State: Regime Engine and Market Breadth Engine design.

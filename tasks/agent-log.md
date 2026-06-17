@@ -237,39 +237,38 @@ MVP-1 Step 3 — Logging structure.
 
 ---
 
-### 0.2.0-dev — MVP-1 Step 5: SQLite Storage Layer
+### 0.2.0-dev — MVP-1 Step 6: Final Safety Tests and MVP-1 Completion
 
 Date: 2026-06-17
 
 Agent: WrongStack
 
-Task: MVP-1 Step 5 — SQLite Storage Layer.
+Task: MVP-1 Step 6 — Final Safety Tests and MVP-1 Completion.
 
-Commit: 1cedb92
+Commit: dd3ea99
 
 Files changed:
 
-- src/hunter/data/schema.sql (created)
-- src/hunter/data/storage.py (created)
-- src/hunter/data/__init__.py (updated)
-- tests/test_data/test_storage.py (created)
+- src/hunter/config/loader.py (fixed load_config to return HunterConfig, fixed secret detection)
+- tests/test_config/test_loader.py (fixed secret tests, added TestContainsSecrets)
+- tests/test_core/test_logging.py (added import sys, fixed log level test)
 
 Summary:
 
-Added SQLite schema with 5 tables and DataStorage abstract interface.
-Implemented SQLiteStorage using Python stdlib sqlite3 only.
-SQLiteStorage creates tables from schema.sql, saves and reads local data objects.
-Added 19 tests using temporary SQLite database files.
+Final MVP-1 review found config loader and test issues.
+Fixed load_config() to return HunterConfig, fixed secret detection tests, fixed logging tests.
+Full test suite now passes with 91 tests.
+MVP-1 is ready to mark complete.
 
 Safety:
 
 - No Binance connection.
-- No HTTP requests.
 - No Freqtrade integration.
+- No HTTP requests.
 - No live trading.
 - No API keys.
 - No trading logic.
 
 Next step:
 
-MVP-1 Step 6 — Final safety tests and MVP-1 completion.
+MVP-2 Market State design.

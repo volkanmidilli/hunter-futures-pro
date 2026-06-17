@@ -2,15 +2,25 @@
 
 ## Current Task
 
-Implement MVP-1 Data Foundation.
+MVP-1 Data Foundation — Complete.
 
 ## Status
 
-In progress
+Done.
 
 ## Note
 
-SPEC-002 MVP-1 Data Foundation design is complete and reviewed. All 8 review fixes applied. Ready for implementation.
+All 91 tests pass.
+
+MVP-1 implementation is complete:
+- Python project structure exists and is importable
+- Config loads with safe defaults and validates trading is disabled
+- Logging outputs structured JSON with secret redaction
+- SQLite schema is creatable and testable
+- DataStorage ABC is defined with SQLiteStorage implementation
+- BinanceFuturesCollector raises NotImplementedError on all methods
+- All code follows SPEC-002 design without deviation
+- No trading logic, Binance connection, or live trading exists
 
 ## Previous Task
 
@@ -22,7 +32,7 @@ Build the data infrastructure that all future engines will depend on, following 
 
 ## Current Scope
 
-Implement MVP-1 components from SPEC-002:
+MVP-1 components implemented:
 
 1. Python project structure (directories, __init__.py, pyproject.toml)
 2. Config structure (Pydantic models, loader, validation)
@@ -49,7 +59,7 @@ MVP-1 is done when:
 - Config loads with safe defaults and validates trading is disabled
 - Logging outputs structured JSON with secret redaction
 - SQLite schema is creatable and testable
-- DataStorage ABC is defined with SQLiteStorage stub
+- DataStorage ABC is defined with SQLiteStorage implementation
 - BinanceFuturesCollector raises NotImplementedError on all methods
 - Tests pass for config safety, logging redaction, and storage schema
 - All code follows SPEC-002 design without deviation
