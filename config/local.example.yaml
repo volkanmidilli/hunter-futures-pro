@@ -1,0 +1,18 @@
+# Example local configuration overrides
+# Copy this file to local.yaml and customize for your environment.
+# WARNING: local.yaml is gitignored. Never commit it to the repository.
+# Never add API keys, secrets, or passwords to any committed file.
+
+# trading:
+#   # NEVER set enabled: true or live_enabled: true without explicit human approval
+#   enabled: false
+#   live_enabled: false
+#   dry_run: true
+#
+# logging:
+#   level: DEBUG
+#   format: text
+#
+# collection:
+#   # Data collection is disabled in MVP-1. Do not enable.
+#   enabled: false
