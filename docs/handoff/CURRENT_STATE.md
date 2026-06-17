@@ -6,17 +6,27 @@ Hunter Futures Pro
 
 ## Version
 
-0.1.0
+0.2.0-dev
 
 ## Current Phase
 
-MVP-0 — Project foundation
+MVP-1 — Data Foundation (design complete, implementation pending)
 
 ## Current Status
 
-MVP-0 foundation is complete.
+MVP-0 foundation is complete and committed.
 
-The project currently contains basic documentation only.
+SPEC-002 MVP-1 Data Foundation design is complete and reviewed. All 8 review fixes applied:
+- .gitignore specification added
+- DataStorage ABC interface defined
+- Missing SQLite index added
+- validate_config() extracted for testability
+- Config merge uses safe model_copy
+- Dependencies specified (pydantic, pyyaml, pytest)
+- CLI entry point and __version__ export defined
+- Test directory standardized to repo root
+
+The project currently contains documentation and design specifications only.
 
 No trading logic exists yet.
 
@@ -31,7 +41,22 @@ No live trading is enabled.
 - README.md
 - PROJECT.md
 - AGENTS.md
+- .wrongstack/AGENTS.md
 - docs/handoff/CURRENT_STATE.md
+- docs/architecture/SYSTEM_OVERVIEW.md
+- docs/operations/RUNBOOK.md
+- docs/operations/TROUBLESHOOTING.md
+- docs/operations/FAILURE_MODES.md
+- docs/decisions/ADR-0001-agent-first-project.md
+- docs/decisions/ADR-0002-freqtrade-as-execution-layer.md
+- docs/decisions/ADR-0003-external-hunter-reference.md
+- specs/SPEC-001-Agent-First-Hunter-Futures-Foundation.md
+- specs/SPEC-002-MVP-1-Data-Foundation.md
+- tasks/backlog.md
+- tasks/active.md
+- tasks/agent-log.md
+- CHANGELOG.md
+- VERSION
 
 ## Main Project Direction
 
