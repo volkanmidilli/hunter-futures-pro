@@ -36,7 +36,7 @@ hunter-futures-pro/
 ├── tasks/
 ├── src/
 │   ├── hunter/                    # Main package
-│   │   ├── __init__.py
+│   │   ├── __init__.py           # Package init with __version__
 │   │   ├── config/               # Configuration management
 │   │   │   ├── __init__.py
 │   │   │   ├── loader.py         # Config loading and validation
@@ -49,7 +49,8 @@ hunter-futures-pro/
 │   │   ├── core/                 # Core utilities
 │   │   │   ├── __init__.py
 │   │   │   ├── logging.py        # Structured logging setup
-│   │   │   └── exceptions.py     # Custom exceptions
+│   │   │   ├── exceptions.py     # Custom exceptions
+│   │   │   └── cli.py            # CLI entry point
 │   │   └── engines/              # Future analysis engines (MVP-2+)
 │   │       ├── __init__.py
 │   │       ├── regime.py         # Placeholder: Regime Engine
@@ -57,14 +58,14 @@ hunter-futures-pro/
 │   │       ├── strength.py       # Placeholder: Relative Strength Engine
 │   │       ├── open_interest.py  # Placeholder: Open Interest Engine
 │   │       └── gate.py           # Placeholder: Decision Gate Engine
-│   ├── tests/
-│   │   ├── __init__.py
-│   │   ├── conftest.py           # Shared fixtures
-│   │   ├── test_config/
-│   │   ├── test_data/
-│   │   └── test_core/
-│   └── scripts/                  # Development and utility scripts
-│       └── setup_db.py           # Database initialization
+├── tests/                        # Tests at repo root (standard pytest)
+│   ├── __init__.py
+│   ├── conftest.py              # Shared fixtures
+│   ├── test_config/
+│   ├── test_data/
+│   └── test_core/
+├── scripts/                      # Development and utility scripts
+│   └── setup_db.py               # Database initialization
 ├── data/                         # Runtime data directory (gitignored)
 │   ├── raw/                      # Raw collected data
 │   ├── processed/                # Processed/transformed data
@@ -76,7 +77,47 @@ hunter-futures-pro/
 ├── pyproject.toml                # Python project metadata
 ├── requirements.txt              # Production dependencies
 ├── requirements-dev.txt          # Development dependencies
-└── .gitignore                    # Git ignore rules
+└── .gitignore                    # Git ignore rules (see below)
+```
+
+### .gitignore Specification
+
+The repository must exclude runtime data, secrets, and local config:
+
+```gitignore
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+*.egg-info/
+dist/
+build/
+
+# Secrets and local config
+config/local.yaml
+.env
+*.key
+*.pem
+*.secret
+
+# Runtime data and logs
+data/
+logs/
+*.db
+*.sqlite
+*.sqlite3
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
 ```
 
 ### Package Design Principles
@@ -144,11 +185,12 @@ collection:
 # Copy from local.yaml.example and customize
 ```
 
-**`config/local.yaml.example`** — Template showing safe overrides:
+**`config/local.yaml.example`** — Template showing safe overrides. **Never commit local.yaml:**
 
 ```yaml
 # Example local configuration
 # Copy to local.yaml and customize
+# WARNING: local.yaml is gitignored. Never commit it.
 
 app:
   log_level: "DEBUG"
@@ -214,6 +256,14 @@ CONFIG_DIR = Path("config")
 class ConfigLoadError(Exception):
     pass
 
+def validate_config(config: HunterConfig) -> None:
+    """Validate config safety constraints. Raises ConfigLoadError if unsafe."""
+    if config.trading.enabled:
+        raise ConfigLoadError(
+            "Trading is not allowed in MVP-1. "
+            "Set trading.enabled to false or wait for a future MVP."
+        )
+
 def load_config(config_path: str | None = None) -> HunterConfig:
     """Load configuration with safe override hierarchy."""
     # Start with defaults (Pydantic defaults)
@@ -231,20 +281,16 @@ def load_config(config_path: str | None = None) -> HunterConfig:
     if local_path.exists():
         with open(local_path) as f:
             local_data = yaml.safe_load(f)
-        # Merge local overrides
-        config = HunterConfig(**{**config.model_dump(), **local_data})
+        # Merge local overrides using Pydantic model_copy for safe nested updates
+        config = config.model_copy(update=local_data)
     
     # Override from environment variables
     if env_config := os.getenv("HUNTER_CONFIG"):
         env_data = yaml.safe_load(env_config)
-        config = HunterConfig(**{**config.model_dump(), **env_data})
+        config = config.model_copy(update=env_data)
     
-    # Safety check: trading.enabled must not be true in MVP-1
-    if config.trading.enabled:
-        raise ConfigLoadError(
-            "Trading is not allowed in MVP-1. "
-            "Set trading.enabled to false or wait for a future MVP."
-        )
+    # Safety validation
+    validate_config(config)
     
     return config
 ```
@@ -350,6 +396,8 @@ def setup_logging(
     json_format: bool = False,
 ) -> None:
     """Configure structured logging."""
+    from logging.handlers import RotatingFileHandler
+    
     Path(log_dir).mkdir(parents=True, exist_ok=True)
     
     handlers: list[logging.Handler] = []
@@ -367,7 +415,6 @@ def setup_logging(
     handlers.append(console_handler)
     
     # File handler with rotation
-    from logging.handlers import RotatingFileHandler
     file_handler = RotatingFileHandler(
         f"{log_dir}/hunter.log",
         maxBytes=10_000_000,  # 10MB
@@ -383,6 +430,88 @@ def setup_logging(
         handlers=handlers,
         force=True,
     )
+```
+
+### Data Storage Layer Interface
+
+The storage layer is abstracted for testability and future backend swaps:
+
+```python
+# src/hunter/data/storage.py
+from abc import ABC, abstractmethod
+from datetime import datetime
+from typing import List, Optional
+from .collector import KlineData, FundingRateData
+
+class DataStorage(ABC):
+    """Abstract base class for data storage backends."""
+    
+    @abstractmethod
+    def save_klines(self, klines: List[KlineData]) -> int:
+        """Save klines. Returns number of records inserted."""
+        pass
+    
+    @abstractmethod
+    def get_klines(
+        self,
+        symbol: str,
+        timeframe: str,
+        start_time: Optional[datetime] = None,
+        end_time: Optional[datetime] = None,
+        limit: int = 1000,
+    ) -> List[KlineData]:
+        """Retrieve klines for a symbol and timeframe."""
+        pass
+    
+    @abstractmethod
+    def get_latest_kline(self, symbol: str, timeframe: str) -> Optional[KlineData]:
+        """Get the most recent kline for a symbol and timeframe."""
+        pass
+    
+    @abstractmethod
+    def save_funding_rates(self, rates: List[FundingRateData]) -> int:
+        """Save funding rates. Returns number of records inserted."""
+        pass
+    
+    @abstractmethod
+    def get_funding_rates(
+        self,
+        symbol: str,
+        start_time: Optional[datetime] = None,
+        end_time: Optional[datetime] = None,
+        limit: int = 1000,
+    ) -> List[FundingRateData]:
+        """Retrieve funding rates for a symbol."""
+        pass
+    
+    @abstractmethod
+    def get_collection_metadata(self, symbol: str, data_type: str) -> Optional[dict]:
+        """Get metadata for a symbol and data type."""
+        pass
+    
+    @abstractmethod
+    def update_collection_metadata(self, symbol: str, data_type: str, **kwargs) -> None:
+        """Update metadata for a symbol and data type."""
+        pass
+    
+    @abstractmethod
+    def is_data_fresh(self, symbol: str, data_type: str, max_age_seconds: int = 3600) -> bool:
+        """Check if data is fresh (within max_age_seconds)."""
+        pass
+
+class SQLiteStorage(DataStorage):
+    """SQLite implementation of DataStorage."""
+    
+    def __init__(self, db_path: str = "data/hunter.db"):
+        self.db_path = db_path
+        self._init_schema()
+    
+    def _init_schema(self) -> None:
+        """Initialize database schema from schema.py."""
+        # Implementation loads schema.sql and executes
+        pass
+    
+    # ... implementations of all abstract methods ...
 ```
 
 ---
@@ -590,6 +719,8 @@ CREATE TABLE long_short_ratio (
     UNIQUE(symbol, timestamp)
 );
 
+CREATE INDEX idx_ls_ratio_symbol_time ON long_short_ratio(symbol, timestamp);
+
 -- System state / regime snapshots (MVP-2+)
 CREATE TABLE regime_snapshots (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -653,7 +784,7 @@ CREATE TABLE collection_metadata (
 ### Directory Structure
 
 ```
-src/tests/
+tests/
 ├── __init__.py
 ├── conftest.py              # Shared fixtures and configuration
 ├── test_config/
@@ -722,7 +853,6 @@ def test_trading_enabled_raises_error():
     config.trading.enabled = True
     
     with pytest.raises(ConfigLoadError, match="Trading is not allowed"):
-        # This would be called during validation
         validate_config(config)
 
 def test_default_config_is_safe():
@@ -731,6 +861,119 @@ def test_default_config_is_safe():
     assert config.trading.enabled is False
     assert config.trading.dry_run is True
     assert config.collection.enabled is False
+```
+
+---
+
+## Dependencies
+
+### Production Dependencies
+
+```
+pydantic>=2.0.0
+pyyaml>=6.0
+```
+
+### Development Dependencies
+
+```
+pytest>=7.0.0
+pytest-asyncio>=0.21.0
+factory-boy>=3.3.0
+```
+
+### pyproject.toml Metadata
+
+```toml
+[project]
+name = "hunter-futures-pro"
+version = "0.2.0"
+description = "Agent-first crypto futures research and execution-control platform"
+requires-python = ">=3.11"
+dependencies = [
+    "pydantic>=2.0.0",
+    "pyyaml>=6.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.0.0",
+    "pytest-asyncio>=0.21.0",
+    "factory-boy>=3.3.0",
+]
+
+[project.scripts]
+hunter = "hunter.core.cli:main"
+```
+
+---
+
+## CLI Entry Point
+
+```python
+# src/hunter/core/cli.py
+import argparse
+import sys
+from pathlib import Path
+
+from ..config.loader import load_config, ConfigLoadError
+from ..core.logging import setup_logging
+
+def main() -> int:
+    """Main CLI entry point for Hunter Futures Pro."""
+    parser = argparse.ArgumentParser(description="Hunter Futures Pro")
+    parser.add_argument(
+        "--config", "-c",
+        type=str,
+        help="Path to config file (overrides default)"
+    )
+    parser.add_argument(
+        "--log-level",
+        type=str,
+        default="INFO",
+        choices=["DEBUG", "INFO", "WARNING", "ERROR"],
+        help="Logging level"
+    )
+    parser.add_argument(
+        "--json-logs",
+        action="store_true",
+        help="Output logs in JSON format"
+    )
+    
+    args = parser.parse_args()
+    
+    try:
+        config = load_config(args.config)
+    except ConfigLoadError as e:
+        print(f"Config error: {e}", file=sys.stderr)
+        return 1
+    
+    setup_logging(
+        log_level=args.log_level,
+        log_dir=config.data.raw_data_dir.replace("raw", "logs"),
+        json_format=args.json_logs,
+    )
+    
+    print(f"Hunter Futures Pro {config.app.version}")
+    print(f"Environment: {config.app.env}")
+    print(f"Trading enabled: {config.trading.enabled}")
+    print(f"Data collection enabled: {config.collection.enabled}")
+    
+    return 0
+
+if __name__ == "__main__":
+    sys.exit(main())
+```
+
+---
+
+## Package Version Export
+
+```python
+# src/hunter/__init__.py
+"""Hunter Futures Pro - Agent-first crypto futures research platform."""
+
+__version__ = "0.2.0"
 ```
 
 ---
