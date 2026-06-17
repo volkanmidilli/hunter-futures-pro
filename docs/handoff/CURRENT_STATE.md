@@ -36,7 +36,14 @@ MVP-2 Step 2 is complete:
 - 50 new tests, all passing
 - Full test suite: 178 tests passing
 
-No Regime Engine logic exists yet.
+MVP-2 Step 3 is complete:
+- `src/hunter/market_state/regime.py` created with deterministic Regime Engine
+- `RegimeConfig` with frozen defaults
+- `calculate_btc_trend_score`, `calculate_bearish_btc_trend_score`, `calculate_eth_trend_score`
+- `calculate_breadth_confirmation_score` with optional breadth input
+- `classify_regime` with fail-closed behavior (UNKNOWN + NONE + confidence 0 on bad data)
+- 37 regime tests, all passing
+- Full test suite: 215 tests passing (178 existing + 37 new)
 
 No Breadth Engine logic exists yet.
 
@@ -50,8 +57,8 @@ No Freqtrade integration exists yet.
 
 No live trading is enabled.
 
-MVP-2 implementation has started. Steps 1 and 2 complete.
+MVP-2 implementation has started. Steps 1, 2, and 3 complete.
 
 ## Next Step
 
-MVP-2 Step 3 — Regime Engine.
+MVP-2 Step 4 — Breadth Engine.

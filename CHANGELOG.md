@@ -231,6 +231,46 @@ All important project changes will be recorded in this file.
 - No Breadth Engine logic exists yet.
 - No JSON writers exist yet.
 
+### MVP-2 Step 3 — Regime Engine (Complete)
+
+- `src/hunter/market_state/regime.py` created with deterministic Regime Engine:
+  - `RegimeConfig` — frozen dataclass with all SPEC-003 defaults (ema periods, thresholds, lookbacks)
+  - `calculate_btc_trend_score(btc_closes, config)` — bullish conditions / total * 100, 0–100
+  - `calculate_bearish_btc_trend_score(btc_closes, config)` — bearish conditions / total * 100, 0–100
+  - `calculate_eth_trend_score(eth_closes, config)` — optional ETH confirmation, returns 0 + `ETH_DATA_UNAVAILABLE` if missing
+  - `calculate_breadth_confirmation_score(...)` — optional breadth confirmation based on regime direction
+  - `classify_regime(...)` — main classifier with fail-closed behavior:
+    - Missing BTC candles → `UNKNOWN` + `NONE` + confidence 0
+    - Insufficient BTC history → `UNKNOWN` + `NONE` + confidence 0
+    - Invalid candle values (≤0) → `UNKNOWN` + `NONE` + confidence 0
+    - Bull detected → `BULL` + `LONG_ONLY` + confidence from confirmation
+    - Bear detected → `BEAR` + `SHORT_ONLY` + confidence from confirmation
+    - Weak trend → `SIDEWAYS` + `NONE`
+    - Low confidence (<0.6) → `TRANSITION` + `NONE`
+  - Uses `ema_slope_pct` from indicators.py (matches SPEC-003 formula exactly)
+  - No ML, no optimization, no curve fitting
+- `tests/test_market_state/test_regime.py` with 37 tests:
+  - RegimeConfig defaults and custom values
+  - BTC trend score: bullish high, bearish low, flat medium, missing, insufficient, invalid, range
+  - Bearish BTC trend score: bearish high, bullish low, missing
+  - ETH trend score: None unavailable, bullish, missing
+  - Breadth confirmation: bull confirmation, bear confirmation, None returns zero, no confirmation
+  - Fail-closed: missing BTC, insufficient history, invalid values, calculation error blocks
+  - Regime detection: bull, bear, sideways, transition with ETH, bull with breadth, confidence range, allowed mode NONE when invalid
+  - Reason codes: bull, bear, unknown all have non-empty reason codes
+  - Safety: no network imports, no trading terms, no Binance, no Freqtrade
+- Full test suite: 215 tests passing (178 existing + 37 new)
+
+### Safety
+
+- No trading logic exists yet.
+- No Binance connection exists yet.
+- No Freqtrade integration exists yet.
+- No live trading is enabled.
+- No API keys or exchange secrets stored in repository.
+- No Breadth Engine logic exists yet.
+- No JSON writers exist yet.
+
 ### Next
 
-- MVP-2 Step 3 — Regime Engine.
+- MVP-2 Step 4 — Breadth Engine.
