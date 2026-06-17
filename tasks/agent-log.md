@@ -334,3 +334,61 @@ Safety:
 Next step:
 
 MVP-2 Step 1 — Market State Models.
+
+---
+
+### 0.3.0-dev — MVP-2 Step 1: Market State Models
+
+Date: 2026-06-17
+
+Agent: WrongStack
+
+Task: MVP-2 Step 1 — Market State Models.
+
+Files changed:
+
+- src/hunter/market_state/__init__.py (created)
+- src/hunter/market_state/models.py (created)
+- tests/test_market_state/__init__.py (created)
+- tests/test_market_state/test_models.py (created)
+
+Summary:
+
+Added market state enums and immutable output models for Regime and Breadth outputs.
+
+Enums created:
+- RegimeState: BULL, BEAR, SIDEWAYS, TRANSITION, UNKNOWN
+- RiskState: RISK_ON, RISK_OFF, NEUTRAL, UNKNOWN
+- AllowedMode: LONG_ONLY, SHORT_ONLY, NONE
+- OutputStatus: VALID, INVALID
+
+Models created:
+- DataQuality: immutable flags for missing, stale, insufficient_history, insufficient_universe
+- RegimeOutput: frozen dataclass with __post_init__ validation (confidence 0.0–1.0, scores 0–100)
+- BreadthOutput: frozen dataclass with __post_init__ validation (breadth_score 0–100, percentages 0.0–1.0)
+
+Fail-closed factories:
+- RegimeOutput.unknown(): UNKNOWN regime + NONE mode + confidence 0 + INVALID status
+- BreadthOutput.invalid(): INVALID status + UNKNOWN health + score 0
+
+37 tests added covering:
+- enum values, valid creation, boundary values
+- validation failures (out-of-range), fail-closed factories
+- immutability (frozen dataclass)
+
+Full test suite: 128 tests passing (91 existing + 37 new).
+
+Safety:
+
+- No Binance connection.
+- No Freqtrade integration.
+- No trading logic.
+- No live trading.
+- No API keys.
+- No Regime Engine logic exists yet.
+- No Breadth Engine logic exists yet.
+- No indicators exist yet.
+
+Next step:
+
+MVP-2 Step 2 — Indicator Utilities.
