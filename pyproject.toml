@@ -17,3 +17,7 @@ dev = [
 
 [project.scripts]
 hunter = "hunter.core.cli:main"
+
+[tool.pytest.ini_options]
+pythonpath = ["src"]
+testpaths = ["tests"]
