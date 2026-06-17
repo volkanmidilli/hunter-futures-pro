@@ -1,4 +1,4 @@
-"""Data collector interface for market data acquisition."""
+"""Data module for market data acquisition and storage."""
 
 from .collector import (
     DataCollector,
@@ -8,6 +8,7 @@ from .collector import (
     OpenInterestData,
     Ticker24hData,
 )
+from .storage import DataStorage, SQLiteStorage
 
 __all__ = [
     "DataCollector",
@@ -16,4 +17,6 @@ __all__ = [
     "OpenInterestData",
     "MarkPriceData",
     "Ticker24hData",
+    "DataStorage",
+    "SQLiteStorage",
 ]
