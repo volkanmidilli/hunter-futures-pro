@@ -314,6 +314,45 @@ All important project changes will be recorded in this file.
 - No JSON writers exist yet.
 - No schema files exist yet.
 
+### MVP-2 Step 5 — JSON Output Writers (Complete)
+
+- `src/hunter/market_state/writer.py` created with JSON serialization and atomic output writers:
+  - `regime_to_dict(output)` — Serializes `RegimeOutput` to JSON-compatible dict:
+    - ISO-8601 timestamps with Z suffix (e.g., `2026-06-17T12:00:00Z`)
+    - Enum values serialized as strings (e.g., `BULL`, `LONG_ONLY`, `VALID`)
+    - `DataQuality` and `reason_codes` preserved
+  - `breadth_to_dict(output)` — Serializes `BreadthOutput` to JSON-compatible dict:
+    - Same timestamp and enum serialization as regime
+    - All percentage fields and counts preserved
+  - `atomic_write_json(data, target_path)` — Atomic file write:
+    - Writes to temp file in same directory first
+    - Uses `os.replace()` for atomic rename
+    - Creates parent directories if missing
+    - Cleans up temp file on failure (no partial output)
+    - Uses `fsync` for durability
+  - `write_regime_output(output, target_path)` — Writes to `data/regime/current_regime.json` by default
+  - `write_breadth_output(output, target_path)` — Writes to `data/breadth/current_breadth.json` by default
+  - Output matches SPEC-003 JSON contract exactly
+- `tests/test_market_state/test_writer.py` with 19 tests:
+  - regime_to_dict: valid regime, unknown regime, ISO-8601 format, naive datetime, enum strings, data quality, reason codes
+  - breadth_to_dict: valid breadth, invalid breadth
+  - atomic_write_json: writes file, creates directories, no partial on failure, unicode encoding
+  - write_regime_output: default path, parent directories
+  - write_breadth_output: default path, parent directories
+  - Safety: no network calls, no trading logic
+- Full test suite: 278 tests passing (259 existing + 19 new)
+
+### Safety
+
+- No trading logic exists yet.
+- No Binance connection exists yet.
+- No Freqtrade integration exists yet.
+- No live trading is enabled.
+- No API keys or exchange secrets stored in repository.
+- No JSON schema validation exists yet.
+- No storage integration exists yet.
+- No report templates exist yet.
+
 ### Next
 
-- MVP-2 Step 5 — JSON Output Writers.
+- MVP-2 Step 6 — Final review and polish.

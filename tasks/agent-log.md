@@ -518,7 +518,58 @@ Safety:
 
 Next step:
 
-MVP-2 Step 5 — JSON Output Writers.
+MVP-2 Step 6 — Final review and polish.
+
+---
+
+### 0.3.0-dev — MVP-2 Step 5: JSON Output Writers
+
+Date: 2026-06-17
+
+Agent: WrongStack
+
+Task: MVP-2 Step 5 — JSON Output Writers.
+
+Files changed:
+
+- src/hunter/market_state/writer.py (created)
+- tests/test_market_state/test_writer.py (created)
+
+Summary:
+
+Added JSON serialization and atomic output writers for RegimeOutput and BreadthOutput.
+
+Functions created:
+- regime_to_dict: Serializes RegimeOutput to JSON-compatible dict with ISO-8601 timestamps, enum string values, DataQuality and reason_codes preserved
+- breadth_to_dict: Serializes BreadthOutput to JSON-compatible dict matching SPEC-003 contract exactly
+- atomic_write_json: Atomic file write using temp file + os.replace(), creates parent directories, cleans up temp file on failure, uses fsync for durability
+- write_regime_output: Writes to data/regime/current_regime.json by default
+- write_breadth_output: Writes to data/breadth/current_breadth.json by default
+
+19 tests added covering:
+- regime_to_dict: valid regime, unknown regime, ISO-8601 format, naive datetime, enum strings, data quality, reason codes
+- breadth_to_dict: valid breadth, invalid breadth
+- atomic_write_json: writes file, creates directories, no partial on failure, unicode encoding
+- write_regime_output: default path, parent directories
+- write_breadth_output: default path, parent directories
+- Safety: no network calls, no trading logic
+
+Full test suite: 278 tests passing (259 existing + 19 new).
+
+Safety:
+
+- No Binance connection.
+- No Freqtrade integration.
+- No trading logic.
+- No live trading.
+- No API keys.
+- No JSON schema validation yet.
+- No storage integration yet.
+- No report templates yet.
+
+Next step:
+
+MVP-2 Step 6 — Final review and polish.
 
 ---
 

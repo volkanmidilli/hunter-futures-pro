@@ -58,9 +58,21 @@ MVP-2 Step 4 is complete:
 - 44 breadth tests, all passing
 - Full test suite: 259 tests passing (215 existing + 44 new)
 
-No JSON writers exist yet.
+MVP-2 Step 5 is complete:
+- `src/hunter/market_state/writer.py` created with JSON serialization and atomic output writers
+- `regime_to_dict` — Serializes RegimeOutput to JSON-compatible dict with ISO-8601 timestamps, enum strings
+- `breadth_to_dict` — Serializes BreadthOutput to JSON-compatible dict matching SPEC-003 contract
+- `atomic_write_json` — Atomic temp-file write with os.replace(), parent directory creation, cleanup on failure
+- `write_regime_output` — Writes to `data/regime/current_regime.json` by default
+- `write_breadth_output` — Writes to `data/breadth/current_breadth.json` by default
+- 19 writer tests, all passing
+- Full test suite: 278 tests passing (259 existing + 19 new)
 
-No schema files exist yet.
+No JSON schema validation exists yet.
+
+No storage integration exists yet.
+
+No report templates exist yet.
 
 No trading logic exists yet.
 
@@ -70,8 +82,8 @@ No Freqtrade integration exists yet.
 
 No live trading is enabled.
 
-MVP-2 implementation has started. Steps 1, 2, 3, and 4 complete.
+MVP-2 implementation has started. Steps 1, 2, 3, 4, and 5 complete.
 
 ## Next Step
 
-MVP-2 Step 5 — JSON Output Writers.
+MVP-2 Step 6 — Final review and polish.
