@@ -80,8 +80,20 @@ All important project changes will be recorded in this file.
 - `.gitignore` prevents accidental commit of `configs/local.yaml`, `.env`, `*.key`, `*.pem`.
 - Logging redacts secret-like fields from file output.
 
+### MVP-1 Step 4 — Data Collector Interface (Complete)
+
+- `src/hunter/data/collector.py` with abstract `DataCollector` interface:
+  - 6 abstract methods: `get_exchange_info()`, `get_klines()`, `get_funding_rates()`, `get_open_interest()`, `get_mark_price()`, `get_24h_ticker()`
+- `BinanceFuturesCollector` skeleton class that does NOT connect to Binance
+  - All methods raise `NotImplementedError` with message "Binance connection not implemented in MVP-1"
+- 5 frozen dataclass data models: `KlineData`, `FundingRateData`, `OpenInterestData`, `MarkPriceData`, `Ticker24hData`
+- `tests/test_data/test_collector.py` with 18 tests:
+  - `DataCollector` cannot be instantiated directly (abstract)
+  - `BinanceFuturesCollector` raises `NotImplementedError` on all methods
+  - No network calls are made (verified by monkeypatch)
+  - Data models are immutable (`frozen=True`)
+
 ### Next
 
-- MVP-1 Step 4: Implement data collector interface (ABC only).
 - MVP-1 Step 5: Implement SQLite schema and `DataStorage` / `SQLiteStorage` stubs.
 - MVP-1 Step 6: Write safety tests for storage schema.
