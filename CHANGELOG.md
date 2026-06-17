@@ -93,7 +93,35 @@ All important project changes will be recorded in this file.
   - No network calls are made (verified by monkeypatch)
   - Data models are immutable (`frozen=True`)
 
+### MVP-1 Step 5 — SQLite Storage Layer (Complete)
+
+- `src/hunter/data/schema.sql` with 5 tables:
+  - `market_symbols` — Symbol registry with base/quote assets
+  - `candles` — OHLCV data with unique constraint on (symbol, timeframe, open_time)
+  - `funding_rates` — Funding rate history with unique constraint on (symbol, funding_time)
+  - `open_interest` — Open interest snapshots
+  - `collection_metadata` — Freshness tracking with upsert support
+- Indexes on common query patterns: `idx_candles_symbol_timeframe_time`, `idx_funding_symbol_time`, `idx_oi_symbol_time`, `idx_meta_symbol_type`
+- `src/hunter/data/storage.py` with `DataStorage` ABC and `SQLiteStorage` implementation
+  - `DataStorage` ABC: 9 abstract methods (`initialize`, `save_klines`, `get_klines`, `get_latest_kline`, `save_funding_rates`, `get_funding_rates`, `save_collection_metadata`, `get_collection_metadata`, `is_data_fresh`)
+  - `SQLiteStorage` uses Python standard library `sqlite3` only (no external dependencies)
+  - `save_klines()` / `save_funding_rates()` use `INSERT OR IGNORE` for deduplication
+  - `is_data_fresh()` checks metadata age against `max_age_seconds`
+- `tests/test_data/test_storage.py` with 19 tests using temporary SQLite database files
+  - All tests pass, no network calls, no Binance connection, no Freqtrade connection
+
+### MVP-1 Step 6 — Final Safety Tests and MVP-1 Completion (Complete)
+
+- Final review found config loader returning `dict` instead of `HunterConfig` when merging YAML
+- Fixed `load_config()` to use `_deep_update()` + `model_validate()` for safe nested merging
+- Fixed secret detection to scan merged dict before Pydantic strips extra fields
+- Fixed config tests to use `raw_dict` parameter for secret injection
+- Fixed missing `import sys` in logging tests
+- Fixed `test_sets_log_level` to check root logger level
+- Commit `dd3ea99`: config loader bugfix and test fixes
+- All 91 tests now pass (0 failures)
+- MVP-1 Data Foundation is complete
+
 ### Next
 
-- MVP-1 Step 5: Implement SQLite schema and `DataStorage` / `SQLiteStorage` stubs.
-- MVP-1 Step 6: Write safety tests for storage schema.
+- MVP-2 Market State: Regime Engine and Market Breadth Engine design.
