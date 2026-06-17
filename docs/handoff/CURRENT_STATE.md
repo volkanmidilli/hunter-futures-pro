@@ -37,7 +37,13 @@ No Freqtrade integration exists yet.
 
 No live trading is enabled.
 
-No logging setup exists yet.
+MVP-1 Step 3 (Logging Structure) is complete and committed:
+- src/hunter/core/logging.py with JSONFormatter, RedactingFilter, setup_logging()
+- JSONFormatter outputs structured JSON with timestamp, level, logger, message, correlation_id, context, exception info
+- RedactingFilter recursively redacts secrets (api_key, secret, password, token, private_key) in dicts and lists
+- setup_logging() with console handler (text or JSON) and rotating file handler (always JSON, 10MB/5 backups)
+- tests/test_core/test_logging.py with 18 tests for formatting, redaction, and setup behavior
+- Log secret redaction applied to file handler only
 
 No data collector exists yet.
 
@@ -120,4 +126,4 @@ Unknown market regime should block execution in future trading logic.
 
 ## Next Step
 
-MVP-1 Step 3 — Logging structure.
+MVP-1 Step 4 — Data collector interface.

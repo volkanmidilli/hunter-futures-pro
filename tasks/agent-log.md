@@ -234,3 +234,37 @@ Safety:
 Next step:
 
 MVP-1 Step 3 — Logging structure.
+
+---
+
+### 0.2.0-dev — MVP-1 Step 3: Logging Structure
+
+Date: 2026-06-17
+
+Agent: WrongStack
+
+Task: MVP-1 Step 3 — Logging Structure.
+
+Commit: e9fb25b
+
+Files changed:
+
+- src/hunter/core/logging.py (created)
+- src/hunter/core/__init__.py (updated)
+- tests/test_core/test_logging.py (created)
+
+Summary:
+
+Added structured logging with JSONFormatter, RedactingFilter and setup_logging(). Added tests for formatting, nested secret redaction and setup behavior.
+
+Safety:
+
+- No Binance connection.
+- No Freqtrade integration.
+- No live trading.
+- No API keys.
+- Logging redacts secret-like fields.
+
+Next step:
+
+MVP-1 Step 4 — Data collector interface.

@@ -61,6 +61,15 @@ All important project changes will be recorded in this file.
 - Config directory standard: `configs/` (not `config/`)
 - Config tests: 23 tests for safe defaults, validation failures, and YAML loading
 
+### MVP-1 Step 3 — Logging Structure (Complete)
+
+- `src/hunter/core/logging.py` with structured logging components:
+  - `JSONFormatter` for JSON log output with timestamp, level, logger, message, correlation_id, context, exception info
+  - `RedactingFilter` for recursive secret redaction (api_key, secret, password, token, private_key) in dicts and lists
+  - `setup_logging()` with console handler (text or JSON) and rotating file handler (always JSON, 10MB/5 backups)
+- `tests/test_core/test_logging.py` with 18 tests for formatting, redaction, and setup behavior
+- Log secret redaction applied to file handler only
+
 ### Safety
 
 - No trading logic exists yet.
@@ -69,10 +78,10 @@ All important project changes will be recorded in this file.
 - No live trading is enabled.
 - No API keys or exchange secrets stored in repository.
 - `.gitignore` prevents accidental commit of `configs/local.yaml`, `.env`, `*.key`, `*.pem`.
+- Logging redacts secret-like fields from file output.
 
 ### Next
 
-- MVP-1 Step 3: Implement logging setup with JSON formatter and `RedactingFilter`.
 - MVP-1 Step 4: Implement data collector interface (ABC only).
 - MVP-1 Step 5: Implement SQLite schema and `DataStorage` / `SQLiteStorage` stubs.
-- MVP-1 Step 6: Write safety tests for logging redaction and storage schema.
+- MVP-1 Step 6: Write safety tests for storage schema.
