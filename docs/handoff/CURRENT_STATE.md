@@ -10,7 +10,54 @@ Hunter Futures Pro
 
 ## Current Phase
 
-MVP-3 — Decision Layer complete. MVP-4 planning pending.
+MVP-4 — Execution Bridge design complete. Implementation planning pending.
+
+## Current Status
+
+MVP-0 foundation is complete and committed.
+
+MVP-1 Data Foundation is complete and committed. All 91 tests pass.
+
+MVP-2 Market State is complete and committed. All 278 tests pass.
+- Market State Models, Indicator Utilities, Regime Engine, Breadth Engine, JSON Output Writers all implemented.
+- No Binance integration. No Freqtrade integration. No live trading.
+
+MVP-3 Decision Layer is complete and committed. All 394 tests pass.
+- Decision Models, Decision Engine, Decision Writer, Integration Tests all implemented.
+- No Binance integration. No Freqtrade integration. No live trading. No JSON input reading.
+
+MVP-4 Execution Bridge design is complete and reviewed:
+- SPEC-005 exists and is finalized.
+- Execution Bridge consumes in-memory DecisionOutput from MVP-3.
+- Future input path: data/decision/current_decision.json.
+- Output path: data/execution/current_execution_context.json.
+- ExecutionState enum: ENABLED, BLOCKED, DRY_RUN_ONLY, UNKNOWN.
+- ExecutionMode enum: LONG_RESEARCH_ONLY, SHORT_RESEARCH_ONLY, BLOCK_ALL, DRY_RUN_ONLY.
+- ExecutionContext version field default "1.0" for backward-compatible evolution.
+- max_context_age_seconds default 300 as consumer-side stale guard.
+- human_override_required default false, reserved for future.
+- Fail-closed by default: all bad inputs produce BLOCKED + BLOCK_ALL.
+- Dry-run only: all successful paths produce DRY_RUN_ONLY, ENABLED reserved for future.
+- 15 priority-ordered fail-closed rules defined.
+- Config file design: configs/execution_bridge.yaml (single file).
+- JSON Schema design: schemas/execution_context.schema.json (future work only).
+- Freqtrade compatibility contract documented for future MVP-5+.
+- All 27 review checklist items passed.
+- No MVP-4 code has been implemented yet.
+- No Binance integration exists.
+- No Freqtrade runtime integration exists.
+- No trading logic exists.
+- No live trading exists.
+- No API keys exist.
+
+## Next Step
+
+MVP-4 Step 1 — Execution Bridge Models.
+- Create ExecutionState, ExecutionMode, ExecutionBridgeConfig, ExecutionContext enums and dataclasses.
+- Add __post_init__ validation for safety flags.
+- Add ExecutionContext.blocked() fail-closed factory.
+- Create tests/test_execution_bridge/test_models.py with model tests.
+- Target: 25+ tests, all passing.
 
 ## Current Status
 

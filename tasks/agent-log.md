@@ -226,7 +226,40 @@ Safety:
 
 Next step:
 
-MVP-3 is complete. Begin MVP-4 planning or commit current state.
+MVP-4 Step 1 — Execution Bridge Models.
+
+---
+
+### 0.4.0-dev — SPEC-005 — Execution Bridge / Freqtrade Design
+
+Date: 2026-06-17
+
+Agent: WrongStack
+
+Task: SPEC-005 — Execution Bridge / Freqtrade Design
+
+Files changed:
+
+- specs/SPEC-005-Execution-Bridge-Freqtrade.md (created)
+
+Summary:
+
+Created, clarified, and reviewed SPEC-005 for MVP-4 Execution Bridge.
+Design consumes in-memory DecisionOutput and produces dry-run-only fail-closed execution context at data/execution/current_execution_context.json.
+All 27 review checklist items passed.
+
+Safety:
+
+- No code implemented.
+- No Binance connection.
+- No Freqtrade runtime integration.
+- No strategy class.
+- No trading logic.
+- No live trading.
+
+Next step:
+
+MVP-4 Step 1 — Execution Bridge Models.
 
 ---
 

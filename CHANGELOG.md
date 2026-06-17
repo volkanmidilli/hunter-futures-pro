@@ -2,7 +2,130 @@
 
 All important project changes will be recorded in this file.
 
-## 0.1.0 — MVP-0 Project Foundation
+## 0.4.0-dev — MVP-4 Execution Bridge (Design Complete)
+
+### Added
+
+- SPEC-005 — Execution Bridge / Freqtrade Integration design document created and reviewed.
+- Execution Bridge consumes in-memory `DecisionOutput` from MVP-3.
+- Future input path documented: `data/decision/current_decision.json`.
+- Output path defined: `data/execution/current_execution_context.json`.
+- `ExecutionState` enum design: ENABLED, BLOCKED, DRY_RUN_ONLY, UNKNOWN.
+- `ExecutionMode` enum design: LONG_RESEARCH_ONLY, SHORT_RESEARCH_ONLY, BLOCK_ALL, DRY_RUN_ONLY.
+- `ExecutionContext` model design with `version` field default `"1.0"` for backward-compatible contract evolution.
+- `max_context_age_seconds` default `300` documented as consumer-side stale rejection guard.
+- `human_override_required` default `false` documented as reserved for future DRY_RUN_ONLY → ENABLED transitions.
+- Fail-closed by default: all bad inputs produce BLOCKED + BLOCK_ALL.
+- Dry-run only: all successful paths produce DRY_RUN_ONLY, ENABLED reserved for future.
+- 15 priority-ordered fail-closed rules defined.
+- Config file design: `configs/execution_bridge.yaml` (single file, no sprawl).
+- JSON Schema design: `schemas/execution_context.schema.json` (future work only, not implemented yet).
+- Freqtrade compatibility contract documented for future MVP-5+ implementation.
+- All 27 review checklist items passed.
+
+### Safety
+
+- No code implemented yet.
+- No Binance integration.
+- No Freqtrade runtime integration.
+- No strategy class.
+- No trading logic.
+- No live trading.
+- No API keys.
+- No real data fetching.
+
+### Next
+
+- MVP-4 Step 1 — Execution Bridge Models.
+
+## 0.3.0-dev — MVP-3 Decision Layer (Complete)
+
+### Added
+
+- SPEC-004 — Decision Layer design document created, clarified, and reviewed.
+- Decision Models: `DecisionState`, `DecisionAction`, `DecisionConfig`, `DecisionInputRefs`, `DecisionOutput` with `block_all()` fail-closed factory.
+- Decision Engine: `make_decision()` with 14 priority-ordered fail-closed rules.
+- Decision Writer: `decision_to_dict()`, `atomic_write_json()`, `write_decision_output()` with atomic temp-file writes.
+- Integration tests: DecisionOutput → make_decision → write_decision_output end-to-end pipeline.
+- Default output: `BLOCK` + `BLOCK_ALL` + confidence `0.0` on all bad inputs.
+- Allow cases: `BULL` + `LONG_ONLY` + healthy breadth → `ENABLE_LONG_ONLY_RESEARCH`; `BEAR` + `SHORT_ONLY` + weak breadth → `ENABLE_SHORT_ONLY_RESEARCH`.
+- All other states (`SIDEWAYS`, `TRANSITION`, conflict, stale) → `BLOCK_ALL`.
+- `REVIEW` state reserved for future, never emitted by default.
+- Config file design: `configs/decision.yaml` (single file).
+- JSON Schema design: `schemas/decision.schema.json` (future work only).
+- All 20 review checklist items passed.
+- Full test suite: 394 tests passing.
+
+### Safety
+
+- No Binance integration.
+- No Freqtrade integration.
+- No trading logic.
+- No live trading.
+- No API keys.
+- No network calls.
+- No JSON input reading.
+
+### Next
+
+- MVP-4 Execution Bridge design and implementation.
+
+## 0.2.0-dev — MVP-2 Market State (Complete)
+
+### Added
+
+- SPEC-003 — Market State Regime & Breadth design document created, reviewed, and finalized with all fixes applied.
+- Market State Models: `RegimeState`, `RiskState`, `AllowedMode`, `OutputStatus`, `DataQuality`, `RegimeOutput`, `BreadthOutput` with `invalid()` fail-closed factories.
+- Indicator Utilities: `safe_divide`, `percent_change`, `simple_moving_average`, `exponential_moving_average`, `ema_slope_pct`, `is_rising`, `is_falling`, `is_flat` — pure standard-library functions.
+- Regime Engine: deterministic `btc_trend_score`, `bearish_btc_trend_score`, `eth_trend_score`, `breadth_confirmation_score`, `classify_regime()` with fail-closed `UNKNOWN` + `NONE` behavior.
+- Breadth Engine: deterministic `breadth_score` with weighted formula, universe filtering, invalid symbol exclusion.
+- JSON Output Writers: `regime_to_dict()`, `breadth_to_dict()`, `atomic_write_json()`, `write_regime_output()`, `write_breadth_output()` with atomic temp-file writes and ISO-8601 timestamps.
+- All 17 review checklist items passed.
+- Full test suite: 278 tests passing.
+
+### Safety
+
+- No Binance integration.
+- No Freqtrade integration.
+- No trading logic.
+- No live trading.
+- No API keys.
+- No network calls.
+- No storage integration.
+
+### Next
+
+- MVP-3 Decision Layer design and implementation.
+
+## 0.1.0-dev — MVP-1 Data Foundation (Complete)
+
+### Added
+
+- Python project structure: `src/hunter/` package with `config`, `data`, `core`, `engines` modules.
+- `pyproject.toml` with project metadata, `pydantic` and `pyyaml` dependencies.
+- `requirements.txt` and `requirements-dev.txt` with pytest dependencies.
+- `.gitignore` excluding Python cache, secrets, runtime data, and local config.
+- `tests/` directory at repo root with `test_config`, `test_data`, `test_core`, `fixtures`.
+- `__version__ = "0.2.0-dev"` in `src/hunter/__init__.py`.
+- SQLiteStorage implementation with `DataStorage` ABC.
+- Config models with Pydantic validation.
+- Logging setup with structlog and JSON output.
+- Test fixtures for config and data layers.
+- Full test suite: 91 tests passing.
+
+### Safety
+
+- No trading logic exists yet.
+- No Binance connection exists yet.
+- No Freqtrade integration exists yet.
+- No live trading is enabled.
+- No API keys or exchange secrets should be stored in the repository.
+
+### Next
+
+- MVP-2 Market State design and implementation.
+
+## 0.0.0 — MVP-0 Project Foundation (Complete)
 
 ### Added
 
