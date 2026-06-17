@@ -2,40 +2,34 @@
 
 ## Current Task
 
-Create MVP-0 project foundation.
+Implement MVP-1 Data Foundation.
 
 ## Status
 
-Done
+In progress
 
 ## Note
 
-Initial MVP-0 foundation commit completed.
+SPEC-002 MVP-1 Data Foundation design is complete and reviewed. All 8 review fixes applied. Ready for implementation.
 
-## Next Task
+## Previous Task
 
-MVP-1 planning.
+MVP-0 Project Foundation — Done.
 
 ## Goal
 
-Create the minimum documentation and agent memory files required so WrongStack and future AI agents can understand the project.
+Build the data infrastructure that all future engines will depend on, following SPEC-002 design.
 
 ## Current Scope
 
-Only documentation and project memory files are being created.
+Implement MVP-1 components from SPEC-002:
 
-## Files Being Created
-
-- README.md
-- PROJECT.md
-- AGENTS.md
-- docs/handoff/CURRENT_STATE.md
-- tasks/backlog.md
-- tasks/active.md
-- tasks/agent-log.md
-- CHANGELOG.md
-- VERSION
-- .wrongstack/AGENTS.md
+1. Python project structure (directories, __init__.py, pyproject.toml)
+2. Config structure (Pydantic models, loader, validation)
+3. Logging structure (JSON formatter, redaction, rotation)
+4. Data collector interface (ABC, not connected to Binance)
+5. SQLite storage layer (schema, DataStorage ABC, SQLiteStorage)
+6. Test structure (pytest, fixtures, safety tests)
 
 ## Do Not Do Yet
 
@@ -45,14 +39,22 @@ Only documentation and project memory files are being created.
 - Do not create API keys.
 - Do not enable live trading.
 - Do not create production trading rules.
+- Do not implement actual data collection (design only, collection.enabled: false).
 
 ## Definition of Done
 
-MVP-0 is done when:
+MVP-1 is done when:
 
-- all foundation files exist
-- WrongStack can read the project context
-- the project direction is clear
-- safety rules are documented
-- next steps are listed
-- initial git commit is created
+- Python project structure exists and is importable
+- Config loads with safe defaults and validates trading is disabled
+- Logging outputs structured JSON with secret redaction
+- SQLite schema is creatable and testable
+- DataStorage ABC is defined with SQLiteStorage stub
+- BinanceFuturesCollector raises NotImplementedError on all methods
+- Tests pass for config safety, logging redaction, and storage schema
+- All code follows SPEC-002 design without deviation
+- No trading logic, Binance connection, or live trading exists
+
+## Next Step After MVP-1
+
+MVP-2 — Market State: Regime Engine and Market Breadth Engine design.
