@@ -145,9 +145,39 @@ Safety:
 - No network calls.
 - No JSON input reading.
 
+---
+
+### 0.3.0-dev — MVP-3 Step 4 — Integration Tests
+
+Date: 2026-06-17
+
+Agent: WrongStack
+
+Task: MVP-3 Step 4 — Integration Tests
+
+Files changed:
+
+- tests/test_decision/test_integration.py
+
+Summary:
+
+Added end-to-end tests for RegimeOutput + BreadthOutput through make_decision() and write_decision_output().
+Covered long-only research enable, short-only research enable, fail-closed block scenarios, JSON verification and safety checks.
+Full test suite passes with 394 tests (379 existing + 15 new).
+
+Safety:
+
+- No Binance connection.
+- No Freqtrade integration.
+- No trading logic.
+- No live trading.
+- No API keys.
+- No network calls.
+- No JSON input reading.
+
 Next step:
 
-MVP-3 Step 4 — Integration Tests.
+MVP-3 Step 5 — Final review and polish.
 
 ---
 

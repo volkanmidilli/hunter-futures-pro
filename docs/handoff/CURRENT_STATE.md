@@ -209,6 +209,41 @@ No Freqtrade integration exists yet.
 
 No live trading is enabled.
 
+MVP-3 Step 4 is complete:
+- `tests/test_decision/test_integration.py` created with 15 end-to-end tests
+- Full pipeline: RegimeOutput + BreadthOutput -> make_decision() -> write_decision_output() -> JSON verification
+- Long-only research enable scenario (BULL + LONG_ONLY + healthy breadth)
+- Short-only research enable scenario (BEAR + SHORT_ONLY + weak breadth)
+- Fail-closed block scenarios: UNKNOWN, INVALID, SIDEWAYS, TRANSITION, stale, conflict
+- JSON output verification: all 14 fields, enum strings, input refs, data quality
+- Tests use tmp_path, not production data/decision path
+- 15 integration tests, all passing
+- Full test suite: 394 tests passing (379 existing + 15 new)
+
+Decision Models exist from Step 1.
+
+Decision Engine exists from Step 2.
+
+Decision Writer exists from Step 3.
+
+No config YAML exists yet.
+
+No JSON Schema validation exists yet.
+
+No JSON input reading in integration tests.
+
+No storage integration exists yet.
+
+No report templates exist yet.
+
+No trading logic exists yet.
+
+No Binance connection exists yet.
+
+No Freqtrade integration exists yet.
+
+No live trading is enabled.
+
 ## Next Step
 
-MVP-3 Step 4 — Integration Tests.
+MVP-3 Step 5 — Final review and polish.

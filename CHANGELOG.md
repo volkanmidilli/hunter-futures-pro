@@ -506,6 +506,35 @@ MVP-2 Market State implementation is fully complete. All 6 steps finished:
 - No JSON schema validation exists yet.
 - No JSON input reading in Decision Writer.
 
+### MVP-3 Step 4 — Integration Tests (Complete)
+
+- `tests/test_decision/test_integration.py` created with 15 end-to-end tests:
+  - `test_bull_long_healthy_full_pipeline` — BULL + LONG_ONLY + healthy breadth → ENABLE_LONG_ONLY_RESEARCH, JSON written and verified
+  - `test_bear_short_weak_full_pipeline` — BEAR + SHORT_ONLY + weak breadth → ENABLE_SHORT_ONLY_RESEARCH, JSON written and verified
+  - `test_unknown_regime_blocks_pipeline` — UNKNOWN regime → BLOCK_ALL, JSON verified
+  - `test_invalid_breadth_blocks_pipeline` — INVALID breadth → BLOCK_ALL, JSON verified
+  - `test_sideways_blocks_pipeline` — SIDEWAYS → BLOCK_ALL, JSON verified
+  - `test_transition_blocks_pipeline` — TRANSITION → BLOCK_ALL, JSON verified
+  - `test_stale_regime_blocks_pipeline` — stale regime → BLOCK_ALL, JSON verified
+  - `test_stale_breadth_blocks_pipeline` — stale breadth → BLOCK_ALL, JSON verified
+  - `test_conflict_blocks_pipeline` — conflicting signals → BLOCK_ALL, JSON verified
+  - `test_json_contains_all_expected_fields` — all 14 SPEC-004 fields present in JSON output
+  - `test_enum_values_are_strings_in_json` — all enum values serialized as strings
+  - `test_no_default_production_path_used` — tests use tmp_path, not production data/decision path
+  - Safety: no network calls, no trading execution logic, no JSON input reading
+- Full test suite: 394 tests passing (379 existing + 15 new)
+
+### Safety
+
+- No trading logic exists yet.
+- No Binance connection exists yet.
+- No Freqtrade integration exists yet.
+- No live trading is enabled.
+- No API keys or exchange secrets stored in repository.
+- No config YAML exists yet.
+- No JSON schema validation exists yet.
+- No JSON input reading in integration tests.
+
 ### Next
 
-- MVP-3 Step 4 — Integration Tests.
+- MVP-3 Step 5 — Final review and polish.
