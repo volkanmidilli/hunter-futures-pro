@@ -82,14 +82,20 @@ No Freqtrade integration exists yet.
 
 No live trading is enabled.
 
-MVP-2 implementation is complete. All steps finished:
-- Step 1: Market State Models (37 tests)
-- Step 2: Indicator Utilities (50 tests)
-- Step 3: Regime Engine (37 tests)
-- Step 4: Breadth Engine (44 tests)
-- Step 5: JSON Output Writers (19 tests)
-- Step 6: Final review and polish
-- Version bumped to 0.3.0-dev
+MVP-3 Decision Layer design is complete:
+- SPEC-004 exists and is reviewed (19 checklist items all passed)
+- Decision Layer consumes in-memory RegimeOutput and BreadthOutput from MVP-2
+- Decision Layer produces data/decision/current_decision.json
+- DecisionState enum: ALLOW, BLOCK, REVIEW (reserved for future), UNKNOWN
+- DecisionAction enum: ENABLE_LONG_ONLY_RESEARCH, ENABLE_SHORT_ONLY_RESEARCH, BLOCK_ALL, MANUAL_REVIEW
+- DecisionOutput model with 14 fields including audit trail (input_refs, data_quality)
+- DecisionConfig with frozen defaults: min_regime_confidence: 0.60, stale_input_minutes: 120
+- 14 deterministic fail-closed rules in priority order (all block by default)
+- configs/decision.yaml design: single config file with threshold controls
+- schemas/decision.schema.json design: future validation schema (not implemented yet)
+- REVIEW state reserved for future manual-review workflows; default is BLOCK_ALL
+- Staleness is output-level (engine output age), not candle-level (handled by MVP-2)
+- No MVP-3 code has been implemented yet
 
 No JSON schema validation exists yet.
 
@@ -107,4 +113,4 @@ No live trading is enabled.
 
 ## Next Step
 
-MVP-3 — Decision Layer (pending SPEC-004 and planning).
+MVP-3 Step 1 — Decision Models.

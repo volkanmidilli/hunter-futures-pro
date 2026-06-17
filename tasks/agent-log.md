@@ -1,6 +1,6 @@
 Next step:
 
-MVP-3 — Decision Layer (pending SPEC-004 and planning).
+MVP-3 Step 1 — Decision Models.
 
 ---
 
@@ -55,7 +55,7 @@ Safety:
 
 Next step:
 
-MVP-3 — Decision Layer (pending SPEC-004 and planning).
+MVP-3 Step 1 — Decision Models.
 
 ---
 

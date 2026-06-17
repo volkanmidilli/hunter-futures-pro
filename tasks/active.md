@@ -2,31 +2,33 @@
 
 ## Current Task
 
-MVP-3 Planning — Decision Layer (SPEC-004).
+MVP-3 Step 1 — Decision Models.
 
 ## Status
 
-MVP-2 is complete. All 278 tests pass. Version 0.3.0-dev.
+Ready to start.
 
 ## Previous Task
 
-MVP-2 Market State — Complete.
+MVP-3 Planning — Decision Layer (SPEC-004). Complete.
 
 ## Goal
 
-Design the Decision Layer: how market state signals (regime, breadth) are translated into execution-ready decisions without trading logic. This is the bridge between Market State (MVP-2) and Execution (MVP-4).
+Implement the Decision Layer models: DecisionState, DecisionAction, DecisionOutput, and DecisionConfig.
 
 ## Current Scope
 
-MVP-3 design only (no code yet):
-- SPEC-004 — Decision Layer design document
-- Signal aggregation from regime + breadth outputs
-- Decision contract (what Freqtrade would consume)
-- Risk constraints (position sizing limits, not execution)
-- Fail-closed behavior when signals are invalid
+MVP-3 Step 1 only:
+- Create DecisionState enum (ALLOW, BLOCK, REVIEW, UNKNOWN)
+- Create DecisionAction enum (ENABLE_LONG_ONLY_RESEARCH, ENABLE_SHORT_ONLY_RESEARCH, BLOCK_ALL, MANUAL_REVIEW)
+- Create DecisionOutput frozen dataclass with all 14 fields
+- Create DecisionConfig frozen dataclass with defaults
+- Add tests for model defaults, immutability, and field types
 
 ## Do Not Do Yet
 
+- Do not implement Decision Engine (Step 2).
+- Do not implement Decision JSON Writer (Step 3).
 - Do not write trading logic.
 - Do not connect to Binance.
 - Do not connect to Freqtrade.
@@ -34,19 +36,16 @@ MVP-3 design only (no code yet):
 - Do not enable live trading.
 - Do not create production trading rules.
 - Do not implement actual data collection.
-- Do not implement MVP-3 code until SPEC-004 is approved.
 
 ## Definition of Done
 
-MVP-3 design is done when:
-- SPEC-004 exists and is reviewed
-- Decision contract is defined (JSON output for execution layer)
-- Risk constraints are defined (max position, not execution logic)
-- Fail-closed behavior is defined
-- No trading execution logic exists
+Step 1 is done when:
+- All decision models exist and are frozen
+- Tests pass for defaults, custom values, and immutability
+- No Binance integration exists
 - No Freqtrade integration exists
-- No live trading is enabled
+- No trading execution exists
 
-## Next Step After MVP-3
+## Next Step After Step 1
 
-MVP-4 — Execution Integration (Freqtrade bridge, still no live trading).
+MVP-3 Step 2 — Decision Engine.

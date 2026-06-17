@@ -365,6 +365,26 @@ MVP-2 Market State implementation is fully complete. All 6 steps finished:
 - Version bumped to 0.3.0-dev
 - Full test suite: 278 tests passing
 
+### SPEC-004 — Decision Layer Design (Complete)
+
+- SPEC-004 exists and is reviewed (19 checklist items all passed)
+- Decision Layer consumes in-memory `RegimeOutput` and `BreadthOutput` from MVP-2
+- Decision Layer produces `data/decision/current_decision.json`
+- `DecisionState` enum designed: `ALLOW`, `BLOCK`, `REVIEW` (reserved for future), `UNKNOWN`
+- `DecisionAction` enum designed: `ENABLE_LONG_ONLY_RESEARCH`, `ENABLE_SHORT_ONLY_RESEARCH`, `BLOCK_ALL`, `MANUAL_REVIEW`
+- `DecisionOutput` model with 14 fields including audit trail (`input_refs`, `data_quality`)
+- `DecisionConfig` with frozen defaults: `min_regime_confidence: 0.60`, `stale_input_minutes: 120`
+- 14 deterministic fail-closed rules in priority order (all block by default)
+- `configs/decision.yaml` design: single config file with threshold controls
+- `schemas/decision.schema.json` design: future validation schema (not implemented yet)
+- `REVIEW` state reserved for future manual-review workflows; default is `BLOCK_ALL`
+- Staleness is output-level (engine output age), not candle-level (handled by MVP-2)
+- No MVP-3 code has been implemented yet
+- No Binance integration
+- No Freqtrade integration
+- No trading logic
+- No live trading
+
 ### Next
 
-- MVP-3 — Decision Layer (pending SPEC-004 and planning).
+- MVP-3 Step 1 — Decision Models.
