@@ -392,3 +392,59 @@ Safety:
 Next step:
 
 MVP-2 Step 2 — Indicator Utilities.
+
+---
+
+### 0.3.0-dev — MVP-2 Step 2: Indicator Utilities
+
+Date: 2026-06-17
+
+Agent: WrongStack
+
+Task: MVP-2 Step 2 — Indicator Utilities.
+
+Files changed:
+
+- src/hunter/market_state/indicators.py (created)
+- tests/test_market_state/test_indicators.py (created)
+
+Summary:
+
+Added pure indicator utility functions for safe division, percent change, SMA, EMA, EMA slope and slope classification.
+
+Functions created:
+- safe_divide: zero-safe division with default fallback
+- percent_change: percentage change with zero-safe fallback
+- simple_moving_average: sliding window SMA, returns empty if insufficient data
+- exponential_moving_average: standard EMA with multiplier = 2/(period+1), returns empty if insufficient data
+- ema_slope_pct: EMA slope percentage matching SPEC-003 formula exactly
+- is_rising: slope > threshold
+- is_falling: slope < -threshold
+- is_flat: abs(slope) <= threshold
+
+50 tests added covering:
+- safe divide: normal, zero denominator, custom default, negatives, floats
+- percent change: normal, negative, zero previous, no change, double
+- SMA: basic, period 1, insufficient data, exact period, invalid period, empty values, large values
+- EMA: basic, period 1, insufficient data, exact period, invalid period, empty values, known values
+- EMA slope: rising, falling, flat, lookback 1, lookback 5, zero denominator, insufficient data, invalid lookback
+- slope direction: rising/falling/flat at and around thresholds, combined state checks
+- safety: no network imports, no trading terms in module source
+
+Full test suite: 178 tests passing (128 existing + 50 new).
+
+Safety:
+
+- No Binance connection.
+- No Freqtrade integration.
+- No trading logic.
+- No live trading.
+- No API keys.
+- Pure standard-library functions only.
+- No Regime Engine logic exists yet.
+- No Breadth Engine logic exists yet.
+- No JSON writers exist yet.
+
+Next step:
+
+MVP-2 Step 3 — Regime Engine.

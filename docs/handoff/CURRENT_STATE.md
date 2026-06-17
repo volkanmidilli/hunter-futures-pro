@@ -28,20 +28,19 @@ MVP-2 Market State design is complete:
 - Test plan is defined for regime, breadth, and safety tests
 - No MVP-2 code has been implemented yet
 
-MVP-2 Step 1 is complete:
-- `src/hunter/market_state/models.py` created with frozen dataclasses
-- Enums: RegimeState, RiskState, AllowedMode, OutputStatus
-- Models: DataQuality, RegimeOutput, BreadthOutput
-- Fail-closed factories: RegimeOutput.unknown(), BreadthOutput.invalid()
-- Range validation: confidence 0.0–1.0, scores 0–100, percentages 0.0–1.0
-- 37 new tests, all passing
-- Full test suite: 128 tests passing
+MVP-2 Step 2 is complete:
+- `src/hunter/market_state/indicators.py` created with pure, deterministic functions
+- Functions: safe_divide, percent_change, simple_moving_average, exponential_moving_average, ema_slope_pct, is_rising, is_falling, is_flat
+- Standard library only — no pandas, no external dependencies
+- All functions are stateless, no network, no storage, no trading logic
+- 50 new tests, all passing
+- Full test suite: 178 tests passing
 
 No Regime Engine logic exists yet.
 
 No Breadth Engine logic exists yet.
 
-No indicators exist yet.
+No JSON writers exist yet.
 
 No trading logic exists yet.
 
@@ -51,8 +50,8 @@ No Freqtrade integration exists yet.
 
 No live trading is enabled.
 
-MVP-2 implementation has started. Step 1 complete.
+MVP-2 implementation has started. Steps 1 and 2 complete.
 
 ## Next Step
 
-MVP-2 Step 2 — Indicator Utilities (EMA, slope, percent change).
+MVP-2 Step 3 — Regime Engine.

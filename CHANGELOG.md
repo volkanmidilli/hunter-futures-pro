@@ -197,6 +197,40 @@ All important project changes will be recorded in this file.
 - No Breadth Engine logic exists yet.
 - No indicators exist yet.
 
+### MVP-2 Step 2 — Indicator Utilities (Complete)
+
+- `src/hunter/market_state/indicators.py` created with pure, deterministic functions:
+  - `safe_divide(numerator, denominator, default)` — division with zero-safe fallback
+  - `percent_change(current, previous, default)` — percentage change with zero-safe fallback
+  - `simple_moving_average(values, period)` — SMA with sliding window; returns empty list if insufficient data
+  - `exponential_moving_average(values, period)` — EMA with standard multiplier formula; returns empty list if insufficient data
+  - `ema_slope_pct(ema_values, lookback)` — EMA slope percentage matching SPEC-003 formula exactly
+  - `is_rising(slope_pct, threshold_pct)` — slope > threshold
+  - `is_falling(slope_pct, threshold_pct)` — slope < -threshold
+  - `is_flat(slope_pct, threshold_pct)` — abs(slope) <= threshold
+- Standard library only — no pandas, no external dependencies
+- All functions are stateless, no network, no storage, no trading logic
+- `tests/test_market_state/test_indicators.py` with 50 tests:
+  - Safe divide: normal, zero denominator, custom default, negatives, floats
+  - Percent change: normal, negative, zero previous, no change, double
+  - SMA: basic, period 1, insufficient data, exact period, invalid period, empty values, large values
+  - EMA: basic, period 1, insufficient data, exact period, invalid period, empty values, known values
+  - EMA slope: rising, falling, flat, lookback 1, lookback 5 (SPEC default), zero denominator, insufficient data, invalid lookback
+  - Slope direction: rising/falling/flat at and around thresholds, combined state checks
+  - Safety: no network imports, no trading terms in module source
+- Full test suite: 178 tests passing (128 existing + 50 new)
+
+### Safety
+
+- No trading logic exists yet.
+- No Binance connection exists yet.
+- No Freqtrade integration exists yet.
+- No live trading is enabled.
+- No API keys or exchange secrets stored in repository.
+- No Regime Engine logic exists yet.
+- No Breadth Engine logic exists yet.
+- No JSON writers exist yet.
+
 ### Next
 
-- MVP-2 Step 2 — Indicator Utilities (EMA, slope, percent change).
+- MVP-2 Step 3 — Regime Engine.
