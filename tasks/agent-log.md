@@ -75,3 +75,36 @@ Risks:
 Next step:
 
 Review git diff and commit initial foundation.
+
+---
+
+### 0.1.0 — Foundation Commit
+
+Date: 2026-06-17
+
+Agent: WrongStack
+
+Task: Commit initial MVP-0 foundation.
+
+Commit message:
+
+feat: add MVP-0 agent-first project foundation
+
+Files changed:
+
+All MVP-0 foundation files.
+
+Summary:
+
+Initial MVP-0 foundation committed to repository.
+
+Risks:
+
+- Trading logic must not be added yet.
+- Binance integration must not be added yet.
+- Freqtrade integration must not be added yet.
+- Live trading must stay disabled.
+
+Next step:
+
+MVP-1 planning: Data Foundation.

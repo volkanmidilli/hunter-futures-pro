@@ -14,7 +14,7 @@ MVP-0 — Project foundation
 
 ## Current Status
 
-The project foundation is being created.
+MVP-0 foundation is complete.
 
 The project currently contains basic documentation only.
 
@@ -86,4 +86,4 @@ Unknown market regime should block execution in future trading logic.
 
 ## Next Step
 
-Finalize MVP-0 cleanup, review git diff, then commit initial foundation.
+MVP-1 planning: Data Foundation.

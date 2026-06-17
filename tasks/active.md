@@ -6,7 +6,15 @@ Create MVP-0 project foundation.
 
 ## Status
 
-In progress
+Done
+
+## Note
+
+Initial MVP-0 foundation commit completed.
+
+## Next Task
+
+MVP-1 planning.
 
 ## Goal
 

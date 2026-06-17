@@ -13,7 +13,7 @@
 - [x] Create VERSION
 - [x] Create .wrongstack/AGENTS.md
 - [x] Review project foundation with WrongStack
-- [ ] Commit initial foundation
+- [x] Commit initial foundation
 
 ## MVP-1 — Data Foundation
 
