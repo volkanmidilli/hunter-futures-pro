@@ -1,5 +1,13 @@
 """Strategy adapter public API."""
 
+from hunter.strategy_adapter.engine import (
+    build_adapter_decision_context,
+    build_safety_flags,
+    is_stale_strategy_context,
+    map_strategy_to_adapter_mode,
+    map_strategy_to_signal_intent,
+    validate_adapter_inputs,
+)
 from hunter.strategy_adapter.models import (
     AdapterConfig,
     AdapterDataQuality,
@@ -52,4 +60,10 @@ __all__ = [
     "SHORT_RESEARCH_SIGNAL_ALLOWED",
     "DEFAULT_BLOCK_SIGNAL",
     "CALCULATION_ERROR",
+    "build_adapter_decision_context",
+    "validate_adapter_inputs",
+    "is_stale_strategy_context",
+    "map_strategy_to_adapter_mode",
+    "map_strategy_to_signal_intent",
+    "build_safety_flags",
 ]
