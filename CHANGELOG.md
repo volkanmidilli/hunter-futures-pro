@@ -268,6 +268,17 @@ All important project changes will be recorded in this file.
   - Blocking mappings: unsafe/invalid/stale/unsupported → BLOCK_ALL.
   - Full test suite: 878 tests passing (806 existing + 72 new).
   - No writer, no integration tests, no config YAML, no JSON schema, no strategy class, no Freqtrade runtime, no Binance, no API keys, no live trading, no real orders, no leverage, no shorting.
+- MVP-6 Step 3 — Strategy Context Writer complete.
+  - `src/hunter/strategy_contract/writer.py` — 3 writer functions + default path constant.
+    - `DEFAULT_STRATEGY_CONTEXT_PATH = data/strategy/current_strategy_context.json`.
+    - `strategy_context_to_dict(...)` — serializes StrategyContext to JSON-compatible dict.
+    - `atomic_write_json(...)` — temp-file + os.replace atomic write, auto cleanup on failure.
+    - `write_strategy_context(...)` — entry point, writes to default or custom path.
+  - `src/hunter/strategy_contract/__init__.py` — updated exports.
+  - `tests/test_strategy_contract/test_writer.py` — 36 writer tests, all passing.
+  - JSON serialization: ISO-8601 UTC timestamps ending with Z, enum string values, reason_codes as list, nested input_refs/safety_flags/data_quality as dicts, version "1.0".
+  - Full test suite: 914 tests passing (878 existing + 36 new).
+  - No integration tests, no config YAML, no JSON schema, no strategy class, no Freqtrade runtime, no Binance, no API keys, no live trading, no real orders, no leverage, no shorting.
 - SPEC-006 Freqtrade Integration design complete and reviewed.
 - Step 1 Freqtrade Bridge Models complete: `src/hunter/freqtrade_bridge/models.py` with 62 tests.
 - Step 2 Freqtrade Bridge Engine complete: `src/hunter/freqtrade_bridge/engine.py` with 57 tests.

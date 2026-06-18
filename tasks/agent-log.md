@@ -4,6 +4,54 @@ MVP-5 Step 4 — Integration Tests.
 
 ---
 
+### MVP-6 Step 3 — Strategy Context Writer
+
+Date: 2026-06-18
+
+Agent: WrongStack
+
+Task: MVP-6 Step 3 — Strategy Context Writer.
+
+Files created:
+
+- `src/hunter/strategy_contract/writer.py` — Strategy Context Writer.
+- `tests/test_strategy_contract/test_writer.py` — 36 writer tests.
+
+Files modified:
+
+- `src/hunter/strategy_contract/__init__.py` — Added writer exports.
+
+Summary:
+
+Implemented Strategy Context writer for SPEC-007.
+- Added `strategy_context_to_dict(...)` — serializes StrategyContext to JSON-compatible dict.
+- Added `atomic_write_json(...)` — temp-file + os.replace atomic write, auto cleanup on failure.
+- Added `write_strategy_context(...)` — entry point, writes to default or custom path.
+- Added `DEFAULT_STRATEGY_CONTEXT_PATH = data/strategy/current_strategy_context.json`.
+- JSON serialization: ISO-8601 UTC timestamps ending with Z, enum string values, reason_codes as list, nested input_refs/safety_flags/data_quality as dicts, version "1.0".
+- 36 writer tests, all passing.
+- Full test suite passes with 914 tests (878 existing + 36 new).
+
+Safety:
+
+- No integration tests yet.
+- No config YAML.
+- No JSON schema.
+- No strategy class.
+- No Freqtrade runtime.
+- No Binance integration.
+- No API keys.
+- No live trading.
+- No real orders.
+- No leverage.
+- No shorting.
+
+Next step:
+
+MVP-6 Step 4 — Integration Tests.
+
+---
+
 ### MVP-6 Step 2 — Strategy Contract Engine
 
 Date: 2026-06-18

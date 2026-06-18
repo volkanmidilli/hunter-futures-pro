@@ -10,7 +10,7 @@ Hunter Futures Pro
 
 ## Current Phase
 
-MVP-5 — Freqtrade Integration Boundary complete. All 5 steps finished. 722 tests passing. SPEC-007 Freqtrade Strategy Contract design finalized. MVP-6 Step 1 Strategy Contract Models complete. 84 new tests. MVP-6 Step 2 Strategy Contract Engine complete. 72 new tests. Full suite 878 tests passing. Ready for MVP-6 Step 3.
+MVP-5 — Freqtrade Integration Boundary complete. All 5 steps finished. 722 tests passing. SPEC-007 Freqtrade Strategy Contract design finalized. MVP-6 Step 1 Strategy Contract Models complete. 84 new tests. MVP-6 Step 2 Strategy Contract Engine complete. 72 new tests. MVP-6 Step 3 Strategy Context Writer complete. 36 new tests. Full suite 914 tests passing. Ready for MVP-6 Step 4.
 
 ## Current Status
 
@@ -128,11 +128,26 @@ MVP-5 Freqtrade Integration Step 1 is complete:
 
 ## Next Step
 
-MVP-6 Step 3 — Strategy Context Writer.
-- Future files: `src/hunter/strategy_contract/writer.py`, `tests/test_strategy_contract/test_writer.py`.
-- Step 3 allowed work: `strategy_context_to_dict(...)`, `atomic_write_json(...)`, `write_strategy_context(...)`, JSON serialization tests, atomic write tests, default output path `data/strategy/current_strategy_context.json`.
-- Step 3 not allowed: no engine changes unless import/export only, no integration tests, no config YAML, no JSON schema, no strategy class, no Freqtrade runtime, no Binance, no API keys, no live trading, no real orders, no leverage, no shorting.
+MVP-6 Step 4 — Integration Tests.
+- Future file: `tests/test_strategy_contract/test_integration.py`.
+- Step 4 allowed work: end-to-end engine + writer tests, LONG_RESEARCH_ONLY flow, SHORT_RESEARCH_ONLY flow, BLOCK_ALL flow, stale/missing/invalid/unsafe bridge context flows, JSON output verification, atomic write verification, safety absence tests.
+- Step 4 not allowed: no app code changes unless fixing a small verified bug, no config YAML, no JSON schema, no strategy class, no Freqtrade runtime, no Binance, no API keys, no live trading, no real orders, no leverage, no shorting.
 - Implementation not started yet. Awaiting approval.
+
+---
+
+## Previous State (MVP-6 Step 3)
+
+MVP-6 Step 3 Strategy Context Writer is complete. 36 new tests. Full suite 914 tests passing.
+- `src/hunter/strategy_contract/writer.py` created with 3 writer functions + default path constant.
+  - `DEFAULT_STRATEGY_CONTEXT_PATH = data/strategy/current_strategy_context.json`.
+  - `strategy_context_to_dict(...)` — serializes StrategyContext to JSON-compatible dict.
+  - `atomic_write_json(...)` — temp-file + os.replace atomic write, auto cleanup on failure.
+  - `write_strategy_context(...)` — entry point, writes to default or custom path.
+- `src/hunter/strategy_contract/__init__.py` updated with writer exports.
+- `tests/test_strategy_contract/test_writer.py` created with 36 writer tests.
+- JSON serialization: ISO-8601 UTC timestamps ending with Z, enum string values, reason_codes as list, nested input_refs/safety_flags/data_quality as dicts, version "1.0".
+- No integration tests, no config YAML, no JSON schema, no strategy class, no Freqtrade runtime, no Binance, no API keys, no live trading, no real orders, no leverage, no shorting.
 
 ---
 
@@ -323,6 +338,264 @@ MVP-4 Step 1 — Execution Bridge Models.
 - Create ExecutionState, ExecutionMode, ExecutionBridgeConfig, ExecutionContext enums and dataclasses.
 - Add __post_init__ validation for safety flags.
 - Add ExecutionContext.blocked() fail-closed factory.
+- Create tests/test_execution_bridge/test_models.py with model tests.
+- Target: 25+ tests, all passing.
+
+## Current Status
+
+MVP-0 foundation is complete and committed.
+
+MVP-1 Data Foundation is complete and committed. All 91 tests pass.
+
+MVP-2 Market State design is complete:
+- SPEC-003 exists and is finalized
+- Regime Engine design is complete with deterministic scoring formulas
+- Market Breadth Engine design is complete with universe filtering and invalid symbol rules
+- JSON output contracts are defined with field ranges
+- Fail-closed behavior is defined for all failure modes
+- Pipeline order is defined: Breadth Engine first, then Regime Engine
+- Test plan is defined for regime, breadth, and safety tests
+- No MVP-2 code has been implemented yet
+
+MVP-2 Step 2 is complete:
+- `src/hunter/market_state/indicators.py` created with pure, deterministic functions
+- Functions: safe_divide, percent_change, simple_moving_average, exponential_moving_average, ema_slope_pct, is_rising, is_falling, is_flat
+- Standard library only — no pandas, no external dependencies
+- All functions are stateless, no network, no storage, no trading logic
+- 50 new tests, all passing
+- Full test suite: 178 tests passing
+
+MVP-2 Step 3 is complete:
+- `src/hunter/market_state/regime.py` created with deterministic Regime Engine
+- `RegimeConfig` with frozen defaults
+- `calculate_btc_trend_score`, `calculate_bearish_btc_trend_score`, `calculate_eth_trend_score`
+- `calculate_breadth_confirmation_score` with optional breadth input
+- `classify_regime` with fail-closed behavior (UNKNOWN + NONE + confidence 0 on bad data)
+- 37 regime tests, all passing
+- Full test suite: 215 tests passing (178 existing + 37 new)
+
+MVP-2 Step 4 is complete:
+- `src/hunter/market_state/breadth.py` created with deterministic Market Breadth Engine
+- `BreadthConfig` with frozen defaults (min_universe_size, EMA periods, thresholds)
+- `filter_valid_symbols` with universe validation (missing, insufficient, invalid excluded)
+- `calculate_percent_above_ema` for EMA20/EMA50 breadth metrics
+- `calculate_percent_ema_rising` for rising EMA slope percentages
+- `calculate_advancing_declining_pct` for market direction percentages
+- `calculate_outperforming_btc_pct` for BTC relative performance
+- `calculate_breadth_score` with SPEC-003 weighted formula, clamped 0-100
+- `calculate_breadth` with fail-closed behavior (INVALID + UNKNOWN + score 0 on bad data)
+- 44 breadth tests, all passing
+- Full test suite: 259 tests passing (215 existing + 44 new)
+
+MVP-2 Step 5 is complete:
+- `src/hunter/market_state/writer.py` created with JSON serialization and atomic output writers
+- `regime_to_dict` — Serializes RegimeOutput to JSON-compatible dict with ISO-8601 timestamps, enum strings
+- `breadth_to_dict` — Serializes BreadthOutput to JSON-compatible dict matching SPEC-003 contract
+- `atomic_write_json` — Atomic temp-file write with os.replace(), parent directory creation, cleanup on failure
+- `write_regime_output` — Writes to `data/regime/current_regime.json` by default
+- `write_breadth_output` — Writes to `data/breadth/current_breadth.json` by default
+- 19 writer tests, all passing
+- Full test suite: 278 tests passing (259 existing + 19 new)
+
+No JSON schema validation exists yet.
+
+No storage integration exists yet.
+
+No report templates exist yet.
+
+No trading logic exists yet.
+
+No Binance connection exists yet.
+
+No Freqtrade integration exists yet.
+
+No live trading is enabled.
+
+MVP-3 Decision Layer design is complete:
+- SPEC-004 exists and is reviewed (19 checklist items all passed)
+- Decision Layer consumes in-memory RegimeOutput and BreadthOutput from MVP-2
+- Decision Layer produces data/decision/current_decision.json
+- DecisionState enum: ALLOW, BLOCK, REVIEW (reserved for future), UNKNOWN
+- DecisionAction enum: ENABLE_LONG_ONLY_RESEARCH, ENABLE_SHORT_ONLY_RESEARCH, BLOCK_ALL, MANUAL_REVIEW
+- DecisionOutput model with 14 fields including audit trail (input_refs, data_quality)
+- DecisionConfig with frozen defaults: min_regime_confidence: 0.60, stale_input_minutes: 120
+- 14 deterministic fail-closed rules in priority order (all block by default)
+- configs/decision.yaml design: single config file with threshold controls
+- schemas/decision.schema.json design: future validation schema (not implemented yet)
+- REVIEW state reserved for future manual-review workflows; default is BLOCK_ALL
+- Staleness is output-level (engine output age), not candle-level (handled by MVP-2)
+- No MVP-3 code has been implemented yet
+
+No JSON schema validation exists yet.
+
+No storage integration exists yet.
+
+No report templates exist yet.
+
+No trading logic exists yet.
+
+No Binance connection exists yet.
+
+No Freqtrade integration exists yet.
+
+No live trading is enabled.
+
+MVP-3 Step 1 is complete:
+- `src/hunter/decision/models.py` created with immutable decision models
+- `DecisionState` enum: ALLOW, BLOCK, REVIEW, UNKNOWN
+- `DecisionAction` enum: ENABLE_LONG_ONLY_RESEARCH, ENABLE_SHORT_ONLY_RESEARCH, BLOCK_ALL, MANUAL_REVIEW
+- `DecisionConfig` with frozen defaults and validation (min_regime_confidence 0.60, stale_input_minutes 120)
+- `DecisionInputRefs` for audit trail references to consumed inputs
+- `DecisionOutput` with 14 fields, `block_all()` fail-closed factory (BLOCK + BLOCK_ALL + confidence 0.0)
+- 32 decision model tests, all passing
+- Full test suite: 310 tests passing (278 existing + 32 new)
+
+No Decision Engine exists yet.
+
+No Decision Writer exists yet.
+
+No config YAML exists yet.
+
+No JSON Schema validation exists yet.
+
+No storage integration exists yet.
+
+No report templates exist yet.
+
+No trading logic exists yet.
+
+No Binance connection exists yet.
+
+No Freqtrade integration exists yet.
+
+No live trading is enabled.
+
+MVP-3 Step 2 is complete:
+- `src/hunter/decision/engine.py` created with fail-closed Decision Engine
+- `make_decision()` implements all 14 priority rules from SPEC-004
+- `validate_decision_inputs()` checks 8 fail-closed conditions in order
+- `is_stale_output()` checks oldest timestamp against stale threshold
+- `detect_regime_breadth_conflict()` detects 4 conflict conditions
+- `calculate_decision_confidence()` uses min(regime_conf, breadth/100)
+- BULL + LONG_ONLY + healthy breadth -> ENABLE_LONG_ONLY_RESEARCH
+- BEAR + SHORT_ONLY + weak breadth -> ENABLE_SHORT_ONLY_RESEARCH
+- All other conditions -> BLOCK_ALL by default
+- Data quality aggregated from both inputs (logical OR)
+- Input refs populated with timestamps and source labels
+- 50 decision engine tests, all passing
+- Full test suite: 360 tests passing (310 existing + 50 new)
+
+Decision Models exist from Step 1.
+
+No Decision Writer exists yet.
+
+No config YAML exists yet.
+
+No JSON reading or writing in Decision Engine.
+
+No JSON schema validation exists yet.
+
+No storage integration exists yet.
+
+No report templates exist yet.
+
+No trading logic exists yet.
+
+No Binance connection exists yet.
+
+No Freqtrade integration exists yet.
+
+No live trading is enabled.
+
+MVP-3 Step 3 is complete:
+- `src/hunter/decision/writer.py` created with JSON serialization and atomic output writer
+- `decision_to_dict()` serializes all 14 DecisionOutput fields to JSON-compatible dict
+- `atomic_write_json()` uses temp-file + os.replace for atomic writes
+- `write_decision_output()` writes to `data/decision/current_decision.json` by default
+- ISO-8601 timestamps, enum strings, input refs, data quality, reason codes all preserved
+- 19 writer tests, all passing
+- Full test suite: 379 tests passing (360 existing + 19 new)
+
+Decision Engine exists from Step 2.
+
+Decision Models exist from Step 1.
+
+No config YAML exists yet.
+
+No JSON Schema validation exists yet.
+
+No JSON input reading in Decision Writer.
+
+No storage integration exists yet.
+
+No report templates exist yet.
+
+No trading logic exists yet.
+
+No Binance connection exists yet.
+
+No Freqtrade integration exists yet.
+
+No live trading is enabled.
+
+MVP-3 Step 4 is complete:
+- `tests/test_decision/test_integration.py` created with 15 end-to-end tests
+- Full pipeline: RegimeOutput + BreadthOutput -> make_decision() -> write_decision_output() -> JSON verification
+- Long-only research enable scenario (BULL + LONG_ONLY + healthy breadth)
+- Short-only research enable scenario (BEAR + SHORT_ONLY + weak breadth)
+- Fail-closed block scenarios: UNKNOWN, INVALID, SIDEWAYS, TRANSITION, stale, conflict
+- JSON output verification: all 14 fields, enum strings, input refs, data quality
+- Tests use tmp_path, not production data/decision path
+- 15 integration tests, all passing
+- Full test suite: 394 tests passing (379 existing + 15 new)
+
+Decision Models exist from Step 1.
+
+Decision Engine exists from Step 2.
+
+Decision Writer exists from Step 3.
+
+No config YAML exists yet.
+
+No JSON Schema validation exists yet.
+
+No JSON input reading in integration tests.
+
+No storage integration exists yet.
+
+No report templates exist yet.
+
+No trading logic exists yet.
+
+No Binance connection exists yet.
+
+No Freqtrade integration exists yet.
+
+No live trading is enabled.
+
+MVP-3 Step 5 is complete:
+- Final review passed with no issues found
+- All 20 checklist items verified and passing
+- No fixes applied
+- Version remains 0.3.0-dev
+
+MVP-3 Decision Layer is fully complete. All 5 steps finished:
+- Step 1: Decision Models (32 tests)
+- Step 2: Decision Engine (50 tests)
+- Step 3: Decision Writer (19 tests)
+- Step 4: Integration Tests (15 tests)
+- Step 5: Final review and polish
+- Full test suite: 394 tests passing
+
+## Next Step
+
+MVP-4 planning (Execution Bridge / Freqtrade Integration) — design only, no implementation yet.
+- Define Freqtrade strategy contract that consumes ExecutionContext.
+- Design signal generation from execution_state and execution_mode.
+- Plan dry-run validation before any live trading enablement.
+- No Freqtrade runtime integration in MVP-5 planning.
+- No live trading enablement.
+- No Binance integration. fail-closed factory.
 - Create tests/test_execution_bridge/test_models.py with model tests.
 - Target: 25+ tests, all passing.
 
