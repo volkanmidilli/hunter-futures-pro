@@ -1,6 +1,59 @@
 Next step:
 
-MVP-5 Step 2 — Freqtrade Bridge Engine.
+MVP-5 Step 3 — Freqtrade Bridge Writer.
+
+---
+
+### MVP-5 Step 2 — Freqtrade Bridge Engine
+
+Date: 2026-06-17
+
+Agent: WrongStack
+
+Task: MVP-5 Step 2 — Freqtrade Bridge Engine.
+
+Files created:
+
+- `src/hunter/freqtrade_bridge/engine.py` — Freqtrade Bridge Engine.
+- `tests/test_freqtrade_bridge/test_engine.py` — 57 engine tests.
+
+Files modified:
+
+- `src/hunter/freqtrade_bridge/__init__.py` — Added engine exports.
+
+Summary:
+
+Added fail-closed Freqtrade Bridge Engine consuming in-memory ExecutionContext.
+- `build_freqtrade_bridge_context()` — main entry point.
+- `validate_freqtrade_bridge_inputs()` — 12 fail-closed rules in priority order.
+- `is_stale_execution_context()` — checks ExecutionContext age against stale threshold.
+- `map_execution_to_bridge_mode()` — maps ExecutionMode to FreqtradeBridgeState/Mode.
+- `build_safety_flags()` — constructs FreqtradeBridgeSafetyFlags from ExecutionContext.
+- All unsafe inputs produce BLOCKED + BLOCK_ALL with descriptive reason codes.
+- DRY_RUN_ONLY + LONG_RESEARCH_ONLY → DRY_RUN_READY + LONG_RESEARCH_ONLY.
+- DRY_RUN_ONLY + SHORT_RESEARCH_ONLY → DRY_RUN_READY + SHORT_RESEARCH_ONLY.
+- BLOCK_ALL → BLOCKED + BLOCK_ALL.
+- UNKNOWN → BLOCKED + BLOCK_ALL.
+- Checks both ExecutionContext direct fields and nested safety_flags for safety.
+- 57 Freqtrade bridge engine tests, all passing.
+- Full test suite: 657 tests passing.
+
+Safety:
+
+- No Binance integration.
+- No real Freqtrade runtime integration.
+- No strategy class.
+- No trading logic (pairlist, order, stake, leverage, stoploss, ROI, entry, exit).
+- No live trading.
+- No leverage.
+- No shorting.
+- No API keys.
+- No network calls.
+- No JSON reading or writing.
+
+Next step:
+
+MVP-5 Step 3 — Freqtrade Bridge Writer.
 
 ---
 

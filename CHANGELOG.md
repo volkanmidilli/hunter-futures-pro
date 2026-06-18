@@ -146,6 +146,46 @@ All important project changes will be recorded in this file.
 
 - MVP-5 Step 2 — Freqtrade Bridge Engine.
 
+## 0.4.0-dev — MVP-5 Step 2 — Freqtrade Bridge Engine (Complete)
+
+### Added
+
+- `src/hunter/freqtrade_bridge/engine.py` — Freqtrade Bridge Engine.
+  - `build_freqtrade_bridge_context()` — main entry point consuming in-memory `ExecutionContext`.
+  - `validate_freqtrade_bridge_inputs()` — 12 fail-closed rules in priority order.
+  - `is_stale_execution_context()` — checks ExecutionContext age against stale threshold.
+  - `map_execution_to_bridge_mode()` — maps ExecutionMode to FreqtradeBridgeState/Mode.
+  - `build_safety_flags()` — constructs FreqtradeBridgeSafetyFlags from ExecutionContext.
+  - All unsafe inputs produce BLOCKED + BLOCK_ALL with descriptive reason codes.
+  - DRY_RUN_ONLY + LONG_RESEARCH_ONLY → DRY_RUN_READY + LONG_RESEARCH_ONLY.
+  - DRY_RUN_ONLY + SHORT_RESEARCH_ONLY → DRY_RUN_READY + SHORT_RESEARCH_ONLY.
+  - BLOCK_ALL → BLOCKED + BLOCK_ALL.
+  - UNKNOWN → BLOCKED + BLOCK_ALL.
+  - Checks both ExecutionContext direct fields and nested safety_flags for safety.
+  - 57 Freqtrade bridge engine tests, all passing.
+  - Full test suite: 657 tests passing.
+
+### Safety
+
+- No Freqtrade Bridge Writer exists yet.
+- No config YAML created.
+- No JSON Schema files created.
+- No ExecutionContext JSON reading.
+- No Binance integration.
+- No real Freqtrade runtime integration.
+- No strategy class.
+- No trading logic (pairlist, order, stake, leverage, stoploss, ROI, entry, exit).
+- No live trading.
+- No leverage.
+- No shorting.
+- No API keys.
+- No network calls.
+- No JSON reading or writing.
+
+### Next
+
+- MVP-5 Step 3 — Freqtrade Bridge Writer.
+
 ## 0.4.0-dev — MVP-4 Step 4 — Integration Tests (Complete)
 
 ### Added

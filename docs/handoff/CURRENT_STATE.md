@@ -10,7 +10,7 @@ Hunter Futures Pro
 
 ## Current Phase
 
-MVP-5 — Freqtrade Integration Step 1 complete. Freqtrade bridge models implemented. 62 tests passing. Ready for MVP-5 Step 2.
+MVP-5 — Freqtrade Integration Step 2 complete. Freqtrade bridge engine implemented. 657 tests passing. Ready for MVP-5 Step 3.
 
 ## Current Status
 
@@ -29,6 +29,34 @@ MVP-3 Decision Layer is complete and committed. All 394 tests pass.
 MVP-4 Execution Bridge is complete and committed. All 538 tests pass.
 - Execution Bridge Models, Engine, Writer, Integration Tests, Final Review all implemented.
 - No Binance integration. No Freqtrade runtime integration. No live trading. No trading logic. No API keys.
+
+MVP-5 Freqtrade Integration Step 2 is complete:
+- `src/hunter/freqtrade_bridge/engine.py` created with fail-closed Freqtrade Bridge Engine.
+- `build_freqtrade_bridge_context()` — main entry point consuming in-memory `ExecutionContext`.
+- `validate_freqtrade_bridge_inputs()` — 12 fail-closed rules in priority order.
+- `is_stale_execution_context()` — checks ExecutionContext age against stale threshold.
+- `map_execution_to_bridge_mode()` — maps ExecutionMode to FreqtradeBridgeState/Mode.
+- `build_safety_flags()` — constructs FreqtradeBridgeSafetyFlags from ExecutionContext.
+- All unsafe inputs produce BLOCKED + BLOCK_ALL with descriptive reason codes.
+- DRY_RUN_ONLY + LONG_RESEARCH_ONLY → DRY_RUN_READY + LONG_RESEARCH_ONLY.
+- DRY_RUN_ONLY + SHORT_RESEARCH_ONLY → DRY_RUN_READY + SHORT_RESEARCH_ONLY.
+- BLOCK_ALL → BLOCKED + BLOCK_ALL.
+- UNKNOWN → BLOCKED + BLOCK_ALL.
+- Checks both ExecutionContext direct fields and nested safety_flags for safety.
+- 57 Freqtrade bridge engine tests, all passing.
+- Full test suite: 657 tests passing.
+- No Freqtrade Bridge Writer exists yet.
+- No config YAML exists yet.
+- No JSON Schema validation exists yet.
+- No ExecutionContext JSON reading exists.
+- No Binance integration exists.
+- No real Freqtrade runtime integration exists.
+- No strategy class exists.
+- No trading logic exists (no pairlist, order, stake, leverage, stoploss, ROI, entry, exit).
+- No live trading exists.
+- No leverage.
+- No shorting.
+- No API keys.
 
 MVP-5 Freqtrade Integration Step 1 is complete:
 - `src/hunter/freqtrade_bridge/models.py` created with immutable Freqtrade bridge models.
@@ -60,7 +88,7 @@ MVP-5 Freqtrade Integration Step 1 is complete:
 
 ## Next Step
 
-MVP-5 Step 2 — Freqtrade Bridge Engine.
+MVP-5 Step 3 — Freqtrade Bridge Writer.
 
 ---
 
