@@ -255,6 +255,19 @@ All important project changes will be recorded in this file.
   - `tests/test_strategy_contract/test_models.py` — 84 model tests, all passing.
   - Full test suite: 806 tests passing (722 existing + 84 new).
   - No engine, no writer, no integration tests, no config YAML, no JSON schema, no strategy class, no Freqtrade runtime, no Binance, no API keys, no live trading, no real orders, no leverage, no shorting.
+- MVP-6 Step 2 — Strategy Contract Engine complete.
+  - `src/hunter/strategy_contract/engine.py` — 5 engine functions.
+    - `build_strategy_context(...)` — main entry point, implements 14 fail-closed rules.
+    - `validate_strategy_contract_inputs(...)` — deterministic priority-ordered validation, returns first blocking reason only.
+    - `is_stale_bridge_context(...)` — checks timestamp validity and age against threshold.
+    - `map_bridge_to_strategy_mode(...)` — maps bridge mode to strategy contract mode.
+    - `build_safety_flags(...)` — constructs safety flags from config with safe defaults.
+  - `src/hunter/strategy_contract/__init__.py` — updated exports.
+  - `tests/test_strategy_contract/test_engine.py` — 72 engine tests, all passing.
+  - Allowed mappings: LONG_RESEARCH_ONLY → LONG_RESEARCH_ONLY, SHORT_RESEARCH_ONLY → SHORT_RESEARCH_ONLY.
+  - Blocking mappings: unsafe/invalid/stale/unsupported → BLOCK_ALL.
+  - Full test suite: 878 tests passing (806 existing + 72 new).
+  - No writer, no integration tests, no config YAML, no JSON schema, no strategy class, no Freqtrade runtime, no Binance, no API keys, no live trading, no real orders, no leverage, no shorting.
 - SPEC-006 Freqtrade Integration design complete and reviewed.
 - Step 1 Freqtrade Bridge Models complete: `src/hunter/freqtrade_bridge/models.py` with 62 tests.
 - Step 2 Freqtrade Bridge Engine complete: `src/hunter/freqtrade_bridge/engine.py` with 57 tests.

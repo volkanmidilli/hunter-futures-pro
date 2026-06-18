@@ -2,29 +2,27 @@
 
 ## Current Task
 
-MVP-6 Step 2 — Strategy Contract Engine.
+MVP-6 Step 3 — Strategy Context Writer.
 
 ## Status
 
 Not started. Awaiting approval.
 
-MVP-6 Step 1 Strategy Contract Models is complete. 84 new tests. Full suite 806 tests passing.
+MVP-6 Step 2 Strategy Contract Engine is complete. 72 new tests. Full suite 878 tests passing.
 
 ## Scope
 
-Step 2 allowed work:
-- Future files: `src/hunter/strategy_contract/engine.py`, `tests/test_strategy_contract/test_engine.py`.
-- `build_strategy_context(...)` — main entry point consuming in-memory FreqtradeBridgeContext.
-- `validate_strategy_contract_inputs(...)` — fail-closed validation in priority order.
-- `is_stale_bridge_context(...)` — checks FreqtradeBridgeContext age against stale threshold.
-- `map_bridge_to_strategy_mode(...)` — maps bridge state/mode to strategy contract state/mode.
-- `build_safety_flags(...)` — constructs StrategyContractSafetyFlags from bridge context.
-- Deterministic fail-closed reason codes.
-- Model-only engine tests.
+Step 3 allowed work:
+- Future files: `src/hunter/strategy_contract/writer.py`, `tests/test_strategy_contract/test_writer.py`.
+- `strategy_context_to_dict(...)` — converts StrategyContext to JSON-serializable dict.
+- `atomic_write_json(...)` — temp-file + os.replace atomic write pattern.
+- `write_strategy_context(...)` — writes StrategyContext to JSON output path.
+- JSON serialization tests.
+- Atomic write tests.
+- Default output path: `data/strategy/current_strategy_context.json`.
 
-Step 2 not allowed:
-- No writer.
-- No JSON output writing.
+Step 3 not allowed:
+- No engine changes unless import/export only.
 - No integration tests.
 - No config YAML.
 - No JSON schema.
@@ -39,28 +37,27 @@ Step 2 not allowed:
 
 ## Previous Task
 
-MVP-6 Step 1 — Strategy Contract Models (complete).
-- `src/hunter/strategy_contract/__init__.py` created.
-- `src/hunter/strategy_contract/models.py` created with 7 model types.
-- `tests/test_strategy_contract/test_models.py` created with 84 tests.
-- Full suite: 806 tests passing.
+MVP-6 Step 2 — Strategy Contract Engine (complete).
+- `src/hunter/strategy_contract/engine.py` created with 5 engine functions.
+- `src/hunter/strategy_contract/__init__.py` updated with engine exports.
+- `tests/test_strategy_contract/test_engine.py` created with 72 tests.
+- Full suite: 878 tests passing.
 
 ## Goal
 
-Implement MVP-6 Strategy Contract Engine as the second step toward the Freqtrade Strategy Contract layer.
+Implement MVP-6 Strategy Context Writer as the third step toward the Freqtrade Strategy Contract layer.
 
 ## Definition of Done
 
-Step 2 is done when:
-- `build_strategy_context()` implements all 14 fail-closed rules from SPEC-007 in priority order.
-- All unsafe inputs produce BLOCKED + BLOCK_ALL with descriptive reason codes.
-- DRY_RUN_READY + LONG_RESEARCH_ONLY → DRY_RUN_READY + LONG_RESEARCH_ONLY.
-- DRY_RUN_READY + SHORT_RESEARCH_ONLY → DRY_RUN_READY + SHORT_RESEARCH_ONLY.
-- Engine tests pass.
-- Full test suite remains 806+ tests passing.
+Step 3 is done when:
+- `strategy_context_to_dict()` produces ISO-8601 timestamps, enum strings, nested dicts for input_refs/safety_flags/data_quality.
+- `atomic_write_json()` uses temp-file + os.replace with automatic cleanup on failure.
+- `write_strategy_context()` writes to `data/strategy/current_strategy_context.json` by default.
+- Writer tests pass.
+- Full test suite remains 878+ tests passing.
 - No code outside the 2 allowed files.
 - No safety constraints violated.
 
-## Next Step After Step 2
+## Next Step After Step 3
 
-MVP-6 Step 3 — Strategy Context Writer.
+MVP-6 Step 4 — Integration Tests.

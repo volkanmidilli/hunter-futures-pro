@@ -10,7 +10,7 @@ Hunter Futures Pro
 
 ## Current Phase
 
-MVP-5 — Freqtrade Integration Boundary complete. All 5 steps finished. 722 tests passing. SPEC-007 Freqtrade Strategy Contract design finalized. MVP-6 Step 1 Strategy Contract Models complete. 84 new tests. Full suite 806 tests passing. Ready for MVP-6 Step 2.
+MVP-5 — Freqtrade Integration Boundary complete. All 5 steps finished. 722 tests passing. SPEC-007 Freqtrade Strategy Contract design finalized. MVP-6 Step 1 Strategy Contract Models complete. 84 new tests. MVP-6 Step 2 Strategy Contract Engine complete. 72 new tests. Full suite 878 tests passing. Ready for MVP-6 Step 3.
 
 ## Current Status
 
@@ -128,11 +128,28 @@ MVP-5 Freqtrade Integration Step 1 is complete:
 
 ## Next Step
 
-MVP-6 Step 2 — Strategy Contract Engine.
-- Future files: `src/hunter/strategy_contract/engine.py`, `tests/test_strategy_contract/test_engine.py`.
-- Step 2 allowed work: `build_strategy_context(...)`, `validate_strategy_contract_inputs(...)`, `is_stale_bridge_context(...)`, `map_bridge_to_strategy_mode(...)`, `build_safety_flags(...)`, deterministic fail-closed reason codes, model-only engine tests.
-- Step 2 not allowed: no writer, no JSON output writing, no integration tests, no config YAML, no JSON schema, no strategy class, no Freqtrade runtime, no Binance, no API keys, no live trading, no real orders, no leverage, no shorting.
+MVP-6 Step 3 — Strategy Context Writer.
+- Future files: `src/hunter/strategy_contract/writer.py`, `tests/test_strategy_contract/test_writer.py`.
+- Step 3 allowed work: `strategy_context_to_dict(...)`, `atomic_write_json(...)`, `write_strategy_context(...)`, JSON serialization tests, atomic write tests, default output path `data/strategy/current_strategy_context.json`.
+- Step 3 not allowed: no engine changes unless import/export only, no integration tests, no config YAML, no JSON schema, no strategy class, no Freqtrade runtime, no Binance, no API keys, no live trading, no real orders, no leverage, no shorting.
 - Implementation not started yet. Awaiting approval.
+
+---
+
+## Previous State (MVP-6 Step 2)
+
+MVP-6 Step 2 Strategy Contract Engine is complete. 72 new tests. Full suite 878 tests passing.
+- `src/hunter/strategy_contract/engine.py` created with 5 engine functions.
+  - `build_strategy_context(...)` — main entry point, implements 14 fail-closed rules.
+  - `validate_strategy_contract_inputs(...)` — deterministic priority-ordered validation, returns first blocking reason only.
+  - `is_stale_bridge_context(...)` — checks timestamp validity and age against threshold.
+  - `map_bridge_to_strategy_mode(...)` — maps bridge mode to strategy contract mode.
+  - `build_safety_flags(...)` — constructs safety flags from config with safe defaults.
+- `src/hunter/strategy_contract/__init__.py` updated with engine exports.
+- `tests/test_strategy_contract/test_engine.py` created with 72 engine tests.
+- Allowed mappings: LONG_RESEARCH_ONLY → LONG_RESEARCH_ONLY, SHORT_RESEARCH_ONLY → SHORT_RESEARCH_ONLY.
+- Blocking mappings: unsafe/invalid/stale/unsupported → BLOCK_ALL.
+- No writer, no integration tests, no config YAML, no JSON schema, no strategy class, no Freqtrade runtime, no Binance, no API keys, no live trading, no real orders, no leverage, no shorting.
 
 ---
 

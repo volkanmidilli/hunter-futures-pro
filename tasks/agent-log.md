@@ -4,6 +4,56 @@ MVP-5 Step 4 — Integration Tests.
 
 ---
 
+### MVP-6 Step 2 — Strategy Contract Engine
+
+Date: 2026-06-18
+
+Agent: WrongStack
+
+Task: MVP-6 Step 2 — Strategy Contract Engine.
+
+Files created:
+
+- `src/hunter/strategy_contract/engine.py` — 5 engine functions.
+- `tests/test_strategy_contract/test_engine.py` — 72 engine tests.
+
+Files modified:
+
+- `src/hunter/strategy_contract/__init__.py` — added engine exports.
+
+Summary:
+
+Implemented Strategy Contract engine for SPEC-007.
+- Added `build_strategy_context(...)` — main entry point, implements 14 fail-closed rules from SPEC-007.
+- Added `validate_strategy_contract_inputs(...)` — deterministic priority-ordered validation, returns first blocking reason only.
+- Added `is_stale_bridge_context(...)` — checks timestamp validity (missing/naive/None → stale) and age against threshold.
+- Added `map_bridge_to_strategy_mode(...)` — maps FreqtradeBridgeMode to StrategyContractMode.
+- Added `build_safety_flags(...)` — constructs StrategyContractSafetyFlags from config with safe defaults.
+- Allowed mappings: LONG_RESEARCH_ONLY → LONG_RESEARCH_ONLY, SHORT_RESEARCH_ONLY → SHORT_RESEARCH_ONLY.
+- Blocking mappings: unsafe/invalid/stale/unsupported → BLOCK_ALL.
+- Full test suite passes with 878 tests (806 existing + 72 new).
+
+Safety:
+
+- No writer.
+- No integration tests.
+- No config YAML.
+- No JSON schema.
+- No strategy class.
+- No Freqtrade runtime.
+- No Binance integration.
+- No API keys.
+- No live trading.
+- No real orders.
+- No leverage.
+- No shorting.
+
+Next step:
+
+MVP-6 Step 3 — Strategy Context Writer.
+
+---
+
 ### MVP-6 Step 1 — Strategy Contract Models
 
 Date: 2026-06-18
