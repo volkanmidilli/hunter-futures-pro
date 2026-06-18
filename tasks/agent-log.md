@@ -1,6 +1,55 @@
 Next step:
 
-MVP-5 Step 1 — Freqtrade Bridge Models.
+MVP-5 Step 2 — Freqtrade Bridge Engine.
+
+---
+
+### MVP-5 Step 1 — Freqtrade Bridge Models
+
+Date: 2026-06-17
+
+Agent: WrongStack
+
+Task: MVP-5 Step 1 — Freqtrade Bridge Models.
+
+Files created:
+
+- `src/hunter/freqtrade_bridge/__init__.py` — Public API exports.
+- `src/hunter/freqtrade_bridge/models.py` — Freqtrade bridge models.
+- `tests/test_freqtrade_bridge/__init__.py` — Test package.
+- `tests/test_freqtrade_bridge/test_models.py` — 62 model tests.
+
+Summary:
+
+Added immutable Freqtrade bridge models and fail-closed FreqtradeBridgeContext.blocked() factory.
+- FreqtradeBridgeState: DISABLED, DRY_RUN_READY, BLOCKED, UNKNOWN.
+- FreqtradeBridgeMode: LONG_RESEARCH_ONLY, SHORT_RESEARCH_ONLY, BLOCK_ALL.
+- FreqtradeBridgeConfig: 12 fields with MVP-5 safety validation.
+- FreqtradeBridgeInputRefs: execution context audit trail references.
+- FreqtradeBridgeSafetyFlags: 10 safety fields with to_dict() for JSON serialization.
+- FreqtradeBridgeDataQuality: freshness, validity, validation errors with to_dict().
+- FreqtradeBridgeContext: 18 fields, version "1.0", fail-closed by default.
+- FreqtradeBridgeContext.blocked(): produces BLOCKED + BLOCK_ALL + dry_run=True + version "1.0".
+- All models frozen with __post_init__ validation.
+- 62 Freqtrade bridge model tests, all passing.
+- Full test suite: 600 tests passing.
+
+Safety:
+
+- No Binance integration.
+- No real Freqtrade runtime integration.
+- No strategy class.
+- No trading logic (pairlist, order, stake, leverage, stoploss, ROI, entry, exit).
+- No live trading.
+- No leverage.
+- No shorting.
+- No API keys.
+- No network calls.
+- No JSON reading or writing.
+
+Next step:
+
+MVP-5 Step 2 — Freqtrade Bridge Engine.
 
 ---
 

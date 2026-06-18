@@ -10,7 +10,7 @@ Hunter Futures Pro
 
 ## Current Phase
 
-MVP-5 — Freqtrade Integration design complete, implementation planning pending. SPEC-006 reviewed and polished. Ready for MVP-5 Step 1.
+MVP-5 — Freqtrade Integration Step 1 complete. Freqtrade bridge models implemented. 62 tests passing. Ready for MVP-5 Step 2.
 
 ## Current Status
 
@@ -30,19 +30,25 @@ MVP-4 Execution Bridge is complete and committed. All 538 tests pass.
 - Execution Bridge Models, Engine, Writer, Integration Tests, Final Review all implemented.
 - No Binance integration. No Freqtrade runtime integration. No live trading. No trading logic. No API keys.
 
-MVP-5 Freqtrade Integration design is complete:
-- `specs/SPEC-006-Freqtrade-Integration.md` created, reviewed, and polished.
-- FreqtradeBridgeState design: DISABLED, DRY_RUN_READY, BLOCKED, UNKNOWN.
-- FreqtradeBridgeMode design: LONG_RESEARCH_ONLY, SHORT_RESEARCH_ONLY, BLOCK_ALL.
-- FreqtradeBridgeContext with 18 fields, version "1.0", all safety defaults safe.
-- 17 fail-closed rules in deterministic priority order.
-- Consumes in-memory ExecutionContext from MVP-4.
-- Future input reference: `data/execution/current_execution_context.json`.
-- Outputs: `data/freqtrade/current_freqtrade_context.json`.
-- Config file designed for future: `configs/freqtrade_bridge.yaml`.
-- JSON Schema designed for future: `schemas/freqtrade_bridge_context.schema.json`.
-- Mock Freqtrade strategy deferred to MVP-6 or later.
-- No MVP-5 code exists yet.
+MVP-5 Freqtrade Integration Step 1 is complete:
+- `src/hunter/freqtrade_bridge/models.py` created with immutable Freqtrade bridge models.
+- `src/hunter/freqtrade_bridge/__init__.py` created with public API exports.
+- FreqtradeBridgeState enum: DISABLED, DRY_RUN_READY, BLOCKED, UNKNOWN.
+- FreqtradeBridgeMode enum: LONG_RESEARCH_ONLY, SHORT_RESEARCH_ONLY, BLOCK_ALL.
+- FreqtradeBridgeConfig with 12 fields and MVP-5 safety validation.
+- FreqtradeBridgeInputRefs for execution context audit trail references.
+- FreqtradeBridgeSafetyFlags with 10 safety fields and `to_dict()` for JSON serialization.
+- FreqtradeBridgeDataQuality with freshness, validity, validation errors, and `to_dict()`.
+- FreqtradeBridgeContext with 18 fields, version default "1.0", fail-closed by default.
+- FreqtradeBridgeContext.blocked() factory producing BLOCKED + BLOCK_ALL + dry_run=True + version "1.0".
+- All models frozen/immutable with `__post_init__` validation.
+- 62 Freqtrade bridge model tests, all passing.
+- Full test suite: 600 tests passing.
+- No Freqtrade Bridge Engine exists yet.
+- No Freqtrade Bridge Writer exists yet.
+- No config YAML exists yet.
+- No JSON Schema validation exists yet.
+- No ExecutionContext JSON reading exists.
 - No Binance integration exists.
 - No real Freqtrade runtime integration exists.
 - No strategy class exists.
@@ -54,7 +60,7 @@ MVP-5 Freqtrade Integration design is complete:
 
 ## Next Step
 
-MVP-5 Step 1 — Freqtrade Bridge Models.
+MVP-5 Step 2 — Freqtrade Bridge Engine.
 
 ---
 
