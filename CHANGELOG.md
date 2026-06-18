@@ -307,6 +307,20 @@ All important project changes will be recorded in this file.
   - All 60 final review checklist items passed.
   - No issues found. No fixes applied.
   - Version bumped to 0.6.0-dev.
+- SPEC-008 Freqtrade Dry-Run Strategy Adapter design finalized and polished.
+  - AdapterState enum: DISABLED, DRY_RUN_READY, BLOCKED, UNKNOWN.
+  - AdapterMode enum: LONG_RESEARCH_ONLY, SHORT_RESEARCH_ONLY, BLOCK_ALL.
+  - AdapterSignalIntent enum: ALLOW_LONG_RESEARCH_SIGNAL, ALLOW_SHORT_RESEARCH_SIGNAL, BLOCK_SIGNAL, NO_SIGNAL.
+  - AdapterDecisionContext with 22 fields including adapter_runtime_allowed, freqtrade_runtime_allowed, strategy_class_allowed, entry_signal_allowed, exit_signal_allowed, order_execution_allowed.
+  - 15 deterministic reason codes: MISSING_STRATEGY_CONTEXT, INVALID_STRATEGY_CONTEXT, STRATEGY_CONTRACT_NOT_DRY_RUN_READY, STRATEGY_CONTRACT_MODE_BLOCK_ALL, DRY_RUN_DISABLED, LIVE_TRADING_ENABLED, REAL_ORDERS_ENABLED, LEVERAGE_ENABLED, SHORTING_ENABLED, STALE_STRATEGY_CONTEXT, UNSUPPORTED_STRATEGY_MODE, LONG_RESEARCH_SIGNAL_ALLOWED, SHORT_RESEARCH_SIGNAL_ALLOWED, DEFAULT_BLOCK_SIGNAL, CALCULATION_ERROR.
+  - Fail-closed adapter rules: 11 blocking + 2 allowed + 1 fallback.
+  - Future config design: `configs/strategy_adapter.yaml`.
+  - Future output: `data/strategy_adapter/current_adapter_decision.json`.
+  - Future schema: `schemas/strategy_adapter_decision.schema.json`.
+  - PlantUML component and adapter flow diagrams included.
+  - Implementation split into 5 steps: Models, Engine, Writer, Integration Tests, Final Review.
+  - No MVP-7 code implemented yet.
+  - Full test suite: 959 tests passing.
 - MVP-6 — Freqtrade Strategy Contract complete.
   - SPEC-007 finalized and polished.
   - Strategy contract produces dry-run-only fail-closed StrategyContext for future strategy-facing consumers.

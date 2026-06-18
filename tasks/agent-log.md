@@ -49,6 +49,60 @@ SPEC-008 — MVP-7 Freqtrade Dry-Run Strategy Adapter design.
 
 ---
 
+### SPEC-008 Freqtrade Dry-Run Strategy Adapter Design
+
+Date: 2026-06-18
+
+Agent: WrongStack
+
+Task: SPEC-008 Freqtrade Dry-Run Strategy Adapter design.
+
+Files created:
+
+- `specs/SPEC-008-Freqtrade-Dry-Run-Strategy-Adapter.md`
+
+Files modified:
+
+- None.
+
+Summary:
+
+Finalized SPEC-008 for MVP-7 Freqtrade Dry-Run Strategy Adapter.
+- AdapterState enum: DISABLED, DRY_RUN_READY, BLOCKED, UNKNOWN.
+- AdapterMode enum: LONG_RESEARCH_ONLY, SHORT_RESEARCH_ONLY, BLOCK_ALL.
+- AdapterSignalIntent enum: ALLOW_LONG_RESEARCH_SIGNAL, ALLOW_SHORT_RESEARCH_SIGNAL, BLOCK_SIGNAL, NO_SIGNAL.
+- AdapterDecisionContext with 22 fields including adapter_runtime_allowed, freqtrade_runtime_allowed, strategy_class_allowed, entry_signal_allowed, exit_signal_allowed, order_execution_allowed.
+- 15 deterministic reason codes: MISSING_STRATEGY_CONTEXT, INVALID_STRATEGY_CONTEXT, STRATEGY_CONTRACT_NOT_DRY_RUN_READY, STRATEGY_CONTRACT_MODE_BLOCK_ALL, DRY_RUN_DISABLED, LIVE_TRADING_ENABLED, REAL_ORDERS_ENABLED, LEVERAGE_ENABLED, SHORTING_ENABLED, STALE_STRATEGY_CONTEXT, UNSUPPORTED_STRATEGY_MODE, LONG_RESEARCH_SIGNAL_ALLOWED, SHORT_RESEARCH_SIGNAL_ALLOWED, DEFAULT_BLOCK_SIGNAL, CALCULATION_ERROR.
+- Fail-closed adapter rules: 11 blocking + 2 allowed + 1 fallback.
+- Future config design: `configs/strategy_adapter.yaml`.
+- Future output: `data/strategy_adapter/current_adapter_decision.json`.
+- Future schema: `schemas/strategy_adapter_decision.schema.json`.
+- PlantUML component and adapter flow diagrams included.
+- Implementation split into 5 steps: Models, Engine, Writer, Integration Tests, Final Review.
+- Full test suite: 959 tests passing.
+
+Safety:
+
+- Design only.
+- No MVP-7 code implemented.
+- No config YAML created.
+- No JSON schema created.
+- No deployable strategy class created.
+- No Binance integration.
+- No real Freqtrade runtime integration.
+- No API keys.
+- No live trading.
+- No real orders.
+- No leverage.
+- No shorting.
+- No entry/exit execution logic.
+
+Next step:
+
+MVP-7 Step 1 — Strategy Adapter Models.
+
+---
+
 ### MVP-6 Step 4 — Strategy Contract Integration Tests
 
 Date: 2026-06-18

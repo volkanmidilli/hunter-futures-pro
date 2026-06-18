@@ -10,7 +10,7 @@ Hunter Futures Pro
 
 ## Current Phase
 
-MVP-6 — Freqtrade Strategy Contract complete. All 5 steps finished. 959 tests passing. Ready for MVP-7 Planning.
+MVP-7 planning — SPEC-008 Freqtrade Dry-Run Strategy Adapter design finalized. Ready for MVP-7 Step 1.
 
 ## Current Status
 
@@ -38,24 +38,33 @@ MVP-6 Freqtrade Strategy Contract is complete and committed. All 959 tests pass.
 - Strategy Contract Models, Engine, Writer, Integration Tests, Final Review all implemented.
 - No Binance integration. No real Freqtrade runtime integration. No live trading. No trading logic. No API keys.
 
+SPEC-008 Freqtrade Dry-Run Strategy Adapter design is finalized and polished.
+- AdapterState, AdapterMode, AdapterSignalIntent, AdapterDecisionContext defined.
+- Fail-closed adapter rules, deterministic reason codes, future config/schema/output defined.
+- PlantUML component and flow diagrams included.
+- 5-step implementation plan defined.
+- No MVP-7 implementation exists yet.
+- No strategy_adapter package exists yet.
+- Full test suite: 959 tests passing.
+
 ## Next Step
 
-MVP-7 Planning — Freqtrade Dry-Run Strategy Adapter.
-- Next design document: SPEC-008 — Freqtrade Dry-Run Strategy Adapter.
-- MVP-7 must begin with design/spec only, not code.
-- MVP-7 may only design a future dry-run strategy adapter that consumes StrategyContext safely.
+MVP-7 Step 1 — Strategy Adapter Models.
+- Future files: `src/hunter/strategy_adapter/__init__.py`, `src/hunter/strategy_adapter/models.py`, `tests/test_strategy_adapter/__init__.py`, `tests/test_strategy_adapter/test_models.py`.
+- Define: AdapterState, AdapterMode, AdapterSignalIntent, AdapterConfig, AdapterInputRefs, AdapterSafetyFlags, AdapterDataQuality, AdapterDecisionContext.
+- Implementation not started yet. Awaiting approval.
 - No Binance integration.
-- No real exchange connection.
+- No real Freqtrade runtime.
+- No deployable strategy class.
 - No API keys.
 - No live trading.
-- No real order execution.
+- No real orders.
 - No leverage.
 - No shorting.
-- Implementation not started yet. Awaiting approval.
 
 ---
 
-## Previous State (MVP-6 Complete)
+## Previous State (MVP-6 Complete + SPEC-008 Design)
 
 MVP-6 — Freqtrade Strategy Contract is complete. All 5 steps finished. 959 tests passing.
 - `src/hunter/strategy_contract/__init__.py` — public API exports.
