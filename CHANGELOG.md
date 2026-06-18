@@ -352,6 +352,12 @@ All important project changes will be recorded in this file.
   - Full test suite: 1128 tests passing (1053 existing + 75 new).
   - No writer, no integration tests, no config YAML, no JSON schema, no deployable strategy class, no Freqtrade runtime, no Binance, no API keys, no live trading, no real orders, no leverage, no shorting, no entry/exit execution logic.
 
+- MVP-7 Step 4 — Strategy Adapter Integration Tests (Complete).
+  - `tests/test_strategy_adapter/test_integration.py` — 45 integration tests, all passing.
+  - Integration coverage: allowed LONG_RESEARCH_ONLY and SHORT_RESEARCH_ONLY signal flows; blocked missing, BLOCKED, UNKNOWN, DISABLED strategy contract states; blocked BLOCK_ALL strategy contract mode; blocked stale StrategyContext; blocked unsafe flags (dry_run false, live_trading_enabled true, real_orders_enabled true, leverage_enabled true, shorting_enabled true); JSON output verification; atomic/path verification; safety absence checks.
+  - Full test suite: 1214 tests passing (1169 existing + 45 new).
+  - No application code changed. No config YAML. No JSON schema. No deployable strategy class. No Freqtrade runtime. No Binance. No API keys. No live trading. No real orders. No leverage. No shorting. No entry/exit execution logic.
+
 - MVP-7 Step 3 — Adapter Decision JSON Writer (Complete).
   - `src/hunter/strategy_adapter/writer.py` — writer functions.
   - `src/hunter/strategy_adapter/__init__.py` — updated exports.

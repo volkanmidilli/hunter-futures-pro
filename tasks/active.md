@@ -2,30 +2,28 @@
 
 ## Current Task
 
-MVP-7 Step 4 — Strategy Adapter Integration Tests.
+MVP-7 Step 5 — Final Review and Polish.
 
 ## Status
 
 Not started. Awaiting approval.
 
-MVP-7 Step 3 is complete. 41 new tests. 1169 total. Version 0.6.0-dev.
-SPEC-008 design is finalized and polished. No MVP-7 integration tests implemented yet.
+MVP-7 Step 4 is complete. 45 new tests. 1214 total. Version 0.6.0-dev.
+SPEC-008 design is finalized and polished. All MVP-7 integration tests implemented.
 
 ## Scope
 
-Step 4 allowed work:
-- `tests/test_strategy_adapter/test_integration.py` — end-to-end integration tests.
-- Engine + writer full pipeline tests.
-- LONG_RESEARCH_ONLY signal flow tests.
-- SHORT_RESEARCH_ONLY signal flow tests.
-- BLOCK_SIGNAL flow tests.
-- Stale/missing/invalid/unsafe StrategyContext flow tests.
-- JSON output verification.
-- Atomic/path verification.
-- Safety absence tests.
+Step 5 allowed work:
+- Review SPEC-008 compliance.
+- Run full pytest.
+- Verify models, engine, writer, integration tests.
+- Verify fail-closed behavior.
+- Verify writer atomic output behavior.
+- Verify no unsafe integration exists.
+- Small polish fixes only if verified.
 
-Step 4 not allowed:
-- No application code changes unless fixing a small verified bug.
+Step 5 not allowed:
+- No new features.
 - No config YAML.
 - No JSON schema.
 - No deployable strategy class.
@@ -40,26 +38,21 @@ Step 4 not allowed:
 
 ## Previous Task
 
-MVP-7 Step 3 — Adapter Decision JSON Writer (complete).
-- 3 files changed/created: `writer.py`, `__init__.py`, `test_writer.py`.
-- `DEFAULT_ADAPTER_DECISION_PATH = data/strategy_adapter/current_adapter_decision.json`.
-- `adapter_decision_context_to_dict()` — serializes `AdapterDecisionContext` to JSON-compatible dict.
-- `atomic_write_json()` — atomic temp-file write with `os.replace()`, parent directory creation, cleanup on failure.
-- `write_adapter_decision_context()` — writes to default path.
-- ISO-8601 UTC timestamps, enum strings, signal_intent as string, reason_codes as list, nested dicts, version "1.0".
-- 41 writer tests. Full suite: 1169 tests.
-- No integration tests, no config YAML, no JSON schema, no deployable strategy class, no Freqtrade runtime, no Binance, no API keys, no live trading, no real orders, no leverage, no shorting, no entry/exit execution logic.
+MVP-7 Step 4 — Strategy Adapter Integration Tests (complete).
+- 1 file created: `tests/test_strategy_adapter/test_integration.py`.
+- 45 integration tests. Full suite: 1214 tests.
+- Integration coverage: allowed LONG_RESEARCH_ONLY and SHORT_RESEARCH_ONLY signal flows; blocked missing, BLOCKED, UNKNOWN, DISABLED strategy contract states; blocked BLOCK_ALL strategy contract mode; blocked stale StrategyContext; blocked unsafe flags (dry_run false, live_trading_enabled true, real_orders_enabled true, leverage_enabled true, shorting_enabled true); JSON output verification; atomic/path verification; safety absence checks.
+- No application code changed. No config YAML, no JSON schema, no deployable strategy class, no Freqtrade runtime, no Binance, no API keys, no live trading, no real orders, no leverage, no shorting, no entry/exit execution logic.
 
 ## Definition of Done
 
-- [ ] Integration tests cover all signal flows (LONG, SHORT, BLOCK).
-- [ ] Integration tests cover all blocking conditions (stale, missing, invalid, unsafe).
-- [ ] JSON output verification tests pass.
-- [ ] Atomic/path verification tests pass.
-- [ ] Safety absence tests pass.
-- [ ] Full test suite passes with 1169+ tests.
-- [ ] No code outside `tests/test_strategy_adapter/test_integration.py`.
+- [ ] SPEC-008 compliance verified.
+- [ ] Full test suite passes with 1214+ tests.
+- [ ] Fail-closed behavior verified.
+- [ ] Writer atomic output behavior verified.
+- [ ] No unsafe integration found.
+- [ ] No new features added.
 
 ## Next Step
 
-MVP-7 Step 5 — Final Review and Polish.
+MVP-7 complete. Version bump to 0.7.0-dev. MVP-8 planning.
