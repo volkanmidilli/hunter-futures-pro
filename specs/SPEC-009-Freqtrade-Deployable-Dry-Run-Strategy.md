@@ -142,7 +142,7 @@ populate_indicators_allowed
 populate_entry_trend_allowed
 populate_exit_trend_allowed
 order_execution_allowed
-reason_codes
+reason_codes              # tuple[str, ...] in Python model, list[str] in JSON output
 input_refs
 safety_flags
 data_quality
