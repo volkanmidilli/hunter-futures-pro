@@ -4,6 +4,57 @@ MVP-5 Step 4 — Integration Tests.
 
 ---
 
+### SPEC-007 — Freqtrade Strategy Contract Design
+
+Date: 2026-06-18
+
+Agent: WrongStack
+
+Task: SPEC-007 Freqtrade Strategy Contract design.
+
+Files created:
+
+- `specs/SPEC-007-Freqtrade-Strategy-Contract.md` — Freqtrade Strategy Contract specification (design-only).
+
+Files reviewed:
+
+- `specs/SPEC-007-Freqtrade-Strategy-Contract.md` — full review against SPEC format.
+- `specs/SPEC-006-Freqtrade-Integration.md` — reference for FreqtradeBridgeContext contract.
+- `docs/handoff/CURRENT_STATE.md` — project state context.
+- `tasks/active.md` — task tracking.
+
+Files changed (polish only):
+
+- `specs/SPEC-007-Freqtrade-Strategy-Contract.md` — 5 polish fixes applied.
+
+Summary:
+
+Finalized SPEC-007 for MVP-6 Strategy Contract.
+- SPEC-007 defines strategy contract states, modes, StrategyContext, fail-closed rules, reason codes, future config design, future JSON output, future schema, diagrams, implementation steps, milestones, and success criteria.
+- 5 polish fixes applied: fail-closed rule grouping, Reason Codes section, stale threshold naming alignment, flow diagram footnote, SPEC-006 consistency note.
+- Full test suite passes with 722 tests.
+
+Safety:
+
+- Design only.
+- No MVP-6 code implemented.
+- No config YAML created.
+- No JSON schema created.
+- No strategy class created.
+- No Binance integration.
+- No real Freqtrade runtime integration.
+- No API keys.
+- No live trading.
+- No real orders.
+- No leverage.
+- No shorting.
+
+Next step:
+
+MVP-6 Step 1 — Strategy Contract Models.
+
+---
+
 ### MVP-5 Final Review
 
 Date: 2026-06-17

@@ -10,7 +10,7 @@ Hunter Futures Pro
 
 ## Current Phase
 
-MVP-5 — Freqtrade Integration Boundary complete. All 5 steps finished. 722 tests passing. Ready for MVP-6 Planning.
+MVP-5 — Freqtrade Integration Boundary complete. All 5 steps finished. 722 tests passing. SPEC-007 Freqtrade Strategy Contract design finalized. Ready for MVP-6 Step 1.
 
 ## Current Status
 
@@ -128,7 +128,11 @@ MVP-5 Freqtrade Integration Step 1 is complete:
 
 ## Next Step
 
-MVP-6 Planning — Freqtrade Strategy Contract design.
+MVP-6 Step 1 — Strategy Contract Models.
+- Future files: `src/hunter/strategy_contract/__init__.py`, `src/hunter/strategy_contract/models.py`, `tests/test_strategy_contract/test_models.py`.
+- Step 1 allowed work: StrategyContractState, StrategyContractMode, StrategyContractConfig, StrategyContractInputRefs, StrategyContractSafetyFlags, StrategyContractDataQuality, StrategyContext, model validation tests.
+- Step 1 not allowed: no engine, no writer, no integration tests, no config YAML, no JSON schema, no Freqtrade runtime, no strategy class, no Binance, no API keys, no live trading, no real orders, no leverage, no shorting.
+- Implementation not started yet. Awaiting approval.
 
 ---
 

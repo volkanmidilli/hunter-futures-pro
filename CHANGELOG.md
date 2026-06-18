@@ -232,6 +232,14 @@ All important project changes will be recorded in this file.
 
 ### MVP-5 Complete — Freqtrade Integration Boundary
 
+- SPEC-007 Freqtrade Strategy Contract design finalized and polished.
+  - Strategy contract states, modes, StrategyContext, fail-closed rules, reason codes defined.
+  - Future config design: `configs/strategy_contract.yaml`.
+  - Future schema design: `schemas/strategy_context.schema.json`.
+  - PlantUML component and flow diagrams included.
+  - Implementation split into 5 steps: Models, Engine, Writer, Integration Tests, Final Review.
+  - No MVP-6 code implemented yet.
+  - Full test suite: 722 tests passing.
 - SPEC-006 Freqtrade Integration design complete and reviewed.
 - Step 1 Freqtrade Bridge Models complete: `src/hunter/freqtrade_bridge/models.py` with 62 tests.
 - Step 2 Freqtrade Bridge Engine complete: `src/hunter/freqtrade_bridge/engine.py` with 57 tests.
