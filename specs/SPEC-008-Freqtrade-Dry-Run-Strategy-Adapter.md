@@ -140,7 +140,7 @@ strategy_class_allowed
 entry_signal_allowed
 exit_signal_allowed
 order_execution_allowed
-reason_codes
+reason_codes              # tuple[str, ...] in Python model, list[str] in JSON output
 input_refs
 safety_flags
 data_quality
@@ -294,6 +294,8 @@ allow_long_research_signal: true
 allow_short_research_signal: true
 unsupported_mode_action: BLOCK_SIGNAL
 ```
+
+`unsupported_mode_action` is represented as the string `"BLOCK_SIGNAL"` in YAML for readability and maps to `AdapterSignalIntent.BLOCK_SIGNAL` in implementation.
 
 `stale_strategy_context_seconds` validates upstream `StrategyContext` age before producing `AdapterDecisionContext`.
 `max_context_age_seconds` is emitted for future adapter-facing consumers as a consumer-side freshness guard, matching SPEC-006 and SPEC-007.
