@@ -351,6 +351,23 @@ All important project changes will be recorded in this file.
   - `tests/test_strategy_adapter/test_engine.py` — 75 engine tests, all passing.
   - Full test suite: 1128 tests passing (1053 existing + 75 new).
   - No writer, no integration tests, no config YAML, no JSON schema, no deployable strategy class, no Freqtrade runtime, no Binance, no API keys, no live trading, no real orders, no leverage, no shorting, no entry/exit execution logic.
+
+- MVP-7 Step 3 — Adapter Decision JSON Writer (Complete).
+  - `src/hunter/strategy_adapter/writer.py` — writer functions.
+  - `src/hunter/strategy_adapter/__init__.py` — updated exports.
+  - `tests/test_strategy_adapter/test_writer.py` — 41 writer tests, all passing.
+  - `DEFAULT_ADAPTER_DECISION_PATH = data/strategy_adapter/current_adapter_decision.json`.
+  - `adapter_decision_context_to_dict()` — serializes `AdapterDecisionContext` to JSON-compatible dict.
+  - `atomic_write_json()` — atomic temp-file write with `os.replace()`, parent directory creation, cleanup on failure.
+  - `write_adapter_decision_context()` — writes to `data/strategy_adapter/current_adapter_decision.json` by default.
+  - ISO-8601 UTC timestamp serialization ending with `Z`.
+  - Enum string serialization: `adapter_state`, `adapter_mode`, `signal_intent`.
+  - `reason_codes` serialized as `list[str]`.
+  - Nested `input_refs`, `safety_flags`, `data_quality` serialized as dicts.
+  - `version` is `"1.0"`.
+  - Full test suite: 1169 tests passing (1128 existing + 41 new).
+  - No integration tests yet. No config YAML. No JSON schema. No deployable strategy class. No Freqtrade runtime. No Binance. No API keys. No live trading. No real orders. No leverage. No shorting. No entry/exit execution logic.
+
 - MVP-6 — Freqtrade Strategy Contract complete.
   - SPEC-007 finalized and polished.
   - Strategy contract produces dry-run-only fail-closed StrategyContext for future strategy-facing consumers.

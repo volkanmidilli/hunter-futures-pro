@@ -4,6 +4,203 @@ MVP-5 Step 4 — Integration Tests.
 
 ---
 
+### MVP-7 Step 3 — Adapter Decision JSON Writer
+
+Date: 2026-06-18
+
+Agent: WrongStack
+
+Task: MVP-7 Step 3 — Adapter Decision JSON Writer.
+
+Files created:
+
+- `src/hunter/strategy_adapter/writer.py`
+- `tests/test_strategy_adapter/test_writer.py`
+
+Files modified:
+
+- `src/hunter/strategy_adapter/__init__.py` (updated exports)
+
+Summary:
+
+Implemented Adapter Decision writer for SPEC-008.
+- Added `adapter_decision_context_to_dict`, `atomic_write_json`, `write_adapter_decision_context`, and `DEFAULT_ADAPTER_DECISION_PATH`.
+- Writer serializes `AdapterDecisionContext` to JSON-compatible dict with ISO-8601 UTC Z timestamps, enum strings, `signal_intent` string, `reason_codes` list, nested dicts, and version `"1.0"`.
+- Writer uses atomic temp-file + `os.replace` writes.
+- Added 41 writer tests.
+- Full test suite passes with 1169 tests.
+
+Safety:
+
+- No integration tests yet.
+- No config YAML.
+- No JSON schema.
+- No deployable strategy class.
+- No Freqtrade runtime.
+- No Binance integration.
+- No API keys.
+- No live trading.
+- No real orders.
+- No leverage.
+- No shorting.
+- No entry/exit execution logic.
+
+Next step:
+
+MVP-7 Step 4 — Strategy Adapter Integration Tests.
+
+---
+
+### MVP-7 Step 2 — Strategy Adapter Engine
+
+Date: 2026-06-18
+
+Agent: WrongStack
+
+Task: MVP-7 Step 2 — Strategy Adapter Engine.
+
+Files created:
+
+- `src/hunter/strategy_adapter/engine.py`
+- `tests/test_strategy_adapter/test_engine.py`
+
+Files modified:
+
+- `src/hunter/strategy_adapter/__init__.py` (updated exports)
+
+Summary:
+
+Implemented Strategy Adapter engine for SPEC-008.
+- Added `build_adapter_decision_context`, `validate_adapter_inputs`, `is_stale_strategy_context`, `map_strategy_to_adapter_mode`, `map_strategy_to_signal_intent`, `build_safety_flags`.
+- Engine implements all 11 fail-closed adapter rules + 2 allowed + 1 fallback.
+- Deterministic priority-ordered validation returns first blocking reason only.
+- Allowed mappings: `LONG_RESEARCH_ONLY` → `ALLOW_LONG_RESEARCH_SIGNAL`, `SHORT_RESEARCH_ONLY` → `ALLOW_SHORT_RESEARCH_SIGNAL`.
+- Blocking mappings: all unsafe/invalid/stale/unsupported → `BLOCK_SIGNAL`.
+- Added 75 engine tests.
+- Full test suite passes with 1128 tests.
+
+Safety:
+
+- No writer yet.
+- No integration tests yet.
+- No config YAML.
+- No JSON schema.
+- No deployable strategy class.
+- No Freqtrade runtime.
+- No Binance integration.
+- No API keys.
+- No live trading.
+- No real orders.
+- No leverage.
+- No shorting.
+- No entry/exit execution logic.
+
+Next step:
+
+MVP-7 Step 3 — Adapter Decision JSON Writer.
+
+---
+
+### MVP-7 Step 1 — Strategy Adapter Models
+
+Date: 2026-06-18
+
+Agent: WrongStack
+
+Task: MVP-7 Step 1 — Strategy Adapter Models.
+
+Files created:
+
+- `src/hunter/strategy_adapter/__init__.py`
+- `src/hunter/strategy_adapter/models.py`
+- `tests/test_strategy_adapter/__init__.py`
+- `tests/test_strategy_adapter/test_models.py`
+
+Files modified:
+
+- None.
+
+Summary:
+
+Implemented Strategy Adapter models for SPEC-008.
+- Added `AdapterState`, `AdapterMode`, `AdapterSignalIntent` enums.
+- Added `AdapterConfig`, `AdapterInputRefs`, `AdapterSafetyFlags`, `AdapterDataQuality`, `AdapterDecisionContext` frozen dataclasses.
+- `AdapterDecisionContext.blocked()` fail-closed factory producing `BLOCKED` + `BLOCK_ALL` + `BLOCK_SIGNAL` + `dry_run=True` + version `"1.0"`.
+- 15 deterministic reason codes defined.
+- All models frozen/immutable with `__post_init__` validation.
+- Added 94 model tests.
+- Full test suite passes with 1053 tests.
+
+Safety:
+
+- No engine yet.
+- No writer yet.
+- No integration tests yet.
+- No config YAML.
+- No JSON schema.
+- No deployable strategy class.
+- No Freqtrade runtime.
+- No Binance integration.
+- No API keys.
+- No live trading.
+- No real orders.
+- No leverage.
+- No shorting.
+
+Next step:
+
+MVP-7 Step 2 — Strategy Adapter Engine.
+
+---
+
+### SPEC-008 — MVP-7 Freqtrade Dry-Run Strategy Adapter Design
+
+Date: 2026-06-18
+
+Agent: WrongStack
+
+Task: SPEC-008 design and review.
+
+Files created:
+
+- `specs/SPEC-008-Freqtrade-Dry-Run-Strategy-Adapter.md`
+
+Files modified:
+
+- None (design-only step).
+
+Summary:
+
+Created and reviewed SPEC-008 Freqtrade Dry-Run Strategy Adapter design.
+- Defined `AdapterState`, `AdapterMode`, `AdapterSignalIntent` enums.
+- Defined `AdapterDecisionContext` with 22 fields, `blocked()` factory, `is_blocking()` method.
+- 15 deterministic reason codes defined.
+- 11 fail-closed blocking rules + 2 allowed + 1 fallback.
+- Future config: `configs/strategy_adapter.yaml`.
+- Future schema: `schemas/strategy_adapter_decision.schema.json`.
+- Future output: `data/strategy_adapter/current_adapter_decision.json`.
+- PlantUML component and flow diagrams included.
+- 5-step implementation plan defined.
+- Full test suite: 959 tests passing.
+
+Safety:
+
+- No code implemented yet.
+- No Binance integration.
+- No real Freqtrade runtime integration.
+- No deployable strategy class.
+- No live trading.
+- No leverage.
+- No shorting.
+- No API keys.
+- No network calls.
+
+Next step:
+
+MVP-7 Step 1 — Strategy Adapter Models.
+
+---
+
 ### MVP-6 Final Review and Completion
 
 Date: 2026-06-18

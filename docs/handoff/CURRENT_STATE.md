@@ -10,7 +10,7 @@ Hunter Futures Pro
 
 ## Current Phase
 
-MVP-7 Step 2 — Strategy Adapter Engine complete. 75 new tests. 1128 total. Ready for Step 3.
+MVP-7 Step 3 — Adapter Decision JSON Writer complete. 41 new tests. 1169 total. Ready for Step 4.
 
 ## Current Status
 
@@ -55,36 +55,56 @@ MVP-7 Step 2 — Strategy Adapter Engine is complete. All 75 new tests pass. 112
 - No config YAML. No JSON schema. No deployable strategy class. No Freqtrade runtime.
 - No Binance. No API keys. No live trading. No real orders. No leverage. No shorting.
 
+MVP-7 Step 3 — Adapter Decision JSON Writer is complete. All 41 new tests pass. 1169 total.
+- `src/hunter/strategy_adapter/writer.py` — 3 writer functions + default path constant.
+- `src/hunter/strategy_adapter/__init__.py` — updated exports.
+- `tests/test_strategy_adapter/test_writer.py` — 41 writer tests.
+- `DEFAULT_ADAPTER_DECISION_PATH = data/strategy_adapter/current_adapter_decision.json`.
+- `adapter_decision_context_to_dict()` — serializes `AdapterDecisionContext` to JSON-compatible dict.
+- `atomic_write_json()` — atomic temp-file write with `os.replace()`, parent directory creation, cleanup on failure.
+- `write_adapter_decision_context()` — writes to default path.
+- ISO-8601 UTC timestamps, enum strings, signal_intent as string, reason_codes as list, nested dicts, version "1.0".
+- No integration tests yet. No config YAML. No JSON schema. No deployable strategy class. No Freqtrade runtime.
+- No Binance. No API keys. No live trading. No real orders. No leverage. No shorting. No entry/exit execution logic.
+
 SPEC-008 Freqtrade Dry-Run Strategy Adapter design is finalized and polished.
 - AdapterState, AdapterMode, AdapterSignalIntent, AdapterDecisionContext defined.
 - Fail-closed adapter rules, deterministic reason codes, future config/schema/output defined.
 - PlantUML component and flow diagrams included.
 - 5-step implementation plan defined.
-- Full test suite: 1128 tests passing.
+- Full test suite: 1169 tests passing.
 
 ## Next Step
 
-MVP-7 Step 3 — Adapter Decision JSON Writer.
-- Future files: `src/hunter/strategy_adapter/writer.py`, `tests/test_strategy_adapter/test_writer.py`.
-- Define: `adapter_decision_context_to_dict(...)`, `atomic_write_json(...)`, `write_adapter_decision_context(...)`.
-- Default output path: `data/strategy_adapter/current_adapter_decision.json`.
-- Implementation not started yet. Awaiting approval.
-- No integration tests yet.
-- No config YAML.
-- No JSON schema.
-- No deployable strategy class.
-- No Freqtrade runtime.
-- No Binance.
-- No API keys.
-- No live trading.
-- No real orders.
-- No leverage.
-- No shorting.
-- No entry/exit execution logic.
+MVP-7 Step 4 — Strategy Adapter Integration Tests.
+- Future file: `tests/test_strategy_adapter/test_integration.py`.
+- End-to-end engine + writer tests.
+- LONG_RESEARCH_ONLY signal flow.
+- SHORT_RESEARCH_ONLY signal flow.
+- BLOCK_SIGNAL flow.
+- Stale/missing/invalid/unsafe StrategyContext flows.
+- JSON output verification.
+- Atomic/path verification.
+- Safety absence tests.
+- No application code changes unless fixing a small verified bug.
+- No config YAML. No JSON schema. No deployable strategy class. No Freqtrade runtime.
+- No Binance. No API keys. No live trading. No real orders. No leverage. No shorting. No entry/exit execution logic.
 
 ---
 
-## Previous State (MVP-7 Step 2 Complete)
+## Previous State (MVP-7 Step 3 Complete)
+
+MVP-7 Step 3 — Adapter Decision JSON Writer is complete. All 41 new tests pass. 1169 total.
+- `src/hunter/strategy_adapter/writer.py` — 3 writer functions + default path constant.
+- `src/hunter/strategy_adapter/__init__.py` — updated exports.
+- `tests/test_strategy_adapter/test_writer.py` — 41 writer tests.
+- `DEFAULT_ADAPTER_DECISION_PATH = data/strategy_adapter/current_adapter_decision.json`.
+- `adapter_decision_context_to_dict()` — serializes `AdapterDecisionContext` to JSON-compatible dict.
+- `atomic_write_json()` — atomic temp-file write with `os.replace()`, parent directory creation, cleanup on failure.
+- `write_adapter_decision_context()` — writes to default path.
+- ISO-8601 UTC timestamps, enum strings, signal_intent as string, reason_codes as list, nested dicts, version "1.0".
+- No integration tests yet. No config YAML. No JSON schema. No deployable strategy class. No Freqtrade runtime.
+- No Binance. No API keys. No live trading. No real orders. No leverage. No shorting. No entry/exit execution logic.
 
 MVP-7 Step 2 — Strategy Adapter Engine is complete. 75 new tests. 1128 total.
 - `src/hunter/strategy_adapter/engine.py` — 6 engine functions.
