@@ -2,42 +2,37 @@
 
 ## Current Task
 
-MVP-7 Step 1 — Strategy Adapter Models.
+MVP-7 Step 2 — Strategy Adapter Engine.
 
 ## Status
 
 Not started. Awaiting approval.
 
-MVP-6 is complete. All 5 steps finished. 959 tests passing. Version 0.6.0-dev.
-SPEC-008 design is finalized and polished. No MVP-7 code implemented yet.
+MVP-7 Step 1 is complete. 94 new tests. 1053 total. Version 0.6.0-dev.
+SPEC-008 design is finalized and polished. No MVP-7 engine implemented yet.
 
 ## Scope
 
-Step 1 allowed work:
-- `src/hunter/strategy_adapter/__init__.py` — public API exports.
-- `src/hunter/strategy_adapter/models.py` — model definitions.
-- `tests/test_strategy_adapter/__init__.py` — test package.
-- `tests/test_strategy_adapter/test_models.py` — model validation tests.
+Step 2 allowed work:
+- `src/hunter/strategy_adapter/engine.py` — engine functions.
+- `tests/test_strategy_adapter/test_engine.py` — engine tests.
 
 Define:
-- `AdapterState` enum: DISABLED, DRY_RUN_READY, BLOCKED, UNKNOWN.
-- `AdapterMode` enum: LONG_RESEARCH_ONLY, SHORT_RESEARCH_ONLY, BLOCK_ALL.
-- `AdapterSignalIntent` enum: ALLOW_LONG_RESEARCH_SIGNAL, ALLOW_SHORT_RESEARCH_SIGNAL, BLOCK_SIGNAL, NO_SIGNAL.
-- `AdapterConfig` with safety validation.
-- `AdapterInputRefs` with path validation.
-- `AdapterSafetyFlags` with `to_dict()` for JSON serialization.
-- `AdapterDataQuality` with `to_dict()` for JSON serialization.
-- `AdapterDecisionContext` with 22 fields, version default "1.0", `blocked()` fail-closed factory.
-- 15 deterministic reason codes as constants.
+- `build_adapter_decision(...)` — main entry point, implements all fail-closed adapter rules.
+- `validate_adapter_inputs(...)` — deterministic priority-ordered validation, returns first blocking reason.
+- `is_stale_strategy_context(...)` — checks timestamp validity and age against threshold.
+- `map_strategy_to_adapter_mode(...)` — maps strategy contract mode to adapter mode.
+- `map_strategy_to_signal_intent(...)` — maps strategy contract mode to signal intent.
+- `build_safety_flags(...)` — constructs safety flags from config with safe defaults.
 
-Step 1 not allowed:
-- No engine.
+Step 2 not allowed:
 - No writer.
+- No JSON output writing.
 - No integration tests.
 - No config YAML.
 - No JSON schema.
-- No Freqtrade runtime.
 - No deployable strategy class.
+- No Freqtrade runtime.
 - No Binance.
 - No API keys.
 - No live trading.
@@ -48,29 +43,29 @@ Step 1 not allowed:
 
 ## Previous Task
 
-MVP-7 Planning — SPEC-008 Freqtrade Dry-Run Strategy Adapter design (complete).
-- SPEC-008 created, reviewed, polished, and finalized.
-- AdapterState, AdapterMode, AdapterSignalIntent, AdapterDecisionContext defined.
-- Fail-closed adapter rules, deterministic reason codes, future config/schema/output defined.
-- PlantUML component and flow diagrams included.
-- 5-step implementation plan defined.
-- No code implemented yet.
-- No safety constraints violated.
+MVP-7 Step 1 — Strategy Adapter Models (complete).
+- 4 files created: `__init__.py`, `models.py`, `tests/__init__.py`, `test_models.py`.
+- 8 model types: AdapterState, AdapterMode, AdapterSignalIntent, AdapterConfig, AdapterInputRefs, AdapterSafetyFlags, AdapterDataQuality, AdapterDecisionContext.
+- 15 deterministic reason codes.
+- `blocked()` factory, `is_blocking()` method, fail-closed defaults.
+- 94 model tests, all passing.
+- Full suite: 1053 tests passing.
 
 ## Goal
 
-Implement MVP-7 Step 1 — Strategy Adapter Models.
+Implement MVP-7 Step 2 — Strategy Adapter Engine.
 
 ## Definition of Done
 
-Step 1 is done when:
-- All 8 model types are defined and immutable.
-- 15 reason code constants are defined.
-- Safety defaults are fail-closed (adapter_state=BLOCKED, adapter_mode=BLOCK_ALL, signal_intent=BLOCK_SIGNAL).
-- All model validation tests pass.
-- Full test suite: 959+ tests passing.
+Step 2 is done when:
+- All 6 engine functions are defined and deterministic.
+- Fail-closed rules are implemented in priority order.
+- Allowed mappings: LONG_RESEARCH_ONLY → ALLOW_LONG_RESEARCH_SIGNAL, SHORT_RESEARCH_ONLY → ALLOW_SHORT_RESEARCH_SIGNAL.
+- Blocking mappings: all unsafe/invalid/stale/unsupported → BLOCK_SIGNAL.
+- All engine tests pass.
+- Full test suite: 1053+ tests passing.
 - No code outside the allowed files.
 
-## Next Step After Step 1
+## Next Step After Step 2
 
-MVP-7 Step 2 — Strategy Adapter Engine (if approved).
+MVP-7 Step 3 — Adapter Decision JSON Writer (if approved).

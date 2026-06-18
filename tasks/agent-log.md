@@ -99,7 +99,64 @@ Safety:
 
 Next step:
 
-MVP-7 Step 1 — Strategy Adapter Models.
+MVP-7 Step 2 — Strategy Adapter Engine.
+
+---
+
+### MVP-7 Step 1 — Strategy Adapter Models
+
+Date: 2026-06-18
+
+Agent: WrongStack
+
+Task: MVP-7 Step 1 — Strategy Adapter Models.
+
+Files created:
+
+- `src/hunter/strategy_adapter/__init__.py`
+- `src/hunter/strategy_adapter/models.py`
+- `tests/test_strategy_adapter/__init__.py`
+- `tests/test_strategy_adapter/test_models.py`
+
+Files modified:
+
+- None.
+
+Summary:
+
+Implemented Strategy Adapter model layer for SPEC-008.
+- AdapterState enum: DISABLED, DRY_RUN_READY, BLOCKED, UNKNOWN.
+- AdapterMode enum: LONG_RESEARCH_ONLY, SHORT_RESEARCH_ONLY, BLOCK_ALL.
+- AdapterSignalIntent enum: ALLOW_LONG_RESEARCH_SIGNAL, ALLOW_SHORT_RESEARCH_SIGNAL, BLOCK_SIGNAL, NO_SIGNAL.
+- AdapterConfig with 17 fields and MVP-7 safety validation.
+- AdapterInputRefs with path validation.
+- AdapterSafetyFlags with 12 safety fields and to_dict() for JSON serialization.
+- AdapterDataQuality with 4 quality fields and to_dict() for JSON serialization.
+- AdapterDecisionContext with 22 fields, version default "1.0", blocked() fail-closed factory, is_blocking() method.
+- 15 deterministic reason codes.
+- 94 model tests, all passing.
+- Full test suite: 1053 tests passing.
+
+Safety:
+
+- No engine.
+- No writer.
+- No integration tests.
+- No config YAML.
+- No JSON schema.
+- No deployable strategy class.
+- No Freqtrade runtime.
+- No Binance integration.
+- No API keys.
+- No live trading.
+- No real orders.
+- No leverage.
+- No shorting.
+- No entry/exit execution logic.
+
+Next step:
+
+MVP-7 Step 2 — Strategy Adapter Engine.
 
 ---
 
