@@ -2,6 +2,13 @@
 
 from __future__ import annotations
 
+from hunter.strategy_contract.engine import (
+    build_safety_flags,
+    build_strategy_context,
+    is_stale_bridge_context,
+    map_bridge_to_strategy_mode,
+    validate_strategy_contract_inputs,
+)
 from hunter.strategy_contract.models import (
     CALCULATION_ERROR,
     DEFAULT_BLOCK_ALL,
@@ -29,6 +36,11 @@ from hunter.strategy_contract.models import (
 )
 
 __all__ = [
+    "build_safety_flags",
+    "build_strategy_context",
+    "is_stale_bridge_context",
+    "map_bridge_to_strategy_mode",
+    "validate_strategy_contract_inputs",
     "CALCULATION_ERROR",
     "DEFAULT_BLOCK_ALL",
     "DRY_RUN_DISABLED",
