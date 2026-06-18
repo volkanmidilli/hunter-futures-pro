@@ -2,7 +2,7 @@
 
 ## Current Task
 
-MVP-4 Step 5 — Final Review and Polish.
+MVP-5 Planning — Freqtrade Integration design.
 
 ## Status
 
@@ -10,47 +10,54 @@ Ready to start.
 
 ## Scope
 
-Final review for MVP-4 Execution Bridge:
-- Run full test suite (538 tests).
-- Verify all safety constraints.
-- Verify no trading logic, no Binance, no Freqtrade runtime, no live trading.
-- Update project memory files (CHANGELOG.md, tasks/agent-log.md).
-- Target: All tests pass, no issues found.
+Design-only phase for Freqtrade Integration:
+- Define Freqtrade strategy contract that consumes ExecutionContext.
+- Design signal generation from execution_state and execution_mode.
+- Plan dry-run validation before any live trading enablement.
+- Document Freqtrade compatibility requirements.
+- No code implementation yet.
 
 ## Not Allowed
 
-- No Binance integration.
 - No Freqtrade runtime integration.
 - No live trading.
 - No real data fetching.
 - No trading execution.
-- No strategy class.
+- No strategy class implementation.
+- No Binance integration.
 
 ## Previous Task
 
-MVP-4 Step 4 — Integration Tests. Complete.
-- `tests/test_execution/test_integration.py` created with 30 end-to-end tests.
-- Full pipeline: DecisionOutput -> build_execution_context() -> write_execution_context() -> JSON verification.
-- All 30 tests passing. Full suite: 538 tests.
+MVP-4 Execution Bridge — fully complete. All 5 steps finished.
+- Step 1: Execution Bridge Models (49 tests)
+- Step 2: Execution Bridge Engine (45 tests)
+- Step 3: Execution Context Writer (20 tests)
+- Step 4: Integration Tests (30 tests)
+- Step 5: Final Review and Polish — no issues found
+- Full test suite: 538 tests passing
+- All 29 review checklist items verified and passing
+- No issues found. No fixes applied.
+- Version remains 0.4.0-dev
+- No Binance integration. No Freqtrade runtime integration. No live trading. No trading logic. No API keys.
 
 ## Goal
 
-Complete MVP-4 Execution Bridge with final review and polish.
+Design the Freqtrade Integration layer that will consume ExecutionContext from MVP-4 and translate it into Freqtrade-compatible signals, while maintaining all safety constraints.
 
 ## Current Scope
 
-MVP-4 Step 5 only:
-- Run full pytest suite.
-- Verify all 11 safety constraints from SPEC-005.
-- Verify no application code bugs.
-- Update CHANGELOG.md with MVP-4 completion.
-- Update tasks/agent-log.md.
-- No code changes unless real bugs found.
+MVP-5 Planning only:
+- SPEC-006 Freqtrade Integration specification.
+- Freqtrade strategy contract design.
+- Signal generation mapping from ExecutionContext.
+- Dry-run validation workflow design.
+- Safety constraint documentation for Freqtrade boundary.
+- No code implementation.
 
 ## Do Not Do Yet
 
-- Do not implement Freqtrade integration.
-- Do not create Freqtrade strategy files.
+- Do not implement Freqtrade strategy class.
+- Do not implement Freqtrade bot connection.
 - Do not enable live trading.
 - Do not connect to Binance.
 - Do not create API keys.
@@ -59,13 +66,14 @@ MVP-4 Step 5 only:
 
 ## Definition of Done
 
-Step 5 is done when:
-- All 538 tests pass.
-- All safety constraints verified.
-- No issues found (or all issues fixed).
-- Project memory files updated.
-- Ready for commit.
+MVP-5 planning is done when:
+- SPEC-006 exists and is reviewed.
+- Freqtrade strategy contract is documented.
+- Signal generation mapping is defined.
+- Dry-run validation workflow is documented.
+- All safety constraints are documented for Freqtrade boundary.
+- Review checklist passes.
 
-## Next Step After Step 5
+## Next Step After MVP-5 Planning
 
-MVP-4 complete. Begin MVP-5 planning (Freqtrade Integration) or other next phase.
+MVP-5 Step 1 — Freqtrade Strategy Contract implementation (if approved).

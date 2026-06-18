@@ -2,6 +2,76 @@
 
 All important project changes will be recorded in this file.
 
+## 0.4.0-dev — MVP-4 — Execution Bridge (Complete)
+
+### Added
+
+- `src/hunter/execution/models.py` — Execution Bridge Models (Step 1).
+  - `ExecutionState` enum: ENABLED, BLOCKED, DRY_RUN_ONLY, UNKNOWN.
+  - `ExecutionMode` enum: LONG_RESEARCH_ONLY, SHORT_RESEARCH_ONLY, BLOCK_ALL, DRY_RUN_ONLY.
+  - `ExecutionBridgeConfig` with MVP-4 safety validation (dry_run_required=True, live_trading_enabled=False, etc.).
+  - `ExecutionInputRefs` for audit trail references to decision output.
+  - `ExecutionSafetyFlags` with human_override_required (default false) and max_context_age_seconds (default 300).
+  - `ExecutionContext` with version field default "1.0" for backward-compatible contract evolution.
+  - `ExecutionContext.blocked()` fail-closed factory producing BLOCKED + BLOCK_ALL + dry_run True + version "1.0".
+  - All models frozen/immutable with __post_init__ validation.
+  - 49 execution model tests, all passing.
+
+- `src/hunter/execution/engine.py` — Execution Bridge Engine (Step 2).
+  - `build_execution_context()` — main entry point implementing all 15 fail-closed rules from SPEC-005 in priority order.
+  - `validate_execution_inputs()` — validates DecisionOutput against all safety constraints.
+  - `is_stale_decision()` — checks DecisionOutput age against stale_decision_minutes threshold.
+  - `map_decision_to_execution_mode()` — maps DecisionAction to ExecutionMode.
+  - `build_safety_flags()` — constructs ExecutionSafetyFlags with all defaults safe.
+  - All successful paths produce DRY_RUN_ONLY (ENABLED reserved for future).
+  - All blocked paths produce BLOCKED + BLOCK_ALL + dry_run=True.
+  - Missing/invalid/stale/unsafe inputs all block by default.
+  - input_refs populated with decision timestamp and source on successful paths.
+  - 45 execution engine tests, all passing.
+
+- `src/hunter/execution/writer.py` — Execution Context Writer (Step 3).
+  - `execution_context_to_dict()` — serializes all 14 ExecutionContext fields to JSON-compatible dict.
+  - `atomic_write_json()` — atomic temp-file write with os.replace(), parent directory creation, cleanup on failure.
+  - `write_execution_context()` — writes to `data/execution/current_execution_context.json` by default.
+  - ISO-8601 timestamp serialization, enum string serialization.
+  - safety_flags, input_refs, data_quality, version all preserved in JSON output.
+  - 20 execution writer tests, all passing.
+
+- `tests/test_execution/test_integration.py` — Integration Tests (Step 4).
+  - 30 end-to-end integration tests.
+  - Full pipeline: DecisionOutput → build_execution_context() → write_execution_context() → JSON verification.
+  - Long-only research enable scenario (ENABLE_LONG_ONLY_RESEARCH → DRY_RUN_ONLY + LONG_RESEARCH_ONLY).
+  - Short-only research enable scenario (ENABLE_SHORT_ONLY_RESEARCH → DRY_RUN_ONLY + SHORT_RESEARCH_ONLY).
+  - Block scenarios: BLOCK_ALL, MANUAL_REVIEW, stale, missing, invalid, blocked decision state.
+  - Unsafe config rejection tests: dry_run=False, live_trading=True, exchange=True, freqtrade=True all raise ValueError.
+  - JSON output verification: all 18 fields, enum strings, safety_flags, version "1.0", ISO-8601 timestamps.
+  - Atomic write tests with tmp_path, nested directory creation, no production path usage.
+  - Safety tests: no network, no trading logic, no JSON input reading, no Freqtrade runtime, all flags safe.
+
+- Final Review and Polish (Step 5).
+  - All 29 review checklist items verified and passing.
+  - No issues found. No fixes applied.
+  - Full test suite: 538 tests passing.
+
+### Safety
+
+- No application code modified during integration tests or review.
+- No config YAML created for execution bridge.
+- No JSON Schema files created.
+- No DecisionOutput JSON reading used.
+- No Freqtrade strategy class created.
+- No trading execution logic added.
+- No Binance integration.
+- No live trading enabled.
+- No network calls.
+- All safety flags remain False or safe (dry_run=True).
+- All blocked paths produce BLOCKED + BLOCK_ALL.
+- ENABLED state exists in enum but is never emitted by MVP-4.
+
+### Next
+
+- MVP-5 Planning — Freqtrade Integration design.
+
 ## 0.4.0-dev — MVP-4 Step 4 — Integration Tests (Complete)
 
 ### Added
