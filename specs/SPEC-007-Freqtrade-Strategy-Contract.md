@@ -154,6 +154,8 @@ version: "1.0"
 
 Priority order:
 
+**Blocking rules (always BLOCKED + BLOCK_ALL):**
+
 1. Missing `FreqtradeBridgeContext` => `BLOCKED + BLOCK_ALL`
 2. Invalid `FreqtradeBridgeContext` => `BLOCKED + BLOCK_ALL`
 3. Bridge state not `DRY_RUN_READY` => `BLOCKED + BLOCK_ALL`
@@ -165,8 +167,14 @@ Priority order:
 9. `shorting_enabled == true` => `BLOCKED + BLOCK_ALL`
 10. Stale bridge context => `BLOCKED + BLOCK_ALL`
 11. Unsupported bridge mode => `BLOCKED + BLOCK_ALL`
+
+**Allowed dry-run research rules:**
+
 12. `DRY_RUN_READY + LONG_RESEARCH_ONLY` => `DRY_RUN_READY + LONG_RESEARCH_ONLY`
 13. `DRY_RUN_READY + SHORT_RESEARCH_ONLY` => `DRY_RUN_READY + SHORT_RESEARCH_ONLY`
+
+**Final fallback:**
+
 14. Any other state => `BLOCKED + BLOCK_ALL`
 
 ### Mapping Rules
@@ -180,9 +188,35 @@ Priority order:
 | UNKNOWN | any | BLOCKED | BLOCK_ALL |
 | any | BLOCK_ALL | BLOCKED | BLOCK_ALL |
 
+### Reason Codes
+
+Every blocking or allowed output must include deterministic reason codes. Expected strings:
+
+```text
+MISSING_BRIDGE_CONTEXT
+INVALID_BRIDGE_CONTEXT
+BRIDGE_NOT_DRY_RUN_READY
+BRIDGE_MODE_BLOCK_ALL
+DRY_RUN_DISABLED
+LIVE_TRADING_ENABLED
+REAL_ORDERS_ENABLED
+LEVERAGE_ENABLED
+SHORTING_ENABLED
+STALE_BRIDGE_CONTEXT
+UNSUPPORTED_BRIDGE_MODE
+LONG_RESEARCH_ALLOWED
+SHORT_RESEARCH_ALLOWED
+DEFAULT_BLOCK_ALL
+CALCULATION_ERROR
+```
+
+`reason_codes` must be included in every `StrategyContext` output, with at least one code explaining the decision.
+
 ### Strategy Contract Boundary
 
 A future strategy may read the strategy context, but must fail closed if the context is missing, stale, invalid, unsafe, or blocking.
+
+These restrictions intentionally mirror the MVP-5 / SPEC-006 bridge boundary and remain stricter than any future Freqtrade runtime integration.
 
 The strategy contract must not:
 
@@ -211,6 +245,7 @@ Defaults:
 
 ```yaml
 stale_bridge_context_seconds: 300
+max_context_age_seconds: 300
 dry_run_required: true
 live_trading_enabled: false
 real_orders_enabled: false
@@ -223,6 +258,9 @@ allow_long_research: true
 allow_short_research: true
 unsupported_mode_action: BLOCK_ALL
 ```
+
+`stale_bridge_context_seconds` validates upstream `FreqtradeBridgeContext` age before producing `StrategyContext`.
+`max_context_age_seconds` is emitted for future strategy-facing consumers as a consumer-side freshness guard, matching SPEC-006.
 
 This file is design-only in SPEC-007 and must not be created during design.
 
@@ -312,6 +350,8 @@ stop
 
 @enduml
 ```
+
+Unsafe flags include `dry_run == false`, `live_trading_enabled == true`, `real_orders_enabled == true`, `leverage_enabled == true`, `shorting_enabled == true`.
 
 ## Implementation
 
