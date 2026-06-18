@@ -10,7 +10,7 @@ Hunter Futures Pro
 
 ## Current Phase
 
-MVP-5 — Freqtrade Integration Boundary complete. All 5 steps finished. 722 tests passing. SPEC-007 Freqtrade Strategy Contract design finalized. MVP-6 Step 1 Strategy Contract Models complete. 84 new tests. MVP-6 Step 2 Strategy Contract Engine complete. 72 new tests. MVP-6 Step 3 Strategy Context Writer complete. 36 new tests. Full suite 914 tests passing. Ready for MVP-6 Step 4.
+MVP-5 — Freqtrade Integration Boundary complete. All 5 steps finished. 722 tests passing. SPEC-007 Freqtrade Strategy Contract design finalized. MVP-6 Step 1 Strategy Contract Models complete. 84 new tests. MVP-6 Step 2 Strategy Contract Engine complete. 72 new tests. MVP-6 Step 3 Strategy Context Writer complete. 36 new tests. MVP-6 Step 4 Strategy Contract Integration Tests complete. 45 new tests. Full suite 959 tests passing. Ready for MVP-6 Step 5.
 
 ## Current Status
 
@@ -128,11 +128,30 @@ MVP-5 Freqtrade Integration Step 1 is complete:
 
 ## Next Step
 
-MVP-6 Step 4 — Integration Tests.
-- Future file: `tests/test_strategy_contract/test_integration.py`.
-- Step 4 allowed work: end-to-end engine + writer tests, LONG_RESEARCH_ONLY flow, SHORT_RESEARCH_ONLY flow, BLOCK_ALL flow, stale/missing/invalid/unsafe bridge context flows, JSON output verification, atomic write verification, safety absence tests.
-- Step 4 not allowed: no app code changes unless fixing a small verified bug, no config YAML, no JSON schema, no strategy class, no Freqtrade runtime, no Binance, no API keys, no live trading, no real orders, no leverage, no shorting.
+MVP-6 Step 5 — Final Review and Polish.
+- Review SPEC-007 compliance: models, engine, writer, integration tests.
+- Run full pytest: verify all 959 tests pass.
+- Verify fail-closed behavior: all blocked paths produce BLOCKED + BLOCK_ALL.
+- Verify writer atomic output behavior: temp-file + os.replace, no partial files.
+- Verify no unsafe integration exists: no config, no schema, no strategy, no runtime, no Binance, no API keys, no live trading, no real orders, no leverage, no shorting.
+- Small polish fixes only if verified. No new features.
 - Implementation not started yet. Awaiting approval.
+
+---
+
+## Previous State (MVP-6 Step 4)
+
+MVP-6 Step 4 Strategy Contract Integration Tests is complete. 45 new tests. Full suite 959 tests passing.
+- `tests/test_strategy_contract/test_integration.py` created with 45 integration tests.
+- Integration coverage:
+  - Allowed flows: LONG_RESEARCH_ONLY, SHORT_RESEARCH_ONLY (full pipeline engine + writer + JSON verification).
+  - Blocked flows: missing bridge context, BLOCKED/UNKNOWN/DISABLED bridge states, BLOCK_ALL bridge mode, stale bridge context.
+  - Unsafe flags blocked: dry_run false, live_trading_enabled true, real_orders_enabled true, leverage_enabled true, shorting_enabled true.
+  - JSON output verification: ISO-8601 timestamps, enum strings, reason_codes list, nested dicts, version "1.0".
+  - Atomic/path verification: custom tmp_path, nested directories, overwrite, no temp files, default path constant.
+  - Safety absence checks: no config YAML, no JSON schema, no strategy class, no Freqtrade runtime, no Binance, no API keys, no live trading, no real orders, no leverage, no shorting, no entry/exit logic, no trading fields.
+- No application code changed.
+- No config YAML, no JSON schema, no strategy class, no Freqtrade runtime, no Binance, no API keys, no live trading, no real orders, no leverage, no shorting.
 
 ---
 

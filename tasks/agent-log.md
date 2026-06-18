@@ -4,6 +4,45 @@ MVP-5 Step 4 — Integration Tests.
 
 ---
 
+### MVP-6 Step 4 — Strategy Contract Integration Tests
+
+Date: 2026-06-18
+
+Agent: WrongStack
+
+Task: MVP-6 Step 4 — Strategy Contract Integration Tests.
+
+Files created:
+
+- `tests/test_strategy_contract/test_integration.py` — 45 integration tests.
+
+Summary:
+
+Added end-to-end integration tests for SPEC-007 Strategy Contract.
+- Integration tests validate engine + writer flows for LONG_RESEARCH_ONLY, SHORT_RESEARCH_ONLY, blocked states, stale/missing/invalid/unsafe bridge contexts, JSON output, atomic/path behavior, and safety absence.
+- 45 integration tests, all passing.
+- Full test suite passes with 959 tests (914 existing + 45 new).
+
+Safety:
+
+- No application code changed.
+- No config YAML.
+- No JSON schema.
+- No strategy class.
+- No Freqtrade runtime.
+- No Binance integration.
+- No API keys.
+- No live trading.
+- No real orders.
+- No leverage.
+- No shorting.
+
+Next step:
+
+MVP-6 Step 5 — Final Review and Polish.
+
+---
+
 ### MVP-6 Step 3 — Strategy Context Writer
 
 Date: 2026-06-18

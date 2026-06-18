@@ -279,6 +279,18 @@ All important project changes will be recorded in this file.
   - JSON serialization: ISO-8601 UTC timestamps ending with Z, enum string values, reason_codes as list, nested input_refs/safety_flags/data_quality as dicts, version "1.0".
   - Full test suite: 914 tests passing (878 existing + 36 new).
   - No integration tests, no config YAML, no JSON schema, no strategy class, no Freqtrade runtime, no Binance, no API keys, no live trading, no real orders, no leverage, no shorting.
+- MVP-6 Step 4 — Strategy Contract Integration Tests complete.
+  - `tests/test_strategy_contract/test_integration.py` — 45 integration tests, all passing.
+  - Integration coverage:
+    - Allowed flows: LONG_RESEARCH_ONLY, SHORT_RESEARCH_ONLY (full pipeline engine + writer + JSON verification).
+    - Blocked flows: missing bridge context, BLOCKED bridge state, UNKNOWN bridge state, DISABLED bridge state, BLOCK_ALL bridge mode, stale bridge context.
+    - Unsafe flags blocked: dry_run false, live_trading_enabled true, real_orders_enabled true, leverage_enabled true, shorting_enabled true.
+    - JSON output verification: ISO-8601 timestamps, enum strings, reason_codes list, input_refs/safety_flags/data_quality dicts, version "1.0", blocked vs allowed reason codes.
+    - Atomic/path verification: custom tmp_path, nested directory creation, overwrite existing file, no temp files left, default path constant.
+    - Safety absence checks: no config YAML, no JSON schema, no strategy class, no Freqtrade runtime, no Binance, no API keys, no live trading, no real orders, no leverage, no shorting, no entry/exit logic, no trading fields.
+  - Full test suite: 959 tests passing (914 existing + 45 new).
+  - No application code changed.
+  - No config YAML, no JSON schema, no strategy class, no Freqtrade runtime, no Binance, no API keys, no live trading, no real orders, no leverage, no shorting.
 - SPEC-006 Freqtrade Integration design complete and reviewed.
 - Step 1 Freqtrade Bridge Models complete: `src/hunter/freqtrade_bridge/models.py` with 62 tests.
 - Step 2 Freqtrade Bridge Engine complete: `src/hunter/freqtrade_bridge/engine.py` with 57 tests.
