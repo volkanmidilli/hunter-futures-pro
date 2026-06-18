@@ -337,6 +337,20 @@ All important project changes will be recorded in this file.
   - `tests/test_strategy_adapter/test_models.py` — 94 model tests, all passing.
   - Full test suite: 1053 tests passing (959 existing + 94 new).
   - No engine, no writer, no integration tests, no config YAML, no JSON schema, no deployable strategy class, no Freqtrade runtime, no Binance, no API keys, no live trading, no real orders, no leverage, no shorting, no entry/exit execution logic.
+- MVP-7 Step 2 — Strategy Adapter Engine complete.
+  - `src/hunter/strategy_adapter/engine.py` — 6 engine functions.
+    - `build_adapter_decision_context(...)` — main entry point implementing all 11 fail-closed adapter rules + 2 allowed + 1 fallback.
+    - `validate_adapter_inputs(...)` — deterministic priority-ordered validation, returns first blocking reason only.
+    - `is_stale_strategy_context(...)` — checks timestamp validity (missing/naive/None → stale) and age against threshold.
+    - `map_strategy_to_adapter_mode(...)` — maps `StrategyContractMode` → `AdapterMode`.
+    - `map_strategy_to_signal_intent(...)` — maps `StrategyContractMode` → `AdapterSignalIntent`.
+    - `build_safety_flags(...)` — constructs `AdapterSafetyFlags` from config with safe defaults.
+  - Allowed mappings: `LONG_RESEARCH_ONLY` → `ALLOW_LONG_RESEARCH_SIGNAL`, `SHORT_RESEARCH_ONLY` → `ALLOW_SHORT_RESEARCH_SIGNAL`.
+  - Blocking mappings: all unsafe/invalid/stale/unsupported → `BLOCK_SIGNAL`.
+  - `src/hunter/strategy_adapter/__init__.py` — updated exports.
+  - `tests/test_strategy_adapter/test_engine.py` — 75 engine tests, all passing.
+  - Full test suite: 1128 tests passing (1053 existing + 75 new).
+  - No writer, no integration tests, no config YAML, no JSON schema, no deployable strategy class, no Freqtrade runtime, no Binance, no API keys, no live trading, no real orders, no leverage, no shorting, no entry/exit execution logic.
 - MVP-6 — Freqtrade Strategy Contract complete.
   - SPEC-007 finalized and polished.
   - Strategy contract produces dry-run-only fail-closed StrategyContext for future strategy-facing consumers.

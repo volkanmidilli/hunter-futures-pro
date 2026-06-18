@@ -99,7 +99,60 @@ Safety:
 
 Next step:
 
-MVP-7 Step 2 — Strategy Adapter Engine.
+MVP-7 Step 3 — Adapter Decision JSON Writer.
+
+---
+
+### MVP-7 Step 2 — Strategy Adapter Engine
+
+Date: 2026-06-18
+
+Agent: WrongStack
+
+Task: MVP-7 Step 2 — Strategy Adapter Engine.
+
+Files created:
+
+- `src/hunter/strategy_adapter/engine.py` — 6 engine functions.
+- `tests/test_strategy_adapter/test_engine.py` — 75 engine tests.
+
+Files modified:
+
+- `src/hunter/strategy_adapter/__init__.py` — added engine exports.
+
+Summary:
+
+Implemented Strategy Adapter engine for SPEC-008.
+- `build_adapter_decision_context(...)` — main entry point implementing all 11 fail-closed adapter rules + 2 allowed + 1 fallback.
+- `validate_adapter_inputs(...)` — deterministic priority-ordered validation, returns first blocking reason only.
+- `is_stale_strategy_context(...)` — checks timestamp validity (missing/naive/None → stale) and age against threshold.
+- `map_strategy_to_adapter_mode(...)` — maps `StrategyContractMode` → `AdapterMode`.
+- `map_strategy_to_signal_intent(...)` — maps `StrategyContractMode` → `AdapterSignalIntent`.
+- `build_safety_flags(...)` — constructs `AdapterSafetyFlags` from config with safe defaults.
+- Allowed mappings: `LONG_RESEARCH_ONLY` → `ALLOW_LONG_RESEARCH_SIGNAL`, `SHORT_RESEARCH_ONLY` → `ALLOW_SHORT_RESEARCH_SIGNAL`.
+- Blocking mappings: all unsafe/invalid/stale/unsupported → `BLOCK_SIGNAL`.
+- 75 engine tests, all passing.
+- Full test suite: 1128 tests passing.
+
+Safety:
+
+- No writer.
+- No integration tests.
+- No config YAML.
+- No JSON schema.
+- No deployable strategy class.
+- No Freqtrade runtime.
+- No Binance integration.
+- No API keys.
+- No live trading.
+- No real orders.
+- No leverage.
+- No shorting.
+- No entry/exit execution logic.
+
+Next step:
+
+MVP-7 Step 3 — Adapter Decision JSON Writer.
 
 ---
 
