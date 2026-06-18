@@ -2,7 +2,7 @@
 
 ## Current Task
 
-MVP-4 Step 1 — Execution Bridge Models.
+MVP-4 Step 5 — Final Review and Polish.
 
 ## Status
 
@@ -10,12 +10,12 @@ Ready to start.
 
 ## Scope
 
-Implementation of execution bridge models only:
-- Create ExecutionState, ExecutionMode, ExecutionBridgeConfig, ExecutionContext enums and dataclasses.
-- Add __post_init__ validation for safety flags.
-- Add ExecutionContext.blocked() fail-closed factory.
-- Create tests/test_execution_bridge/test_models.py with model tests.
-- Target: 25+ tests, all passing.
+Final review for MVP-4 Execution Bridge:
+- Run full test suite (538 tests).
+- Verify all safety constraints.
+- Verify no trading logic, no Binance, no Freqtrade runtime, no live trading.
+- Update project memory files (CHANGELOG.md, tasks/agent-log.md).
+- Target: All tests pass, no issues found.
 
 ## Not Allowed
 
@@ -28,27 +28,27 @@ Implementation of execution bridge models only:
 
 ## Previous Task
 
-MVP-4 Planning — Execution Bridge / Freqtrade Integration design. Complete. SPEC-005 created and reviewed. All 27 checklist items passed.
+MVP-4 Step 4 — Integration Tests. Complete.
+- `tests/test_execution/test_integration.py` created with 30 end-to-end tests.
+- Full pipeline: DecisionOutput -> build_execution_context() -> write_execution_context() -> JSON verification.
+- All 30 tests passing. Full suite: 538 tests.
 
 ## Goal
 
-Implement the Execution Bridge models that define the safe contract layer between Hunter Futures Pro Decision Layer and future Freqtrade execution.
+Complete MVP-4 Execution Bridge with final review and polish.
 
 ## Current Scope
 
-MVP-4 Step 1 only:
-- ExecutionState enum (ENABLED, BLOCKED, DRY_RUN_ONLY, UNKNOWN).
-- ExecutionMode enum (LONG_RESEARCH_ONLY, SHORT_RESEARCH_ONLY, BLOCK_ALL, DRY_RUN_ONLY).
-- ExecutionBridgeConfig with safety validation.
-- ExecutionContext with version field, safety flags, audit trail.
-- ExecutionContext.blocked() fail-closed factory.
-- Model tests: 25+ tests.
+MVP-4 Step 5 only:
+- Run full pytest suite.
+- Verify all 11 safety constraints from SPEC-005.
+- Verify no application code bugs.
+- Update CHANGELOG.md with MVP-4 completion.
+- Update tasks/agent-log.md.
+- No code changes unless real bugs found.
 
 ## Do Not Do Yet
 
-- Do not implement Execution Bridge Engine (Step 2).
-- Do not implement Execution Context Writer (Step 3).
-- Do not implement integration tests (Step 4).
 - Do not implement Freqtrade integration.
 - Do not create Freqtrade strategy files.
 - Do not enable live trading.
@@ -59,13 +59,13 @@ MVP-4 Step 1 only:
 
 ## Definition of Done
 
-Step 1 is done when:
-- All models exist and are frozen/immutable.
-- ExecutionBridgeConfig validates safety defaults and raises on violation.
-- ExecutionContext.blocked() produces correct fail-closed defaults.
-- 25+ model tests pass.
-- Full test suite passes.
+Step 5 is done when:
+- All 538 tests pass.
+- All safety constraints verified.
+- No issues found (or all issues fixed).
+- Project memory files updated.
+- Ready for commit.
 
-## Next Step After Step 1
+## Next Step After Step 5
 
-MVP-4 Step 2 — Execution Bridge Engine.
+MVP-4 complete. Begin MVP-5 planning (Freqtrade Integration) or other next phase.

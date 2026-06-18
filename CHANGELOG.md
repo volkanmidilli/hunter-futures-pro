@@ -2,6 +2,39 @@
 
 All important project changes will be recorded in this file.
 
+## 0.4.0-dev — MVP-4 Step 4 — Integration Tests (Complete)
+
+### Added
+
+- `tests/test_execution/test_integration.py` created with 30 end-to-end integration tests.
+- Full pipeline: DecisionOutput → `build_execution_context()` → `write_execution_context()` → JSON verification.
+- Long-only research enable scenario (`ENABLE_LONG_ONLY_RESEARCH` → `DRY_RUN_ONLY` + `LONG_RESEARCH_ONLY`).
+- Short-only research enable scenario (`ENABLE_SHORT_ONLY_RESEARCH` → `DRY_RUN_ONLY` + `SHORT_RESEARCH_ONLY`).
+- Block scenarios: `BLOCK_ALL`, `MANUAL_REVIEW`, stale, missing, invalid, blocked decision state.
+- Unsafe config rejection tests: `dry_run=False`, `live_trading=True`, `exchange=True`, `freqtrade=True` all raise `ValueError`.
+- JSON output verification: all 18 fields, enum strings, `safety_flags`, version `"1.0"`, ISO-8601 timestamps.
+- Atomic write tests with `tmp_path`, nested directory creation, no production path usage.
+- Safety tests: no network, no trading logic, no JSON input reading, no Freqtrade runtime, all flags safe.
+- 30 integration tests, all passing.
+- Full test suite: 538 tests passing (508 existing + 30 new).
+
+### Safety
+
+- No application code modified.
+- No config YAML created.
+- No JSON Schema files created.
+- No DecisionOutput JSON reading used.
+- No Freqtrade strategy class created.
+- No trading execution logic added.
+- No Binance integration.
+- No live trading enabled.
+- No network calls.
+- All safety flags remain `False` or safe (`dry_run=True`).
+
+### Next
+
+- MVP-4 Step 5 — Final Review and Polish.
+
 ## 0.4.0-dev — MVP-4 Step 3 — Execution Context Writer (Complete)
 
 ### Added

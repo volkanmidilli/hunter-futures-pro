@@ -10,7 +10,7 @@ Hunter Futures Pro
 
 ## Current Phase
 
-MVP-4 — Execution Bridge Step 3 complete. Step 4 pending.
+MVP-4 — Execution Bridge Step 4 complete. Step 5 pending.
 
 ## Current Status
 
@@ -72,6 +72,48 @@ MVP-4 Execution Bridge Step 2 is complete:
 - No live trading exists.
 - No API keys exist.
 
+MVP-4 Execution Bridge Step 4 is complete:
+- `tests/test_execution/test_integration.py` created with 30 end-to-end integration tests.
+- Full pipeline: DecisionOutput -> build_execution_context() -> write_execution_context() -> JSON verification.
+- Long-only research enable scenario (ENABLE_LONG_ONLY_RESEARCH -> DRY_RUN_ONLY + LONG_RESEARCH_ONLY).
+- Short-only research enable scenario (ENABLE_SHORT_ONLY_RESEARCH -> DRY_RUN_ONLY + SHORT_RESEARCH_ONLY).
+- Block scenarios: BLOCK_ALL, MANUAL_REVIEW, stale, missing, invalid, blocked decision state.
+- Unsafe config rejection tests: dry_run=False, live_trading=True, exchange=True, freqtrade=True all raise ValueError.
+- JSON output verification: all 18 fields, enum strings, safety_flags, version "1.0", ISO-8601 timestamps.
+- Atomic write tests with tmp_path, nested directory creation, no production path usage.
+- Safety tests: no network, no trading logic, no JSON input reading, no Freqtrade runtime, all flags safe.
+- 30 integration tests, all passing.
+- Full test suite: 538 tests passing (508 existing + 30 new).
+- No application code modified.
+- No config YAML created.
+- No JSON Schema files created.
+- No DecisionOutput JSON reading used.
+- No Freqtrade strategy class created.
+- No trading execution logic added.
+- No Binance integration.
+- No live trading enabled.
+
+MVP-4 Execution Bridge Step 4 is complete:
+- `tests/test_execution/test_integration.py` created with 30 end-to-end integration tests.
+- Full pipeline: DecisionOutput -> build_execution_context() -> write_execution_context() -> JSON verification.
+- Long-only research enable scenario (ENABLE_LONG_ONLY_RESEARCH -> DRY_RUN_ONLY + LONG_RESEARCH_ONLY).
+- Short-only research enable scenario (ENABLE_SHORT_ONLY_RESEARCH -> DRY_RUN_ONLY + SHORT_RESEARCH_ONLY).
+- Block scenarios: BLOCK_ALL, MANUAL_REVIEW, stale, missing, invalid, blocked decision state.
+- Unsafe config rejection tests: dry_run=False, live_trading=True, exchange=True, freqtrade=True all raise ValueError.
+- JSON output verification: all 18 fields, enum strings, safety_flags, version "1.0", ISO-8601 timestamps.
+- Atomic write tests with tmp_path, nested directory creation, no production path usage.
+- Safety tests: no network, no trading logic, no JSON input reading, no Freqtrade runtime, all flags safe.
+- 30 integration tests, all passing.
+- Full test suite: 538 tests passing (508 existing + 30 new).
+- No application code modified.
+- No config YAML created.
+- No JSON Schema files created.
+- No DecisionOutput JSON reading used.
+- No Freqtrade strategy class created.
+- No trading execution logic added.
+- No Binance integration.
+- No live trading enabled.
+
 MVP-4 Execution Bridge Step 3 is complete:
 - `src/hunter/execution/writer.py` created with JSON serialization and atomic output writer.
 - `execution_context_to_dict()` — serializes all 14 ExecutionContext fields to JSON-compatible dict.
@@ -93,14 +135,12 @@ MVP-4 Execution Bridge Step 3 is complete:
 
 ## Next Step
 
-MVP-4 Step 4 — Integration Tests.
-- Create end-to-end tests: DecisionOutput -> build_execution_context() -> write_execution_context() -> JSON verification.
-- Test successful path: valid decision produces DRY_RUN_ONLY context with correct JSON output.
-- Test blocked path: invalid decision produces BLOCKED context with correct JSON output.
-- Test stale decision blocks.
-- Test safety config violations block.
-- Use tmp_path for writer outputs, not production data/execution path.
-- Target: 15+ tests, all passing.
+MVP-4 Step 5 — Final Review and Polish.
+- Run full test suite.
+- Verify all safety constraints.
+- Verify no trading logic, no Binance, no Freqtrade runtime, no live trading.
+- Update project memory files.
+- Target: All tests pass, no issues found.
 
 ## Current Status
 
