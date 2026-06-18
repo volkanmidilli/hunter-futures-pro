@@ -240,6 +240,21 @@ All important project changes will be recorded in this file.
   - Implementation split into 5 steps: Models, Engine, Writer, Integration Tests, Final Review.
   - No MVP-6 code implemented yet.
   - Full test suite: 722 tests passing.
+- MVP-6 Step 1 — Strategy Contract Models complete.
+  - `src/hunter/strategy_contract/__init__.py` — public API exports.
+  - `src/hunter/strategy_contract/models.py` — 7 model types.
+    - `StrategyContractState` enum: DISABLED, DRY_RUN_READY, BLOCKED, UNKNOWN.
+    - `StrategyContractMode` enum: LONG_RESEARCH_ONLY, SHORT_RESEARCH_ONLY, BLOCK_ALL.
+    - `StrategyContractConfig` with 14 fields and MVP-6 safety validation.
+    - `StrategyContractInputRefs` with path validation.
+    - `StrategyContractSafetyFlags` with 9 safety fields and `to_dict()` for JSON serialization.
+    - `StrategyContractDataQuality` with 4 quality fields and `to_dict()` for JSON serialization.
+    - `StrategyContext` with 18 fields, version default "1.0", `blocked()` fail-closed factory, `is_blocking()` method.
+  - 15 deterministic reason codes: MISSING_BRIDGE_CONTEXT, INVALID_BRIDGE_CONTEXT, BRIDGE_NOT_DRY_RUN_READY, BRIDGE_MODE_BLOCK_ALL, DRY_RUN_DISABLED, LIVE_TRADING_ENABLED, REAL_ORDERS_ENABLED, LEVERAGE_ENABLED, SHORTING_ENABLED, STALE_BRIDGE_CONTEXT, UNSUPPORTED_BRIDGE_MODE, LONG_RESEARCH_ALLOWED, SHORT_RESEARCH_ALLOWED, DEFAULT_BLOCK_ALL, CALCULATION_ERROR.
+  - `tests/test_strategy_contract/__init__.py` — test package.
+  - `tests/test_strategy_contract/test_models.py` — 84 model tests, all passing.
+  - Full test suite: 806 tests passing (722 existing + 84 new).
+  - No engine, no writer, no integration tests, no config YAML, no JSON schema, no strategy class, no Freqtrade runtime, no Binance, no API keys, no live trading, no real orders, no leverage, no shorting.
 - SPEC-006 Freqtrade Integration design complete and reviewed.
 - Step 1 Freqtrade Bridge Models complete: `src/hunter/freqtrade_bridge/models.py` with 62 tests.
 - Step 2 Freqtrade Bridge Engine complete: `src/hunter/freqtrade_bridge/engine.py` with 57 tests.

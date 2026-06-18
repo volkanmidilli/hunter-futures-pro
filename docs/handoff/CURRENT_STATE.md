@@ -10,7 +10,7 @@ Hunter Futures Pro
 
 ## Current Phase
 
-MVP-5 — Freqtrade Integration Boundary complete. All 5 steps finished. 722 tests passing. SPEC-007 Freqtrade Strategy Contract design finalized. Ready for MVP-6 Step 1.
+MVP-5 — Freqtrade Integration Boundary complete. All 5 steps finished. 722 tests passing. SPEC-007 Freqtrade Strategy Contract design finalized. MVP-6 Step 1 Strategy Contract Models complete. 84 new tests. Full suite 806 tests passing. Ready for MVP-6 Step 2.
 
 ## Current Status
 
@@ -128,15 +128,33 @@ MVP-5 Freqtrade Integration Step 1 is complete:
 
 ## Next Step
 
-MVP-6 Step 1 — Strategy Contract Models.
-- Future files: `src/hunter/strategy_contract/__init__.py`, `src/hunter/strategy_contract/models.py`, `tests/test_strategy_contract/test_models.py`.
-- Step 1 allowed work: StrategyContractState, StrategyContractMode, StrategyContractConfig, StrategyContractInputRefs, StrategyContractSafetyFlags, StrategyContractDataQuality, StrategyContext, model validation tests.
-- Step 1 not allowed: no engine, no writer, no integration tests, no config YAML, no JSON schema, no Freqtrade runtime, no strategy class, no Binance, no API keys, no live trading, no real orders, no leverage, no shorting.
+MVP-6 Step 2 — Strategy Contract Engine.
+- Future files: `src/hunter/strategy_contract/engine.py`, `tests/test_strategy_contract/test_engine.py`.
+- Step 2 allowed work: `build_strategy_context(...)`, `validate_strategy_contract_inputs(...)`, `is_stale_bridge_context(...)`, `map_bridge_to_strategy_mode(...)`, `build_safety_flags(...)`, deterministic fail-closed reason codes, model-only engine tests.
+- Step 2 not allowed: no writer, no JSON output writing, no integration tests, no config YAML, no JSON schema, no strategy class, no Freqtrade runtime, no Binance, no API keys, no live trading, no real orders, no leverage, no shorting.
 - Implementation not started yet. Awaiting approval.
 
 ---
 
-## Previous State (MVP-4)
+## Previous State (MVP-6 Step 1)
+
+MVP-6 Step 1 Strategy Contract Models is complete. 84 new tests. Full suite 806 tests passing.
+- `src/hunter/strategy_contract/__init__.py` created with public API exports.
+- `src/hunter/strategy_contract/models.py` created with 7 model types.
+  - `StrategyContractState` enum: DISABLED, DRY_RUN_READY, BLOCKED, UNKNOWN.
+  - `StrategyContractMode` enum: LONG_RESEARCH_ONLY, SHORT_RESEARCH_ONLY, BLOCK_ALL.
+  - `StrategyContractConfig` with 14 fields and MVP-6 safety validation.
+  - `StrategyContractInputRefs` with path validation.
+  - `StrategyContractSafetyFlags` with 9 safety fields and `to_dict()` for JSON serialization.
+  - `StrategyContractDataQuality` with 4 quality fields and `to_dict()` for JSON serialization.
+  - `StrategyContext` with 18 fields, version default "1.0", `blocked()` fail-closed factory, `is_blocking()` method.
+- 15 deterministic reason codes defined.
+- `tests/test_strategy_contract/test_models.py` created with 84 model tests.
+- No engine, no writer, no integration tests, no config YAML, no JSON schema, no strategy class, no Freqtrade runtime, no Binance, no API keys, no live trading, no real orders, no leverage, no shorting.
+
+---
+
+## Previous State (MVP-5)
 
 MVP-4 Execution Bridge is complete and committed. All 538 tests pass.
 - Execution Bridge Models, Engine, Writer, Integration Tests, Final Review all implemented.

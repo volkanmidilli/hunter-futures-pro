@@ -4,6 +4,60 @@ MVP-5 Step 4 — Integration Tests.
 
 ---
 
+### MVP-6 Step 1 — Strategy Contract Models
+
+Date: 2026-06-18
+
+Agent: WrongStack
+
+Task: MVP-6 Step 1 — Strategy Contract Models.
+
+Files created:
+
+- `src/hunter/strategy_contract/__init__.py` — public API exports.
+- `src/hunter/strategy_contract/models.py` — 7 model types.
+- `tests/test_strategy_contract/__init__.py` — test package.
+- `tests/test_strategy_contract/test_models.py` — 84 model tests.
+
+Files modified:
+
+- None.
+
+Summary:
+
+Implemented Strategy Contract model layer for SPEC-007.
+- Added `StrategyContractState` enum: DISABLED, DRY_RUN_READY, BLOCKED, UNKNOWN.
+- Added `StrategyContractMode` enum: LONG_RESEARCH_ONLY, SHORT_RESEARCH_ONLY, BLOCK_ALL.
+- Added `StrategyContractConfig` with 14 fields and MVP-6 safety validation.
+- Added `StrategyContractInputRefs` with path validation.
+- Added `StrategyContractSafetyFlags` with 9 safety fields and `to_dict()` for JSON serialization.
+- Added `StrategyContractDataQuality` with 4 quality fields and `to_dict()` for JSON serialization.
+- Added `StrategyContext` with 18 fields, version default "1.0", `blocked()` fail-closed factory, `is_blocking()` method.
+- Added 15 deterministic reason codes: MISSING_BRIDGE_CONTEXT, INVALID_BRIDGE_CONTEXT, BRIDGE_NOT_DRY_RUN_READY, BRIDGE_MODE_BLOCK_ALL, DRY_RUN_DISABLED, LIVE_TRADING_ENABLED, REAL_ORDERS_ENABLED, LEVERAGE_ENABLED, SHORTING_ENABLED, STALE_BRIDGE_CONTEXT, UNSUPPORTED_BRIDGE_MODE, LONG_RESEARCH_ALLOWED, SHORT_RESEARCH_ALLOWED, DEFAULT_BLOCK_ALL, CALCULATION_ERROR.
+- Full test suite passes with 806 tests (722 existing + 84 new).
+
+Safety:
+
+- No engine.
+- No writer.
+- No integration tests.
+- No config YAML.
+- No JSON schema.
+- No strategy class.
+- No Freqtrade runtime.
+- No Binance integration.
+- No API keys.
+- No live trading.
+- No real orders.
+- No leverage.
+- No shorting.
+
+Next step:
+
+MVP-6 Step 2 — Strategy Contract Engine.
+
+---
+
 ### SPEC-007 — Freqtrade Strategy Contract Design
 
 Date: 2026-06-18
