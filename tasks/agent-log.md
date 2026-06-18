@@ -51,6 +51,94 @@ MVP-7 Step 4 — Strategy Adapter Integration Tests.
 
 ---
 
+### MVP-7 Step 4 — Strategy Adapter Integration Tests
+
+Date: 2026-06-18
+
+Agent: WrongStack
+
+Task: MVP-7 Step 4 — Strategy Adapter Integration Tests.
+
+Files created:
+
+- `tests/test_strategy_adapter/test_integration.py`
+
+Files modified:
+
+- None
+
+Summary:
+
+Added end-to-end integration tests for SPEC-008 Strategy Adapter.
+Integration tests validate engine + writer flows for LONG_RESEARCH_ONLY, SHORT_RESEARCH_ONLY, blocked states, stale/missing/invalid/unsafe StrategyContext, JSON output, atomic/path behavior, and safety absence.
+Added 45 integration tests.
+Full test suite passes with 1214 tests.
+
+Safety:
+
+- No application code changed.
+- No config YAML.
+- No JSON schema.
+- No deployable strategy class.
+- No Freqtrade runtime.
+- No Binance integration.
+- No API keys.
+- No live trading.
+- No real orders.
+- No leverage.
+- No shorting.
+- No entry/exit execution logic.
+
+Next step:
+
+MVP-7 Step 5 — Final Review and Polish.
+
+---
+
+### MVP-7 Final Review and Completion
+
+Date: 2026-06-18
+
+Agent: WrongStack
+
+Task: MVP-7 Final Review and Completion
+
+Files created:
+
+- None
+
+Files modified:
+
+- None
+
+Summary:
+
+Completed final review for MVP-7 Strategy Adapter.
+Full test suite passes with 1214 tests.
+MVP-7 includes strategy adapter models, engine, writer, and integration tests.
+The strategy adapter produces dry-run-only fail-closed AdapterDecisionContext for future Freqtrade-facing consumers.
+All 63 final review checklist items passed.
+
+Safety:
+
+- No Binance integration.
+- No real Freqtrade runtime integration.
+- No deployable strategy class.
+- No config YAML.
+- No JSON schema.
+- No API keys.
+- No live trading.
+- No real orders.
+- No leverage.
+- No shorting.
+- No entry/exit execution logic.
+
+Next step:
+
+SPEC-009 — MVP-8 Freqtrade Deployable Dry-Run Strategy design.
+
+---
+
 ### MVP-7 Step 2 — Strategy Adapter Engine
 
 Date: 2026-06-18

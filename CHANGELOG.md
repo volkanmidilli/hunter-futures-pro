@@ -2,7 +2,72 @@
 
 All important project changes will be recorded in this file.
 
-## 0.4.0-dev — MVP-4 — Execution Bridge (Complete)
+## MVP-7 — Freqtrade Dry-Run Strategy Adapter (Complete)
+
+### Added
+
+- `src/hunter/strategy_adapter/__init__.py` — public API exports (Step 1).
+- `src/hunter/strategy_adapter/models.py` — Strategy Adapter Models (Step 1).
+  - `AdapterState` enum: DISABLED, DRY_RUN_READY, BLOCKED, UNKNOWN.
+  - `AdapterMode` enum: LONG_RESEARCH_ONLY, SHORT_RESEARCH_ONLY, BLOCK_ALL.
+  - `AdapterSignalIntent` enum: ALLOW_LONG_RESEARCH_SIGNAL, ALLOW_SHORT_RESEARCH_SIGNAL, BLOCK_SIGNAL, NO_SIGNAL.
+  - `AdapterConfig` with MVP-7 safety validation (dry_run_required=True, all unsafe flags False, all runtime/execution flags False).
+  - `AdapterInputRefs` for audit trail references to strategy context and adapter decision.
+  - `AdapterSafetyFlags` with 12 fields including adapter_runtime_allowed, freqtrade_runtime_allowed, strategy_class_allowed, entry_signal_allowed, exit_signal_allowed, order_execution_allowed (all default False).
+  - `AdapterDataQuality` with strategy_context_present, strategy_context_valid, strategy_context_stale, reason.
+  - `AdapterDecisionContext` with 22 fields including signal_intent, strategy_contract_state, strategy_contract_mode, adapter_runtime_allowed, freqtrade_runtime_allowed, strategy_class_allowed, entry_signal_allowed, exit_signal_allowed, order_execution_allowed.
+  - `AdapterDecisionContext.blocked()` fail-closed factory producing BLOCKED + BLOCK_ALL + BLOCK_SIGNAL + version "1.0".
+  - 15 deterministic reason codes: MISSING_STRATEGY_CONTEXT, INVALID_STRATEGY_CONTEXT, STRATEGY_CONTRACT_NOT_DRY_RUN_READY, STRATEGY_CONTRACT_MODE_BLOCK_ALL, DRY_RUN_DISABLED, LIVE_TRADING_ENABLED, REAL_ORDERS_ENABLED, LEVERAGE_ENABLED, SHORTING_ENABLED, STALE_STRATEGY_CONTEXT, UNSUPPORTED_STRATEGY_MODE, LONG_RESEARCH_SIGNAL_ALLOWED, SHORT_RESEARCH_SIGNAL_ALLOWED, DEFAULT_BLOCK_SIGNAL, CALCULATION_ERROR.
+  - All models frozen/immutable with `__post_init__` validation.
+  - 94 strategy adapter model tests, all passing.
+
+- `src/hunter/strategy_adapter/engine.py` — Strategy Adapter Engine (Step 2).
+  - `build_adapter_decision_context()` — main entry point implementing all 11 fail-closed adapter rules + 2 allowed + 1 fallback from SPEC-008 in priority order.
+  - `validate_adapter_inputs()` — deterministic priority-ordered validation, returns first blocking reason only.
+  - `is_stale_strategy_context()` — checks timestamp validity (missing/naive/None → stale) and age against threshold.
+  - `map_strategy_to_adapter_mode()` — maps `StrategyContractMode` → `AdapterMode`.
+  - `map_strategy_to_signal_intent()` — maps `StrategyContractMode` → `AdapterSignalIntent`.
+  - `build_safety_flags()` — constructs `AdapterSafetyFlags` from config with safe defaults.
+  - Allowed mappings: LONG_RESEARCH_ONLY → ALLOW_LONG_RESEARCH_SIGNAL, SHORT_RESEARCH_ONLY → ALLOW_SHORT_RESEARCH_SIGNAL.
+  - Blocking mappings: all unsafe/invalid/stale/unsupported → BLOCK_SIGNAL.
+  - 75 strategy adapter engine tests, all passing.
+
+- `src/hunter/strategy_adapter/writer.py` — Adapter Decision JSON Writer (Step 3).
+  - `adapter_decision_context_to_dict()` — serializes all 22 `AdapterDecisionContext` fields to JSON-compatible dict.
+  - `atomic_write_json()` — atomic temp-file write with `os.replace()`, parent directory creation, cleanup on failure.
+  - `write_adapter_decision_context()` — writes to `data/strategy_adapter/current_adapter_decision.json` by default.
+  - `DEFAULT_ADAPTER_DECISION_PATH = data/strategy_adapter/current_adapter_decision.json`.
+  - ISO-8601 UTC timestamps ending with Z, enum string values, signal_intent as string, reason_codes as list, nested dicts, version "1.0".
+  - 41 writer tests, all passing.
+
+- `tests/test_strategy_adapter/test_integration.py` — Integration Tests (Step 4).
+  - 45 end-to-end integration tests.
+  - Full pipeline: StrategyContext → build_adapter_decision_context() → write_adapter_decision_context() → JSON verification.
+  - Allowed LONG_RESEARCH_ONLY signal flow (DRY_RUN_READY → ALLOW_LONG_RESEARCH_SIGNAL).
+  - Allowed SHORT_RESEARCH_ONLY signal flow (DRY_RUN_READY → ALLOW_SHORT_RESEARCH_SIGNAL).
+  - Blocked signal flows: missing, BLOCKED, UNKNOWN, DISABLED strategy contract states; BLOCK_ALL strategy contract mode; stale StrategyContext; unsafe flags (dry_run false, live_trading_enabled true, real_orders_enabled true, leverage_enabled true, shorting_enabled true).
+  - JSON output verification: all 22 fields, enum strings, signal_intent, reason_codes, safety_flags, data_quality, version "1.0", ISO-8601 timestamps.
+  - Atomic write tests with tmp_path, nested directory creation, no production path usage.
+  - Safety tests: no network, no trading logic, no JSON input reading, no Freqtrade runtime, no Binance, all flags safe.
+
+- SPEC-008 Freqtrade Dry-Run Strategy Adapter design finalized and polished.
+  - AdapterState, AdapterMode, AdapterSignalIntent, AdapterDecisionContext defined.
+  - Fail-closed adapter rules, deterministic reason codes, future config/schema/output defined.
+  - PlantUML component and flow diagrams included.
+  - 5-step implementation plan defined.
+
+- MVP-7 Step 5 — Final Review and Polish complete.
+  - 63 final review checklist items passed.
+  - No issues found. No fixes applied.
+  - Full test suite: 1214 tests passing.
+  - Adapter remains dry-run-only and fail-closed.
+  - No Binance integration. No real Freqtrade runtime integration. No deployable strategy class.
+  - No config YAML. No JSON schema. No API keys. No live trading. No real orders. No leverage. No shorting. No entry/exit execution logic.
+
+### Changed
+
+- `src/hunter/__init__.py` — version bumped to `0.7.0-dev`.
+
 
 ### Added
 
