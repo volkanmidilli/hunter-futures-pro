@@ -2,24 +2,26 @@
 
 ## Current Task
 
-MVP-5 Step 1 — Freqtrade Bridge Models.
+MVP-6 Planning — Freqtrade Strategy Contract design.
 
 ## Status
 
-Ready to start.
+Complete.
+
+MVP-5 Freqtrade Integration Boundary is fully complete with 722 tests passing.
 
 ## Scope
 
-Implementation of Freqtrade bridge models only:
-- Create `src/hunter/freqtrade/models.py`.
-- Implement `FreqtradeBridgeState` enum: DISABLED, DRY_RUN_READY, BLOCKED, UNKNOWN.
-- Implement `FreqtradeBridgeMode` enum: LONG_RESEARCH_ONLY, SHORT_RESEARCH_ONLY, BLOCK_ALL.
-- Implement `FreqtradeBridgeContext` dataclass with 18 fields.
-- All fields with correct defaults (version "1.0", dry_run=True, all others False).
-- All enum values serializable as lowercase strings.
-- Immutable/frozen models with `__post_init__` validation where appropriate.
-- Tests: ~50 tests.
-- No engine, no writer, no integration tests in this step.
+Design only. No code implementation.
+
+Next required design document:
+- SPEC-007 — Freqtrade Strategy Contract
+
+MVP-6 must begin with design/spec only, not code. The strategy contract defines:
+- How a future Freqtrade strategy class reads `data/freqtrade/current_freqtrade_context.json`
+- Safety checks the strategy must perform before any trading action
+- Enforcement of dry_run, blocked state, and mode restrictions
+- Interface between the bridge output and strategy execution
 
 ## Not Allowed
 
@@ -27,27 +29,20 @@ Implementation of Freqtrade bridge models only:
 - No real Freqtrade runtime integration.
 - No live trading.
 - No real data fetching.
-- No trading execution.
-- No strategy class.
+- No real order execution.
 - No leverage.
 - No shorting.
+- No API keys.
+- No strategy class implementation (design only).
+- No trading logic implementation (design only).
 - No config YAML creation.
 - No JSON Schema creation.
-- No JSON input reading from files.
+- No JSON input reading implementation.
 - No network calls.
-- No API keys.
 
 ## Previous Task
 
-MVP-5 Planning — Freqtrade Integration design. SPEC-006 created, reviewed, and polished.
-- FreqtradeBridgeState design: DISABLED, DRY_RUN_READY, BLOCKED, UNKNOWN.
-- FreqtradeBridgeMode design: LONG_RESEARCH_ONLY, SHORT_RESEARCH_ONLY, BLOCK_ALL.
-- FreqtradeBridgeContext with 18 fields, version "1.0", all safety defaults safe.
-- 17 fail-closed rules in deterministic priority order.
-- Config file designed for future: `configs/freqtrade_bridge.yaml`.
-- JSON Schema designed for future: `schemas/freqtrade_bridge_context.schema.json`.
-- Mock Freqtrade strategy deferred to MVP-6 or later.
-- No code implemented yet.
+MVP-5 — Freqtrade Integration Boundary (complete).
 
 ## Goal
 

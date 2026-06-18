@@ -10,7 +10,7 @@ Hunter Futures Pro
 
 ## Current Phase
 
-MVP-5 — Freqtrade Integration Step 4 complete. Freqtrade bridge integration tests implemented. 722 tests passing. Ready for MVP-5 Step 5.
+MVP-5 — Freqtrade Integration Boundary complete. All 5 steps finished. 722 tests passing. Ready for MVP-6 Planning.
 
 ## Current Status
 
@@ -128,7 +128,7 @@ MVP-5 Freqtrade Integration Step 1 is complete:
 
 ## Next Step
 
-MVP-5 Step 5 — Final Review and Polish.
+MVP-6 Planning — Freqtrade Strategy Contract design.
 
 ---
 

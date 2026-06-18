@@ -230,9 +230,31 @@ All important project changes will be recorded in this file.
   - No network calls.
   - Next step: MVP-5 Step 5 — Final Review and Polish.
 
+### MVP-5 Complete — Freqtrade Integration Boundary
+
+- SPEC-006 Freqtrade Integration design complete and reviewed.
+- Step 1 Freqtrade Bridge Models complete: `src/hunter/freqtrade_bridge/models.py` with 62 tests.
+- Step 2 Freqtrade Bridge Engine complete: `src/hunter/freqtrade_bridge/engine.py` with 57 tests.
+- Step 3 Freqtrade Bridge Writer complete: `src/hunter/freqtrade_bridge/writer.py` with 25 tests.
+- Step 4 Integration Tests complete: `tests/test_freqtrade_bridge/test_integration.py` with 40 tests.
+- Step 5 Final Review complete: all 35 checklist items verified, no issues found, no fixes required.
+- Full test suite: 722 tests passing.
+- Output path: `data/freqtrade/current_freqtrade_context.json`.
+- Dry-run only: all outputs have `dry_run=True` and `live_trading_enabled=False`.
+- Fail-closed: all unsafe inputs produce `BLOCKED` + `BLOCK_ALL`.
+- No Binance integration.
+- No real Freqtrade runtime integration.
+- No strategy class.
+- No trading logic (pairlist, order, stake, leverage, stoploss, ROI, entry, exit).
+- No live trading.
+- No leverage.
+- No shorting.
+- No API keys.
+- No network calls.
+- Next step: MVP-6 Planning — Freqtrade Strategy Contract design.
+
 ### Safety
 
-- No MVP-5 integration tests exist yet.
 - No config YAML created.
 - No JSON Schema files created.
 - No ExecutionContext JSON reading.
