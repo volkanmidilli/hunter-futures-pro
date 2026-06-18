@@ -4,6 +4,53 @@ MVP-5 Step 4 — Integration Tests.
 
 ---
 
+### MVP-5 Step 4 — Freqtrade Bridge Integration Tests
+
+Date: 2026-06-17
+
+Agent: WrongStack
+
+Task: MVP-5 Step 4 — Freqtrade Bridge Integration Tests.
+
+Files created:
+
+- `tests/test_freqtrade_bridge/test_integration.py` — 40 integration tests.
+
+Files modified:
+
+- None.
+
+Summary:
+
+Added end-to-end integration tests for ExecutionContext through `build_freqtrade_bridge_context()` and `write_freqtrade_bridge_context()`.
+- Long research dry-run-ready scenario: DRY_RUN_ONLY + LONG_RESEARCH_ONLY → DRY_RUN_READY + LONG_RESEARCH_ONLY.
+- Short research dry-run-ready scenario: DRY_RUN_ONLY + SHORT_RESEARCH_ONLY → DRY_RUN_READY + SHORT_RESEARCH_ONLY.
+- Fail-closed blocked scenarios: BLOCK_ALL, stale, missing, blocked state, dry_run false, live trading true, exchange true, freqtrade enabled true, dry_run_only mode.
+- JSON output verification: all 18 fields present, enum values as strings, version "1.0", ISO-8601 timestamps, safety_flags with all 10 fields, input_refs, data_quality, reason_codes.
+- Atomic write and path tests: no temp files left, nested directory creation, no production path used, overwrite existing file.
+- Safety checks: no network, no trading logic, no Freqtrade runtime, no strategy, no leverage, no shorting, no live trading, no real orders, no exchange, no freqtrade runtime, dry_run always true, no JSON input reading.
+- 40 integration tests, all passing.
+- Full test suite: 722 tests passing.
+
+Safety:
+
+- No Binance integration.
+- No real Freqtrade runtime integration.
+- No strategy class.
+- No trading logic.
+- No live trading.
+- No leverage.
+- No shorting.
+- No API keys.
+- No network calls.
+- No JSON input reading.
+
+Next step:
+
+MVP-5 Step 5 — Final Review and Polish.
+
+---
+
 ### MVP-5 Step 3 — Freqtrade Bridge Writer
 
 Date: 2026-06-17
