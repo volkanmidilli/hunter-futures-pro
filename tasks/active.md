@@ -2,7 +2,7 @@
 
 ## Current Task
 
-MVP-5 Planning — Freqtrade Integration design.
+MVP-5 Step 1 — Freqtrade Bridge Models.
 
 ## Status
 
@@ -10,35 +10,44 @@ Ready to start.
 
 ## Scope
 
-Design-only phase for Freqtrade Integration:
-- Define Freqtrade strategy contract that consumes ExecutionContext.
-- Design signal generation from execution_state and execution_mode.
-- Plan dry-run validation before any live trading enablement.
-- Document Freqtrade compatibility requirements.
-- No code implementation yet.
+Implementation of Freqtrade bridge models only:
+- Create `src/hunter/freqtrade/models.py`.
+- Implement `FreqtradeBridgeState` enum: DISABLED, DRY_RUN_READY, BLOCKED, UNKNOWN.
+- Implement `FreqtradeBridgeMode` enum: LONG_RESEARCH_ONLY, SHORT_RESEARCH_ONLY, BLOCK_ALL.
+- Implement `FreqtradeBridgeContext` dataclass with 18 fields.
+- All fields with correct defaults (version "1.0", dry_run=True, all others False).
+- All enum values serializable as lowercase strings.
+- Immutable/frozen models with `__post_init__` validation where appropriate.
+- Tests: ~50 tests.
+- No engine, no writer, no integration tests in this step.
 
 ## Not Allowed
 
-- No Freqtrade runtime integration.
+- No Binance integration.
+- No real Freqtrade runtime integration.
 - No live trading.
 - No real data fetching.
 - No trading execution.
-- No strategy class implementation.
-- No Binance integration.
+- No strategy class.
+- No leverage.
+- No shorting.
+- No config YAML creation.
+- No JSON Schema creation.
+- No JSON input reading from files.
+- No network calls.
+- No API keys.
 
 ## Previous Task
 
-MVP-4 Execution Bridge — fully complete. All 5 steps finished.
-- Step 1: Execution Bridge Models (49 tests)
-- Step 2: Execution Bridge Engine (45 tests)
-- Step 3: Execution Context Writer (20 tests)
-- Step 4: Integration Tests (30 tests)
-- Step 5: Final Review and Polish — no issues found
-- Full test suite: 538 tests passing
-- All 29 review checklist items verified and passing
-- No issues found. No fixes applied.
-- Version remains 0.4.0-dev
-- No Binance integration. No Freqtrade runtime integration. No live trading. No trading logic. No API keys.
+MVP-5 Planning — Freqtrade Integration design. SPEC-006 created, reviewed, and polished.
+- FreqtradeBridgeState design: DISABLED, DRY_RUN_READY, BLOCKED, UNKNOWN.
+- FreqtradeBridgeMode design: LONG_RESEARCH_ONLY, SHORT_RESEARCH_ONLY, BLOCK_ALL.
+- FreqtradeBridgeContext with 18 fields, version "1.0", all safety defaults safe.
+- 17 fail-closed rules in deterministic priority order.
+- Config file designed for future: `configs/freqtrade_bridge.yaml`.
+- JSON Schema designed for future: `schemas/freqtrade_bridge_context.schema.json`.
+- Mock Freqtrade strategy deferred to MVP-6 or later.
+- No code implemented yet.
 
 ## Goal
 

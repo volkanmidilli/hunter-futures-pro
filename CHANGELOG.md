@@ -72,6 +72,42 @@ All important project changes will be recorded in this file.
 
 - MVP-5 Planning — Freqtrade Integration design.
 
+## 0.4.0-dev — MVP-5 Planning — Freqtrade Integration Design (Complete)
+
+### Added
+
+- `specs/SPEC-006-Freqtrade-Integration.md` — Freqtrade Integration specification (design-only, no code).
+  - Consumes in-memory `ExecutionContext` from MVP-4.
+  - Future input reference: `data/execution/current_execution_context.json`.
+  - Outputs: `data/freqtrade/current_freqtrade_context.json`.
+  - Dry-run only: the only non-blocked state is `DRY_RUN_READY`.
+  - Fail-closed `BLOCK_ALL` by default for all unsafe inputs.
+  - `FreqtradeBridgeState` enum design: DISABLED, DRY_RUN_READY, BLOCKED, UNKNOWN.
+  - `FreqtradeBridgeMode` enum design: LONG_RESEARCH_ONLY, SHORT_RESEARCH_ONLY, BLOCK_ALL.
+  - `FreqtradeBridgeContext` with 18 fields including version default `"1.0"`.
+  - 17 fail-closed rules in deterministic priority order.
+  - `configs/freqtrade_bridge.yaml` future design only (not created in MVP-5).
+  - `schemas/freqtrade_bridge_context.schema.json` future design only (not created in MVP-5).
+  - Mock Freqtrade strategy deferred to MVP-6 or later.
+  - No code implemented yet.
+
+### Safety
+
+- No code implemented for Freqtrade Integration.
+- No Binance integration.
+- No real Freqtrade runtime integration.
+- No strategy class.
+- No trading logic (pairlist, order, stake, leverage, stoploss, ROI, entry, exit).
+- No live trading.
+- No leverage.
+- No shorting.
+- No API keys.
+- No network calls.
+
+### Next
+
+- MVP-5 Step 1 — Freqtrade Bridge Models.
+
 ## 0.4.0-dev — MVP-4 Step 4 — Integration Tests (Complete)
 
 ### Added

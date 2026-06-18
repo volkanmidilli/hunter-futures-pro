@@ -10,11 +10,61 @@ Hunter Futures Pro
 
 ## Current Phase
 
-MVP-4 — Execution Bridge fully complete. All 5 steps done. 538 tests passing. Ready for MVP-5 planning.
+MVP-5 — Freqtrade Integration design complete, implementation planning pending. SPEC-006 reviewed and polished. Ready for MVP-5 Step 1.
 
 ## Current Status
 
 MVP-0 foundation is complete and committed.
+
+MVP-1 Data Foundation is complete and committed. All 91 tests pass.
+
+MVP-2 Market State is complete and committed. All 278 tests pass.
+- Market State Models, Indicator Utilities, Regime Engine, Breadth Engine, JSON Output Writers all implemented.
+- No Binance integration. No Freqtrade integration. No live trading.
+
+MVP-3 Decision Layer is complete and committed. All 394 tests pass.
+- Decision Models, Decision Engine, Decision Writer, Integration Tests all implemented.
+- No Binance integration. No Freqtrade integration. No live trading. No JSON input reading.
+
+MVP-4 Execution Bridge is complete and committed. All 538 tests pass.
+- Execution Bridge Models, Engine, Writer, Integration Tests, Final Review all implemented.
+- No Binance integration. No Freqtrade runtime integration. No live trading. No trading logic. No API keys.
+
+MVP-5 Freqtrade Integration design is complete:
+- `specs/SPEC-006-Freqtrade-Integration.md` created, reviewed, and polished.
+- FreqtradeBridgeState design: DISABLED, DRY_RUN_READY, BLOCKED, UNKNOWN.
+- FreqtradeBridgeMode design: LONG_RESEARCH_ONLY, SHORT_RESEARCH_ONLY, BLOCK_ALL.
+- FreqtradeBridgeContext with 18 fields, version "1.0", all safety defaults safe.
+- 17 fail-closed rules in deterministic priority order.
+- Consumes in-memory ExecutionContext from MVP-4.
+- Future input reference: `data/execution/current_execution_context.json`.
+- Outputs: `data/freqtrade/current_freqtrade_context.json`.
+- Config file designed for future: `configs/freqtrade_bridge.yaml`.
+- JSON Schema designed for future: `schemas/freqtrade_bridge_context.schema.json`.
+- Mock Freqtrade strategy deferred to MVP-6 or later.
+- No MVP-5 code exists yet.
+- No Binance integration exists.
+- No real Freqtrade runtime integration exists.
+- No strategy class exists.
+- No trading logic exists (no pairlist, order, stake, leverage, stoploss, ROI, entry, exit).
+- No live trading exists.
+- No leverage.
+- No shorting.
+- No API keys.
+
+## Next Step
+
+MVP-5 Step 1 — Freqtrade Bridge Models.
+
+---
+
+## Previous State (MVP-4)
+
+MVP-4 Execution Bridge is complete and committed. All 538 tests pass.
+- Execution Bridge Models, Engine, Writer, Integration Tests, Final Review all implemented.
+- No Binance integration. No Freqtrade runtime integration. No live trading. No trading logic. No API keys.
+
+MVP-4 Execution Bridge Step 1 is complete:
 
 MVP-1 Data Foundation is complete and committed. All 91 tests pass.
 

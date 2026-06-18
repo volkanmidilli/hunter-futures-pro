@@ -1,6 +1,62 @@
 Next step:
 
-MVP-5 Planning — Freqtrade Integration design.
+MVP-5 Step 1 — Freqtrade Bridge Models.
+
+---
+
+### SPEC-006 — Freqtrade Integration Design
+
+Date: 2026-06-17
+
+Agent: WrongStack
+
+Task: SPEC-006 — Freqtrade Integration Design.
+
+Files created:
+
+- `specs/SPEC-006-Freqtrade-Integration.md` — Freqtrade Integration specification (design-only).
+
+Files reviewed:
+
+- `specs/SPEC-006-Freqtrade-Integration.md` — full review against 29 checklist items.
+- `specs/SPEC-005-Execution-Bridge-Freqtrade.md` — reference for ExecutionContext contract.
+- `docs/handoff/CURRENT_STATE.md` — project state context.
+- `tasks/active.md` — task tracking.
+- `AGENTS.md` — agent guidelines.
+- `.wrongstack/AGENTS.md` — agent configuration.
+
+Files changed (polish only):
+
+- `specs/SPEC-006-Freqtrade-Integration.md` — 3 polish fixes applied.
+
+Summary:
+
+Created, reviewed, and polished SPEC-006 for MVP-5 Freqtrade Integration.
+- Design consumes in-memory ExecutionContext from MVP-4.
+- Produces dry-run-only fail-closed Freqtrade bridge context at `data/freqtrade/current_freqtrade_context.json`.
+- FreqtradeBridgeState: DISABLED, DRY_RUN_READY, BLOCKED, UNKNOWN.
+- FreqtradeBridgeMode: LONG_RESEARCH_ONLY, SHORT_RESEARCH_ONLY, BLOCK_ALL.
+- FreqtradeBridgeContext: 18 fields, version "1.0", all safety defaults safe.
+- 17 fail-closed rules in deterministic priority order.
+- Review passed all 29 checklist items.
+- No blocking issues found. 3 non-blocking polish items addressed.
+
+Safety:
+
+- No code implemented.
+- No Binance connection.
+- No real Freqtrade runtime integration.
+- No strategy class.
+- No trading logic (pairlist, order, stake, leverage, stoploss, ROI, entry, exit).
+- No live trading.
+- No leverage.
+- No shorting.
+- No API keys.
+- No network calls.
+
+Next step:
+
+MVP-5 Step 1 — Freqtrade Bridge Models.
 
 ---
 
