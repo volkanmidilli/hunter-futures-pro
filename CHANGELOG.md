@@ -2,6 +2,39 @@
 
 All important project changes will be recorded in this file.
 
+## 0.4.0-dev — MVP-4 Step 3 — Execution Context Writer (Complete)
+
+### Added
+
+- `src/hunter/execution/writer.py` created with JSON serialization and atomic output writer.
+- `execution_context_to_dict()` — serializes all 14 ExecutionContext fields to JSON-compatible dict.
+- `atomic_write_json()` — atomic temp-file write with `os.replace()`, parent directory creation, cleanup on failure.
+- `write_execution_context()` — writes to `data/execution/current_execution_context.json` by default.
+- ISO-8601 timestamp serialization with Z suffix.
+- Enum string serialization for all enum fields.
+- `input_refs` serialized as nested dict with `decision_timestamp` and `decision_source`.
+- `safety_flags` serialized as nested dict with all 6 safety fields.
+- `data_quality` serialized as nested dict with all 4 quality flags.
+- `version` field preserved for backward-compatible contract evolution.
+- 20 execution writer tests, all passing.
+- Full test suite: 508 tests passing.
+
+### Safety
+
+- No Binance integration.
+- No Freqtrade runtime integration.
+- No strategy class.
+- No trading logic.
+- No live trading.
+- No API keys.
+- No network calls.
+- No JSON input reading.
+- Atomic writes prevent partial output on failure.
+
+### Next
+
+- MVP-4 Step 4 — Integration Tests.
+
 ## 0.4.0-dev — MVP-4 Step 2 — Execution Bridge Engine (Complete)
 
 ### Added

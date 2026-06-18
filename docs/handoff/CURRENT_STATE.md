@@ -10,7 +10,7 @@ Hunter Futures Pro
 
 ## Current Phase
 
-MVP-4 — Execution Bridge Step 2 complete. Step 3 pending.
+MVP-4 — Execution Bridge Step 3 complete. Step 4 pending.
 
 ## Current Status
 
@@ -72,13 +72,34 @@ MVP-4 Execution Bridge Step 2 is complete:
 - No live trading exists.
 - No API keys exist.
 
+MVP-4 Execution Bridge Step 3 is complete:
+- `src/hunter/execution/writer.py` created with JSON serialization and atomic output writer.
+- `execution_context_to_dict()` — serializes all 14 ExecutionContext fields to JSON-compatible dict.
+- `atomic_write_json()` — atomic temp-file write with os.replace(), parent directory creation, cleanup on failure.
+- `write_execution_context()` — writes to `data/execution/current_execution_context.json` by default.
+- ISO-8601 timestamp serialization, enum string serialization.
+- safety_flags, input_refs, data_quality, version all preserved in JSON output.
+- 20 execution writer tests, all passing.
+- Full test suite: 508 tests passing.
+- No integration tests exist yet for MVP-4.
+- No config YAML exists yet.
+- No JSON Schema validation exists yet.
+- No DecisionOutput JSON reading exists.
+- No Binance integration exists.
+- No Freqtrade runtime integration exists.
+- No trading logic exists.
+- No live trading exists.
+- No API keys exist.
+
 ## Next Step
 
-MVP-4 Step 3 — Execution Bridge Writer.
-- Create `execution_to_dict()` function for JSON serialization.
-- Create `write_execution_output()` function with atomic writes.
-- Target: `data/execution/current_execution_context.json` default path.
-- Create `tests/test_execution/test_writer.py` with serialization tests.
+MVP-4 Step 4 — Integration Tests.
+- Create end-to-end tests: DecisionOutput -> build_execution_context() -> write_execution_context() -> JSON verification.
+- Test successful path: valid decision produces DRY_RUN_ONLY context with correct JSON output.
+- Test blocked path: invalid decision produces BLOCKED context with correct JSON output.
+- Test stale decision blocks.
+- Test safety config violations block.
+- Use tmp_path for writer outputs, not production data/execution path.
 - Target: 15+ tests, all passing.
 
 ## Current Status
