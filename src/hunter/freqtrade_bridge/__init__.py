@@ -2,6 +2,11 @@
 
 from __future__ import annotations
 
+from hunter.freqtrade_bridge.writer import (
+    atomic_write_json,
+    freqtrade_bridge_context_to_dict,
+    write_freqtrade_bridge_context,
+)
 from hunter.freqtrade_bridge.engine import (
     build_freqtrade_bridge_context,
     build_safety_flags,
@@ -32,4 +37,7 @@ __all__ = [
     "map_execution_to_bridge_mode",
     "build_safety_flags",
     "build_freqtrade_bridge_context",
+    "freqtrade_bridge_context_to_dict",
+    "atomic_write_json",
+    "write_freqtrade_bridge_context",
 ]
