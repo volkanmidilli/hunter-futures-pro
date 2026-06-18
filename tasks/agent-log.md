@@ -4,6 +4,51 @@ MVP-5 Step 4 — Integration Tests.
 
 ---
 
+### MVP-6 Final Review and Completion
+
+Date: 2026-06-18
+
+Agent: WrongStack
+
+Task: MVP-6 Final Review and Completion.
+
+Files created:
+
+- None.
+
+Files modified:
+
+- None.
+
+Summary:
+
+Completed final review for MVP-6 Strategy Contract.
+- Full test suite passes with 959 tests.
+- MVP-6 includes strategy contract models, engine, writer, and integration tests.
+- The strategy contract produces dry-run-only fail-closed StrategyContext for future strategy-facing consumers.
+- All 60 final review checklist items passed.
+- No issues found. No fixes applied.
+- Version bumped to 0.6.0-dev.
+
+Safety:
+
+- No Binance integration.
+- No real Freqtrade runtime integration.
+- No strategy class.
+- No config YAML.
+- No JSON schema.
+- No API keys.
+- No live trading.
+- No real orders.
+- No leverage.
+- No shorting.
+
+Next step:
+
+SPEC-008 — MVP-7 Freqtrade Dry-Run Strategy Adapter design.
+
+---
+
 ### MVP-6 Step 4 — Strategy Contract Integration Tests
 
 Date: 2026-06-18

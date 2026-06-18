@@ -291,6 +291,37 @@ All important project changes will be recorded in this file.
   - Full test suite: 959 tests passing (914 existing + 45 new).
   - No application code changed.
   - No config YAML, no JSON schema, no strategy class, no Freqtrade runtime, no Binance, no API keys, no live trading, no real orders, no leverage, no shorting.
+- MVP-6 Step 4 — Strategy Contract Integration Tests complete.
+  - `tests/test_strategy_contract/test_integration.py` — 45 integration tests, all passing.
+  - Integration coverage:
+    - Allowed flows: LONG_RESEARCH_ONLY, SHORT_RESEARCH_ONLY (full pipeline engine + writer + JSON verification).
+    - Blocked flows: missing bridge context, BLOCKED bridge state, UNKNOWN bridge state, DISABLED bridge state, BLOCK_ALL bridge mode, stale bridge context.
+    - Unsafe flags blocked: dry_run false, live_trading_enabled true, real_orders_enabled true, leverage_enabled true, shorting_enabled true.
+    - JSON output verification: ISO-8601 timestamps, enum strings, reason_codes list, input_refs/safety_flags/data_quality dicts, version "1.0", blocked vs allowed reason codes.
+    - Atomic/path verification: custom tmp_path, nested directory creation, overwrite existing file, no temp files left, default path constant.
+    - Safety absence checks: no config YAML, no JSON schema, no strategy class, no Freqtrade runtime, no Binance, no API keys, no live trading, no real orders, no leverage, no shorting, no entry/exit logic, no trading fields.
+  - Full test suite: 959 tests passing (914 existing + 45 new).
+  - No application code changed.
+  - No config YAML, no JSON schema, no strategy class, no Freqtrade runtime, no Binance, no API keys, no live trading, no real orders, no leverage, no shorting.
+- MVP-6 Step 5 — Final Review and Polish complete.
+  - All 60 final review checklist items passed.
+  - No issues found. No fixes applied.
+  - Version bumped to 0.6.0-dev.
+- MVP-6 — Freqtrade Strategy Contract complete.
+  - SPEC-007 finalized and polished.
+  - Strategy contract produces dry-run-only fail-closed StrategyContext for future strategy-facing consumers.
+  - Default output path: `data/strategy/current_strategy_context.json`.
+  - Full test suite: 959 tests passing.
+  - No Binance integration.
+  - No real Freqtrade runtime integration.
+  - No strategy class.
+  - No config YAML.
+  - No JSON schema.
+  - No API keys.
+  - No live trading.
+  - No real orders.
+  - No leverage.
+  - No shorting.
 - SPEC-006 Freqtrade Integration design complete and reviewed.
 - Step 1 Freqtrade Bridge Models complete: `src/hunter/freqtrade_bridge/models.py` with 62 tests.
 - Step 2 Freqtrade Bridge Engine complete: `src/hunter/freqtrade_bridge/engine.py` with 57 tests.
