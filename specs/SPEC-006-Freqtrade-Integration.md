@@ -10,7 +10,7 @@ The Freqtrade Integration layer is a pure translation and validation boundary. I
 
 ## Requirements
 
-1. **Consume ExecutionContext**: Accept an in-memory `ExecutionContext` from MVP-4 as the sole input.
+1. **Consume ExecutionContext**: Accept an in-memory `ExecutionContext` from MVP-4 as the sole input. During implementation, MVP-5 consumes the ExecutionContext in-memory directly from the Execution Bridge engine. The future file input reference path is `data/execution/current_execution_context.json` — this is the future bridge input path for consumers that read from disk rather than receiving objects in memory.
 2. **Produce FreqtradeBridgeContext**: Output a `FreqtradeBridgeContext` object with explicit safety fields.
 3. **Fail-Closed by Default**: Any missing, invalid, stale, or unsafe input must produce `BLOCKED` + `BLOCK_ALL`.
 4. **Dry-Run Only**: The only non-blocked state is `DRY_RUN_READY`.
@@ -108,6 +108,8 @@ The bridge engine applies these rules in strict priority order. The first matchi
 16. **Block All**: If `execution_context.mode == BLOCK_ALL` => `BLOCKED` + `BLOCK_ALL` + reason `"execution_mode_is_block_all"`.
 17. **Unknown Mode**: If none of the above match => `BLOCKED` + `BLOCK_ALL` + reason `"unknown_execution_mode:<actual_mode>"`.
 
+> **Note on flow diagram**: The PlantUML flow diagram below shows 16 visible decision branches. The final `BLOCK_ALL` fallback (rule 16) is represented by the terminal `else`/`default` branch following the `SHORT_RESEARCH_ONLY` check. Rules 16 and 17 both produce `BLOCKED` + `BLOCK_ALL` and are visually merged in the diagram for clarity.
+
 ### Mapping Table
 
 | ExecutionState | ExecutionMode | FreqtradeBridgeState | FreqtradeBridgeMode | Reason Code |
@@ -140,6 +142,8 @@ freqtrade_bridge:
   allow_short_research: true
   unsupported_mode_action: BLOCK_ALL
 ```
+
+> **Config-to-output mapping**: `stale_execution_context_seconds: 300` in the config above is the producer-side validation threshold. It validates the age of the input `ExecutionContext` before the Freqtrade bridge produces a `FreqtradeBridgeContext`. The consumer-side safety flag emitted in the JSON output is `max_context_age_seconds: 300` (inside `safety_flags`), which tells future Freqtrade-facing consumers how fresh the context is expected to be.
 
 ### JSON Output Format
 
