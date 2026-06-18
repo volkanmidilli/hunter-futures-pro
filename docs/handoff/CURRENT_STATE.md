@@ -10,7 +10,7 @@ Hunter Futures Pro
 
 ## Current Phase
 
-MVP-5 — Freqtrade Integration Step 2 complete. Freqtrade bridge engine implemented. 657 tests passing. Ready for MVP-5 Step 3.
+MVP-5 — Freqtrade Integration Step 3 complete. Freqtrade bridge writer implemented. 682 tests passing. Ready for MVP-5 Step 4.
 
 ## Current Status
 
@@ -30,6 +30,33 @@ MVP-4 Execution Bridge is complete and committed. All 538 tests pass.
 - Execution Bridge Models, Engine, Writer, Integration Tests, Final Review all implemented.
 - No Binance integration. No Freqtrade runtime integration. No live trading. No trading logic. No API keys.
 
+MVP-5 Freqtrade Integration Step 3 is complete:
+- `src/hunter/freqtrade_bridge/writer.py` created with Freqtrade Bridge Writer.
+- `freqtrade_bridge_context_to_dict()` — serializes all 18 FreqtradeBridgeContext fields to JSON-compatible dict.
+- `atomic_write_json()` — atomic temp-file write with `os.replace()`, parent directory creation, cleanup on failure.
+- `write_freqtrade_bridge_context()` — writes to `data/freqtrade/current_freqtrade_context.json` by default.
+- ISO-8601 timestamp serialization with `Z` suffix.
+- Enum string serialization via `.value`.
+- `safety_flags` serialization via `to_dict()` with all 10 fields.
+- `data_quality` serialization via `to_dict()` with freshness, validity, validation errors.
+- `input_refs` nested dict with `execution_context_timestamp` and `execution_context_version`.
+- `version` always `"1.0"`.
+- `reason_codes` list of strings.
+- 25 Freqtrade bridge writer tests, all passing.
+- Full test suite: 682 tests passing.
+- No MVP-5 integration tests exist yet.
+- No config YAML exists yet.
+- No JSON Schema validation exists yet.
+- No ExecutionContext JSON reading exists.
+- No Binance integration exists.
+- No real Freqtrade runtime integration exists.
+- No strategy class exists.
+- No trading logic exists (no pairlist, order, stake, leverage, stoploss, ROI, entry, exit).
+- No live trading exists.
+- No leverage.
+- No shorting.
+- No API keys.
+
 MVP-5 Freqtrade Integration Step 2 is complete:
 - `src/hunter/freqtrade_bridge/engine.py` created with fail-closed Freqtrade Bridge Engine.
 - `build_freqtrade_bridge_context()` — main entry point consuming in-memory `ExecutionContext`.
@@ -45,7 +72,8 @@ MVP-5 Freqtrade Integration Step 2 is complete:
 - Checks both ExecutionContext direct fields and nested safety_flags for safety.
 - 57 Freqtrade bridge engine tests, all passing.
 - Full test suite: 657 tests passing.
-- No Freqtrade Bridge Writer exists yet.
+- Freqtrade Bridge Writer exists (Step 3 complete).
+- No MVP-5 integration tests exist yet.
 - No config YAML exists yet.
 - No JSON Schema validation exists yet.
 - No ExecutionContext JSON reading exists.
@@ -72,8 +100,9 @@ MVP-5 Freqtrade Integration Step 1 is complete:
 - All models frozen/immutable with `__post_init__` validation.
 - 62 Freqtrade bridge model tests, all passing.
 - Full test suite: 600 tests passing.
-- No Freqtrade Bridge Engine exists yet.
-- No Freqtrade Bridge Writer exists yet.
+- Freqtrade Bridge Engine exists (Step 2 complete).
+- Freqtrade Bridge Writer exists (Step 3 complete).
+- No MVP-5 integration tests exist yet.
 - No config YAML exists yet.
 - No JSON Schema validation exists yet.
 - No ExecutionContext JSON reading exists.
@@ -88,7 +117,7 @@ MVP-5 Freqtrade Integration Step 1 is complete:
 
 ## Next Step
 
-MVP-5 Step 3 — Freqtrade Bridge Writer.
+MVP-5 Step 4 — Integration Tests.
 
 ---
 

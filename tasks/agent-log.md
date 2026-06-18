@@ -1,6 +1,58 @@
 Next step:
 
-MVP-5 Step 3 — Freqtrade Bridge Writer.
+MVP-5 Step 4 — Integration Tests.
+
+---
+
+### MVP-5 Step 3 — Freqtrade Bridge Writer
+
+Date: 2026-06-17
+
+Agent: WrongStack
+
+Task: MVP-5 Step 3 — Freqtrade Bridge Writer.
+
+Files created:
+
+- `src/hunter/freqtrade_bridge/writer.py` — Freqtrade Bridge Writer.
+- `tests/test_freqtrade_bridge/test_writer.py` — 25 writer tests.
+
+Files modified:
+
+- `src/hunter/freqtrade_bridge/__init__.py` — Added writer exports.
+
+Summary:
+
+Added JSON serialization and atomic output writer for FreqtradeBridgeContext.
+- `freqtrade_bridge_context_to_dict()` — serializes all 18 FreqtradeBridgeContext fields to JSON-compatible dict.
+- `atomic_write_json()` — atomic temp-file write with `os.replace()`, parent directory creation, cleanup on failure.
+- `write_freqtrade_bridge_context()` — writes to `data/freqtrade/current_freqtrade_context.json` by default.
+- ISO-8601 timestamp serialization with `Z` suffix.
+- Enum string serialization via `.value`.
+- `safety_flags` serialization via `to_dict()` with all 10 fields.
+- `data_quality` serialization via `to_dict()` with freshness, validity, validation errors.
+- `input_refs` nested dict with `execution_context_timestamp` and `execution_context_version`.
+- `version` always `"1.0"`.
+- `reason_codes` list of strings.
+- 25 Freqtrade bridge writer tests, all passing.
+- Full test suite: 682 tests passing.
+
+Safety:
+
+- No Binance integration.
+- No real Freqtrade runtime integration.
+- No strategy class.
+- No trading logic (pairlist, order, stake, leverage, stoploss, ROI, entry, exit).
+- No live trading.
+- No leverage.
+- No shorting.
+- No API keys.
+- No network calls.
+- No JSON input reading.
+
+Next step:
+
+MVP-5 Step 4 — Integration Tests.
 
 ---
 
