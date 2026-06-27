@@ -60,17 +60,17 @@ This layer is the final safety boundary before any human considers acting on res
 | W3 | **Report consumption by execution/strategy/shell/order layers** | Reports are human-review artifacts only, never trading signals |
 | W4 | **Freqtrade runtime connection** | No runtime integration at any level |
 | W5 | **Binance or any exchange connection** | No exchange APIs |
-| W5 | **Real order execution** | No orders, ever |
-| W6 | **Leverage configuration** | No position sizing |
-| W7 | **Shorting logic** | No directional execution |
-| W8 | **Real entry/exit execution logic** | No `enter_long`, `enter_short`, `exit_long`, `exit_short` |
-| W9 | **Live trading enablement** | Reports are for research review only |
-| W10 | **API keys or secrets** | No authentication needed |
-| W11 | **Production deployment instructions** | Local-only reports |
-| W12 | **Network calls from report generation** | Reports are local filesystem only |
-| W13 | **Database persistence** | Filesystem JSON/Markdown only |
-| W14 | **Real-time streaming** | Batch observation only |
-| W15 | **Report output feeding back into any MVP layer** | Reports must never be consumed by execution, strategy, shell, or order layers |
+| W6 | **Real order execution** | No orders, ever |
+| W7 | **Leverage configuration** | No position sizing |
+| W8 | **Shorting logic** | No directional execution |
+| W9 | **Real entry/exit execution logic** | No `enter_long`, `enter_short`, `exit_long`, `exit_short` |
+| W10 | **Live trading enablement** | Reports are for research review only |
+| W11 | **API keys or secrets** | No authentication needed |
+| W12 | **Production deployment instructions** | Local-only reports |
+| W13 | **Network calls from report generation** | Reports are local filesystem only |
+| W14 | **Database persistence** | Filesystem JSON/Markdown only |
+| W15 | **Real-time streaming** | Batch observation only |
+| W16 | **Report output feeding back into any MVP layer** | Reports must never be consumed by execution, strategy, shell, or order layers |
 
 ## 3. Method
 
@@ -246,13 +246,14 @@ The observation layer implements 8 fail-closed rules in priority order:
 | Priority | Check | Failure State | Reason Code |
 |---|---|---|---|
 | 1 | Input is None | BLOCKED | MISSING_INPUT |
-| 2 | Input missing required fields | BLOCKED | INVALID_INPUT |
-| 3 | `dry_run` is not `true` | BLOCKED | DRY_RUN_DISABLED |
-| 4 | `live_trading_enabled` is not `false` | BLOCKED | LIVE_TRADING_ENABLED |
-| 5 | `real_orders_enabled` is not `false` | BLOCKED | REAL_ORDERS_ENABLED |
-| 6 | `leverage_enabled` is not `false` | BLOCKED | LEVERAGE_ENABLED |
-| 7 | `shorting_enabled` is not `false` | BLOCKED | SHORTING_ENABLED |
-| 8 | Any exception during observation | BLOCKED | OBSERVATION_ERROR |
+| 2 | Input missing required fields or unsupported version | BLOCKED | INVALID_INPUT |
+| 3 | `version` is not `"1.0"` | BLOCKED | UNSUPPORTED_INPUT_VERSION |
+| 4 | `dry_run` is not `true` | BLOCKED | DRY_RUN_DISABLED |
+| 5 | `live_trading_enabled` is not `false` | BLOCKED | LIVE_TRADING_ENABLED |
+| 6 | `real_orders_enabled` is not `false` | BLOCKED | REAL_ORDERS_ENABLED |
+| 7 | `leverage_enabled` is not `false` | BLOCKED | LEVERAGE_ENABLED |
+| 8 | `shorting_enabled` is not `false` | BLOCKED | SHORTING_ENABLED |
+| 9 | Any exception during observation | BLOCKED | OBSERVATION_ERROR |
 
 All failures produce a `SignalObservation` with:
 - `signal`: `"NONE"`
@@ -267,6 +268,7 @@ All failures produce a `SignalObservation` with:
 ```python
 MISSING_INPUT = "MISSING_INPUT"
 INVALID_INPUT = "INVALID_INPUT"
+UNSUPPORTED_INPUT_VERSION = "UNSUPPORTED_INPUT_VERSION"
 DRY_RUN_DISABLED = "DRY_RUN_DISABLED"
 LIVE_TRADING_ENABLED = "LIVE_TRADING_ENABLED"
 REAL_ORDERS_ENABLED = "REAL_ORDERS_ENABLED"
