@@ -1,5 +1,66 @@
 ---
 
+### MVP-12 Step 1 — Review Index Models and Engine
+
+Date: 2026-06-27
+
+Agent: WrongStack
+
+Task: MVP-12 Step 1 — Review Index Models and Engine.
+
+Files created:
+
+- `src/hunter/review_index/__init__.py` — public API exports.
+- `src/hunter/review_index/models.py` — frozen index dataclasses, enums, reason codes, forbidden index content detection.
+- `src/hunter/review_index/engine.py` — in-memory review index engine functions.
+- `tests/test_review_index/__init__.py` — test package init.
+- `tests/test_review_index/test_models.py` — model unit tests.
+- `tests/test_review_index/test_engine.py` — engine unit tests.
+
+Files modified:
+
+- `CHANGELOG.md` — added MVP-12 Step 1 section.
+- `tasks/agent-log.md` — this entry.
+
+Summary:
+
+Implemented SPEC-013 review index models and in-memory review index engine.
+Added frozen index dataclasses (IndexConfig, IndexSafetyFlags, IndexEntry, IndexSummary, IndexDataQuality, ReviewIndex), index enums (IndexState, IndexEntryKind, IndexOutputFormat), deterministic reason codes (12 constants), forbidden index content detection (FORBIDDEN_INDEX_TERMS with 13 keys), and 6 engine functions (has_unsafe_index_content, build_index_safety_flags, build_index_entry, build_index_summary, build_index_data_quality, build_review_index).
+12-priority fail-closed rules with deterministic first blocking reason: EMPTY_INDEX, INVALID_REPORT, UNSUPPORTED_REPORT_VERSION, UNSAFE_REPORT_STATE, INVALID_REVIEW, UNSUPPORTED_REVIEW_VERSION, UNSAFE_REVIEW_STATE, UNSAFE_SAFETY_FLAGS, UNSAFE_INDEX_CONTENT, MISSING_REPORTS, MISSING_REVIEWS, INDEX_ERROR.
+Added 70 model tests + 97 engine tests = 166 review_index tests passing. 1 skipped (INDEX_ERROR orphan review edge case). Full suite passes with 2377 tests using `pytest --import-mode=importlib`.
+
+Safety:
+
+No writer created.
+No integration tests created.
+No file I/O in engine.
+No config YAML.
+No JSON schema.
+No Freqtrade strategy class.
+No freqtrade import.
+No Freqtrade runtime connection.
+No Binance.
+No real exchange.
+No API keys.
+No live trading.
+No real orders.
+No leverage.
+No shorting.
+No real entry/exit execution logic.
+No report feedback into execution paths.
+No operator feedback into execution paths.
+No index feedback into execution paths.
+No Web UI.
+No dashboard.
+No database persistence.
+File references are local strings only and are not traversed, opened, followed, validated, or executed.
+
+Next step:
+
+MVP-12 Step 2 — Review Index Writer, not started.
+
+---
+
 ### SPEC-013 Planning — Local Review Index
 
 Date: 2026-06-27

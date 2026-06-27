@@ -2,6 +2,82 @@
 
 All important project changes will be recorded in this file.
 
+## MVP-12 Step 1 — Review Index Models and Engine (Complete)
+
+**Version:** 0.11.0-dev (MVP-11 complete) → MVP-12 Step 1 complete.
+
+**SPEC-013:** `specs/SPEC-013-Local-Review-Index.md` — approved with notes and polished.
+
+- **Implemented package:** `src/hunter/review_index/`
+- **Files created:**
+  - `src/hunter/review_index/__init__.py` — public API exports.
+  - `src/hunter/review_index/models.py` — frozen index dataclasses, enums, reason codes, forbidden index content detection.
+  - `src/hunter/review_index/engine.py` — in-memory review index engine functions.
+  - `tests/test_review_index/__init__.py` — test package init.
+  - `tests/test_review_index/test_models.py` — model unit tests.
+  - `tests/test_review_index/test_engine.py` — engine unit tests.
+- **Implemented:**
+  - `IndexState` enum (DISABLED, READY, BLOCKED, UNKNOWN).
+  - `IndexEntryKind` enum (OBSERVATION_ONLY, REVIEW_ONLY, LINKED_REPORT_REVIEW, EMPTY, UNKNOWN).
+  - `IndexOutputFormat` enum (JSON, MARKDOWN).
+  - `IndexConfig` frozen dataclass with 13 fields and validation.
+  - `IndexSafetyFlags` frozen dataclass with 10 fields and validation.
+  - `IndexEntry` frozen dataclass with 11 fields, `blocked()` factory, validation.
+  - `IndexSummary` frozen dataclass with 8 fields and validation.
+  - `IndexDataQuality` frozen dataclass with 7 fields and validation.
+  - `ReviewIndex` frozen dataclass with 8 fields, `blocked()` factory, validation.
+  - Deterministic `REASON_CODES` tuple with 12 constants.
+  - `FORBIDDEN_INDEX_TERMS` frozenset with 13 forbidden keys/terms.
+  - `has_unsafe_index_content()` — case-insensitive forbidden content detection.
+  - `build_index_safety_flags()` — safe defaults from config.
+  - `build_index_entry()` — 12-priority fail-closed entry builder.
+  - `build_index_summary()` — deterministic summary counts.
+  - `build_index_data_quality()` — deterministic quality metrics.
+  - `build_review_index()` — full index builder with empty-records blocking.
+- **Fail-closed priority order:**
+  1. EMPTY_INDEX
+  2. INVALID_REPORT
+  3. UNSUPPORTED_REPORT_VERSION
+  4. UNSAFE_REPORT_STATE
+  5. INVALID_REVIEW
+  6. UNSUPPORTED_REVIEW_VERSION
+  7. UNSAFE_REVIEW_STATE
+  8. UNSAFE_SAFETY_FLAGS
+  9. UNSAFE_INDEX_CONTENT
+  10. MISSING_REPORTS
+  11. MISSING_REVIEWS
+  12. INDEX_ERROR
+- **Tests:**
+  - 70 model tests + 97 engine tests = 166 review_index tests passing.
+  - 1 skipped (INDEX_ERROR orphan review edge case — requires source modification to trigger).
+  - **Full suite: 2377 tests passing** using `pytest --import-mode=importlib`.
+- **Safety:**
+  - No writer created.
+  - No integration tests created.
+  - No file I/O in engine.
+  - No config YAML.
+  - No JSON schema.
+  - No Freqtrade strategy class.
+  - No freqtrade import.
+  - No Freqtrade runtime connection.
+  - No Binance.
+  - No real exchange.
+  - No API keys.
+  - No live trading.
+  - No real orders.
+  - No leverage.
+  - No shorting.
+  - No real entry/exit execution logic.
+  - No report feedback into execution paths.
+  - No operator feedback into execution paths.
+  - No index feedback into execution paths.
+  - No Web UI.
+  - No dashboard.
+  - No database persistence.
+  - File references are local strings only and are not traversed, opened, followed, validated, or executed.
+
+---
+
 ## SPEC-013 — Local Review Index (Planning)
 
 **Version:** 0.11.0-dev (MVP-11 complete) → SPEC-013 drafted, MVP-12 not started.

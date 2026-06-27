@@ -2,33 +2,40 @@
 
 ## Current Task
 
-SPEC-013 review / MVP-12 planning.
+MVP-12 Step 2 — Review Index Writer, not started.
 
 ## Status
 
-SPEC-013 drafted, awaiting human review; MVP-12 implementation not started. MVP-11 complete. SPEC-012 complete. Version 0.11.0-dev. Full test suite: 2211 tests passing using `pytest --import-mode=importlib`.
+MVP-12 Step 1 complete. SPEC-013 implementation started safely. Version 0.11.0-dev. Full test suite: 2377 tests passing, 1 skipped using `pytest --import-mode=importlib`.
 
-MVP-10 is complete. All 1968 tests pass. Version 0.10.0-dev.
-SPEC-010 design is approved and fully implemented.
-SPEC-011 is approved with notes and polished.
-SPEC-012 is approved with notes and polished. MVP-11 Steps 1-4 complete.
-SPEC-013 is drafted. MVP-12 not started.
+MVP-12 Step 1 Review Index Models and Engine is complete.
+- `src/hunter/review_index/__init__.py` — public API exports.
+- `src/hunter/review_index/models.py` — review index models.
+- `src/hunter/review_index/engine.py` — review index engine.
+- `tests/test_review_index/__init__.py` — test package init.
+- `tests/test_review_index/test_models.py` — 70 model tests.
+- `tests/test_review_index/test_engine.py` — 97 engine tests.
+- 166 review_index tests passing. 1 skipped INDEX_ERROR edge test.
+- Full suite: 2377 tests passing, 1 skipped using `pytest --import-mode=importlib`.
+- No writer. No integration tests. No Web UI. No dashboard. No database persistence.
+
+MVP-12 Step 2 — Review Index Writer, not started. Requires human approval before implementation.
 
 ## Scope
 
-SPEC-013 review for approval or polish.
-- Do not start MVP-12 implementation until human approval.
+MVP-12 Step 2 — Review Index Writer only.
+- Do not modify models or engine unless a defect is found.
+- Do not write integration tests.
+- Do not build Web UI, dashboard, or database persistence.
 
 ### Not Allowed Until Future SPEC
-- No source code.
-- No tests.
 - No config YAML.
 - No JSON schema.
 - No Freqtrade strategy class.
 - No freqtrade import.
 - No Freqtrade runtime connection.
 - No Binance.
-- No real exchange connection.
+- No real exchange.
 - No API keys.
 - No live trading.
 - No real orders.
@@ -42,6 +49,7 @@ SPEC-013 review for approval or polish.
 - No dashboard.
 - No database persistence.
 - No production data reads/writes.
+- File references remain local strings only and must not be traversed/opened/followed/validated/executed.
 
 ## Previous Task
 
@@ -64,11 +72,15 @@ MVP-11 Step 4 — Final Review (Complete).
 - [x] No defects found.
 - [x] Version bumped to 0.11.0-dev.
 - [x] SPEC-013 drafted for MVP-12 planning.
-- [ ] SPEC-013 reviewed and approved.
-- [ ] MVP-12 implementation started.
+- [x] SPEC-013 reviewed and approved.
+- [x] MVP-12 Step 1 complete: review index models and engine implemented.
+- [x] 70 review index model tests pass.
+- [x] 97 review index engine tests pass.
+- [x] Full suite 2377 tests pass, 1 skipped.
+- [ ] MVP-12 Step 2 complete: review index writer implemented.
 
 ## Next Step
 
-SPEC-013 review / MVP-12 planning. Requires human approval before implementation.
+MVP-12 Step 2 — Review Index Writer, not started. Requires human approval before implementation.
 
-Future local report browser, review index, dashboard, or operator workflow UI may be considered only in a future SPEC, but is not implemented yet.
+Future review index writer, integration tests, or operator workflow UI may be considered only in a future SPEC, but is not implemented yet.

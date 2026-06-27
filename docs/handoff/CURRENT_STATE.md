@@ -6,11 +6,11 @@ Hunter Futures Pro
 
 ## Version
 
-0.10.0-dev
+0.11.0-dev
 
 ## Current Phase
 
-MVP-11 complete / SPEC-012 complete. SPEC-013 drafted for MVP-12 planning. Version 0.11.0-dev. Full test suite: 2211 tests passing using `pytest --import-mode=importlib`. MVP-12 implementation not started. Next step: SPEC-013 review / MVP-12 planning. No source code, no tests, no config YAML, no JSON schema, no Freqtrade strategy class, no freqtrade import, no Freqtrade runtime connection, no Binance, no real exchange connection, no API keys, no live trading, no real orders, no leverage, no shorting, no real entry/exit execution logic, no production data reads/writes, no report feedback into execution paths, no operator feedback into execution paths, no index feedback into execution paths, no Web UI, no dashboard, no database persistence.
+MVP-12 Step 1 complete; SPEC-013 implementation started safely. Version 0.11.0-dev. Full test suite: 2377 tests passing, 1 skipped using `pytest --import-mode=importlib`. Review index package has models and engine only. Next step: MVP-12 Step 2 — Review Index Writer, not started. No source code, no tests, no config YAML, no JSON schema, no Freqtrade strategy class, no freqtrade import, no Freqtrade runtime connection, no Binance, no real exchange connection, no API keys, no live trading, no real orders, no leverage, no shorting, no real entry/exit execution logic, no production data reads/writes, no report feedback into execution paths, no operator feedback into execution paths, no index feedback into execution paths, no Web UI, no dashboard, no database persistence.
 
 ## Current Status
 
@@ -107,11 +107,21 @@ SPEC-011 Freqtrade Dry-Run Research Observation Reports design is approved with 
 - No integration tests yet. → now complete with integration tests.
 - No Freqtrade strategy class. No freqtrade import. No Freqtrade runtime connection. No Binance. No real exchange. No API keys. No live trading. No real orders. No leverage. No shorting. No real entry/exit execution logic. No report feedback into execution paths. No production data reads/writes.
 
+MVP-12 Step 1 Review Index Models and Engine is complete.
+- `src/hunter/review_index/__init__.py` — public API exports.
+- `src/hunter/review_index/models.py` — review index models.
+- `src/hunter/review_index/engine.py` — review index engine.
+- `tests/test_review_index/test_models.py` — 70 model tests.
+- `tests/test_review_index/test_engine.py` — 97 engine tests.
+- 166 review_index tests passing. 1 skipped INDEX_ERROR edge test.
+- Full suite: 2377 tests passing, 1 skipped using `pytest --import-mode=importlib`.
+- No writer. No integration tests. No Web UI. No dashboard. No database persistence.
+
 ## Next Step
 
-MVP-11 planning not started. SPEC-012 drafted, awaiting human review. Requires human approval before implementation.
+MVP-12 Step 2 — Review Index Writer, not started. Requires human approval before implementation.
 
-Future operator review workflow may be considered only after SPEC-012 is approved, but is not implemented yet.
+Future review index writer, integration tests, or operator workflow UI may be considered only in a future SPEC, but is not implemented yet.
 
 ### Not Allowed Until Future SPEC
 - No source code.
@@ -131,6 +141,10 @@ Future operator review workflow may be considered only after SPEC-012 is approve
 - No real entry/exit execution logic.
 - No report feedback into execution paths.
 - No operator feedback into execution paths.
+- No index feedback into execution paths.
+- No Web UI.
+- No dashboard.
+- No database persistence.
 - No production data reads/writes.
 
 ---
