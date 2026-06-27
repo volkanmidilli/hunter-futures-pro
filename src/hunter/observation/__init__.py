@@ -33,6 +33,15 @@ from hunter.observation.models import (
     ReportFormat,
     SignalObservation,
 )
+from hunter.observation.writer import (
+    DEFAULT_OBSERVATION_JSON_REPORT_PATH,
+    DEFAULT_OBSERVATION_MARKDOWN_REPORT_PATH,
+    atomic_write_json_report,
+    atomic_write_markdown_report,
+    observation_report_to_dict,
+    observation_report_to_markdown,
+    write_observation_reports,
+)
 
 __all__ = [
     # Enums
@@ -52,6 +61,15 @@ __all__ = [
     "build_observation_report",
     "build_observation_safety_flags",
     "has_unsafe_metadata",
+    # Writer functions
+    "observation_report_to_dict",
+    "observation_report_to_markdown",
+    "atomic_write_json_report",
+    "atomic_write_markdown_report",
+    "write_observation_reports",
+    # Writer constants
+    "DEFAULT_OBSERVATION_JSON_REPORT_PATH",
+    "DEFAULT_OBSERVATION_MARKDOWN_REPORT_PATH",
     # Constants
     "REASON_CODES",
     "FORBIDDEN_METADATA_KEYS",
