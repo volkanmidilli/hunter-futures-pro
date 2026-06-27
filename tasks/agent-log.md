@@ -6,6 +6,62 @@ MVP-5 Step 4 — Integration Tests.
 
 ---
 
+---
+
+### MVP-8 Step 1 — Dry-Run Strategy Runtime Models
+
+Date: 2026-06-18
+
+Agent: WrongStack
+
+Task: MVP-8 Step 1 — Dry-Run Strategy Runtime Models.
+
+Files created:
+
+- `src/hunter/dry_run_strategy/__init__.py` — public API exports.
+- `src/hunter/dry_run_strategy/models.py` — Dry-Run Strategy Models.
+- `tests/test_dry_run_strategy/__init__.py` — test package.
+- `tests/test_dry_run_strategy/test_models.py` — 94 model tests.
+
+Files modified:
+
+- None.
+
+Summary:
+
+Implemented Dry-Run Strategy Runtime model layer for SPEC-009.
+- Added `DryRunStrategyState`, `DryRunStrategyMode`, `DryRunSignalAction` enums.
+- Added `DryRunStrategyConfig`, `DryRunStrategyInputRefs`, `DryRunStrategySafetyFlags`, `DryRunStrategyDataQuality`, `DryRunStrategyRuntimeContext` frozen dataclasses.
+- `DryRunStrategyRuntimeContext.blocked()` fail-closed factory producing `BLOCKED` + `BLOCK_ALL` + `BLOCK_SIGNAL` + `dry_run=True` + version `"1.0"`.
+- 17 deterministic reason codes defined.
+- All models frozen/immutable with `__post_init__` validation.
+- Added 94 model tests.
+- Full test suite passes with 1308 tests.
+
+Safety:
+
+- No engine.
+- No writer.
+- No integration tests.
+- No config YAML.
+- No JSON schema.
+- No deployable Freqtrade strategy class.
+- No Freqtrade runtime connection.
+- No Binance integration.
+- No real exchange connection.
+- No API keys.
+- No live trading.
+- No real orders.
+- No leverage.
+- No shorting.
+- No real entry/exit execution logic.
+
+Next step:
+
+MVP-8 Step 2 — Dry-Run Strategy Runtime Engine.
+
+---
+
 ### SPEC-009 — MVP-8 Freqtrade Deployable Dry-Run Strategy Design
 
 Date: 2026-06-18

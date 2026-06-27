@@ -57,15 +57,17 @@ SPEC-009 Freqtrade Deployable Dry-Run Strategy design is finalized and polished.
 - Fail-closed deployable dry-run strategy rules, deterministic reason codes, future config/schema/output defined.
 - PlantUML component and runtime flow diagrams included.
 - 5-step implementation plan defined.
-- No MVP-8 code implemented yet. No `dry_run_strategy` package exists yet.
-- Full test suite: 1214 tests passing.
+- MVP-8 Step 1 Dry-Run Strategy Runtime Models complete.
+- `dry_run_strategy` package now exists with models only.
+- `tests/test_dry_run_strategy/test_models.py` exists with 94 tests.
+- Full test suite: 1308 tests passing.
 
 ## Next Step
 
-MVP-8 Step 1 — Dry-Run Strategy Runtime Models.
-- Future files: `src/hunter/dry_run_strategy/__init__.py`, `src/hunter/dry_run_strategy/models.py`, `tests/test_dry_run_strategy/__init__.py`, `tests/test_dry_run_strategy/test_models.py`.
-- Allowed: enums, config, input refs, safety flags, data quality, runtime context, reason codes, model validation tests.
-- Not allowed: no engine, no writer, no integration tests, no config YAML, no JSON schema, no deployable Freqtrade strategy class, no Freqtrade runtime connection, no Binance, no real exchange connection, no API keys, no live trading, no real orders, no leverage, no shorting, no real entry/exit execution logic.
+MVP-8 Step 2 — Dry-Run Strategy Runtime Engine.
+- Future files: `src/hunter/dry_run_strategy/engine.py`, `tests/test_dry_run_strategy/test_engine.py`.
+- Allowed: `build_dry_run_strategy_runtime_context()`, `validate_dry_run_strategy_inputs()`, `is_stale_adapter_decision_context()`, `map_adapter_to_strategy_mode()`, `map_adapter_to_signal_action()`, `build_safety_flags()`, deterministic fail-closed reason codes, model-only engine tests.
+- Not allowed: no writer, no JSON output writing, no integration tests, no config YAML, no JSON schema, no deployable Freqtrade strategy class, no Freqtrade runtime connection, no Binance, no real exchange connection, no API keys, no live trading, no real orders, no leverage, no shorting, no real entry/exit execution logic.
 
 ## Previous State (MVP-7 Complete)
 

@@ -18,6 +18,24 @@ All important project changes will be recorded in this file.
   - Future schema: `schemas/dry_run_strategy_runtime.schema.json` (design-only, not created).
   - PlantUML component and runtime flow diagrams included.
   - 5-step implementation plan defined: Models, Engine, Writer, Integration Tests, Final Review.
+- MVP-8 Step 1 — Dry-Run Strategy Runtime Models complete.
+  - `src/hunter/dry_run_strategy/__init__.py` — public API exports.
+  - `src/hunter/dry_run_strategy/models.py` — Dry-Run Strategy Models (Step 1).
+    - `DryRunStrategyState` enum: DISABLED, DRY_RUN_READY, BLOCKED, UNKNOWN.
+    - `DryRunStrategyMode` enum: LONG_RESEARCH_ONLY, SHORT_RESEARCH_ONLY, BLOCK_ALL.
+    - `DryRunSignalAction` enum: EXPOSE_LONG_RESEARCH_SIGNAL, EXPOSE_SHORT_RESEARCH_SIGNAL, BLOCK_SIGNAL, NO_SIGNAL.
+    - `DryRunStrategyConfig` with 17 fields and MVP-8 safety validation.
+    - `DryRunStrategyInputRefs` with path validation.
+    - `DryRunStrategySafetyFlags` with 12 safety fields and `to_dict()` for JSON serialization.
+    - `DryRunStrategyDataQuality` with 4 quality fields and `to_dict()` for JSON serialization.
+    - `DryRunStrategyRuntimeContext` with 24 fields, version default "1.0", `blocked()` fail-closed factory, `is_blocking()` method.
+    - 17 deterministic reason codes: MISSING_ADAPTER_DECISION_CONTEXT, INVALID_ADAPTER_DECISION_CONTEXT, ADAPTER_NOT_DRY_RUN_READY, ADAPTER_MODE_BLOCK_ALL, ADAPTER_SIGNAL_BLOCKED, DRY_RUN_DISABLED, LIVE_TRADING_ENABLED, REAL_ORDERS_ENABLED, LEVERAGE_ENABLED, SHORTING_ENABLED, STALE_ADAPTER_DECISION_CONTEXT, UNSUPPORTED_ADAPTER_MODE, UNSUPPORTED_ADAPTER_SIGNAL_INTENT, LONG_RESEARCH_SIGNAL_EXPOSED, SHORT_RESEARCH_SIGNAL_EXPOSED, DEFAULT_BLOCK_SIGNAL, CALCULATION_ERROR.
+    - All models frozen/immutable with `__post_init__` validation.
+    - 94 dry-run strategy model tests, all passing.
+  - `tests/test_dry_run_strategy/__init__.py` — test package.
+  - `tests/test_dry_run_strategy/test_models.py` — 94 model tests, all passing.
+  - Full test suite: 1308 tests passing (1214 existing + 94 new).
+  - No engine, no writer, no integration tests, no config YAML, no JSON schema, no deployable Freqtrade strategy class, no Freqtrade runtime connection, no Binance, no real exchange connection, no API keys, no live trading, no real orders, no leverage, no shorting, no real entry/exit execution logic.
 - MVP-8 remains design-first; implementation has not started.
 - Full test suite: 1214 tests passing.
 
