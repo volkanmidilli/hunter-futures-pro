@@ -39,6 +39,12 @@ from hunter.dry_run_strategy.engine import (
     map_adapter_to_strategy_mode,
     validate_dry_run_strategy_inputs,
 )
+from hunter.dry_run_strategy.writer import (
+    DEFAULT_DRY_RUN_STRATEGY_RUNTIME_PATH,
+    atomic_write_json,
+    dry_run_strategy_runtime_context_to_dict,
+    write_dry_run_strategy_runtime_context,
+)
 
 __all__ = [
     # Enums
@@ -58,6 +64,11 @@ __all__ = [
     "map_adapter_to_strategy_mode",
     "map_adapter_to_signal_action",
     "build_safety_flags",
+    # Writer
+    "dry_run_strategy_runtime_context_to_dict",
+    "atomic_write_json",
+    "write_dry_run_strategy_runtime_context",
+    "DEFAULT_DRY_RUN_STRATEGY_RUNTIME_PATH",
     # Reason codes
     "MISSING_ADAPTER_DECISION_CONTEXT",
     "INVALID_ADAPTER_DECISION_CONTEXT",
