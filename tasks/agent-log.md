@@ -1,5 +1,63 @@
 ---
 
+### MVP-11 Step 2 -- Review Writer
+
+Date: 2026-06-18
+
+Agent: WrongStack
+
+Task: MVP-11 Step 2 -- Review Writer.
+
+Files created:
+
+- `src/hunter/review/writer.py` -- JSON/Markdown serialization, atomic file writing.
+- `tests/test_review/test_writer.py` -- writer unit tests.
+
+Files modified:
+
+- `src/hunter/review/__init__.py` -- updated with writer exports.
+- `CHANGELOG.md` -- added MVP-11 Step 2 section.
+- `docs/handoff/CURRENT_STATE.md` -- updated current phase to MVP-11 Step 2 complete.
+- `tasks/active.md` -- updated current task to MVP-11 Step 3 not started.
+- `tasks/agent-log.md` -- this entry.
+
+Summary:
+
+Implemented SPEC-012 review writer for local JSON/Markdown review audit records.
+Added deterministic JSON-safe serialization for review records, audit summaries, data quality, safety flags, and audit records.
+Added human-audit-only Markdown rendering with explicit notice that review audit records are not trading signals, not trade approvals, and must not be consumed by execution, strategy, Freqtrade shell, order, exchange, or any MVP execution path.
+Added atomic JSON/Markdown local writers and combined writer.
+Default paths: `data/review/latest_review_audit_record.json` and `reports/review/latest_review_audit_record.md`.
+Added 54 writer tests. Full suite passes with 2160 tests using `pytest --import-mode=importlib`.
+
+Safety:
+
+No model changes.
+No engine changes.
+No integration tests.
+Tests write only to tmp_path.
+No config YAML.
+No JSON schema.
+No Freqtrade strategy class.
+No freqtrade import.
+No Freqtrade runtime connection.
+No Binance integration.
+No real exchange connection.
+No API keys.
+No live trading.
+No real orders.
+No leverage.
+No shorting.
+No real entry/exit execution logic.
+No report feedback into execution paths.
+No operator feedback into execution paths.
+
+Next step:
+
+MVP-11 Step 3 -- Review Integration Tests, not started.
+
+---
+
 ### MVP-11 Step 1 -- Review Models and Engine
 
 Date: 2026-06-18

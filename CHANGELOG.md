@@ -2,6 +2,52 @@
 
 All important project changes will be recorded in this file.
 
+## MVP-11 Step 2 — Review Writer (Complete)
+
+**Version:** 0.10.0-dev (MVP-11 Step 1 complete) → MVP-11 Step 2 complete.
+
+**SPEC-012:** `specs/SPEC-012-Operator-Review-Workflow.md` — approved with notes and polished.
+
+- **Files created/modified:**
+  - `src/hunter/review/writer.py` — JSON/Markdown serialization, atomic file writing.
+  - `src/hunter/review/__init__.py` — updated with writer exports.
+  - `tests/test_review/test_writer.py` — writer unit tests.
+- **Implemented:**
+  - `DEFAULT_REVIEW_JSON_RECORD_PATH = Path("data/review/latest_review_audit_record.json")`
+  - `DEFAULT_REVIEW_MARKDOWN_RECORD_PATH = Path("reports/review/latest_review_audit_record.md")`
+  - `review_record_to_dict()` — deterministic JSON-safe serialization (ISO-8601 Z suffix, enum values, tuple→list, metadata).
+  - `review_safety_flags_to_dict()` — safety flags serialization.
+  - `review_audit_summary_to_dict()` — summary with reason_counts as plain dict.
+  - `review_data_quality_to_dict()` — data quality serialization.
+  - `review_audit_record_to_dict()` — full audit record with nested records/summary/data_quality/safety_flags.
+  - `review_audit_record_to_markdown()` — human-readable Markdown with explicit safety notice:
+    - "This review audit record is a human-audit artifact only."
+    - "It is not a trading signal, not trade approval, and must not be consumed by execution, strategy, Freqtrade shell, order, exchange, or any MVP execution path."
+  - `atomic_write_json_review_audit_record()` — atomic temp-file write with parent dirs, UTF-8, indent=2, sort_keys, trailing newline, fsync, os.replace, cleanup.
+  - `atomic_write_markdown_review_audit_record()` — atomic temp-file write with parent dirs, UTF-8, trailing newline, fsync, os.replace, cleanup.
+  - `write_review_audit_records()` — writes both JSON and Markdown, returns paths.
+- **Tests:** 54 new writer tests. Full suite: **2160 tests passing** using `pytest --import-mode=importlib`.
+- **Safety:**
+  - No model changes.
+  - No engine changes.
+  - No integration tests created.
+  - Tests write only to `tmp_path`.
+  - No config YAML.
+  - No JSON schema.
+  - No Freqtrade strategy class.
+  - No freqtrade import.
+  - No Freqtrade runtime connection.
+  - No Binance.
+  - No real exchange connection.
+  - No API keys.
+  - No live trading.
+  - No real orders.
+  - No leverage.
+  - No shorting.
+  - No real entry/exit execution logic.
+  - No report feedback into execution paths.
+  - No operator feedback into execution paths.
+
 ## MVP-11 Step 1 — Review Models and Engine (Complete)
 
 **Version:** 0.10.0-dev (MVP-10 complete) → MVP-11 Step 1 complete.
