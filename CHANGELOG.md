@@ -52,6 +52,26 @@ All important project changes will be recorded in this file.
   - `tests/test_dry_run_strategy/test_engine.py` — 93 engine tests, all passing.
   - Full test suite: 1401 tests passing (1308 existing + 93 new).
   - No writer, no integration tests, no config YAML, no JSON schema, no deployable Freqtrade strategy class, no Freqtrade runtime connection, no Binance, no real exchange connection, no API keys, no live trading, no real orders, no leverage, no shorting, no real entry/exit execution logic.
+- MVP-8 Step 3 — Dry-Run Strategy Runtime JSON Writer complete.
+  - `src/hunter/dry_run_strategy/writer.py` — Dry-Run Strategy Writer (Step 3).
+    - `DEFAULT_DRY_RUN_STRATEGY_RUNTIME_PATH = data/freqtrade_strategy/current_dry_run_strategy_runtime.json`.
+    - `dry_run_strategy_runtime_context_to_dict()` — deterministic JSON-safe serialization:
+      - ISO-8601 timestamps with Z suffix.
+      - Enum values as `.value` strings.
+      - Tuple `reason_codes` as list.
+      - Nested `input_refs`, `safety_flags`, `data_quality` as dicts.
+    - `atomic_write_json()` — atomic write:
+      - Parent directories created if missing.
+      - Temp file in same directory.
+      - `fsync` for durability.
+      - `os.replace` for atomic rename.
+      - Temp cleanup on failure.
+      - Sorted, indented UTF-8 JSON with trailing newline.
+    - `write_dry_run_strategy_runtime_context()` — default path or custom path, converts + writes atomically.
+  - `src/hunter/dry_run_strategy/__init__.py` — updated with 4 writer exports.
+  - `tests/test_dry_run_strategy/test_writer.py` — 42 writer tests, all passing.
+  - Full test suite: 1443 tests passing (1401 existing + 42 new).
+  - No engine changes, no model changes, no integration tests, no config YAML, no JSON schema, no deployable Freqtrade strategy class, no Freqtrade runtime connection, no Binance, no real exchange connection, no API keys, no live trading, no real orders, no leverage, no shorting, no real entry/exit execution logic.
 - MVP-8 remains design-first; implementation has not started.
 - Full test suite: 1214 tests passing.
 

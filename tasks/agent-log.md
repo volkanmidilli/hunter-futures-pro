@@ -10,6 +10,58 @@ MVP-5 Step 4 — Integration Tests.
 
 ---
 
+---
+
+### MVP-8 Step 3 — Dry-Run Strategy Runtime JSON Writer
+
+Date: 2026-06-18
+
+Agent: WrongStack
+
+Task: MVP-8 Step 3 — Dry-Run Strategy Runtime JSON Writer.
+
+Files created:
+
+- `src/hunter/dry_run_strategy/writer.py` — Dry-Run Strategy Writer.
+- `tests/test_dry_run_strategy/test_writer.py` — 42 writer tests.
+
+Files modified:
+
+- `src/hunter/dry_run_strategy/__init__.py` — added 4 writer exports.
+
+Summary:
+
+Implemented Dry-Run Strategy Runtime JSON writer for SPEC-009.
+- Added `dry_run_strategy_runtime_context_to_dict()`, `atomic_write_json()`, `write_dry_run_strategy_runtime_context()`, and `DEFAULT_DRY_RUN_STRATEGY_RUNTIME_PATH`.
+- Deterministic JSON-safe serialization for timestamps, enums, tuples, and nested dataclasses.
+- Atomic UTF-8 JSON writing with parent directory creation, same-directory temp file, fsync, os.replace, and cleanup on failure.
+- Added 42 writer tests.
+- Full test suite passes with 1443 tests.
+
+Safety:
+
+- No model changes.
+- No engine changes.
+- No integration tests.
+- No config YAML.
+- No JSON schema.
+- No deployable Freqtrade strategy class.
+- No Freqtrade runtime connection.
+- No Binance integration.
+- No real exchange connection.
+- No API keys.
+- No live trading.
+- No real orders.
+- No leverage.
+- No shorting.
+- No real entry/exit execution logic.
+
+Next step:
+
+MVP-8 Step 4 — Dry-Run Strategy Runtime Integration Tests.
+
+---
+
 ### MVP-8 Step 2 — Dry-Run Strategy Runtime Engine
 
 Date: 2026-06-18

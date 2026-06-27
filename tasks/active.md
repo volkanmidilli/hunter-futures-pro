@@ -2,32 +2,33 @@
 
 ## Current Task
 
-MVP-8 Step 3 — Dry-Run Strategy Runtime JSON Writer.
+MVP-8 Step 4 — Dry-Run Strategy Runtime Integration Tests.
 
 ## Status
 
 Not started. Implementation is not started yet.
 
-MVP-8 Step 2 is complete. All 1401 tests pass. Version 0.7.0-dev.
-SPEC-009 design is finalized and polished. All MVP-8 Step 2 engine complete.
+MVP-8 Step 3 is complete. All 1443 tests pass. Version 0.7.0-dev.
+SPEC-009 design is finalized and polished. All MVP-8 Step 3 writer complete.
 
 ## Scope
 
-Step 3 future files:
-- `src/hunter/dry_run_strategy/writer.py`
-- `tests/test_dry_run_strategy/test_writer.py`
+Step 4 future file:
+- `tests/test_dry_run_strategy/test_integration.py`
 
-Step 3 allowed work:
-- `dry_run_strategy_runtime_context_to_dict(...)`
-- `atomic_write_json(...)`
-- `write_dry_run_strategy_runtime_context(...)`
-- JSON serialization tests
-- Atomic write tests
-- Default output path: `data/freqtrade_strategy/current_dry_run_strategy_runtime.json`
+Step 4 allowed work:
+- End-to-end dry-run strategy runtime context build from AdapterDecisionContext.
+- Allowed long research signal path.
+- Allowed short research signal path.
+- Blocked/fail-closed paths.
+- Writer output verification using tmp_path only.
+- No production data writes except tmp_path tests.
+- No runtime/exchange/network calls.
 
-Step 3 not allowed:
-- No engine changes unless import/export only.
-- No integration tests.
+Step 4 not allowed:
+- No model changes unless strictly necessary for test compatibility.
+- No engine changes unless strictly necessary for test compatibility.
+- No writer changes unless strictly necessary for test compatibility.
 - No config YAML.
 - No JSON schema.
 - No deployable Freqtrade strategy class.
@@ -55,36 +56,38 @@ Step 3 not allowed:
 - No Freqtrade runtime connection.
 - No config YAML.
 - No JSON schema.
-- No integration tests.
+- No model changes unless strictly necessary.
+- No engine changes unless strictly necessary.
+- No writer changes unless strictly necessary.
 
 ## Previous Task
 
-MVP-8 Step 2 — Dry-Run Strategy Runtime Engine (complete).
-- `src/hunter/dry_run_strategy/engine.py` — 6 engine functions.
-  - `build_dry_run_strategy_runtime_context()` — fail-closed runtime context builder.
-  - `validate_dry_run_strategy_inputs()` — 13 priority-ordered blocking checks.
-  - `is_stale_adapter_decision_context()` — timestamp validity + age check.
-  - `map_adapter_to_strategy_mode()` — adapter mode → strategy mode mapping.
-  - `map_adapter_to_signal_action()` — adapter signal intent → strategy signal action mapping.
-  - `build_safety_flags()` — safe defaults from config.
-  - Allowed mappings: LONG_RESEARCH_ONLY + ALLOW_LONG_RESEARCH_SIGNAL → EXPOSE_LONG_RESEARCH_SIGNAL; SHORT_RESEARCH_ONLY + ALLOW_SHORT_RESEARCH_SIGNAL → EXPOSE_SHORT_RESEARCH_SIGNAL.
-  - Unsafe/invalid/stale/unsupported → BLOCK_SIGNAL.
-  - 93 engine tests, all passing.
-- `src/hunter/dry_run_strategy/__init__.py` — updated with 6 engine function exports.
-- Full suite: 1401 tests passing.
-- No writer. No integration tests. No config YAML. No JSON schema. No deployable strategy class. No Freqtrade runtime.
+MVP-8 Step 3 — Dry-Run Strategy Runtime JSON Writer (complete).
+- `src/hunter/dry_run_strategy/writer.py` — 3 writer functions + default path constant.
+  - `DEFAULT_DRY_RUN_STRATEGY_RUNTIME_PATH = data/freqtrade_strategy/current_dry_run_strategy_runtime.json`.
+  - `dry_run_strategy_runtime_context_to_dict()` — deterministic JSON-safe serialization with ISO-8601 timestamps, enum values, tuple→list, nested dicts.
+  - `atomic_write_json()` — atomic temp-file write with parent directory creation, fsync, os.replace, cleanup on failure.
+  - `write_dry_run_strategy_runtime_context()` — default path or custom path, converts + writes atomically.
+  - 42 writer tests, all passing.
+- `src/hunter/dry_run_strategy/__init__.py` — updated with 4 writer exports.
+- Full suite: 1443 tests passing.
+- No integration tests. No config YAML. No JSON schema. No deployable strategy class. No Freqtrade runtime.
 - No Binance. No API keys. No live trading. No real orders. No leverage. No shorting. No entry/exit execution logic.
 
 ## Definition of Done
 
-- [ ] `dry_run_strategy_runtime_context_to_dict()` serializes all fields to JSON-compatible dict with ISO-8601 timestamps, enum strings, nested dicts.
-- [ ] `atomic_write_json()` writes temp file + os.replace with cleanup on failure.
-- [ ] `write_dry_run_strategy_runtime_context()` writes to default path with atomic write.
-- [ ] Writer tests pass.
-- [ ] No integration tests, config YAML, JSON schema, or deployable strategy class created.
+- [ ] End-to-end dry-run strategy runtime context build from AdapterDecisionContext passes.
+- [ ] Allowed long research signal path verified.
+- [ ] Allowed short research signal path verified.
+- [ ] Blocked/fail-closed paths verified.
+- [ ] Writer output verification using tmp_path passes.
+- [ ] No production data writes except tmp_path tests.
+- [ ] No model/engine/writer changes unless strictly necessary.
+- [ ] Integration tests pass.
+- [ ] No config YAML, JSON schema, or deployable strategy class created.
 - [ ] All safety constraints preserved.
 
 ## Next Step
 
-MVP-8 Step 4 — Integration Tests (after Step 3 complete).
+MVP-8 Step 5 — Final Review (after Step 4 complete).
 
