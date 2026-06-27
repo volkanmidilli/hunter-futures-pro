@@ -31,6 +31,15 @@ from hunter.dry_run_strategy.models import (
     UNSUPPORTED_ADAPTER_SIGNAL_INTENT,
 )
 
+from hunter.dry_run_strategy.engine import (
+    build_dry_run_strategy_runtime_context,
+    build_safety_flags,
+    is_stale_adapter_decision_context,
+    map_adapter_to_signal_action,
+    map_adapter_to_strategy_mode,
+    validate_dry_run_strategy_inputs,
+)
+
 __all__ = [
     # Enums
     "DryRunStrategyState",
@@ -42,6 +51,13 @@ __all__ = [
     "DryRunStrategySafetyFlags",
     "DryRunStrategyDataQuality",
     "DryRunStrategyRuntimeContext",
+    # Engine
+    "build_dry_run_strategy_runtime_context",
+    "validate_dry_run_strategy_inputs",
+    "is_stale_adapter_decision_context",
+    "map_adapter_to_strategy_mode",
+    "map_adapter_to_signal_action",
+    "build_safety_flags",
     # Reason codes
     "MISSING_ADAPTER_DECISION_CONTEXT",
     "INVALID_ADAPTER_DECISION_CONTEXT",
