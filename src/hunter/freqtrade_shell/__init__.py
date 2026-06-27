@@ -5,6 +5,17 @@ No Freqtrade imports, no exchange connections, no trading logic.
 
 from __future__ import annotations
 
+from hunter.freqtrade_shell.adapter import (
+    RESEARCH_EXPOSURE_COLUMN,
+    RESEARCH_REASON_COLUMN,
+    RESEARCH_SIGNAL_COLUMN,
+    RESEARCH_STATE_COLUMN,
+    apply_research_metadata_to_dataframe,
+    assert_no_trade_columns,
+    build_blocked_research_metadata,
+    determine_research_signal,
+    shell_validation_result_to_metadata,
+)
 from hunter.freqtrade_shell.models import (
     DEFAULT_BLOCKED,
     DRY_RUN_DISABLED,
@@ -38,6 +49,17 @@ from hunter.freqtrade_shell.validator import (
 )
 
 __all__ = [
+    # Adapter constants
+    "RESEARCH_SIGNAL_COLUMN",
+    "RESEARCH_REASON_COLUMN",
+    "RESEARCH_STATE_COLUMN",
+    "RESEARCH_EXPOSURE_COLUMN",
+    # Adapter functions
+    "shell_validation_result_to_metadata",
+    "determine_research_signal",
+    "apply_research_metadata_to_dataframe",
+    "assert_no_trade_columns",
+    "build_blocked_research_metadata",
     # Enums
     "ShellState",
     "ShellSignalExposure",
