@@ -12,6 +12,59 @@ MVP-5 Step 4 — Integration Tests.
 
 ---
 
+---
+
+### MVP-8 Step 4 — Dry-Run Strategy Runtime Integration Tests
+
+Date: 2026-06-18
+
+Agent: WrongStack
+
+Task: MVP-8 Step 4 — Dry-Run Strategy Runtime Integration Tests.
+
+Files created:
+
+- `tests/test_dry_run_strategy/test_integration.py` — 48 integration tests.
+
+Files modified:
+
+- None.
+
+Summary:
+
+Added in-process integration tests for the SPEC-009 Dry-Run Strategy Runtime.
+Verified AdapterDecisionContext-like input to build_dry_run_strategy_runtime_context to write_dry_run_strategy_runtime_context using tmp_path only.
+Covered long and short research happy paths, fail-closed blocking paths, writer output verification, deterministic JSON payloads, and safety flags.
+Added 48 integration tests.
+Full test suite passes with 1491 tests.
+
+Safety:
+
+- No model changes.
+- No engine changes.
+- No writer changes.
+- No __init__.py changes.
+- No memory files changed during implementation.
+- No production data path writes.
+- No config YAML.
+- No JSON schema.
+- No deployable Freqtrade strategy class.
+- No Freqtrade runtime connection.
+- No Binance integration.
+- No real exchange connection.
+- No API keys.
+- No live trading.
+- No real orders.
+- No leverage.
+- No shorting.
+- No real entry/exit execution logic.
+
+Next step:
+
+MVP-8 Step 5 — Final Review.
+
+---
+
 ### MVP-8 Step 3 — Dry-Run Strategy Runtime JSON Writer
 
 Date: 2026-06-18
