@@ -2,6 +2,58 @@
 
 All important project changes will be recorded in this file.
 
+## SPEC-013 — Local Review Index (Planning)
+
+**Version:** 0.11.0-dev (MVP-11 complete) → SPEC-013 drafted, MVP-12 not started.
+
+**SPEC-013:** `specs/SPEC-013-Local-Review-Index.md` — draft, awaiting human review.
+
+- **File created:**
+  - `specs/SPEC-013-Local-Review-Index.md` — MVP-12 planning document only.
+- **Purpose:**
+  - Local Review Index layer that catalogs MVP-10 observation reports and MVP-11 review audit records as human-audit catalog artifacts.
+- **Planned outputs:**
+  - Local JSON index artifact: `data/review_index/latest_review_index.json`
+  - Local Markdown index artifact: `reports/review_index/latest_review_index.md`
+- **Key design elements:**
+  - `IndexEntry` — single report + review catalog entry.
+  - `IndexSummary` — aggregated counts across all entries.
+  - `IndexDataQuality` — completeness and staleness metrics.
+  - `IndexSafetyFlags` — safety invariants with human-audit-only flags.
+  - `ReviewIndex` — full index container with fail-closed `blocked()` factory.
+  - Fail-closed local index engine with 12 priority-ordered reason codes.
+  - Deterministic local index writer with atomic JSON/Markdown output.
+  - PlantUML component and sequence diagrams.
+  - Four-step MVP-12 implementation plan (Models+Engine → Writer → Integration → Final Review).
+- **Safety clarifications:**
+  - Local review index artifacts are human-audit catalog artifacts only.
+  - Index entries, summaries, JSON output, and Markdown output are not trading signals.
+  - Index entries, summaries, JSON output, and Markdown output are not trade approvals.
+  - Index artifacts must never be consumed by execution, strategy, Freqtrade shell, order, exchange, or any MVP execution path.
+  - Index artifacts and summaries must not feed back into MVP-4, MVP-5, MVP-6, MVP-7, MVP-8, MVP-9, MVP-10, MVP-11, Freqtrade, strategy, order, exchange, or execution paths.
+  - File references are local string references only; index logic must not traverse, validate, open, follow, or execute file references.
+  - Missing/invalid/unsafe report or review inputs are summarized as BLOCKED/UNKNOWN/INVALID in data quality, not repaired, inferred, upgraded, or normalized into safe-looking records.
+  - Fail-closed index records are audit/catalog only and never trigger action.
+  - Index output must not contain API keys, secrets, exchange credentials, executable trading instructions, or operational instructions.
+- **Not started:**
+  - No source code.
+  - No tests.
+  - No config YAML.
+  - No JSON schema.
+  - No Freqtrade strategy class.
+  - No freqtrade import.
+  - No Binance.
+  - No real exchange.
+  - No API keys.
+  - No live trading.
+  - No real orders.
+  - No leverage.
+  - No shorting.
+  - No real entry/exit execution logic.
+  - No Web UI.
+  - No dashboard.
+  - No database persistence.
+
 ## MVP-11 — Operator Review Workflow (Complete)
 
 **Version:** 0.11.0-dev (MVP-11 Steps 1-3 complete) → MVP-11 complete.

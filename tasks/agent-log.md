@@ -1,5 +1,57 @@
 ---
 
+### SPEC-013 Planning — Local Review Index
+
+Date: 2026-06-27
+
+Agent: WrongStack
+
+Task: SPEC-013 Planning — Local Review Index.
+
+Files created:
+
+- `specs/SPEC-013-Local-Review-Index.md` — MVP-12 planning document.
+
+Summary:
+
+Drafted SPEC-013 for MVP-12 planning.
+Designed a Local Review Index layer that catalogs MVP-10 observation reports and MVP-11 review audit records as human-audit catalog artifacts.
+Planned local JSON/Markdown index artifacts, index entries, summaries, data quality, safety flags, fail-closed local index engine, deterministic writer, PlantUML diagrams, and four-step implementation plan.
+Clarified index outputs are not trading signals, not trade approvals, and must never be consumed by or fed back into execution, strategy, Freqtrade, order, exchange, or any MVP execution path.
+Clarified file references are local strings only and must not be traversed, opened, followed, validated, or executed.
+No MVP-12 implementation started.
+
+Safety:
+
+No source code.
+No tests.
+No config YAML.
+No JSON schema.
+No Freqtrade strategy class.
+No freqtrade import.
+No Freqtrade runtime connection.
+No Binance integration.
+No real exchange connection.
+No API keys.
+No live trading.
+No real orders.
+No leverage.
+No shorting.
+No real entry/exit execution logic.
+No report feedback into execution paths.
+No operator feedback into execution paths.
+No index feedback into execution paths.
+No Web UI.
+No dashboard.
+No database persistence.
+No production data reads/writes.
+
+Next step:
+
+Human review of SPEC-013 before MVP-12 implementation.
+
+---
+
 ### MVP-11 Completion — SPEC-012 Operator Review Workflow
 
 Date: 2026-06-27
