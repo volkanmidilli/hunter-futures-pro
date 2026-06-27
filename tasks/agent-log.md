@@ -1955,6 +1955,57 @@ MVP-4 Step 1 — Execution Bridge Models.
 
 ---
 
+---
+
+### 0.9.0-dev — MVP-9 Completion: SPEC-010 Freqtrade Dry-Run Strategy Shell
+
+Date: 2026-06-18
+
+Agent: WrongStack
+
+Task: MVP-9 Completion — SPEC-010 Freqtrade Dry-Run Strategy Shell
+
+Files modified:
+
+- pyproject.toml
+- src/hunter/__init__.py
+- CHANGELOG.md
+- docs/handoff/CURRENT_STATE.md
+- tasks/active.md
+- tasks/agent-log.md
+
+Summary:
+
+Completed MVP-9 and SPEC-010.
+Implemented shell models, fail-closed runtime payload validator, research-only adapter boundary, and in-process integration tests.
+Adapter exposes only hunter_* research metadata columns and never sets enter_long, enter_short, exit_long, or exit_short.
+Final review verdict PASS.
+Version bumped to 0.9.0-dev.
+Full test suite passes with 1716 tests using pytest --import-mode=importlib.
+
+Safety:
+
+- No config YAML.
+- No JSON schema.
+- No Freqtrade strategy class.
+- No freqtrade import.
+- No Freqtrade runtime connection.
+- No Binance integration.
+- No real exchange connection.
+- No API keys.
+- No live trading.
+- No real orders.
+- No leverage.
+- No shorting.
+- No real entry/exit execution logic.
+- No production data reads/writes.
+
+Next step:
+
+MVP-10 planning not started. Requires human approval and new SPEC.
+
+---
+
 ### 0.8.0-dev — MVP-9 Step 3: Shell Integration Tests
 
 Date: 2026-06-18
