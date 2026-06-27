@@ -99,6 +99,48 @@ All important project changes will be recorded in this file.
 - MVP-8 remains design-first; implementation has not started.
 - Full test suite: 1214 tests passing.
 
+## MVP-8 — Freqtrade Deployable Dry-Run Strategy (Complete)
+
+### Added
+
+- MVP-8 complete — SPEC-009 Freqtrade Deployable Dry-Run Strategy implemented.
+  - Version 0.8.0-dev.
+  - `src/hunter/dry_run_strategy/` package with models, engine, writer, and tests.
+  - `src/hunter/dry_run_strategy/__init__.py` — public API exports (8 models + 6 engine functions + 4 writer functions + 17 reason codes).
+  - `src/hunter/dry_run_strategy/models.py` — Dry-Run Strategy Runtime Models.
+    - `DryRunStrategyState` enum: DISABLED, DRY_RUN_READY, BLOCKED, UNKNOWN.
+    - `DryRunStrategyMode` enum: LONG_RESEARCH_ONLY, SHORT_RESEARCH_ONLY, BLOCK_ALL.
+    - `DryRunSignalAction` enum: EXPOSE_LONG_RESEARCH_SIGNAL, EXPOSE_SHORT_RESEARCH_SIGNAL, BLOCK_SIGNAL, NO_SIGNAL.
+    - `DryRunStrategyConfig` with 17 fields and MVP-8 safety validation (dry_run=True, all unsafe flags=False).
+    - `DryRunStrategyInputRefs` with path validation.
+    - `DryRunStrategySafetyFlags` with 12 safety fields and `to_dict()` for JSON serialization.
+    - `DryRunStrategyDataQuality` with 4 quality fields and `to_dict()` for JSON serialization.
+    - `DryRunStrategyRuntimeContext` with 24 fields, version default "1.0", `blocked()` fail-closed factory, `is_blocking()` method.
+    - 17 deterministic reason codes: MISSING_ADAPTER_DECISION_CONTEXT, INVALID_ADAPTER_DECISION_CONTEXT, ADAPTER_NOT_DRY_RUN_READY, ADAPTER_MODE_BLOCK_ALL, ADAPTER_SIGNAL_BLOCKED, DRY_RUN_DISABLED, LIVE_TRADING_ENABLED, REAL_ORDERS_ENABLED, LEVERAGE_ENABLED, SHORTING_ENABLED, STALE_ADAPTER_DECISION_CONTEXT, UNSUPPORTED_ADAPTER_MODE, UNSUPPORTED_ADAPTER_SIGNAL_INTENT, LONG_RESEARCH_SIGNAL_EXPOSED, SHORT_RESEARCH_SIGNAL_EXPOSED, DEFAULT_BLOCK_SIGNAL, CALCULATION_ERROR.
+    - All models frozen/immutable with `__post_init__` validation.
+  - `src/hunter/dry_run_strategy/engine.py` — Dry-Run Strategy Runtime Engine.
+    - `build_dry_run_strategy_runtime_context()` — fail-closed runtime context builder with deterministic validation.
+    - `validate_dry_run_strategy_inputs()` — 13 priority-ordered blocking checks, returns first blocking reason only.
+    - `is_stale_adapter_decision_context()` — timestamp validity + age check.
+    - `map_adapter_to_strategy_mode()` — adapter mode → strategy mode mapping.
+    - `map_adapter_to_signal_action()` — adapter signal intent → strategy signal action mapping.
+    - `build_safety_flags()` — safe defaults from config.
+    - Allowed mappings: LONG_RESEARCH_ONLY + ALLOW_LONG_RESEARCH_SIGNAL → EXPOSE_LONG_RESEARCH_SIGNAL; SHORT_RESEARCH_ONLY + ALLOW_SHORT_RESEARCH_SIGNAL → EXPOSE_SHORT_RESEARCH_SIGNAL.
+    - Unsafe/invalid/stale/unsupported → BLOCK_SIGNAL.
+  - `src/hunter/dry_run_strategy/writer.py` — Dry-Run Strategy Runtime JSON Writer.
+    - `DEFAULT_DRY_RUN_STRATEGY_RUNTIME_PATH = data/freqtrade_strategy/current_dry_run_strategy_runtime.json`.
+    - `dry_run_strategy_runtime_context_to_dict()` — deterministic JSON-safe serialization with ISO-8601 timestamps, enum values, tuple→list, nested dicts.
+    - `atomic_write_json()` — atomic temp-file write with parent directory creation, fsync, os.replace, cleanup on failure.
+    - `write_dry_run_strategy_runtime_context()` — default path or custom path, converts + writes atomically.
+  - `tests/test_dry_run_strategy/__init__.py` — test package.
+  - `tests/test_dry_run_strategy/test_models.py` — 94 model tests, all passing.
+  - `tests/test_dry_run_strategy/test_engine.py` — 93 engine tests, all passing.
+  - `tests/test_dry_run_strategy/test_writer.py` — 42 writer tests, all passing.
+  - `tests/test_dry_run_strategy/test_integration.py` — 48 integration tests, all passing.
+  - 277 MVP-8 tests total. Full test suite: 1491 tests passing.
+  - Final review verdict: PASS. No defects found.
+  - No config YAML. No JSON schema. No deployable Freqtrade strategy class. No Freqtrade runtime connection. No Binance. No real exchange. No API keys. No live trading. No real orders. No leverage. No shorting. No real entry/exit execution logic.
+
 ### Safety
 
 - No Binance integration.

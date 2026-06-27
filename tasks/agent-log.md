@@ -14,6 +14,58 @@ MVP-5 Step 4 — Integration Tests.
 
 ---
 
+---
+
+### MVP-8 Completion — SPEC-009 Dry-Run Strategy Runtime
+
+Date: 2026-06-18
+
+Agent: WrongStack
+
+Task: MVP-8 Completion — SPEC-009 Dry-Run Strategy Runtime.
+
+Files modified:
+
+- `pyproject.toml` — version bumped to 0.8.0-dev.
+- `CHANGELOG.md` — added MVP-8 complete section.
+- `docs/handoff/CURRENT_STATE.md` — updated MVP-8 complete status.
+- `tasks/active.md` — updated MVP-8 complete, MVP-9 planning not started.
+- `tasks/agent-log.md` — this entry.
+
+Summary:
+
+Completed MVP-8 and SPEC-009.
+Implemented dry-run strategy runtime models, fail-closed engine, deterministic JSON writer, atomic output writer, and integration tests.
+Final review verdict: PASS. No defects found.
+Version bumped to 0.8.0-dev.
+Full test suite passes with 1491 tests.
+- 94 model tests
+- 93 engine tests
+- 42 writer tests
+- 48 integration tests
+- 277 MVP-8 tests total
+
+Safety:
+
+- No config YAML.
+- No JSON schema.
+- No deployable Freqtrade strategy class.
+- No Freqtrade runtime connection.
+- No Binance integration.
+- No real exchange connection.
+- No API keys.
+- No live trading.
+- No real orders.
+- No leverage.
+- No shorting.
+- No real entry/exit execution logic.
+
+Next step:
+
+MVP-9 planning not started. Requires human approval and new SPEC.
+
+---
+
 ### MVP-8 Step 4 — Dry-Run Strategy Runtime Integration Tests
 
 Date: 2026-06-18
