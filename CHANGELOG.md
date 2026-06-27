@@ -2,6 +2,59 @@
 
 All important project changes will be recorded in this file.
 
+## MVP-11 — Operator Review Workflow (Complete)
+
+**Version:** 0.11.0-dev (MVP-11 Steps 1-3 complete) → MVP-11 complete.
+
+**SPEC-012:** `specs/SPEC-012-Operator-Review-Workflow.md` — complete.
+
+- **Implemented package:** `src/hunter/review/`
+- **Files created/modified:**
+  - `src/hunter/review/__init__.py` — public API exports.
+  - `src/hunter/review/models.py` — frozen review dataclasses, enums, reason codes, forbidden review content detection.
+  - `src/hunter/review/engine.py` — in-memory review engine functions.
+  - `src/hunter/review/writer.py` — JSON/Markdown serialization, atomic file writing.
+  - `tests/test_review/__init__.py` — test package init.
+  - `tests/test_review/test_models.py` — model unit tests.
+  - `tests/test_review/test_engine.py` — engine unit tests.
+  - `tests/test_review/test_writer.py` — writer unit tests.
+  - `tests/test_review/test_integration.py` — integration tests.
+- **Capabilities:**
+  - Review models (`ReviewStatus`, `ReviewState`, `ReviewOutputFormat`, `ReviewConfig`, `ReviewSafetyFlags`, `ReviewRecord`, `ReviewAuditSummary`, `ReviewDataQuality`, `ReviewAuditRecord`).
+  - Fail-closed review engine with 13 priority-ordered blocking rules and deterministic first blocking reason.
+  - Human-audit-only JSON/Markdown review writer with explicit safety notice.
+  - Atomic review audit output writing (temp file, fsync, os.replace, cleanup).
+  - In-process review integration tests (observation report → review record → audit record → JSON/Markdown).
+  - No report feedback into execution paths.
+  - No operator feedback into execution paths.
+- **Default review output paths:**
+  - `data/review/latest_review_audit_record.json`
+  - `reports/review/latest_review_audit_record.md`
+- **Tests:**
+  - 138 model/engine tests (Step 1)
+  - 54 writer tests (Step 2)
+  - 83 integration tests (Step 3)
+  - 243 review tests total
+  - **Full suite: 2211 tests passing** using `pytest --import-mode=importlib`
+- **Final review verdict: PASS.** No defects found.
+- **Safety:**
+  - No config YAML.
+  - No JSON schema.
+  - No Freqtrade strategy class.
+  - No freqtrade import.
+  - No Freqtrade runtime connection.
+  - No Binance.
+  - No real exchange.
+  - No API keys.
+  - No live trading.
+  - No real orders.
+  - No leverage.
+  - No shorting.
+  - No real entry/exit execution logic.
+  - No report feedback into execution paths.
+  - No operator feedback into execution paths.
+  - No production data reads/writes.
+
 ## MVP-11 Step 3 — Review Integration Tests (Complete)
 
 **Version:** 0.10.0-dev (MVP-11 Step 2 complete) → MVP-11 Step 3 complete.

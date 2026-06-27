@@ -2,27 +2,25 @@
 
 ## Current Task
 
-MVP-11 Step 4 — Final Review, not started.
+MVP-12 planning — not started.
 
 ## Status
 
-MVP-11 Step 3 complete. SPEC-012 implementation in progress. Version 0.10.0-dev. Full test suite: 2211 tests passing using `pytest --import-mode=importlib`.
+MVP-11 complete. SPEC-012 complete. Version 0.11.0-dev. Full test suite: 2211 tests passing using `pytest --import-mode=importlib`.
 
 MVP-10 is complete. All 1968 tests pass. Version 0.10.0-dev.
 SPEC-010 design is approved and fully implemented.
 SPEC-011 is approved with notes and polished.
-SPEC-012 is approved with notes and polished. MVP-11 Steps 1-3 complete.
+SPEC-012 is approved with notes and polished. MVP-11 Steps 1-4 complete.
 
 ## Scope
 
-MVP-11 Step 4 — Final Review only.
-- Final review only.
-- No new implementation unless real defect found.
-- No memory update until review passes.
+MVP-12 planning only.
+- Do not start MVP-12 without human approval and a SPEC document.
 
-### Not Allowed
-- No new implementation unless real defect found.
-- No memory update until review passes.
+### Not Allowed Until Future SPEC
+- No source code.
+- No tests.
 - No config YAML.
 - No JSON schema.
 - No Freqtrade strategy class.
@@ -38,31 +36,31 @@ MVP-11 Step 4 — Final Review only.
 - No real entry/exit execution logic.
 - No report feedback into execution paths.
 - No operator feedback into execution paths.
-- No real entry/exit execution logic.
-- No report feedback into execution paths.
-- No operator feedback into execution paths.
 - No production data reads/writes.
 
 ## Previous Task
 
-MVP-11 Step 2 — Review Writer (Complete).
-- Files created: `src/hunter/review/writer.py`, `tests/test_review/test_writer.py`.
-- File modified: `src/hunter/review/__init__.py`.
-- 54 new writer tests. Full suite: 2160 tests passing.
-- Implemented: 11 writer functions (9 serialization + 2 atomic writers + combined writer), 2 default path constants, Markdown safety notice.
+MVP-11 Step 4 — Final Review (Complete).
+- Final review verdict: PASS. No defects found.
+- 138 model/engine tests + 54 writer tests + 83 integration tests = 243 review tests.
+- Full suite: 2211 tests passing.
 
 ## Definition of Done
 
 - [x] SPEC-012 approved with notes and polished.
 - [x] MVP-11 Step 1 complete: review models and engine implemented.
 - [x] MVP-11 Step 2 complete: review writer implemented.
+- [x] MVP-11 Step 3 complete: integration tests implemented.
+- [x] MVP-11 Step 4 complete: final review passed.
 - [x] 138 review model/engine tests pass.
 - [x] 54 writer tests pass.
-- [x] Full suite 2160 tests pass.
-- [ ] MVP-11 Step 3 integration tests implemented (not started).
-- [ ] Integration tests pass (not started).
-- [ ] No defects found in Steps 1-2.
+- [x] 83 integration tests pass.
+- [x] Full suite 2211 tests pass.
+- [x] No defects found.
+- [x] Version bumped to 0.11.0-dev.
 
 ## Next Step
 
-MVP-11 Step 3 — Review Integration Tests. Requires human approval.
+MVP-12 planning — not started. Requires human approval and new SPEC.
+
+Future local report browser, review index, dashboard, or operator workflow UI may be considered only in a future SPEC, but is not implemented yet.

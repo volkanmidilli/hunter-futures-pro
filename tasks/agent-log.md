@@ -1,5 +1,56 @@
 ---
 
+### MVP-11 Completion — SPEC-012 Operator Review Workflow
+
+Date: 2026-06-27
+
+Agent: WrongStack
+
+Task: MVP-11 Completion — SPEC-012 Operator Review Workflow.
+
+Files modified:
+
+- `pyproject.toml` — version bumped to 0.11.0-dev.
+- `src/hunter/__init__.py` — version bumped to 0.11.0-dev.
+- `CHANGELOG.md` — added MVP-11 complete section.
+- `docs/handoff/CURRENT_STATE.md` — updated to MVP-11 complete.
+- `tasks/active.md` — updated to MVP-12 planning not started.
+- `tasks/agent-log.md` — this entry.
+
+Summary:
+
+Completed MVP-11 and SPEC-012.
+Implemented review models, fail-closed review engine, human-audit-only JSON/Markdown review writer, atomic review audit output writing, and in-process integration tests.
+Review audit records are human-audit artifacts only, not trading signals, not trade approvals, and never feed back into execution paths.
+Final review verdict: PASS.
+Version bumped to 0.11.0-dev.
+Full test suite passes with 2211 tests using `pytest --import-mode=importlib`.
+
+Safety:
+
+No config YAML.
+No JSON schema.
+No Freqtrade strategy class.
+No freqtrade import.
+No Freqtrade runtime connection.
+No Binance integration.
+No real exchange connection.
+No API keys.
+No live trading.
+No real orders.
+No leverage.
+No shorting.
+No real entry/exit execution logic.
+No report feedback into execution paths.
+No operator feedback into execution paths.
+No production data reads/writes.
+
+Next step:
+
+MVP-12 planning — not started. Requires human approval and new SPEC.
+
+---
+
 ### MVP-11 Step 3 — Review Integration Tests
 
 Date: 2026-06-27
