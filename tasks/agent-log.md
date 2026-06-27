@@ -1,5 +1,55 @@
 ---
 
+### MVP-10 Completion -- SPEC-011 Dry-Run Research Observation Reports
+
+Date: 2026-06-18
+
+Agent: WrongStack
+
+Task: MVP-10 Completion -- SPEC-011 Dry-Run Research Observation Reports.
+
+Files modified:
+
+- `pyproject.toml` -- version bumped to 0.10.0-dev.
+- `src/hunter/__init__.py` -- version bumped to 0.10.0-dev.
+- `CHANGELOG.md` -- added MVP-10 complete section.
+- `docs/handoff/CURRENT_STATE.md` -- updated MVP-10 complete status.
+- `tasks/active.md` -- updated current task to MVP-11 planning not started.
+- `tasks/agent-log.md` -- this entry.
+
+Summary:
+
+Completed MVP-10 and SPEC-011.
+Implemented observation models, fail-closed observation engine, human-review-only JSON/Markdown report writer, atomic report output writing, and in-process integration tests.
+Reports are audit artifacts only, not trading signals, and never feed back into execution paths.
+Final review verdict PASS.
+Version bumped to 0.10.0-dev.
+Full test suite passes with 1968 tests using pytest --import-mode=importlib.
+
+Safety:
+
+No config YAML.
+No JSON schema.
+No Freqtrade strategy class.
+No freqtrade import.
+No Freqtrade runtime connection.
+No Binance integration.
+No real exchange connection.
+No API keys.
+No live trading.
+No real orders.
+No leverage.
+No shorting.
+No real entry/exit execution logic.
+No report feedback into execution paths.
+No production data reads/writes.
+
+Next step:
+
+MVP-11 planning not started. Requires human approval and new SPEC.
+
+---
+
 ### MVP-10 Step 3 -- Observation Integration Tests
 
 Date: 2026-06-18

@@ -2,20 +2,46 @@
 
 ## Current Task
 
-MVP-10 Step 4 -- Final Review.
+MVP-11 planning -- not started.
 
 ## Status
 
-MVP-10 Step 3 complete. SPEC-011 approved with notes and polished. MVP-10 implementation in progress. Version 0.9.0-dev. Full test suite: 1968 tests passing using `pytest --import-mode=importlib`.
+MVP-10 complete. SPEC-011 complete. Version 0.10.0-dev. Full test suite: 1968 tests passing using `pytest --import-mode=importlib`. Final review verdict: PASS.
 
 MVP-9 is complete. All 1716 tests pass. Version 0.9.0-dev.
 SPEC-010 design is approved and fully implemented.
 SPEC-011 is approved with notes and polished.
 MVP-10 Step 1 Observation Models and Engine complete. 1852 tests pass.
+MVP-10 Step 2 Observation Report Writer complete. 1910 tests pass.
+VP-10 Step 3 Observation Integration Tests complete. 1968 tests pass.
+MVP-10 Step 4 Final Review complete. Verdict: PASS. No defects found.
 
 ## Scope
 
-MVP-10 Step 4 -- Final Review only.
+MVP-11 planning -- not started.
+- Do not start MVP-11 without human approval and a new SPEC document.
+- Future dashboard/report review UI or operator review workflow may be considered only in a future SPEC, but is not implemented yet.
+
+### Not Allowed Until Future SPEC
+- No config YAML.
+- No JSON schema.
+- No Freqtrade strategy class.
+- No freqtrade import.
+- No Freqtrade runtime connection.
+- No Binance.
+- No real exchange.
+- No API keys.
+- No live trading.
+- No real orders.
+- No leverage.
+- No shorting.
+- No real entry/exit execution logic.
+- No report feedback into execution paths.
+- No production data reads/writes.
+
+## Previous Task
+
+MVP-10 Step 4 -- Final Review.
 - Scope: review only, no implementation unless a defect is found.
 - Allowed work:
   - Review SPEC-011 against implementation.
@@ -32,45 +58,16 @@ MVP-10 Step 4 -- Final Review only.
   - No freqtrade import.
   - No Freqtrade runtime connection.
   - No Binance.
-  - No real exchange connection.
+  - No real exchange.
   - No API keys.
   - No live trading.
   - No real orders.
   - No leverage.
   - No shorting.
   - No real entry/exit execution logic.
-  - No report feedback into execution paths.
   - No production data reads/writes.
-
-## Previous Task
-
-MVP-10 Step 3 -- Observation Integration Tests (complete).
-- `tests/test_observation/test_integration.py` -- 58 integration tests.
-- Full test suite: 1968 tests passing using `pytest --import-mode=importlib`.
-- No models, engine, writer, or `__init__.py` changes.
-- No config YAML, no JSON schema, no Freqtrade strategy class, no freqtrade import, no Freqtrade runtime connection, no Binance, no real exchange, no API keys, no live trading, no real orders, no leverage, no shorting, no real entry/exit execution logic, no report feedback into execution paths, no production data reads/writes.
-
-MVP-10 Step 2 -- Observation Report Writer (complete).
-- `src/hunter/observation/writer.py` -- 5 writer functions: observation_report_to_dict, observation_report_to_markdown, atomic_write_json_report, atomic_write_markdown_report, write_observation_reports.
-- `src/hunter/observation/__init__.py` -- updated with writer exports.
-- `tests/test_observation/test_writer.py` -- 58 writer tests.
-- Default JSON path: `data/observation/latest_observation_report.json`.
-- Default Markdown path: `reports/observation/latest_observation_report.md`.
-- Full test suite: 1910 tests passing using `pytest --import-mode=importlib`.
-- No integration tests yet.
-- No config YAML, no JSON schema, no Freqtrade strategy class, no freqtrade import, no Freqtrade runtime connection, no Binance, no real exchange, no API keys, no live trading, no real orders, no leverage, no shorting, no real entry/exit execution logic, no report feedback into execution paths, no production data reads/writes.
-
-MVP-10 Step 1 -- Observation Models and Engine (complete).
-- `src/hunter/observation/__init__.py` -- public API exports.
-- `src/hunter/observation/models.py` -- 9 models: ObservationState, ObservationSignal, ReportFormat, ObservationConfig, ObservationSafetyFlags, SignalObservation, ObservationWindow, ObservationDataQuality, ObservationReport.
-- `src/hunter/observation/engine.py` -- 5 engine functions: build_signal_observation, build_observation_window, build_observation_report, build_observation_safety_flags, has_unsafe_metadata.
-- `tests/test_observation/__init__.py` -- test package init.
-- `tests/test_observation/test_models.py` -- 77 model tests.
-- `tests/test_observation/test_engine.py` -- 59 engine tests.
-- 13 deterministic reason codes + FORBIDDEN_METADATA_KEYS.
-- Full test suite: 1852 tests passing using `pytest --import-mode=importlib`.
-- No writer. No integration tests.
-- No config YAML, no JSON schema, no Freqtrade strategy class, no freqtrade import, no Freqtrade runtime connection, no Binance, no real exchange, no API keys, no live trading, no real orders, no leverage, no shorting, no real entry/exit execution logic, no report feedback into execution paths, no file reads/writes, no production data access.
+  - No report feedback into execution paths.
+- Result: Final review verdict PASS. No defects found. All checklist items verified.
 
 ## Definition of Done
 
@@ -133,17 +130,42 @@ MVP-10 Step 1 -- Observation Models and Engine (complete).
 - [x] No real entry/exit execution logic.
 - [x] No report feedback into execution paths.
 - [x] No production data reads/writes.
-- [ ] SPEC-011 reviewed against implementation.
-- [ ] Models reviewed.
-- [ ] Engine reviewed.
-- [ ] Writer reviewed.
-- [ ] Integration tests reviewed.
-- [ ] Full test suite passes (1968+ tests).
-- [ ] Safety constraints verified.
-- [ ] Final review verdict produced.
-- [ ] No new features, config, schema, or strategy class created.
-- [ ] No production data reads/writes.
+- [x] SPEC-011 reviewed against implementation.
+- [x] Models reviewed.
+- [x] Engine reviewed.
+- [x] Writer reviewed.
+- [x] Integration tests reviewed.
+- [x] Full test suite passes (1968+ tests).
+- [x] Safety constraints verified.
+- [x] Final review verdict produced: PASS.
+- [x] No new features, config, schema, or strategy class created.
+- [x] No production data reads/writes.
+- [x] pyproject.toml version bumped to 0.10.0-dev.
+- [x] src/hunter/__init__.py version bumped to 0.10.0-dev.
+- [x] CHANGELOG.md updated with MVP-10 complete section.
+- [x] docs/handoff/CURRENT_STATE.md updated with MVP-10 complete status.
+- [x] tasks/agent-log.md updated with MVP-10 completion entry.
+- [ ] MVP-11 planning -- not started. Requires human approval and new SPEC.
 
 ## Next Step
 
-MVP-10 complete -- commit and tag version 1.0.0-dev (or next version).
+MVP-11 planning -- not started. Requires human approval and a new SPEC document.
+
+Future dashboard/report review UI or operator review workflow may be considered only in a future SPEC, but is not implemented yet.
+
+### Not Allowed Until Future SPEC
+- No config YAML.
+- No JSON schema.
+- No Freqtrade strategy class.
+- No freqtrade import.
+- No Freqtrade runtime connection.
+- No Binance.
+- No real exchange.
+- No API keys.
+- No live trading.
+- No real orders.
+- No leverage.
+- No shorting.
+- No real entry/exit execution logic.
+- No report feedback into execution paths.
+- No production data reads/writes.

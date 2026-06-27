@@ -10,7 +10,7 @@ Hunter Futures Pro
 
 ## Current Phase
 
-MVP-9 complete / SPEC-010 complete / SPEC-011 approved with notes and polished. MVP-10 Step 1 Observation Models and Engine complete. MVP-10 Step 2 Observation Report Writer complete. MVP-10 Step 3 Observation Integration Tests complete. Version 0.9.0-dev. Full test suite: 1968 tests passing using `pytest --import-mode=importlib`. Final review verdict: PASS. No defects found. Next step: MVP-10 Step 4 — Final Review. No config YAML, no JSON schema, no Freqtrade strategy class, no freqtrade import, no Freqtrade runtime connection, no Binance, no real exchange connection, no API keys, no live trading, no real orders, no leverage, no shorting, no real entry/exit execution logic, no production data reads/writes, no report feedback into execution paths.
+MVP-9 complete / SPEC-010 complete / SPEC-011 complete. MVP-10 complete. Version 0.10.0-dev. Full test suite: 1968 tests passing using `pytest --import-mode=importlib`. Final review verdict: PASS. No defects found. Next step: MVP-11 planning not started. No config YAML, no JSON schema, no Freqtrade strategy class, no freqtrade import, no Freqtrade runtime connection, no Binance, no real exchange connection, no API keys, no live trading, no real orders, no leverage, no shorting, no real entry/exit execution logic, no production data reads/writes, no report feedback into execution paths.
 
 ## Current Status
 
@@ -109,32 +109,28 @@ SPEC-011 Freqtrade Dry-Run Research Observation Reports design is approved with 
 
 ## Next Step
 
-MVP-10 Step 4 — Final Review.
-- Scope: review only, no implementation unless a defect is found.
-- Allowed work:
-  - Review SPEC-011 against implementation.
-  - Review models, engine, writer, integration tests.
-  - Run full test suite with `pytest --import-mode=importlib`.
-  - Check git status.
-  - Verify safety constraints.
-  - Produce final review verdict.
-- Not allowed:
-  - No new features.
-  - No config YAML.
-  - No JSON schema.
-  - No Freqtrade strategy class.
-  - No freqtrade import.
-  - No Freqtrade runtime connection.
-  - No Binance.
-  - No real exchange.
-  - No API keys.
-  - No live trading.
-  - No real orders.
-  - No leverage.
-  - No shorting.
-  - No real entry/exit execution logic.
-  - No report feedback into execution paths.
-  - No production data reads/writes.
+MVP-11 planning not started. Requires human approval and a new SPEC document.
+
+Future dashboard/report review UI or operator review workflow may be considered only in a future SPEC, but is not implemented yet.
+
+### Not Allowed Until Future SPEC
+- No config YAML.
+- No JSON schema.
+- No Freqtrade strategy class.
+- No freqtrade import.
+- No Freqtrade runtime connection.
+- No Binance.
+- No real exchange.
+- No API keys.
+- No live trading.
+- No real orders.
+- No leverage.
+- No shorting.
+- No real entry/exit execution logic.
+- No report feedback into execution paths.
+- No production data reads/writes.
+
+---
 
 ## Previous State (MVP-7 Complete)
 

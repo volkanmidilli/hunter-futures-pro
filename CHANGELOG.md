@@ -2,11 +2,11 @@
 
 All important project changes will be recorded in this file.
 
-## MVP-10 — Dry-Run Research Observation & Reports (Planning)
+## MVP-10 — Dry-Run Research Observation & Reports (Complete)
 
-**Version:** 0.9.0-dev (MVP-9 complete) → MVP-10 planning phase.
+**Version:** 0.10.0-dev (MVP-10 complete).
 
-**SPEC-011:** `specs/SPEC-011-Dry-Run-Research-Observation-Reports.md` — drafted.
+**SPEC-011:** `specs/SPEC-011-Dry-Run-Research-Observation-Reports.md` — approved with notes and polished.
 
 - **Purpose:** Design a dry-run research observation/reporting layer that consumes MVP-9 research-only shell metadata and produces local JSON/Markdown reports for human review.
 - **File created:** `specs/SPEC-011-Dry-Run-Research-Observation-Reports.md` (729 lines).
@@ -14,7 +14,7 @@ All important project changes will be recorded in this file.
   - `ObservationState`, `SignalObservation`, `ObservationWindow`, `ObservationReport`, `ObservationSafetyFlags`, `ObservationDataQuality` models.
   - `JsonReport` and `MarkdownReport` output models.
   - 8 fail-closed validation rules with priority-ordered blocking.
-  - 12 deterministic reason code constants.
+  - 13 deterministic reason code constants.
   - Proposed package: `src/hunter/observation/`.
   - Proposed output paths: `data/observation/current_observation_report.json`, `data/observation/current_observation_report.md`.
   - PlantUML component and sequence diagrams.
@@ -27,7 +27,7 @@ All important project changes will be recorded in this file.
   - Fail-closed observations produce **safe audit/report output only** and never trigger action.
   - Missing/invalid/unsafe inputs are **summarized as BLOCKED/UNKNOWN**, not repaired or inferred.
   - Reports **must not contain API keys, secrets, exchange credentials, or executable trading instructions**.
-- **No MVP-10 implementation started.** No source code, no tests, no config YAML, no JSON schema.
+- **MVP-10 implementation complete.** All 4 steps finished. Final review verdict: PASS.
 - **Safety constraints preserved:**
   - No Freqtrade strategy class.
   - No `freqtrade` import.
@@ -41,6 +41,66 @@ All important project changes will be recorded in this file.
   - No shorting.
   - No real entry/exit execution logic (`enter_long`, `enter_short`, `exit_long`, `exit_short`).
   - No report feedback into execution paths.
+
+---
+
+## MVP-10 — Dry-Run Research Observation & Reports (Complete)
+
+- **Version:** 0.10.0-dev (MVP-10 complete).
+- **SPEC-011:** `specs/SPEC-011-Dry-Run-Research-Observation-Reports.md` — approved with notes and polished.
+- **Implemented package:** `src/hunter/observation/`
+- **Files created/modified:**
+  - `src/hunter/observation/__init__.py` — public API exports.
+  - `src/hunter/observation/models.py` — 9 models + 13 reason codes + `FORBIDDEN_METADATA_KEYS`.
+  - `src/hunter/observation/engine.py` — 5 engine functions.
+  - `src/hunter/observation/writer.py` — 5 writer functions + 2 default path constants.
+  - `tests/test_observation/__init__.py` — test package init.
+  - `tests/test_observation/test_models.py` — 77 model tests.
+  - `tests/test_observation/test_engine.py` — 59 engine tests.
+  - `tests/test_observation/test_writer.py` — 58 writer tests.
+  - `tests/test_observation/test_integration.py` — 58 integration tests.
+- **Capabilities:**
+  - Observation models (ObservationState, ObservationSignal, ReportFormat, ObservationConfig, ObservationSafetyFlags, SignalObservation, ObservationWindow, ObservationDataQuality, ObservationReport).
+  - Fail-closed observation engine with 10 priority-ordered validation rules.
+  - Human-review-only JSON/Markdown report writer.
+  - Atomic report output writing (temp file, fsync, os.replace, cleanup).
+  - In-process observation integration tests (MVP-9 metadata → SignalObservation → ObservationWindow → ObservationReport → JSON/Markdown).
+  - No report feedback into execution paths.
+- **Default report paths:**
+  - `data/observation/latest_observation_report.json`
+  - `reports/observation/latest_observation_report.md`
+- **Tests:**
+  - 77 model tests + 59 engine tests + 58 writer tests + 58 integration tests = **252 MVP-10 tests**.
+  - **Full test suite: 1968 tests passing** using `pytest --import-mode=importlib`.
+- **Final review verdict: PASS.** No defects found.
+- **Safety constraints preserved:**
+  - No config YAML.
+  - No JSON schema.
+  - No Freqtrade strategy class.
+  - No `freqtrade` import.
+  - No Freqtrade runtime connection.
+  - No Binance integration.
+  - No real exchange connection.
+  - No API keys.
+  - No live trading.
+  - No real orders.
+  - No leverage.
+  - No shorting.
+  - No real entry/exit execution logic (`enter_long`, `enter_short`, `exit_long`, `exit_short`).
+  - No report feedback into execution paths.
+  - No production data reads/writes.
+
+---
+
+## MVP-10 Step 4 — Final Review (Complete)
+
+- **Final review verdict: PASS.** No defects found.
+- All SPEC-011 requirements verified against implementation.
+- All models, engine, writer, and integration tests reviewed.
+- Full test suite: 1968 tests passing using `pytest --import-mode=importlib`.
+- Safety constraints verified.
+- No new features, config, schema, or strategy class created.
+- No production data reads/writes.
 
 ---
 
