@@ -1949,6 +1949,56 @@ MVP-4 Step 1 — Execution Bridge Models.
 
 ## Entries
 
+---
+
+### 0.8.0-dev — MVP-9 Step 1: Shell Models and Validator
+
+Date: 2026-06-18
+
+Agent: WrongStack
+
+Task: MVP-9 Step 1 — Shell Models and Validator
+
+Files created:
+
+- src/hunter/freqtrade_shell/__init__.py
+- src/hunter/freqtrade_shell/models.py
+- src/hunter/freqtrade_shell/validator.py
+- tests/test_freqtrade_shell/__init__.py
+- tests/test_freqtrade_shell/test_models.py
+- tests/test_freqtrade_shell/test_validator.py
+
+Summary:
+
+Implemented Freqtrade shell model and validator layer from SPEC-010.
+Added ShellState, ShellSignalExposure, ShellRuntimeConfig, ShellValidationResult, 18 deterministic reason codes, and validator functions.
+Validator validates MVP-8 runtime JSON payloads in memory only and returns first blocking reason fail-closed.
+Added 122 MVP-9 Step 1 tests (94 model + 28 validator).
+Full test suite passes with 1613 tests.
+
+Safety:
+
+- No adapter.py.
+- No Freqtrade strategy class.
+- No freqtrade import.
+- No config YAML.
+- No JSON schema.
+- No Freqtrade runtime connection.
+- No Binance integration.
+- No real exchange connection.
+- No API keys.
+- No live trading.
+- No real orders.
+- No leverage.
+- No shorting.
+- No real entry/exit execution logic.
+
+Next step:
+
+MVP-9 Step 2 — Shell Adapter Boundary.
+
+---
+
 ### 0.1.0 — Foundation Start
 
 Date: 2026-06-17
