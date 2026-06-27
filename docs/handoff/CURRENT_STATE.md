@@ -10,7 +10,7 @@ Hunter Futures Pro
 
 ## Current Phase
 
-MVP-7 complete — Freqtrade Dry-Run Strategy Adapter. All 1214 tests pass. Ready for MVP-8 Planning.
+MVP-8 planning / SPEC-009 complete. SPEC-009 Freqtrade Deployable Dry-Run Strategy design finalized and polished. Next step is MVP-8 Step 1 — Dry-Run Strategy Runtime Models. No MVP-8 implementation exists yet.
 
 ## Current Status
 
@@ -52,18 +52,20 @@ MVP-7 Freqtrade Dry-Run Strategy Adapter is complete and committed. All 1214 tes
 - No config YAML exists. No JSON schema exists. No deployable Freqtrade strategy class exists.
 - No Binance integration. No real Freqtrade runtime integration. No API keys. No live trading. No real orders. No leverage. No shorting. No entry/exit execution logic.
 
-SPEC-008 Freqtrade Dry-Run Strategy Adapter design is finalized and polished.
-- AdapterState, AdapterMode, AdapterSignalIntent, AdapterDecisionContext defined.
-- Fail-closed adapter rules, deterministic reason codes, future config/schema/output defined.
-- PlantUML component and flow diagrams included.
+SPEC-009 Freqtrade Deployable Dry-Run Strategy design is finalized and polished.
+- `DryRunStrategyState`, `DryRunStrategyMode`, `DryRunSignalAction`, `DryRunStrategyRuntimeContext` defined.
+- Fail-closed deployable dry-run strategy rules, deterministic reason codes, future config/schema/output defined.
+- PlantUML component and runtime flow diagrams included.
 - 5-step implementation plan defined.
+- No MVP-8 code implemented yet. No `dry_run_strategy` package exists yet.
+- Full test suite: 1214 tests passing.
 
 ## Next Step
 
-MVP-8 Planning — SPEC-009 Freqtrade Deployable Dry-Run Strategy.
-- Design/spec only at this stage. No code implementation yet.
-- MVP-8 may only design a future deployable dry-run strategy that consumes `AdapterDecisionContext` safely.
-- Not allowed: no Binance integration, no real exchange connection, no API keys, no live trading, no real order execution, no leverage, no shorting.
+MVP-8 Step 1 — Dry-Run Strategy Runtime Models.
+- Future files: `src/hunter/dry_run_strategy/__init__.py`, `src/hunter/dry_run_strategy/models.py`, `tests/test_dry_run_strategy/__init__.py`, `tests/test_dry_run_strategy/test_models.py`.
+- Allowed: enums, config, input refs, safety flags, data quality, runtime context, reason codes, model validation tests.
+- Not allowed: no engine, no writer, no integration tests, no config YAML, no JSON schema, no deployable Freqtrade strategy class, no Freqtrade runtime connection, no Binance, no real exchange connection, no API keys, no live trading, no real orders, no leverage, no shorting, no real entry/exit execution logic.
 
 ## Previous State (MVP-7 Complete)
 

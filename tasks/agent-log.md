@@ -4,6 +4,53 @@ MVP-5 Step 4 — Integration Tests.
 
 ---
 
+---
+
+### SPEC-009 — MVP-8 Freqtrade Deployable Dry-Run Strategy Design
+
+Date: 2026-06-18
+
+Agent: WrongStack
+
+Task: SPEC-009 Freqtrade Deployable Dry-Run Strategy design.
+
+Files created:
+
+- `specs/SPEC-009-Freqtrade-Deployable-Dry-Run-Strategy.md` — Freqtrade Deployable Dry-Run Strategy specification (design-only).
+
+Files modified:
+
+- None (design-only step).
+
+Summary:
+
+Finalized SPEC-009 for MVP-8 Freqtrade Deployable Dry-Run Strategy.
+- SPEC-009 defines `DryRunStrategyState`, `DryRunStrategyMode`, `DryRunSignalAction`, `DryRunStrategyRuntimeContext`, fail-closed runtime rules, deterministic reason codes, future config design, future JSON output, future schema, diagrams, implementation steps, milestones, and success criteria.
+- Full test suite passes with 1214 tests.
+
+Safety:
+
+- Design only.
+- No MVP-8 code implemented.
+- No config YAML created.
+- No JSON schema created.
+- No deployable Freqtrade strategy class created.
+- No Binance integration.
+- No real exchange connection.
+- No real Freqtrade runtime connection.
+- No API keys.
+- No live trading.
+- No real orders.
+- No leverage.
+- No shorting.
+- No real entry/exit execution logic.
+
+Next step:
+
+MVP-8 Step 1 — Dry-Run Strategy Runtime Models.
+
+---
+
 ### MVP-7 Step 3 — Adapter Decision JSON Writer
 
 Date: 2026-06-18

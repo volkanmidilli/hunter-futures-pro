@@ -2,24 +2,51 @@
 
 ## Current Task
 
-MVP-8 Planning — SPEC-009 Freqtrade Deployable Dry-Run Strategy.
+MVP-8 Step 1 — Dry-Run Strategy Runtime Models.
 
 ## Status
 
-Not started. Awaiting approval.
+Not started. Implementation is not started yet.
 
 MVP-7 is complete. All 1214 tests pass. Version 0.7.0-dev.
-SPEC-008 design is finalized and polished. All MVP-7 implementation complete.
+SPEC-009 design is finalized and polished. All MVP-7 implementation complete.
 
 ## Scope
 
-MVP-8 must begin with design/spec only, not code.
-MVP-8 may only design a future deployable dry-run strategy that consumes AdapterDecisionContext safely.
+Step 1 future files:
+- `src/hunter/dry_run_strategy/__init__.py`
+- `src/hunter/dry_run_strategy/models.py`
+- `tests/test_dry_run_strategy/__init__.py`
+- `tests/test_dry_run_strategy/test_models.py`
 
-Next required design document:
-- SPEC-009 — Freqtrade Deployable Dry-Run Strategy
+Step 1 allowed work:
+- `DryRunStrategyState` enum
+- `DryRunStrategyMode` enum
+- `DryRunSignalAction` enum
+- `DryRunStrategyConfig`
+- `DryRunStrategyInputRefs`
+- `DryRunStrategySafetyFlags`
+- `DryRunStrategyDataQuality`
+- `DryRunStrategyRuntimeContext`
+- Deterministic reason codes
+- Model validation tests
 
-Suggested MVP-8 title: Freqtrade Deployable Dry-Run Strategy.
+Step 1 not allowed:
+- No engine.
+- No writer.
+- No integration tests.
+- No config YAML.
+- No JSON schema.
+- No deployable Freqtrade strategy class.
+- No Freqtrade runtime connection.
+- No Binance.
+- No real exchange connection.
+- No API keys.
+- No live trading.
+- No real orders.
+- No leverage.
+- No shorting.
+- No real entry/exit execution logic.
 
 ## Not Allowed
 
@@ -30,6 +57,11 @@ Suggested MVP-8 title: Freqtrade Deployable Dry-Run Strategy.
 - No real order execution.
 - No leverage.
 - No shorting.
+- No real entry/exit execution logic.
+- No deployable Freqtrade strategy class.
+- No Freqtrade runtime connection.
+- No config YAML.
+- No JSON schema.
 
 ## Previous Task
 
@@ -45,12 +77,17 @@ MVP-7 — Freqtrade Dry-Run Strategy Adapter (complete).
 
 ## Definition of Done
 
-- [ ] SPEC-009 created and reviewed.
-- [ ] No code implementation yet.
-- [ ] Design remains dry-run-only and fail-closed.
-- [ ] No unsafe integration designed.
+- [ ] `DryRunStrategyState`, `DryRunStrategyMode`, `DryRunSignalAction` enums defined.
+- [ ] `DryRunStrategyConfig`, `DryRunStrategyInputRefs`, `DryRunStrategySafetyFlags`, `DryRunStrategyDataQuality`, `DryRunStrategyRuntimeContext` models defined.
+- [ ] Deterministic reason codes defined.
+- [ ] Model validation tests pass.
+- [ ] No engine, writer, or integration tests created.
+- [ ] No config YAML created.
+- [ ] No JSON schema created.
+- [ ] No deployable Freqtrade strategy class created.
+- [ ] All safety constraints preserved.
 
 ## Next Step
 
-MVP-8 Step 1 — Strategy Adapter Models (if approved).
+MVP-8 Step 2 — Dry-Run Strategy Runtime Engine (after Step 1 complete).
 

@@ -2,6 +2,44 @@
 
 All important project changes will be recorded in this file.
 
+## MVP-8 — Freqtrade Deployable Dry-Run Strategy (Planning)
+
+### Added
+
+- SPEC-009 Freqtrade Deployable Dry-Run Strategy design finalized.
+  - `DryRunStrategyState` enum: DISABLED, DRY_RUN_READY, BLOCKED, UNKNOWN.
+  - `DryRunStrategyMode` enum: LONG_RESEARCH_ONLY, SHORT_RESEARCH_ONLY, BLOCK_ALL.
+  - `DryRunSignalAction` enum: EXPOSE_LONG_RESEARCH_SIGNAL, EXPOSE_SHORT_RESEARCH_SIGNAL, BLOCK_SIGNAL, NO_SIGNAL.
+  - `DryRunStrategyRuntimeContext` with 22 fields including adapter_state, adapter_mode, adapter_signal_intent, dry_run, live_trading_enabled, real_orders_enabled, leverage_enabled, shorting_enabled, freqtrade_runtime_allowed, strategy_class_allowed, populate_indicators_allowed, populate_entry_trend_allowed, populate_exit_trend_allowed, order_execution_allowed.
+  - Fail-closed deployable dry-run strategy rules: 12 blocking + 2 allowed + 1 fallback in deterministic priority order.
+  - Deterministic reason codes: MISSING_ADAPTER_DECISION_CONTEXT, INVALID_ADAPTER_DECISION_CONTEXT, ADAPTER_NOT_DRY_RUN_READY, ADAPTER_MODE_BLOCK_ALL, ADAPTER_SIGNAL_BLOCKED, DRY_RUN_DISABLED, LIVE_TRADING_ENABLED, REAL_ORDERS_ENABLED, LEVERAGE_ENABLED, SHORTING_ENABLED, STALE_ADAPTER_DECISION_CONTEXT, UNSUPPORTED_ADAPTER_MODE, UNSUPPORTED_ADAPTER_SIGNAL_INTENT, LONG_RESEARCH_SIGNAL_EXPOSED, SHORT_RESEARCH_SIGNAL_EXPOSED, DEFAULT_BLOCK_SIGNAL, CALCULATION_ERROR.
+  - Future config design: `configs/dry_run_strategy.yaml` (design-only, not created).
+  - Future output: `data/freqtrade_strategy/current_dry_run_strategy_runtime.json` (design-only, not created).
+  - Future schema: `schemas/dry_run_strategy_runtime.schema.json` (design-only, not created).
+  - PlantUML component and runtime flow diagrams included.
+  - 5-step implementation plan defined: Models, Engine, Writer, Integration Tests, Final Review.
+- MVP-8 remains design-first; implementation has not started.
+- Full test suite: 1214 tests passing.
+
+### Safety
+
+- No Binance integration.
+- No real exchange connection.
+- No real Freqtrade runtime connection.
+- No API keys.
+- No live trading.
+- No real orders.
+- No leverage.
+- No shorting.
+- No real entry/exit execution logic.
+- No deployable Freqtrade strategy class created.
+- No config YAML created.
+- No JSON schema created.
+
+### Next
+
+- MVP-8 Step 1 — Dry-Run Strategy Runtime Models.
+
 ## MVP-7 — Freqtrade Dry-Run Strategy Adapter (Complete)
 
 ### Added
