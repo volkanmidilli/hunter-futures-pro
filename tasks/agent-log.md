@@ -16,6 +16,62 @@ MVP-5 Step 4 — Integration Tests.
 
 ---
 
+---
+
+### SPEC-010 Planning — Freqtrade Dry-Run Strategy Shell
+
+Date: 2026-06-18
+
+Agent: WrongStack
+
+Task: SPEC-010 Planning — Freqtrade Dry-Run Strategy Shell.
+
+Files created:
+
+- `specs/SPEC-010-Freqtrade-Dry-Run-Strategy-Shell.md` — Freqtrade Dry-Run Strategy Shell design document.
+
+Files modified:
+
+- `CHANGELOG.md` — added SPEC-010 planning section.
+- `docs/handoff/CURRENT_STATE.md` — updated MVP-9 planning / SPEC-010 drafted status.
+- `tasks/active.md` — updated current task to SPEC-010 review / MVP-9 planning.
+- `tasks/agent-log.md` — this entry.
+
+Summary:
+
+Drafted SPEC-010 for MVP-9 planning.
+Designed a Freqtrade-compatible dry-run strategy shell that consumes MVP-8's `DryRunStrategyRuntimeContext` JSON from `data/freqtrade_strategy/current_dry_run_strategy_runtime.json`.
+Key safety clarifications:
+- Research-only signal exposure means metadata/columns only, not real Freqtrade trade signals.
+- `populate_entry_trend` must never set `enter_long` or `enter_short` execution columns.
+- `populate_exit_trend` must never set `exit_long` or `exit_short` execution columns.
+- Freqtrade compatibility is an interface boundary only, not a real runtime/exchange connection.
+- The shell must not bypass MVP-5, MVP-6, MVP-7, or MVP-8 safety contexts.
+No MVP-9 implementation started.
+
+Safety:
+
+- No source code.
+- No tests.
+- No config YAML.
+- No JSON schema.
+- No implemented Freqtrade strategy class.
+- No Freqtrade runtime connection.
+- No Binance integration.
+- No real exchange connection.
+- No API keys.
+- No live trading.
+- No real orders.
+- No leverage.
+- No shorting.
+- No real entry/exit execution logic.
+
+Next step:
+
+Human review of SPEC-010. After approval, MVP-9 Step 1 — Shell Models and Validator.
+
+---
+
 ### MVP-8 Completion — SPEC-009 Dry-Run Strategy Runtime
 
 Date: 2026-06-18

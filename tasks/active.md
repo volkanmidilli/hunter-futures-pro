@@ -2,24 +2,27 @@
 
 ## Current Task
 
-MVP-8 complete. MVP-9 planning — not started.
+SPEC-010 review / MVP-9 planning.
 
 ## Status
 
-Complete. All MVP-8 steps finished. Final review verdict: PASS. No defects found.
+SPEC-010 drafted, awaiting human review. MVP-9 implementation not started.
 
-MVP-8 Step 5 is complete. All 1491 tests pass. Version 0.8.0-dev.
+MVP-8 is complete. All 1491 tests pass. Version 0.8.0-dev.
 SPEC-009 design is finalized and fully implemented.
+SPEC-010 is drafted for MVP-9 planning.
 
 ## Scope
 
-MVP-9 planning not started. Do not start MVP-9 without human approval and a SPEC document.
+SPEC-010 review only. Do not start MVP-9 implementation until human approval.
 
-## Not Allowed (until future SPEC)
+## Not Allowed (until human approval)
 
+- No source code.
+- No tests.
 - No config YAML.
 - No JSON schema.
-- No deployable Freqtrade strategy class.
+- No Freqtrade strategy class.
 - No Freqtrade runtime connection.
 - No Binance.
 - No real exchange connection.
@@ -32,33 +35,20 @@ MVP-9 planning not started. Do not start MVP-9 without human approval and a SPEC
 
 ## Previous Task
 
-MVP-8 Step 5 — Final Review (complete).
-- SPEC-009 reviewed against implementation: PASS.
-- Models reviewed: PASS.
-- Engine reviewed: PASS.
-- Writer reviewed: PASS.
-- Integration tests reviewed: PASS.
-- Full test suite passes: 1491 tests.
-- Safety constraints verified: PASS.
+MVP-8 Completion — SPEC-009 Dry-Run Strategy Runtime (complete).
 - Final review verdict: PASS. No defects found.
+- Version 0.8.0-dev.
+- Full test suite: 1491 tests passing.
 - No new features, config, schema, or strategy class created.
 - All safety constraints preserved.
 
 ## Definition of Done
 
-- [x] SPEC-009 reviewed against implementation.
-- [x] Models reviewed.
-- [x] Engine reviewed.
-- [x] Writer reviewed.
-- [x] Integration tests reviewed.
-- [x] Full test suite passes.
-- [x] Safety constraints verified.
-- [x] Final review verdict produced.
-- [x] No new features, config, schema, or strategy class created.
-- [x] All safety constraints preserved.
+- [ ] SPEC-010 reviewed and approved (or polished).
+- [ ] MVP-9 implementation not started until human approval.
+- [ ] All safety constraints preserved.
 
 ## Next Step
 
-MVP-9 planning — not started. Requires human approval and new SPEC.
-- Future deployable Freqtrade dry-run strategy shell may be considered, but not implemented yet.
+Human review of SPEC-010. After approval, MVP-9 Step 1 — Shell Models and Validator.
 

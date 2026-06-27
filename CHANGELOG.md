@@ -99,6 +99,23 @@ All important project changes will be recorded in this file.
 - MVP-8 remains design-first; implementation has not started.
 - Full test suite: 1214 tests passing.
 
+## SPEC-010 — Freqtrade Dry-Run Strategy Shell (Planning)
+
+### Added
+
+- SPEC-010 drafted for MVP-9 planning.
+  - `specs/SPEC-010-Freqtrade-Dry-Run-Strategy-Shell.md` — Freqtrade Dry-Run Strategy Shell design document.
+  - Designs a Freqtrade-compatible dry-run strategy shell that consumes MVP-8's `DryRunStrategyRuntimeContext` JSON from `data/freqtrade_strategy/current_dry_run_strategy_runtime.json`.
+  - Key safety clarifications:
+    - Research-only signal exposure means metadata/columns only, not real Freqtrade trade signals.
+    - `populate_entry_trend` must never set `enter_long` or `enter_short` execution columns.
+    - `populate_exit_trend` must never set `exit_long` or `exit_short` execution columns.
+    - Freqtrade compatibility is an interface boundary only, not a real runtime/exchange connection.
+    - The shell must not bypass MVP-5, MVP-6, MVP-7, or MVP-8 safety contexts.
+  - No MVP-9 implementation started.
+  - No source code, no tests, no config YAML, no JSON schema, no Freqtrade strategy class implementation.
+  - No Binance, no real exchange, no API keys, no live trading, no real orders, no leverage, no shorting, no real entry/exit execution logic.
+
 ## MVP-8 — Freqtrade Deployable Dry-Run Strategy (Complete)
 
 ### Added
