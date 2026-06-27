@@ -10,7 +10,7 @@ Hunter Futures Pro
 
 ## Current Phase
 
-MVP-8 planning / SPEC-009 complete. SPEC-009 Freqtrade Deployable Dry-Run Strategy design finalized and polished. Next step is MVP-8 Step 1 — Dry-Run Strategy Runtime Models. No MVP-8 implementation exists yet.
+MVP-8 planning / SPEC-009 complete. Step 1 Dry-Run Strategy Runtime Models complete. Step 2 Dry-Run Strategy Runtime Engine complete. Next step is MVP-8 Step 3 — Dry-Run Strategy Runtime JSON Writer. No writer, no integration tests, no config YAML, no JSON schema, no deployable Freqtrade strategy class, no Freqtrade runtime connection, no Binance, no real exchange connection, no API keys, no live trading, no real orders, no leverage, no shorting, no real entry/exit execution logic.
 
 ## Current Status
 
@@ -58,16 +58,19 @@ SPEC-009 Freqtrade Deployable Dry-Run Strategy design is finalized and polished.
 - PlantUML component and runtime flow diagrams included.
 - 5-step implementation plan defined.
 - MVP-8 Step 1 Dry-Run Strategy Runtime Models complete.
-- `dry_run_strategy` package now exists with models only.
+- `dry_run_strategy` package now exists with models and engine.
 - `tests/test_dry_run_strategy/test_models.py` exists with 94 tests.
-- Full test suite: 1308 tests passing.
+- MVP-8 Step 2 Dry-Run Strategy Runtime Engine complete.
+- `src/hunter/dry_run_strategy/engine.py` exists with 6 engine functions.
+- `tests/test_dry_run_strategy/test_engine.py` exists with 93 tests.
+- Full test suite: 1401 tests passing.
 
 ## Next Step
 
-MVP-8 Step 2 — Dry-Run Strategy Runtime Engine.
-- Future files: `src/hunter/dry_run_strategy/engine.py`, `tests/test_dry_run_strategy/test_engine.py`.
-- Allowed: `build_dry_run_strategy_runtime_context()`, `validate_dry_run_strategy_inputs()`, `is_stale_adapter_decision_context()`, `map_adapter_to_strategy_mode()`, `map_adapter_to_signal_action()`, `build_safety_flags()`, deterministic fail-closed reason codes, model-only engine tests.
-- Not allowed: no writer, no JSON output writing, no integration tests, no config YAML, no JSON schema, no deployable Freqtrade strategy class, no Freqtrade runtime connection, no Binance, no real exchange connection, no API keys, no live trading, no real orders, no leverage, no shorting, no real entry/exit execution logic.
+MVP-8 Step 3 — Dry-Run Strategy Runtime JSON Writer.
+- Future files: `src/hunter/dry_run_strategy/writer.py`, `tests/test_dry_run_strategy/test_writer.py`.
+- Allowed: `dry_run_strategy_runtime_context_to_dict()`, `atomic_write_json()`, `write_dry_run_strategy_runtime_context()`, JSON serialization tests, atomic write tests, default output path `data/freqtrade_strategy/current_dry_run_strategy_runtime.json`.
+- Not allowed: no engine changes unless import/export only, no integration tests, no config YAML, no JSON schema, no deployable Freqtrade strategy class, no Freqtrade runtime connection, no Binance, no real exchange connection, no API keys, no live trading, no real orders, no leverage, no shorting, no real entry/exit execution logic.
 
 ## Previous State (MVP-7 Complete)
 

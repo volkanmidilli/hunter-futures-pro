@@ -36,6 +36,22 @@ All important project changes will be recorded in this file.
   - `tests/test_dry_run_strategy/test_models.py` — 94 model tests, all passing.
   - Full test suite: 1308 tests passing (1214 existing + 94 new).
   - No engine, no writer, no integration tests, no config YAML, no JSON schema, no deployable Freqtrade strategy class, no Freqtrade runtime connection, no Binance, no real exchange connection, no API keys, no live trading, no real orders, no leverage, no shorting, no real entry/exit execution logic.
+- MVP-8 Step 2 — Dry-Run Strategy Runtime Engine complete.
+  - `src/hunter/dry_run_strategy/engine.py` — Dry-Run Strategy Engine (Step 2).
+    - `build_dry_run_strategy_runtime_context()` — fail-closed runtime context builder with deterministic validation.
+    - `validate_dry_run_strategy_inputs()` — 13 priority-ordered blocking checks, returns first blocking reason only.
+    - `is_stale_adapter_decision_context()` — timestamp validity + age check.
+    - `map_adapter_to_strategy_mode()` — adapter mode → strategy mode mapping.
+    - `map_adapter_to_signal_action()` — adapter signal intent → strategy signal action mapping.
+    - `build_safety_flags()` — safe defaults from config.
+    - Allowed mappings:
+      - `LONG_RESEARCH_ONLY` + `ALLOW_LONG_RESEARCH_SIGNAL` → `EXPOSE_LONG_RESEARCH_SIGNAL`
+      - `SHORT_RESEARCH_ONLY` + `ALLOW_SHORT_RESEARCH_SIGNAL` → `EXPOSE_SHORT_RESEARCH_SIGNAL`
+    - Unsafe/invalid/stale/unsupported → `BLOCK_SIGNAL`.
+  - `src/hunter/dry_run_strategy/__init__.py` — updated with 6 engine function exports.
+  - `tests/test_dry_run_strategy/test_engine.py` — 93 engine tests, all passing.
+  - Full test suite: 1401 tests passing (1308 existing + 93 new).
+  - No writer, no integration tests, no config YAML, no JSON schema, no deployable Freqtrade strategy class, no Freqtrade runtime connection, no Binance, no real exchange connection, no API keys, no live trading, no real orders, no leverage, no shorting, no real entry/exit execution logic.
 - MVP-8 remains design-first; implementation has not started.
 - Full test suite: 1214 tests passing.
 
