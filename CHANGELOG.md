@@ -44,6 +44,51 @@ All important project changes will be recorded in this file.
 
 ---
 
+## MVP-10 Step 2 — Observation Report Writer (Complete)
+
+- **Files created/modified:**
+  - `src/hunter/observation/writer.py` — observation report writer.
+  - `src/hunter/observation/__init__.py` — updated with writer exports.
+  - `tests/test_observation/test_writer.py` — 58 writer tests.
+- **Constants:**
+  - `DEFAULT_OBSERVATION_JSON_REPORT_PATH = Path("data/observation/latest_observation_report.json")`
+  - `DEFAULT_OBSERVATION_MARKDOWN_REPORT_PATH = Path("reports/observation/latest_observation_report.md")`
+- **Writer functions:**
+  - `observation_report_to_dict(...)` — serializes `ObservationReport` to JSON-compatible dict with ISO-8601 timestamps, enum `.value` strings, tuple→list conversion, nested dicts for window/observations/data_quality/safety_flags.
+  - `observation_report_to_markdown(...)` — human-review-only Markdown with title, generated_at, report_state, window info, summary counts, reason codes, data quality, safety flags, explicit safety notice.
+  - `atomic_write_json_report(...)` — atomic temp-file write with parent dirs, UTF-8, indent=2, sort_keys, trailing newline, fsync, os.replace, cleanup on failure.
+  - `atomic_write_markdown_report(...)` — atomic temp-file write with parent dirs, UTF-8, trailing newline, fsync, os.replace, cleanup on failure.
+  - `write_observation_reports(...)` — writes both JSON and Markdown reports, uses default paths when None.
+- **58 new writer tests** covering:
+  - Dict serialization: all fields, ISO-8601, enum values, nested objects, no secrets, blocked report, no mutation.
+  - Markdown: title, generated_at, report_state, window, counts, reason codes, data quality, safety flags, human-review safety notice, no executable instructions, no secrets, blocked report.
+  - Atomic JSON write: parent dirs, valid JSON, indent/sort_keys, UTF-8, overwrite, no temp files, cleanup on failure.
+  - Atomic Markdown write: parent dirs, UTF-8, trailing newline, overwrite, no temp files, cleanup on failure.
+  - `write_observation_reports`: default paths, custom paths, blocked report, no mutation.
+  - Safety assertions: no production data reads, no execution feedback, no network, no database, no realtime, no API keys, no live trading, no real orders, no leverage, no shorting, no real entry/exit, no report feedback, default paths, no freqtrade import.
+- **Full test suite: 1910 tests passing** using `pytest --import-mode=importlib`.
+- **Safety constraints preserved:**
+  - No model changes.
+  - No engine changes.
+  - No integration tests created.
+  - No config YAML.
+  - No JSON schema.
+  - No Freqtrade strategy class.
+  - No `freqtrade` import.
+  - No runtime connection.
+  - No Binance integration.
+  - No real exchange connection.
+  - No API keys.
+  - No live trading.
+  - No real orders.
+  - No leverage.
+  - No shorting.
+  - No real entry/exit execution logic (`enter_long`, `enter_short`, `exit_long`, `exit_short`).
+  - No report feedback into execution paths.
+  - Tests write only to `tmp_path`.
+
+---
+
 ## MVP-10 Step 1 — Observation Models and Engine (Complete)
 
 - **SPEC-011 approved with notes and polished.**

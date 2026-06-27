@@ -1,5 +1,61 @@
 ---
 
+### MVP-10 Step 2 -- Observation Report Writer
+
+Date: 2026-06-18
+
+Agent: WrongStack
+
+Task: MVP-10 Step 2 -- Observation Report Writer.
+
+Files created:
+
+- `src/hunter/observation/writer.py` -- observation report writer.
+- `tests/test_observation/test_writer.py` -- 58 writer tests.
+
+Files modified:
+
+- `src/hunter/observation/__init__.py` -- updated with writer exports.
+- `CHANGELOG.md` -- added MVP-10 Step 2 completion section.
+- `docs/handoff/CURRENT_STATE.md` -- updated MVP-10 status and next step.
+- `tasks/active.md` -- updated current task to MVP-10 Step 3.
+- `tasks/agent-log.md` -- this entry.
+
+Summary:
+
+Implemented dry-run research observation report writer from SPEC-011.
+Added JSON-safe report serialization, human-review-only Markdown rendering, atomic JSON writer, atomic Markdown writer, default report paths, and combined report writing.
+Reports are audit artifacts only, not trading signals, and must not be consumed by execution, strategy, Freqtrade, order, or exchange layers.
+Added 58 writer tests.
+Full test suite passes with 1910 tests using pytest --import-mode=importlib.
+
+Safety:
+
+- No model changes.
+- No engine changes.
+- No integration tests.
+- No config YAML.
+- No JSON schema.
+- No Freqtrade strategy class.
+- No freqtrade import.
+- No Freqtrade runtime connection.
+- No Binance integration.
+- No real exchange connection.
+- No API keys.
+- No live trading.
+- No real orders.
+- No leverage.
+- No shorting.
+- No real entry/exit execution logic.
+- No report feedback into execution paths.
+- Tests write only to tmp_path.
+
+Next step:
+
+MVP-10 Step 3 -- Observation Integration Tests.
+
+---
+
 ### MVP-10 Step 1 -- Observation Models and Engine
 
 Date: 2026-06-18

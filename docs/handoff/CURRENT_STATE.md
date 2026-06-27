@@ -10,7 +10,7 @@ Hunter Futures Pro
 
 ## Current Phase
 
-MVP-9 complete / SPEC-010 complete / SPEC-011 approved with notes and polished. MVP-10 Step 1 Observation Models and Engine complete. Version 0.9.0-dev. Full test suite: 1852 tests passing using `pytest --import-mode=importlib`. Final review verdict: PASS. No defects found. Next step: MVP-10 Step 2 — Observation Report Writer. No config YAML, no JSON schema, no Freqtrade strategy class, no freqtrade import, no Freqtrade runtime connection, no Binance, no real exchange connection, no API keys, no live trading, no real orders, no leverage, no shorting, no real entry/exit execution logic, no production data reads/writes, no report feedback into execution paths.
+MVP-9 complete / SPEC-010 complete / SPEC-011 approved with notes and polished. MVP-10 Step 1 Observation Models and Engine complete. MVP-10 Step 2 Observation Report Writer complete. Version 0.9.0-dev. Full test suite: 1910 tests passing using `pytest --import-mode=importlib`. Final review verdict: PASS. No defects found. Next step: MVP-10 Step 3 — Observation Integration Tests. No config YAML, no JSON schema, no Freqtrade strategy class, no freqtrade import, no Freqtrade runtime connection, no Binance, no real exchange connection, no API keys, no live trading, no real orders, no leverage, no shorting, no real entry/exit execution logic, no production data reads/writes, no report feedback into execution paths.
 
 ## Current Status
 
@@ -94,18 +94,51 @@ SPEC-011 Freqtrade Dry-Run Research Observation Reports design is approved with 
 - `tests/test_observation/test_models.py` — 77 model tests.
 - `tests/test_observation/test_engine.py` — 59 engine tests.
 - 13 deterministic reason codes + FORBIDDEN_METADATA_KEYS.
-- Full test suite: 1852 tests passing using `pytest --import-mode=importlib`.
-- No writer yet. No integration tests yet.
-- No Freqtrade strategy class. No freqtrade import. No Freqtrade runtime connection. No Binance. No real exchange. No API keys. No live trading. No real orders. No leverage. No shorting. No real entry/exit execution logic. No report feedback into execution paths. No file reads/writes. No production data access.
+- MVP-10 Step 2 Observation Report Writer complete.
+- `src/hunter/observation/writer.py` — 5 writer functions: observation_report_to_dict, observation_report_to_markdown, atomic_write_json_report, atomic_write_markdown_report, write_observation_reports.
+- `src/hunter/observation/__init__.py` — updated with writer exports.
+- `tests/test_observation/test_writer.py` — 58 writer tests.
+- Default JSON path: `data/observation/latest_observation_report.json`.
+- Default Markdown path: `reports/observation/latest_observation_report.md`.
+- Full test suite: 1910 tests passing using `pytest --import-mode=importlib`.
+- No integration tests yet.
+- No Freqtrade strategy class. No freqtrade import. No Freqtrade runtime connection. No Binance. No real exchange. No API keys. No live trading. No real orders. No leverage. No shorting. No real entry/exit execution logic. No report feedback into execution paths. No production data reads/writes.
 
 ## Next Step
 
-MVP-10 Step 2 — Observation Report Writer.
-- Future files: `src/hunter/observation/writer.py`, `tests/test_observation/test_writer.py`.
-- Allowed work: `observation_report_to_dict()`, `observation_report_to_markdown()`, `atomic_write_json_report()`, `atomic_write_markdown_report()`, `write_observation_reports()`, local report writer tests.
-- Default JSON path: `data/observation/latest_observation_report.json`.
-- Default Markdown path: `reports/observation/latest_observation_report.md`.
-- Not allowed: no model changes unless strictly necessary, no engine changes unless strictly necessary, no integration tests, no config YAML, no JSON schema, no Freqtrade strategy class, no freqtrade import, no Freqtrade runtime connection, no Binance, no real exchange, no API keys, no live trading, no real orders, no leverage, no shorting, no real entry/exit execution logic, no report feedback into execution paths, no production data reads/writes except writer output path tests using `tmp_path`.
+MVP-10 Step 3 — Observation Integration Tests.
+- Future file: `tests/test_observation/test_integration.py`.
+- Allowed work:
+  - In-process MVP-9 shell metadata to SignalObservation.
+  - SignalObservation to ObservationWindow.
+  - ObservationWindow to ObservationReport.
+  - ObservationReport to JSON/Markdown using `tmp_path` only.
+  - Long research observation path.
+  - Short research observation path.
+  - Blocked/fail-closed paths.
+  - Unsafe metadata rejection.
+  - Report output verification.
+  - No production data reads/writes.
+  - No runtime/exchange/network calls.
+- Not allowed:
+  - No model changes unless strictly necessary.
+  - No engine changes unless strictly necessary.
+  - No writer changes unless strictly necessary.
+  - No config YAML.
+  - No JSON schema.
+  - No Freqtrade strategy class.
+  - No freqtrade import.
+  - No runtime connection.
+  - No Binance.
+  - No real exchange.
+  - No API keys.
+  - No live trading.
+  - No real orders.
+  - No leverage.
+  - No shorting.
+  - No real entry/exit execution logic.
+  - No report feedback into execution paths.
+  - No production data reads/writes except `tmp_path`.
 
 ## Previous State (MVP-7 Complete)
 
