@@ -10,7 +10,7 @@ Hunter Futures Pro
 
 ## Current Phase
 
-MVP-9 complete / SPEC-010 complete. Version 0.9.0-dev. Full test suite: 1716 tests passing using `pytest --import-mode=importlib`. Final review verdict: PASS. No defects found. Next step: MVP-10 planning not started. No config YAML, no JSON schema, no Freqtrade strategy class, no freqtrade import, no Freqtrade runtime connection, no Binance, no real exchange connection, no API keys, no live trading, no real orders, no leverage, no shorting, no real entry/exit execution logic, no production data reads/writes.
+MVP-9 complete / SPEC-010 complete / SPEC-011 drafted. Version 0.9.0-dev. Full test suite: 1716 tests passing using `pytest --import-mode=importlib`. Final review verdict: PASS. No defects found. Next step: SPEC-011 review / MVP-10 planning not started. No config YAML, no JSON schema, no Freqtrade strategy class, no freqtrade import, no Freqtrade runtime connection, no Binance, no real exchange connection, no API keys, no live trading, no real orders, no leverage, no shorting, no real entry/exit execution logic, no production data reads/writes, no report feedback into execution paths.
 
 ## Current Status
 
@@ -82,11 +82,20 @@ SPEC-010 Freqtrade Dry-Run Strategy Shell design is approved.
 - MVP-9 Step 4 Final Review complete. Verdict: PASS. No defects found.
 - No Freqtrade strategy class. No freqtrade import.
 
+SPEC-011 Freqtrade Dry-Run Research Observation Reports design is drafted.
+- `specs/SPEC-011-Dry-Run-Research-Observation-Reports.md` created (729 lines).
+- Designs a dry-run research observation/reporting layer consuming MVP-9 shell metadata.
+- Produces local JSON/Markdown reports for human review only.
+- Key safety clarifications: reports are human-review artifacts only (not trading signals), must never be consumed by execution/strategy/shell/order layers, must not feed back into any MVP layer, fail-closed observations produce safe audit output only, missing/invalid inputs summarized as BLOCKED/UNKNOWN, reports must not contain API keys/secrets/credentials/executable trading instructions.
+- 8 fail-closed rules, 12 reason codes, proposed `src/hunter/observation/` package.
+- No MVP-10 implementation started. No source code, no tests, no config YAML, no JSON schema.
+- No Freqtrade strategy class. No freqtrade import. No Freqtrade runtime connection. No Binance. No real exchange. No API keys. No live trading. No real orders. No leverage. No shorting. No real entry/exit execution logic. No report feedback into execution paths.
+
 ## Next Step
 
-MVP-10 planning not started.
-- Requires human approval and new SPEC document.
-- Not allowed until future SPEC: no config YAML, no JSON schema, no Freqtrade strategy class, no freqtrade import, no Freqtrade runtime connection, no Binance, no real exchange, no API keys, no live trading, no real orders, no leverage, no shorting, no real entry/exit execution logic, no production data reads/writes.
+MVP-10 planning / SPEC-011 review.
+- Requires human approval before MVP-10 implementation.
+- Not allowed until future SPEC: no config YAML, no JSON schema, no Freqtrade strategy class, no freqtrade import, no Freqtrade runtime connection, no Binance, no real exchange connection, no API keys, no live trading, no real orders, no leverage, no shorting, no real entry/exit execution logic, no production data reads/writes, no report feedback into execution paths.
 
 ## Previous State (MVP-7 Complete)
 

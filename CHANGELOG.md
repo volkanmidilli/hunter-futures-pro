@@ -2,6 +2,48 @@
 
 All important project changes will be recorded in this file.
 
+## MVP-10 — Dry-Run Research Observation & Reports (Planning)
+
+**Version:** 0.9.0-dev (MVP-9 complete) → MVP-10 planning phase.
+
+**SPEC-011:** `specs/SPEC-011-Dry-Run-Research-Observation-Reports.md` — drafted.
+
+- **Purpose:** Design a dry-run research observation/reporting layer that consumes MVP-9 research-only shell metadata and produces local JSON/Markdown reports for human review.
+- **File created:** `specs/SPEC-011-Dry-Run-Research-Observation-Reports.md` (729 lines).
+- **Key design elements:**
+  - `ObservationState`, `SignalObservation`, `ObservationWindow`, `ObservationReport`, `ObservationSafetyFlags`, `ObservationDataQuality` models.
+  - `JsonReport` and `MarkdownReport` output models.
+  - 8 fail-closed validation rules with priority-ordered blocking.
+  - 12 deterministic reason code constants.
+  - Proposed package: `src/hunter/observation/`.
+  - Proposed output paths: `data/observation/current_observation_report.json`, `data/observation/current_observation_report.md`.
+  - PlantUML component and sequence diagrams.
+  - 4-step implementation plan (Models+Engine → Writer → Integration → Review).
+  - ~100 test plan (40 models + 35 engine + 25 integration).
+- **Key safety clarifications:**
+  - Reports are **human-review artifacts only** — not trading signals.
+  - JSON/Markdown reports **must never be consumed by execution, strategy, Freqtrade shell, order, or any MVP execution path**.
+  - Observation layer **must not feed outputs back into MVP-4, MVP-5, MVP-6, MVP-7, MVP-8, MVP-9, Freqtrade, or any execution path**.
+  - Fail-closed observations produce **safe audit/report output only** and never trigger action.
+  - Missing/invalid/unsafe inputs are **summarized as BLOCKED/UNKNOWN**, not repaired or inferred.
+  - Reports **must not contain API keys, secrets, exchange credentials, or executable trading instructions**.
+- **No MVP-10 implementation started.** No source code, no tests, no config YAML, no JSON schema.
+- **Safety constraints preserved:**
+  - No Freqtrade strategy class.
+  - No `freqtrade` import.
+  - No Freqtrade runtime connection.
+  - No Binance integration.
+  - No real exchange connection.
+  - No API keys.
+  - No live trading.
+  - No real orders.
+  - No leverage.
+  - No shorting.
+  - No real entry/exit execution logic (`enter_long`, `enter_short`, `exit_long`, `exit_short`).
+  - No report feedback into execution paths.
+
+---
+
 ## MVP-9 — Freqtrade Dry-Run Strategy Shell (Planning)
 
 ### Added

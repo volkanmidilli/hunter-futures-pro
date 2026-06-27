@@ -1,3 +1,61 @@
+---
+
+### SPEC-011 Planning -- Dry-Run Research Observation Reports
+
+Date: 2026-06-18
+
+Agent: WrongStack
+
+Task: SPEC-011 Planning -- Dry-Run Research Observation Reports.
+
+Files created:
+
+- `specs/SPEC-011-Dry-Run-Research-Observation-Reports.md` -- Dry-Run Research Observation Reports design document (729 lines).
+
+Files modified:
+
+- `CHANGELOG.md` -- added SPEC-011 planning section.
+- `docs/handoff/CURRENT_STATE.md` -- updated MVP-10 planning / SPEC-011 drafted status.
+- `tasks/active.md` -- updated current task to SPEC-011 review / MVP-10 planning.
+- `tasks/agent-log.md` -- this entry.
+
+Summary:
+
+Drafted SPEC-011 for MVP-10 planning.
+Designed a dry-run research observation/reporting layer that consumes MVP-9 research-only shell metadata and produces local JSON/Markdown reports for human review.
+Key safety clarifications:
+- Reports are human-review artifacts only and not trading signals.
+- JSON/Markdown reports must never be consumed by execution, strategy, Freqtrade shell, order, or any MVP execution path.
+- Observation layer must not feed outputs back into MVP-4, MVP-5, MVP-6, MVP-7, MVP-8, MVP-9, Freqtrade, or any execution path.
+- Fail-closed observations produce safe audit/report output only and never trigger action.
+- Missing/invalid/unsafe inputs are summarized as BLOCKED/UNKNOWN, not repaired or inferred.
+- Reports must not contain API keys, secrets, exchange credentials, or executable trading instructions.
+No MVP-10 implementation started. No source code, no tests, no config YAML, no JSON schema.
+
+Safety:
+
+- No source code.
+- No tests.
+- No config YAML.
+- No JSON schema.
+- No Freqtrade strategy class.
+- No freqtrade import.
+- No Freqtrade runtime connection.
+- No Binance integration.
+- No real exchange connection.
+- No API keys.
+- No live trading.
+- No real orders.
+- No leverage.
+- No shorting.
+- No real entry/exit execution logic.
+- No report feedback into execution paths.
+
+Next step:
+
+Human review of SPEC-011 before MVP-10 implementation.
+
+---
 Next step:
 
 MVP-5 Step 4 — Integration Tests.
