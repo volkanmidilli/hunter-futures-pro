@@ -295,19 +295,20 @@ class ReviewAuditRecord:
 
 ### 3.5 Fail-Closed Rules
 
-The review workflow implements 8 fail-closed rules in priority order:
+The review workflow implements 9 fail-closed rules in priority order:
 
 | Priority | Check | Failure State | Reason Code |
 |---|---|---|---|
 | 1 | Input is None | BLOCKED | MISSING_REPORT |
 | 2 | Input missing required fields or unsupported version | BLOCKED | INVALID_REPORT |
 | 3 | `version` is not `"1.0"` | BLOCKED | UNSUPPORTED_REPORT_VERSION |
-| 4 | `dry_run` is not `true` | BLOCKED | DRY_RUN_DISABLED |
-| 5 | `live_trading_enabled` is not `false` | BLOCKED | LIVE_TRADING_ENABLED |
-| 6 | `real_orders_enabled` is not `false` | BLOCKED | REAL_ORDERS_ENABLED |
-| 7 | `leverage_enabled` is not `false` | BLOCKED | LEVERAGE_ENABLED |
-| 8 | `shorting_enabled` is not `false` | BLOCKED | SHORTING_ENABLED |
-| 9 | Any exception during review | BLOCKED | REVIEW_ERROR |
+| 4 | `report_state` is `BLOCKED`, `UNKNOWN`, or `DISABLED` | BLOCKED | UNSAFE_REPORT_STATE |
+| 5 | `dry_run` is not `true` | BLOCKED | DRY_RUN_DISABLED |
+| 6 | `live_trading_enabled` is not `false` | BLOCKED | LIVE_TRADING_ENABLED |
+| 7 | `real_orders_enabled` is not `false` | BLOCKED | REAL_ORDERS_ENABLED |
+| 8 | `leverage_enabled` is not `false` | BLOCKED | LEVERAGE_ENABLED |
+| 9 | `shorting_enabled` is not `false` | BLOCKED | SHORTING_ENABLED |
+| 10 | Any exception during review | BLOCKED | REVIEW_ERROR |
 
 All failures produce a `ReviewRecord` with:
 - `review_status`: `BLOCKED`
@@ -330,6 +331,7 @@ LIVE_TRADING_ENABLED = "LIVE_TRADING_ENABLED"
 REAL_ORDERS_ENABLED = "REAL_ORDERS_ENABLED"
 LEVERAGE_ENABLED = "LEVERAGE_ENABLED"
 SHORTING_ENABLED = "SHORTING_ENABLED"
+UNSAFE_REPORT_STATE = "UNSAFE_REPORT_STATE"
 REVIEW_ERROR = "REVIEW_ERROR"
 REVIEW_ACCEPTED = "REVIEW_ACCEPTED"
 REVIEW_REJECTED = "REVIEW_REJECTED"
@@ -405,6 +407,7 @@ tests/test_review/
 - `build_review_record` with valid input → ACCEPTED/REVIEWED/REJECTED/NEEDS_INVESTIGATION
 - `build_review_record` with None → BLOCKED + MISSING_REPORT
 - `build_review_record` with invalid fields → BLOCKED + INVALID_REPORT
+- `build_review_record` with unsafe observation report state (BLOCKED/UNKNOWN/DISABLED) → BLOCKED + UNSAFE_REPORT_STATE
 - `build_review_record` with dry_run=False → BLOCKED + DRY_RUN_DISABLED
 - `build_review_record` with live_trading_enabled=True → BLOCKED + LIVE_TRADING_ENABLED
 - `build_review_record` with real_orders_enabled=True → BLOCKED + REAL_ORDERS_ENABLED
@@ -461,7 +464,7 @@ tests/test_review/
 
 ### Success Criteria
 
-1. All 8 fail-closed rules are implemented and tested.
+1. All 9 fail-closed rules are implemented and tested.
 2. All 19 safety invariants are enforced by validation and tests.
 3. JSON review record is deterministic and human-readable.
 4. Markdown review record is human-readable without tools.
