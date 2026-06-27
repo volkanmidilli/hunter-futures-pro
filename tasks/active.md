@@ -2,27 +2,27 @@
 
 ## Current Task
 
-MVP-11 planning -- not started.
+SPEC-012 review / MVP-11 planning.
 
 ## Status
 
-MVP-10 complete. SPEC-011 complete. Version 0.10.0-dev. Full test suite: 1968 tests passing using `pytest --import-mode=importlib`. Final review verdict: PASS.
+SPEC-012 drafted, awaiting human review. MVP-11 implementation not started. Version 0.10.0-dev. Full test suite: 1968 tests passing using `pytest --import-mode=importlib`.
 
-MVP-9 is complete. All 1716 tests pass. Version 0.9.0-dev.
+MVP-10 is complete. All 1968 tests pass. Version 0.10.0-dev.
 SPEC-010 design is approved and fully implemented.
 SPEC-011 is approved with notes and polished.
-MVP-10 Step 1 Observation Models and Engine complete. 1852 tests pass.
-MVP-10 Step 2 Observation Report Writer complete. 1910 tests pass.
-VP-10 Step 3 Observation Integration Tests complete. 1968 tests pass.
-MVP-10 Step 4 Final Review complete. Verdict: PASS. No defects found.
+SPEC-012 is drafted and awaits human review.
 
 ## Scope
 
-MVP-11 planning -- not started.
-- Do not start MVP-11 without human approval and a new SPEC document.
-- Future dashboard/report review UI or operator review workflow may be considered only in a future SPEC, but is not implemented yet.
+SPEC-012 review / MVP-11 planning.
+- Do not start MVP-11 implementation without human approval.
+- SPEC-012 requires human review before implementation can begin.
+- Future operator review workflow may be considered only after SPEC-012 is approved, but is not implemented yet.
 
-### Not Allowed Until Future SPEC
+### Not Allowed
+- No source code.
+- No tests.
 - No config YAML.
 - No JSON schema.
 - No Freqtrade strategy class.
@@ -37,11 +37,17 @@ MVP-11 planning -- not started.
 - No shorting.
 - No real entry/exit execution logic.
 - No report feedback into execution paths.
+- No operator feedback into execution paths.
 - No production data reads/writes.
 
 ## Previous Task
 
-MVP-10 Step 4 -- Final Review.
+MVP-10 complete. SPEC-012 drafted.
+- `specs/SPEC-012-Operator-Review-Workflow.md` created (838 lines).
+- No source code, no tests, no config, no schema, no Freqtrade strategy class.
+- No MVP-11 implementation started.
+- Full test suite: 1968 tests passing.
+- Safety constraints preserved.
 - Scope: review only, no implementation unless a defect is found.
 - Allowed work:
   - Review SPEC-011 against implementation.

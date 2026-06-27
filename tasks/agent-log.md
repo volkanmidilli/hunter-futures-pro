@@ -1,5 +1,60 @@
 ---
 
+### SPEC-012 Planning -- Operator Review Workflow
+
+Date: 2026-06-18
+
+Agent: WrongStack
+
+Task: SPEC-012 Planning -- Operator Review Workflow.
+
+Files created:
+
+- `specs/SPEC-012-Operator-Review-Workflow.md` -- drafted (838 lines).
+
+Files modified:
+
+- `CHANGELOG.md` -- added SPEC-012 planning section.
+- `docs/handoff/CURRENT_STATE.md` -- updated next phase to MVP-11 planning / SPEC-012 drafted.
+- `tasks/active.md` -- updated current task to SPEC-012 review / MVP-11 planning.
+- `tasks/agent-log.md` -- this entry.
+
+Summary:
+
+Drafted SPEC-012 for MVP-11 planning.
+Designed an operator review workflow layer that consumes MVP-10 observation reports as human-review artifacts and produces local JSON/Markdown review audit records.
+Clarified that operator acceptance is not trade approval.
+Clarified review records are human-audit artifacts only, not trading signals.
+Clarified review decisions and records must never be consumed by or fed back into execution, strategy, Freqtrade, order, exchange, or any MVP execution path.
+No MVP-11 implementation started.
+
+Safety:
+
+No source code.
+No tests.
+No config YAML.
+No JSON schema.
+No Freqtrade strategy class.
+No freqtrade import.
+No Freqtrade runtime connection.
+No Binance integration.
+No real exchange connection.
+No API keys.
+No live trading.
+No real orders.
+No leverage.
+No shorting.
+No real entry/exit execution logic.
+No report feedback into execution paths.
+No operator feedback into execution paths.
+No production data reads/writes.
+
+Next step:
+
+Human review of SPEC-012 before MVP-11 implementation.
+
+---
+
 ### MVP-10 Completion -- SPEC-011 Dry-Run Research Observation Reports
 
 Date: 2026-06-18

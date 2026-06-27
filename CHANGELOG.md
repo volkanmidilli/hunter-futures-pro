@@ -2,6 +2,49 @@
 
 All important project changes will be recorded in this file.
 
+## MVP-11 — Operator Review Workflow (Planning)
+
+**Version:** 0.10.0-dev (MVP-10 complete) → MVP-11 planning phase.
+
+**SPEC-012:** `specs/SPEC-012-Operator-Review-Workflow.md` — drafted.
+
+- **Purpose:** Design an operator review workflow layer that consumes MVP-10 observation reports as human-review artifacts and produces local JSON/Markdown review audit records.
+- **File created:** `specs/SPEC-012-Operator-Review-Workflow.md` (838 lines).
+- **Key design elements:**
+  - `ReviewStatus`, `ReviewRecord`, `ReviewAuditSummary`, `ReviewSafetyFlags`, `ReviewDataQuality`, `ReviewAuditRecord` models.
+  - 9 fail-closed validation rules with priority-ordered blocking.
+  - 15 deterministic reason code constants.
+  - Proposed package: `src/hunter/review/`.
+  - Proposed output paths: `data/review/latest_review_record.json`, `reports/review/latest_review_record.md`.
+  - PlantUML component and sequence diagrams.
+  - 4-step implementation plan (Models+Engine → Writer → Integration → Review).
+  - ~115 test plan (45 models + 40 engine + 30 integration).
+- **Key safety clarifications:**
+  - **Operator acceptance is not trade approval.** The `ACCEPTED` status means the operator acknowledges the observation report as a valid audit artifact, not that they approve any trade.
+  - Review records are **human-audit artifacts only** — not trading signals, not trade approvals, not execution instructions.
+  - JSON/Markdown review records **must never be consumed by execution, strategy, Freqtrade shell, order, exchange, or any MVP execution path**.
+  - Review decisions **must not feed back into MVP-4, MVP-5, MVP-6, MVP-7, MVP-8, MVP-9, MVP-10, Freqtrade, strategy, order, exchange, or execution paths**.
+  - Fail-closed review records may be generated for audit only and **never trigger any action**.
+  - Missing/invalid/unsafe observation reports are **summarized as BLOCKED/UNKNOWN**, not repaired or inferred.
+  - Review files **must not contain API keys, secrets, exchange credentials, or executable trading instructions**.
+- **No MVP-11 implementation started.** No source code, no tests, no config YAML, no JSON schema.
+- **Safety constraints preserved:**
+  - No Freqtrade strategy class.
+  - No `freqtrade` import.
+  - No Freqtrade runtime connection.
+  - No Binance integration.
+  - No real exchange connection.
+  - No API keys.
+  - No live trading.
+  - No real orders.
+  - No leverage.
+  - No shorting.
+  - No real entry/exit execution logic (`enter_long`, `enter_short`, `exit_long`, `exit_short`).
+  - No report feedback into execution paths.
+  - No operator feedback into execution paths.
+
+---
+
 ## MVP-10 — Dry-Run Research Observation & Reports (Complete)
 
 **Version:** 0.10.0-dev (MVP-10 complete).

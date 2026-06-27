@@ -10,7 +10,7 @@ Hunter Futures Pro
 
 ## Current Phase
 
-MVP-9 complete / SPEC-010 complete / SPEC-011 complete. MVP-10 complete. Version 0.10.0-dev. Full test suite: 1968 tests passing using `pytest --import-mode=importlib`. Final review verdict: PASS. No defects found. Next step: MVP-11 planning not started. No config YAML, no JSON schema, no Freqtrade strategy class, no freqtrade import, no Freqtrade runtime connection, no Binance, no real exchange connection, no API keys, no live trading, no real orders, no leverage, no shorting, no real entry/exit execution logic, no production data reads/writes, no report feedback into execution paths.
+MVP-9 complete / SPEC-010 complete / SPEC-011 complete / SPEC-012 drafted. MVP-10 complete. Version 0.10.0-dev. Full test suite: 1968 tests passing using `pytest --import-mode=importlib`. Final review verdict: PASS. No defects found. Next step: MVP-11 planning not started. SPEC-012 requires human review before implementation. No config YAML, no JSON schema, no Freqtrade strategy class, no freqtrade import, no Freqtrade runtime connection, no Binance, no real exchange connection, no API keys, no live trading, no real orders, no leverage, no shorting, no real entry/exit execution logic, no production data reads/writes, no report feedback into execution paths, no operator feedback into execution paths.
 
 ## Current Status
 
@@ -109,11 +109,13 @@ SPEC-011 Freqtrade Dry-Run Research Observation Reports design is approved with 
 
 ## Next Step
 
-MVP-11 planning not started. Requires human approval and a new SPEC document.
+MVP-11 planning not started. SPEC-012 drafted, awaiting human review. Requires human approval before implementation.
 
-Future dashboard/report review UI or operator review workflow may be considered only in a future SPEC, but is not implemented yet.
+Future operator review workflow may be considered only after SPEC-012 is approved, but is not implemented yet.
 
 ### Not Allowed Until Future SPEC
+- No source code.
+- No tests.
 - No config YAML.
 - No JSON schema.
 - No Freqtrade strategy class.
@@ -128,6 +130,7 @@ Future dashboard/report review UI or operator review workflow may be considered 
 - No shorting.
 - No real entry/exit execution logic.
 - No report feedback into execution paths.
+- No operator feedback into execution paths.
 - No production data reads/writes.
 
 ---
