@@ -44,6 +44,55 @@ All important project changes will be recorded in this file.
 
 ---
 
+## MVP-10 Step 1 — Observation Models and Engine (Complete)
+
+- **SPEC-011 approved with notes and polished.**
+- **Files created:**
+  - `src/hunter/observation/__init__.py` — public API exports.
+  - `src/hunter/observation/models.py` — observation models and reason codes.
+  - `src/hunter/observation/engine.py` — observation engine functions.
+  - `tests/test_observation/__init__.py` — test package init.
+  - `tests/test_observation/test_models.py` — 77 model tests.
+  - `tests/test_observation/test_engine.py` — 59 engine tests.
+- **Models:**
+  - `ObservationState` enum: DISABLED, READY, BLOCKED, UNKNOWN.
+  - `ObservationSignal` enum: LONG_RESEARCH, SHORT_RESEARCH, NONE.
+  - `ReportFormat` enum: JSON, MARKDOWN.
+  - `ObservationConfig` — 13 fields, frozen, fail-closed validation (all unsafe flags must be False).
+  - `ObservationSafetyFlags` — 10 fields, frozen, validation (all unsafe flags must be False).
+  - `SignalObservation` — 9 fields, `blocked()` fail-closed factory, validation.
+  - `ObservationWindow` — 4 fields, frozen, validation.
+  - `ObservationDataQuality` — 7 fields, frozen, validation.
+  - `ObservationReport` — 9 fields, `blocked()` fail-closed factory, validation.
+- **Engine functions:**
+  - `build_signal_observation(...)` — builds a single `SignalObservation` from MVP-9 shell metadata with 10 priority-ordered fail-closed validation rules, returns first blocking reason only, catches exceptions → `OBSERVATION_ERROR`.
+  - `build_observation_window(...)` — creates `ObservationWindow` from a list of `SignalObservation` instances.
+  - `build_observation_report(...)` — creates `ObservationReport` from `ObservationWindow`, empty window → blocked, unsafe metadata → blocked, summary counts aggregated.
+  - `build_observation_safety_flags(...)` — safe defaults from `ObservationConfig`.
+  - `has_unsafe_metadata(...)` — checks metadata dict for `FORBIDDEN_METADATA_KEYS`.
+- **13 deterministic reason codes:** MISSING_INPUT, INVALID_INPUT, UNSUPPORTED_INPUT_VERSION, DRY_RUN_DISABLED, LIVE_TRADING_ENABLED, REAL_ORDERS_ENABLED, LEVERAGE_ENABLED, SHORTING_ENABLED, UNSAFE_METADATA, LONG_RESEARCH_EXPOSED, SHORT_RESEARCH_EXPOSED, DEFAULT_BLOCKED, OBSERVATION_ERROR.
+- **FORBIDDEN_METADATA_KEYS** frozenset for unsafe metadata detection.
+- **136 new MVP-10 Step 1 tests** (77 models + 59 engine).
+- **Full test suite: 1852 tests passing** using `pytest --import-mode=importlib`.
+- **No writer yet.** No integration tests yet.
+- **Safety constraints preserved:**
+  - No Freqtrade strategy class.
+  - No `freqtrade` import.
+  - No Freqtrade runtime connection.
+  - No Binance integration.
+  - No real exchange connection.
+  - No API keys.
+  - No live trading.
+  - No real orders.
+  - No leverage.
+  - No shorting.
+  - No real entry/exit execution logic (`enter_long`, `enter_short`, `exit_long`, `exit_short`).
+  - No report feedback into execution paths.
+  - No file reads/writes.
+  - No production data access.
+
+---
+
 ## MVP-9 — Freqtrade Dry-Run Strategy Shell (Planning)
 
 ### Added

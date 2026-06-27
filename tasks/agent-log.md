@@ -1,5 +1,65 @@
 ---
 
+### MVP-10 Step 1 -- Observation Models and Engine
+
+Date: 2026-06-18
+
+Agent: WrongStack
+
+Task: MVP-10 Step 1 -- Observation Models and Engine.
+
+Files created:
+
+- `src/hunter/observation/__init__.py` -- public API exports.
+- `src/hunter/observation/models.py` -- observation models and reason codes.
+- `src/hunter/observation/engine.py` -- observation engine functions.
+- `tests/test_observation/__init__.py` -- test package init.
+- `tests/test_observation/test_models.py` -- 77 model tests.
+- `tests/test_observation/test_engine.py` -- 59 engine tests.
+
+Files modified:
+
+- `CHANGELOG.md` -- added MVP-10 Step 1 completion section.
+- `docs/handoff/CURRENT_STATE.md` -- updated MVP-10 status and next step.
+- `tasks/active.md` -- updated current task to MVP-10 Step 2.
+- `tasks/agent-log.md` -- this entry.
+
+Summary:
+
+Implemented dry-run research observation model and engine layer from SPEC-011.
+Added ObservationState, ObservationSignal, ReportFormat, ObservationConfig, ObservationSafetyFlags, SignalObservation, ObservationWindow, ObservationDataQuality, ObservationReport, 13 deterministic reason codes, FORBIDDEN_METADATA_KEYS, and engine functions.
+Engine builds signal observations from MVP-9 shell metadata with 10 priority-ordered fail-closed validation rules, returns first blocking reason only, catches exceptions -> OBSERVATION_ERROR.
+Builds observation windows, builds human-review-only observation reports, aggregates summary counts, and fails closed on unsafe input.
+Added 136 MVP-10 Step 1 tests (77 models + 59 engine).
+Full test suite passes with 1852 tests using pytest --import-mode=importlib.
+
+Safety:
+
+- No writer.
+- No integration tests.
+- No config YAML.
+- No JSON schema.
+- No Freqtrade strategy class.
+- No freqtrade import.
+- No Freqtrade runtime connection.
+- No Binance integration.
+- No real exchange connection.
+- No API keys.
+- No live trading.
+- No real orders.
+- No leverage.
+- No shorting.
+- No real entry/exit execution logic.
+- No report feedback into execution paths.
+- No file reads/writes.
+- No production data access.
+
+Next step:
+
+MVP-10 Step 2 -- Observation Report Writer.
+
+---
+
 ### SPEC-011 Planning -- Dry-Run Research Observation Reports
 
 Date: 2026-06-18
