@@ -36,6 +36,20 @@ from .engine import (
     has_unsafe_review_content,
 )
 
+from .writer import (
+    DEFAULT_REVIEW_JSON_RECORD_PATH,
+    DEFAULT_REVIEW_MARKDOWN_RECORD_PATH,
+    atomic_write_json_review_audit_record,
+    atomic_write_markdown_review_audit_record,
+    review_audit_record_to_dict,
+    review_audit_record_to_markdown,
+    review_audit_summary_to_dict,
+    review_data_quality_to_dict,
+    review_record_to_dict,
+    review_safety_flags_to_dict,
+    write_review_audit_records,
+)
+
 __all__ = [
     # Enums
     "ReviewStatus",
@@ -72,4 +86,17 @@ __all__ = [
     "build_review_audit_summary",
     "build_review_data_quality",
     "build_review_audit_record",
+    # Writer constants
+    "DEFAULT_REVIEW_JSON_RECORD_PATH",
+    "DEFAULT_REVIEW_MARKDOWN_RECORD_PATH",
+    # Writer functions
+    "review_record_to_dict",
+    "review_safety_flags_to_dict",
+    "review_audit_summary_to_dict",
+    "review_data_quality_to_dict",
+    "review_audit_record_to_dict",
+    "review_audit_record_to_markdown",
+    "atomic_write_json_review_audit_record",
+    "atomic_write_markdown_review_audit_record",
+    "write_review_audit_records",
 ]
