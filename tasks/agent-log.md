@@ -1951,6 +1951,58 @@ MVP-4 Step 1 — Execution Bridge Models.
 
 ---
 
+---
+
+### 0.8.0-dev — MVP-9 Step 2: Shell Adapter Boundary
+
+Date: 2026-06-18
+
+Agent: WrongStack
+
+Task: MVP-9 Step 2 — Shell Adapter Boundary
+
+Files created:
+
+- src/hunter/freqtrade_shell/adapter.py
+- tests/test_freqtrade_shell/test_adapter.py
+
+Files modified:
+
+- src/hunter/freqtrade_shell/__init__.py
+
+Summary:
+
+Implemented Freqtrade shell adapter boundary from SPEC-010.
+Added research-only metadata constants (RESEARCH_SIGNAL_COLUMN, RESEARCH_REASON_COLUMN, RESEARCH_STATE_COLUMN, RESEARCH_EXPOSURE_COLUMN) and adapter functions.
+Adapter consumes ShellValidationResult and exposes only hunter_* research metadata columns.
+Adapter never sets enter_long, enter_short, exit_long, or exit_short and rejects forbidden trade columns.
+Added 41 adapter tests.
+Full test suite passes with 1654 tests using pytest --import-mode=importlib.
+
+Safety:
+
+- No model changes.
+- No validator changes.
+- No Freqtrade import.
+- No Freqtrade strategy class.
+- No config YAML.
+- No JSON schema.
+- No Freqtrade runtime connection.
+- No Binance integration.
+- No real exchange connection.
+- No API keys.
+- No live trading.
+- No real orders.
+- No leverage.
+- No shorting.
+- No real entry/exit execution logic.
+
+Next step:
+
+MVP-9 Step 3 — Shell Integration Tests.
+
+---
+
 ### 0.8.0-dev — MVP-9 Step 1: Shell Models and Validator
 
 Date: 2026-06-18

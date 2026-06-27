@@ -37,6 +37,19 @@ All important project changes will be recorded in this file.
   - `tests/test_freqtrade_shell/test_validator.py` — 28 validator tests, all passing.
   - Full test suite: 1613 tests passing (1491 existing + 122 new).
   - No adapter.py, no Freqtrade strategy class, no freqtrade import, no config YAML, no JSON schema, no Freqtrade runtime connection, no Binance, no real exchange connection, no API keys, no live trading, no real orders, no leverage, no shorting, no real entry/exit execution logic.
+- MVP-9 Step 2 — Shell Adapter Boundary complete.
+  - `src/hunter/freqtrade_shell/adapter.py` — Shell Adapter (Step 2).
+    - `RESEARCH_SIGNAL_COLUMN`, `RESEARCH_REASON_COLUMN`, `RESEARCH_STATE_COLUMN`, `RESEARCH_EXPOSURE_COLUMN` — research-only metadata column names.
+    - `shell_validation_result_to_metadata()` — serializes `ShellValidationResult` to deterministic JSON-compatible dict (16 fields, enum `.value` strings, tuple→list).
+    - `determine_research_signal()` — returns `"LONG_RESEARCH"`, `"SHORT_RESEARCH"`, or `"NONE"` based on state + exposure.
+    - `apply_research_metadata_to_dataframe()` — returns copy of dataframe with 4 research-only columns added, never mutates input, rejects dataframes containing forbidden trade columns (`enter_long`, `enter_short`, `exit_long`, `exit_short`).
+    - `assert_no_trade_columns()` — raises `ValueError` if dataframe contains any forbidden trade columns.
+    - `build_blocked_research_metadata()` — fail-closed metadata factory with blocked defaults.
+    - Research-only behavior: adds only `hunter_*` research metadata columns, never sets `enter_long`/`enter_short`/`exit_long`/`exit_short`, blocked/unknown/disabled results produce `NONE`.
+  - `src/hunter/freqtrade_shell/__init__.py` — updated with adapter constants and function exports.
+  - `tests/test_freqtrade_shell/test_adapter.py` — 41 adapter tests, all passing.
+  - Full test suite: 1654 tests passing (1613 existing + 41 new) using `pytest --import-mode=importlib`.
+  - No model changes, no validator changes, no Freqtrade import, no Freqtrade strategy class, no config YAML, no JSON schema, no Freqtrade runtime connection, no Binance, no real exchange connection, no API keys, no live trading, no real orders, no leverage, no shorting, no real entry/exit execution logic.
 
 ## MVP-8 — Freqtrade Deployable Dry-Run Strategy (Planning)
 

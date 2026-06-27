@@ -2,35 +2,42 @@
 
 ## Current Task
 
-MVP-9 Step 2 — Shell Adapter Boundary.
+MVP-9 Step 3 — Shell Integration Tests.
 
 ## Status
 
-MVP-9 Step 1 complete. SPEC-010 approved. MVP-9 implementation in progress.
+MVP-9 Step 2 complete. SPEC-010 approved. MVP-9 implementation in progress.
 
 MVP-8 is complete. All 1491 tests pass. Version 0.8.0-dev.
 SPEC-009 design is finalized and fully implemented.
 SPEC-010 is approved for MVP-9 implementation.
 MVP-9 Step 1 Shell Models and Validator complete. 1613 tests pass.
+MVP-9 Step 2 Shell Adapter Boundary complete. 1654 tests pass.
 
 ## Scope
 
-MVP-9 Step 2 only. Do not start Step 3 until human approval.
+MVP-9 Step 3 only. Do not start Step 4 until human approval.
 
-## Allowed (Step 2)
+## Allowed (Step 3)
 
-- `src/hunter/freqtrade_shell/adapter.py` — adapter boundary only.
-- `tests/test_freqtrade_shell/test_adapter.py` — adapter tests.
-- No freqtrade import.
-- No real IStrategy dependency.
-- Expose research-only metadata/columns only.
-- Never set `enter_long`, `enter_short`, `exit_long`, `exit_short`.
-- Consume `ShellValidationResult`.
-- Fail closed on BLOCKED/UNKNOWN/DISABLED/invalid result.
+- `tests/test_freqtrade_shell/test_integration.py` — integration tests only.
+- In-process payload validation to `ShellValidationResult`.
+- `ShellValidationResult` to research metadata.
+- Research metadata applied to dataframe-like object.
+- Long research happy path.
+- Short research happy path.
+- Blocked/fail-closed paths.
+- Forbidden trade columns rejected.
+- No production data writes.
+- No runtime/exchange/network calls.
 
-## Not Allowed (Step 2)
+## Not Allowed (Step 3)
 
+- No model changes unless strictly necessary for test compatibility.
+- No validator changes unless strictly necessary for test compatibility.
+- No adapter changes unless strictly necessary for test compatibility.
 - No real Freqtrade strategy class.
+- No freqtrade import.
 - No config YAML.
 - No JSON schema.
 - No Freqtrade runtime connection.
@@ -45,28 +52,29 @@ MVP-9 Step 2 only. Do not start Step 3 until human approval.
 
 ## Previous Task
 
-MVP-9 Step 1 — Shell Models and Validator (complete).
-- `src/hunter/freqtrade_shell/__init__.py` — public API exports.
-- `src/hunter/freqtrade_shell/models.py` — ShellState, ShellSignalExposure, ShellRuntimeConfig, ShellValidationResult, 18 reason codes.
-- `src/hunter/freqtrade_shell/validator.py` — validate_runtime_payload, is_runtime_payload_stale, parse_runtime_timestamp, map_signal_action_to_exposure.
-- `tests/test_freqtrade_shell/test_models.py` — 94 model tests.
-- `tests/test_freqtrade_shell/test_validator.py` — 28 validator tests.
-- Full test suite: 1613 tests passing (1491 existing + 122 new).
-- No adapter.py, no Freqtrade strategy class, no freqtrade import, no config YAML, no JSON schema, no Freqtrade runtime connection, no Binance, no real exchange, no API keys, no live trading, no real orders, no leverage, no shorting, no real entry/exit execution logic.
+MVP-9 Step 2 — Shell Adapter Boundary (complete).
+- `src/hunter/freqtrade_shell/adapter.py` — 5 adapter functions + 4 research column constants.
+- `src/hunter/freqtrade_shell/__init__.py` — updated with adapter constants and function exports.
+- `tests/test_freqtrade_shell/test_adapter.py` — 41 adapter tests.
+- Research-only metadata: adds only `hunter_*` columns, never sets `enter_long`/`enter_short`/`exit_long`/`exit_short`, rejects forbidden trade columns.
+- Full test suite: 1654 tests passing (1613 existing + 41 new) using `pytest --import-mode=importlib`.
+- No model changes, no validator changes, no Freqtrade import, no Freqtrade strategy class, no config YAML, no JSON schema, no Freqtrade runtime connection, no Binance, no real exchange, no API keys, no live trading, no real orders, no leverage, no shorting, no real entry/exit execution logic.
 
 ## Definition of Done
 
-- [ ] `adapter.py` created with adapter boundary functions.
-- [ ] `test_adapter.py` created with comprehensive adapter tests.
+- [ ] `test_integration.py` created with comprehensive integration tests.
 - [ ] All tests pass.
+- [ ] No model changes unless strictly necessary.
+- [ ] No validator changes unless strictly necessary.
+- [ ] No adapter changes unless strictly necessary.
 - [ ] No freqtrade import.
-- [ ] No real IStrategy dependency.
+- [ ] No real Freqtrade strategy class.
 - [ ] Research-only metadata/columns only.
 - [ ] Never set enter/exit columns.
 - [ ] Fail closed on BLOCKED/UNKNOWN/DISABLED/invalid.
-- [ ] Full test suite passes (1613+ tests).
+- [ ] Full test suite passes (1654+ tests).
 
 ## Next Step
 
-Human review of SPEC-010. After approval, MVP-9 Step 1 — Shell Models and Validator.
+MVP-9 Step 4 — Final Review.
 
