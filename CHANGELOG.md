@@ -2,6 +2,72 @@
 
 All important project changes will be recorded in this file.
 
+## MVP-11 Step 1 — Review Models and Engine (Complete)
+
+**Version:** 0.10.0-dev (MVP-10 complete) → MVP-11 Step 1 complete.
+
+**SPEC-012:** `specs/SPEC-012-Operator-Review-Workflow.md` — approved with notes and polished.
+
+- **Files created:**
+  - `src/hunter/review/__init__.py` — public API exports.
+  - `src/hunter/review/models.py` — frozen review dataclasses, enums, reason codes, forbidden review content detection.
+  - `src/hunter/review/engine.py` — in-memory review engine functions.
+  - `tests/test_review/__init__.py` — test package init.
+  - `tests/test_review/test_models.py` — model unit tests.
+  - `tests/test_review/test_engine.py` — engine unit tests.
+- **Implemented:**
+  - `ReviewStatus` enum (NOT_REVIEWED, REVIEWED, ACCEPTED, REJECTED, NEEDS_INVESTIGATION).
+  - `ReviewState` enum (DISABLED, READY, BLOCKED, UNKNOWN).
+  - `ReviewOutputFormat` enum (JSON, MARKDOWN).
+  - `ReviewConfig` frozen dataclass with 13 fields and validation.
+  - `ReviewSafetyFlags` frozen dataclass with 10 fields and validation.
+  - `ReviewRecord` frozen dataclass with 11 fields, `blocked()` factory, validation.
+  - `ReviewAuditSummary` frozen dataclass with 8 fields and validation.
+  - `ReviewDataQuality` frozen dataclass with 7 fields and validation.
+  - `ReviewAuditRecord` frozen dataclass with 8 fields, `blocked()` factory, validation.
+  - Deterministic `REASON_CODES` tuple with 14 constants.
+  - `FORBIDDEN_REVIEW_TERMS` frozenset with 13 forbidden keys/terms.
+  - `has_unsafe_review_content()` — case-insensitive forbidden content detection.
+  - `build_review_safety_flags()` — safe defaults from config.
+  - `build_review_record()` — 13-priority fail-closed record builder.
+  - `build_review_audit_summary()` — deterministic summary counts.
+  - `build_review_data_quality()` — deterministic quality metrics.
+  - `build_review_audit_record()` — audit record builder with empty-records blocking.
+- **Fail-closed priority order:**
+  1. MISSING_REPORT
+  2. INVALID_REPORT
+  3. UNSUPPORTED_REPORT_VERSION
+  4. UNSAFE_REPORT_STATE
+  5. DRY_RUN_DISABLED
+  6. LIVE_TRADING_ENABLED
+  7. REAL_ORDERS_ENABLED
+  8. LEVERAGE_ENABLED
+  9. SHORTING_ENABLED
+  10. MISSING_REVIEWER
+  11. INVALID_REVIEW_STATUS
+  12. UNSAFE_REVIEW_CONTENT
+  13. REVIEW_ERROR
+- **Tests:** 138 new review tests. Full suite: **2106 tests passing** using `pytest --import-mode=importlib`.
+- **Safety:**
+  - No writer created.
+  - No integration tests created.
+  - No file I/O in engine.
+  - No config YAML.
+  - No JSON schema.
+  - No Freqtrade strategy class.
+  - No freqtrade import.
+  - No Freqtrade runtime connection.
+  - No Binance.
+  - No real exchange connection.
+  - No API keys.
+  - No live trading.
+  - No real orders.
+  - No leverage.
+  - No shorting.
+  - No real entry/exit execution logic.
+  - No report feedback into execution paths.
+  - No operator feedback into execution paths.
+
 ## MVP-11 — Operator Review Workflow (Planning)
 
 **Version:** 0.10.0-dev (MVP-10 complete) → MVP-11 planning phase.
