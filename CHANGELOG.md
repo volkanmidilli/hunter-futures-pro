@@ -44,6 +44,51 @@ All important project changes will be recorded in this file.
 
 ---
 
+## MVP-10 Step 3 — Observation Integration Tests (Complete)
+
+- **File created:**
+  - `tests/test_observation/test_integration.py` — 58 integration tests.
+- **Integration flow verified:**
+  - MVP-9 shell metadata dict → `build_signal_observation(...)` → `SignalObservation` → `build_observation_window(...)` → `ObservationWindow` → `build_observation_report(...)` → `ObservationReport` → `observation_report_to_dict(...)` → `observation_report_to_markdown(...)` → `write_observation_reports(..., tmp_path JSON and Markdown paths)` → verify local report outputs.
+- **Paths covered:**
+  - Long research happy path: READY observation + LONG_RESEARCH, READY report, JSON/Markdown contain long research, human-review safety notice.
+  - Short research happy path: READY observation + SHORT_RESEARCH, READY report, JSON/Markdown contain short research.
+  - Missing metadata: MISSING_INPUT → BLOCKED observation + NONE, BLOCKED report, audit artifact generated, no action triggered.
+  - Invalid metadata: INVALID_INPUT → BLOCKED observation + NONE, BLOCKED report.
+  - Unsupported version: UNSUPPORTED_INPUT_VERSION → BLOCKED observation + NONE, BLOCKED report.
+  - dry_run false: DRY_RUN_DISABLED → BLOCKED observation + NONE, BLOCKED report.
+  - live_trading_enabled true: LIVE_TRADING_ENABLED → BLOCKED observation + NONE, BLOCKED report.
+  - real_orders_enabled true: REAL_ORDERS_ENABLED → BLOCKED observation + NONE, BLOCKED report.
+  - leverage_enabled true: LEVERAGE_ENABLED → BLOCKED observation + NONE, BLOCKED report.
+  - shorting_enabled true: SHORTING_ENABLED → BLOCKED observation + NONE, BLOCKED report.
+  - Unsafe metadata: all 8 forbidden keys (`enter_long`, `enter_short`, `exit_long`, `exit_short`, `api_key`, `secret`, `exchange_credentials`, `executable_instructions`) → UNSAFE_METADATA → BLOCKED observation + NONE, no unsafe keys in report output.
+  - Empty observation window: EMPTY_OBSERVATION_WINDOW → BLOCKED report.
+  - Mixed observation window: long + short + blocked → summary counts correct (total=3, long=1, short=1, none≥1, blocked≥1), reason_counts aggregated, report state BLOCKED.
+  - Writer integration: both JSON and Markdown written to tmp_path, parent directories created, JSON valid and deterministic, Markdown safety notice present, no API keys/secrets/executable instructions in output.
+  - Safety assertions: no freqtrade import, no production data reads/writes, no report feedback into execution, no network/database/realtime, no live trading/real orders/leverage/shorting, no real entry/exit execution logic.
+- **58 new integration tests** (all passed).
+- **Full test suite: 1968 tests passing** using `pytest --import-mode=importlib`.
+- **No models, engine, writer, or `__init__.py` changes.**
+- **Tests write only to `tmp_path`.**
+- **No production data reads/writes.**
+- **Safety constraints preserved:**
+  - No config YAML.
+  - No JSON schema.
+  - No Freqtrade strategy class.
+  - No `freqtrade` import.
+  - No runtime connection.
+  - No Binance integration.
+  - No real exchange connection.
+  - No API keys.
+  - No live trading.
+  - No real orders.
+  - No leverage.
+  - No shorting.
+  - No real entry/exit execution logic (`enter_long`, `enter_short`, `exit_long`, `exit_short`).
+  - No report feedback into execution paths.
+
+---
+
 ## MVP-10 Step 2 — Observation Report Writer (Complete)
 
 - **Files created/modified:**

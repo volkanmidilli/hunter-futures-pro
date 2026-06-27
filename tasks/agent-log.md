@@ -1,5 +1,61 @@
 ---
 
+### MVP-10 Step 3 -- Observation Integration Tests
+
+Date: 2026-06-18
+
+Agent: WrongStack
+
+Task: MVP-10 Step 3 -- Observation Integration Tests.
+
+Files created:
+
+- `tests/test_observation/test_integration.py` -- 58 integration tests.
+
+Files modified:
+
+- `CHANGELOG.md` -- added MVP-10 Step 3 completion section.
+- `docs/handoff/CURRENT_STATE.md` -- updated MVP-10 status and next step.
+- `tasks/active.md` -- updated current task to MVP-10 Step 4.
+- `tasks/agent-log.md` -- this entry.
+
+Summary:
+
+Added in-process integration tests for the SPEC-011 Dry-Run Research Observation Reports layer.
+Verified MVP-9 shell metadata dict to SignalObservation to ObservationWindow to ObservationReport to JSON/Markdown report output using tmp_path only.
+Covered long and short research happy paths, fail-closed blocking paths, unsafe metadata rejection, empty/mixed observation windows, writer output verification, and safety assertions.
+Added 58 integration tests.
+Full test suite passes with 1968 tests using pytest --import-mode=importlib.
+
+Safety:
+
+- No model changes.
+- No engine changes.
+- No writer changes.
+- No __init__.py changes.
+- Tests write only to tmp_path.
+- No production data reads/writes.
+- No config YAML.
+- No JSON schema.
+- No Freqtrade strategy class.
+- No freqtrade import.
+- No Freqtrade runtime connection.
+- No Binance integration.
+- No real exchange connection.
+- No API keys.
+- No live trading.
+- No real orders.
+- No leverage.
+- No shorting.
+- No real entry/exit execution logic.
+- No report feedback into execution paths.
+
+Next step:
+
+MVP-10 Step 4 -- Final Review.
+
+---
+
 ### MVP-10 Step 2 -- Observation Report Writer
 
 Date: 2026-06-18

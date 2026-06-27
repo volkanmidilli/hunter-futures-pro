@@ -10,7 +10,7 @@ Hunter Futures Pro
 
 ## Current Phase
 
-MVP-9 complete / SPEC-010 complete / SPEC-011 approved with notes and polished. MVP-10 Step 1 Observation Models and Engine complete. MVP-10 Step 2 Observation Report Writer complete. Version 0.9.0-dev. Full test suite: 1910 tests passing using `pytest --import-mode=importlib`. Final review verdict: PASS. No defects found. Next step: MVP-10 Step 3 — Observation Integration Tests. No config YAML, no JSON schema, no Freqtrade strategy class, no freqtrade import, no Freqtrade runtime connection, no Binance, no real exchange connection, no API keys, no live trading, no real orders, no leverage, no shorting, no real entry/exit execution logic, no production data reads/writes, no report feedback into execution paths.
+MVP-9 complete / SPEC-010 complete / SPEC-011 approved with notes and polished. MVP-10 Step 1 Observation Models and Engine complete. MVP-10 Step 2 Observation Report Writer complete. MVP-10 Step 3 Observation Integration Tests complete. Version 0.9.0-dev. Full test suite: 1968 tests passing using `pytest --import-mode=importlib`. Final review verdict: PASS. No defects found. Next step: MVP-10 Step 4 — Final Review. No config YAML, no JSON schema, no Freqtrade strategy class, no freqtrade import, no Freqtrade runtime connection, no Binance, no real exchange connection, no API keys, no live trading, no real orders, no leverage, no shorting, no real entry/exit execution logic, no production data reads/writes, no report feedback into execution paths.
 
 ## Current Status
 
@@ -100,35 +100,31 @@ SPEC-011 Freqtrade Dry-Run Research Observation Reports design is approved with 
 - `tests/test_observation/test_writer.py` — 58 writer tests.
 - Default JSON path: `data/observation/latest_observation_report.json`.
 - Default Markdown path: `reports/observation/latest_observation_report.md`.
-- Full test suite: 1910 tests passing using `pytest --import-mode=importlib`.
-- No integration tests yet.
+- MVP-10 Step 3 Observation Integration Tests complete.
+- `tests/test_observation/test_integration.py` — 58 integration tests.
+- Full test suite: 1968 tests passing using `pytest --import-mode=importlib`.
+- No models, engine, writer, or `__init__.py` changes.
+- No integration tests yet. → now complete with integration tests.
 - No Freqtrade strategy class. No freqtrade import. No Freqtrade runtime connection. No Binance. No real exchange. No API keys. No live trading. No real orders. No leverage. No shorting. No real entry/exit execution logic. No report feedback into execution paths. No production data reads/writes.
 
 ## Next Step
 
-MVP-10 Step 3 — Observation Integration Tests.
-- Future file: `tests/test_observation/test_integration.py`.
+MVP-10 Step 4 — Final Review.
+- Scope: review only, no implementation unless a defect is found.
 - Allowed work:
-  - In-process MVP-9 shell metadata to SignalObservation.
-  - SignalObservation to ObservationWindow.
-  - ObservationWindow to ObservationReport.
-  - ObservationReport to JSON/Markdown using `tmp_path` only.
-  - Long research observation path.
-  - Short research observation path.
-  - Blocked/fail-closed paths.
-  - Unsafe metadata rejection.
-  - Report output verification.
-  - No production data reads/writes.
-  - No runtime/exchange/network calls.
+  - Review SPEC-011 against implementation.
+  - Review models, engine, writer, integration tests.
+  - Run full test suite with `pytest --import-mode=importlib`.
+  - Check git status.
+  - Verify safety constraints.
+  - Produce final review verdict.
 - Not allowed:
-  - No model changes unless strictly necessary.
-  - No engine changes unless strictly necessary.
-  - No writer changes unless strictly necessary.
+  - No new features.
   - No config YAML.
   - No JSON schema.
   - No Freqtrade strategy class.
   - No freqtrade import.
-  - No runtime connection.
+  - No Freqtrade runtime connection.
   - No Binance.
   - No real exchange.
   - No API keys.
@@ -138,7 +134,7 @@ MVP-10 Step 3 — Observation Integration Tests.
   - No shorting.
   - No real entry/exit execution logic.
   - No report feedback into execution paths.
-  - No production data reads/writes except `tmp_path`.
+  - No production data reads/writes.
 
 ## Previous State (MVP-7 Complete)
 
