@@ -2,6 +2,63 @@
 
 All important project changes will be recorded in this file.
 
+## MVP-11 Step 3 — Review Integration Tests (Complete)
+
+**Version:** 0.10.0-dev (MVP-11 Step 2 complete) → MVP-11 Step 3 complete.
+
+**SPEC-012:** `specs/SPEC-012-Operator-Review-Workflow.md` — approved with notes and polished.
+
+- **Files created:**
+  - `tests/test_review/test_integration.py` — review integration tests.
+- **Integration flow covered:**
+  - observation report payload → `build_review_record` → `build_review_audit_record` → `write_review_audit_records`
+- **Covered paths:**
+  - accepted review happy path
+  - rejected review happy path
+  - needs investigation happy path
+  - not reviewed path
+  - missing report → `MISSING_REPORT`
+  - invalid report missing version → `INVALID_REPORT`
+  - invalid report missing report_state → `INVALID_REPORT`
+  - unsupported report version → `UNSUPPORTED_REPORT_VERSION`
+  - unsafe report_state `BLOCKED`/`UNKNOWN`/`DISABLED` → `UNSAFE_REPORT_STATE`
+  - dry_run false → `DRY_RUN_DISABLED`
+  - live_trading_enabled true → `LIVE_TRADING_ENABLED`
+  - real_orders_enabled true → `REAL_ORDERS_ENABLED`
+  - leverage_enabled true → `LEVERAGE_ENABLED`
+  - shorting_enabled true → `SHORTING_ENABLED`
+  - missing reviewer → `MISSING_REVIEWER`
+  - unsafe notes/tags/metadata → `UNSAFE_REVIEW_CONTENT`
+  - deterministic first blocking reason
+  - mixed audit summary
+  - empty audit fail-closed
+  - JSON/Markdown writer integration with `tmp_path`
+  - safety assertions
+- **Tests:**
+  - 83 new integration tests
+  - 243 review tests total
+  - full suite 2211 passing with `pytest --import-mode=importlib`
+- **Safety:**
+  - no source changes
+  - tests only
+  - tests write only to `tmp_path`
+  - no production data reads/writes
+  - no config YAML
+  - no JSON schema
+  - no Freqtrade strategy class
+  - no freqtrade import
+  - no Freqtrade runtime connection
+  - no Binance
+  - no real exchange
+  - no API keys
+  - no live trading
+  - no real orders
+  - no leverage
+  - no shorting
+  - no real entry/exit execution logic
+  - no report feedback into execution paths
+  - no operator feedback into execution paths
+
 ## MVP-11 Step 2 — Review Writer (Complete)
 
 **Version:** 0.10.0-dev (MVP-11 Step 1 complete) → MVP-11 Step 2 complete.

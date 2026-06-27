@@ -1,5 +1,54 @@
 ---
 
+### MVP-11 Step 3 — Review Integration Tests
+
+Date: 2026-06-27
+
+Agent: WrongStack
+
+Task: MVP-11 Step 3 — Review Integration Tests.
+
+Files created:
+
+- `tests/test_review/test_integration.py` — review integration tests.
+
+Summary:
+
+Added MVP-11 review integration tests for SPEC-012.
+Covered observation report payload to review record to audit record to local JSON/Markdown writer flow.
+Covered accepted, rejected, needs investigation, not reviewed, missing/invalid/unsupported/unsafe reports, safety flag blocking, missing reviewer, unsafe review content, deterministic first blocking reason, mixed audit summary, empty audit fail-closed behavior, writer integration, and safety assertions.
+Added 83 integration tests.
+Review tests now total 243.
+Full suite passes with 2211 tests using `pytest --import-mode=importlib`.
+
+Safety:
+
+No source changes.
+Tests only.
+Tests write only to `tmp_path`.
+No production data reads/writes.
+No config YAML.
+No JSON schema.
+No Freqtrade strategy class.
+No freqtrade import.
+No Freqtrade runtime connection.
+No Binance integration.
+No real exchange connection.
+No API keys.
+No live trading.
+No real orders.
+No leverage.
+No shorting.
+No real entry/exit execution logic.
+No report feedback into execution paths.
+No operator feedback into execution paths.
+
+Next step:
+
+MVP-11 Step 4 — Final Review, not started.
+
+---
+
 ### MVP-11 Step 2 -- Review Writer
 
 Date: 2026-06-18

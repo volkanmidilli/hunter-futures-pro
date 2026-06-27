@@ -2,30 +2,27 @@
 
 ## Current Task
 
-MVP-11 Step 3 — Review Integration Tests, not started.
+MVP-11 Step 4 — Final Review, not started.
 
 ## Status
 
-MVP-11 Step 2 complete. SPEC-012 implementation in progress. Version 0.10.0-dev. Full test suite: 2160 tests passing using `pytest --import-mode=importlib`.
+MVP-11 Step 3 complete. SPEC-012 implementation in progress. Version 0.10.0-dev. Full test suite: 2211 tests passing using `pytest --import-mode=importlib`.
 
 MVP-10 is complete. All 1968 tests pass. Version 0.10.0-dev.
 SPEC-010 design is approved and fully implemented.
 SPEC-011 is approved with notes and polished.
-SPEC-012 is approved with notes and polished. MVP-11 Steps 1-2 complete.
+SPEC-012 is approved with notes and polished. MVP-11 Steps 1-3 complete.
 
 ## Scope
 
-MVP-11 Step 3 — Review Integration Tests only.
-- Do not start Step 3 without human approval.
-- Integration test scope: in-process MVP-10 observation report → review record → review audit record → JSON/Markdown output using tmp_path only.
-- No model changes unless defect found.
-- No engine changes unless defect found.
-- No writer changes unless defect found.
+MVP-11 Step 4 — Final Review only.
+- Final review only.
+- No new implementation unless real defect found.
+- No memory update until review passes.
 
 ### Not Allowed
-- No model changes unless defect found.
-- No engine changes unless defect found.
-- No writer changes unless defect found.
+- No new implementation unless real defect found.
+- No memory update until review passes.
 - No config YAML.
 - No JSON schema.
 - No Freqtrade strategy class.
@@ -38,6 +35,9 @@ MVP-11 Step 3 — Review Integration Tests only.
 - No real orders.
 - No leverage.
 - No shorting.
+- No real entry/exit execution logic.
+- No report feedback into execution paths.
+- No operator feedback into execution paths.
 - No real entry/exit execution logic.
 - No report feedback into execution paths.
 - No operator feedback into execution paths.
