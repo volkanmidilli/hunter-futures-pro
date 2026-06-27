@@ -35,6 +35,20 @@ from .engine import (
     has_unsafe_index_content,
 )
 
+from .writer import (
+    DEFAULT_REVIEW_INDEX_JSON_PATH,
+    DEFAULT_REVIEW_INDEX_MARKDOWN_PATH,
+    atomic_write_json_review_index,
+    atomic_write_markdown_review_index,
+    index_data_quality_to_dict,
+    index_entry_to_dict,
+    index_safety_flags_to_dict,
+    index_summary_to_dict,
+    review_index_to_dict,
+    review_index_to_markdown,
+    write_review_index,
+)
+
 __all__ = [
     # Enums
     "IndexState",
@@ -70,4 +84,17 @@ __all__ = [
     "build_index_summary",
     "build_index_data_quality",
     "build_review_index",
+    # Writer constants
+    "DEFAULT_REVIEW_INDEX_JSON_PATH",
+    "DEFAULT_REVIEW_INDEX_MARKDOWN_PATH",
+    # Writer functions
+    "index_entry_to_dict",
+    "index_summary_to_dict",
+    "index_data_quality_to_dict",
+    "index_safety_flags_to_dict",
+    "review_index_to_dict",
+    "review_index_to_markdown",
+    "atomic_write_json_review_index",
+    "atomic_write_markdown_review_index",
+    "write_review_index",
 ]
