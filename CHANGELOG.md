@@ -37,7 +37,16 @@ All important project changes will be recorded in this file.
   - `tests/test_freqtrade_shell/test_validator.py` — 28 validator tests, all passing.
   - Full test suite: 1613 tests passing (1491 existing + 122 new).
   - No adapter.py, no Freqtrade strategy class, no freqtrade import, no config YAML, no JSON schema, no Freqtrade runtime connection, no Binance, no real exchange connection, no API keys, no live trading, no real orders, no leverage, no shorting, no real entry/exit execution logic.
-- MVP-9 Step 2 — Shell Adapter Boundary complete.
+- MVP-9 Step 3 — Shell Integration Tests complete.
+  - `tests/test_freqtrade_shell/test_integration.py` — Shell Integration Tests (Step 3).
+    - 62 integration tests covering the complete in-process MVP-9 shell flow: MVP-8 runtime payload dict → `validate_runtime_payload()` → `ShellValidationResult` → `shell_validation_result_to_metadata()` → `determine_research_signal()` → `apply_research_metadata_to_dataframe()` → research-only dataframe metadata verification.
+    - Happy paths: long research (`EXPOSE_LONG_RESEARCH_SIGNAL` → `LONG_RESEARCH`), short research (`EXPOSE_SHORT_RESEARCH_SIGNAL` → `SHORT_RESEARCH`).
+    - Fail-closed blocking paths: missing payload, invalid payload, version mismatch, dry_run false, live_trading_enabled true, real_orders_enabled true, leverage_enabled true, shorting_enabled true, invalid timestamp, stale runtime context, invalid strategy state, invalid signal action, `BLOCK_SIGNAL`, `NO_SIGNAL`, `BLOCKED`/`UNKNOWN`/`DISABLED` states.
+    - Forbidden trade columns: `enter_long`, `enter_short`, `exit_long`, `exit_short` all rejected with `ValueError`.
+    - Metadata verification: enum serialization to `.value` strings, `reason_codes` tuple → list, runtime version/state/mode/action present, all unsafe flags remain False.
+    - Safety assertions: no freqtrade import, no Freqtrade strategy class, no config YAML, no JSON schema, no network calls, no Binance, no live trading, no real orders, no leverage, no shorting, no real entry/exit columns set, no production data access.
+  - Full test suite: 1716 tests passing (1654 existing + 62 new) using `pytest --import-mode=importlib`.
+  - No model changes, no validator changes, no adapter changes, no `__init__.py` changes, no file reads/writes, no production data access, no Freqtrade import, no Freqtrade strategy class, no config YAML, no JSON schema, no Freqtrade runtime connection, no Binance, no real exchange connection, no API keys, no live trading, no real orders, no leverage, no shorting, no real entry/exit execution logic.
   - `src/hunter/freqtrade_shell/adapter.py` — Shell Adapter (Step 2).
     - `RESEARCH_SIGNAL_COLUMN`, `RESEARCH_REASON_COLUMN`, `RESEARCH_STATE_COLUMN`, `RESEARCH_EXPOSURE_COLUMN` — research-only metadata column names.
     - `shell_validation_result_to_metadata()` — serializes `ShellValidationResult` to deterministic JSON-compatible dict (16 fields, enum `.value` strings, tuple→list).

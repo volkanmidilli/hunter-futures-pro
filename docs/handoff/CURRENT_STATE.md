@@ -10,7 +10,7 @@ Hunter Futures Pro
 
 ## Current Phase
 
-MVP-9 Step 2 complete / SPEC-010 approved. Version 0.8.0-dev. Full test suite: 1654 tests passing using `pytest --import-mode=importlib`. MVP-9 Step 1 Shell Models and Validator complete. MVP-9 Step 2 Shell Adapter Boundary complete. Next step: MVP-9 Step 3 — Shell Integration Tests. No config YAML, no JSON schema, no implemented Freqtrade strategy class, no Freqtrade runtime connection, no Binance, no real exchange connection, no API keys, no live trading, no real orders, no leverage, no shorting, no real entry/exit execution logic.
+MVP-9 Step 3 complete / SPEC-010 approved. Version 0.8.0-dev. Full test suite: 1716 tests passing using `pytest --import-mode=importlib`. MVP-9 Step 1 Shell Models and Validator complete. MVP-9 Step 2 Shell Adapter Boundary complete. MVP-9 Step 3 Shell Integration Tests complete. Next step: MVP-9 Step 4 — Final Review. No config YAML, no JSON schema, no implemented Freqtrade strategy class, no Freqtrade runtime connection, no Binance, no real exchange connection, no API keys, no live trading, no real orders, no leverage, no shorting, no real entry/exit execution logic.
 
 ## Current Status
 
@@ -81,19 +81,21 @@ SPEC-010 Freqtrade Dry-Run Strategy Shell design is approved.
   - `src/hunter/freqtrade_shell/validator.py` — 4 validator functions.
   - `tests/test_freqtrade_shell/test_models.py` — 94 model tests.
   - `tests/test_freqtrade_shell/test_validator.py` — 28 validator tests.
-- MVP-9 Step 2 Shell Adapter Boundary complete.
-  - `src/hunter/freqtrade_shell/adapter.py` — 5 adapter functions + 4 research column constants.
-  - `tests/test_freqtrade_shell/test_adapter.py` — 41 adapter tests.
-  - Research-only metadata: adds only `hunter_*` columns, never sets `enter_long`/`enter_short`/`exit_long`/`exit_short`, rejects forbidden trade columns.
-  - No adapter.py changes needed for models/validator.
-  - No Freqtrade strategy class. No freqtrade import.
+- MVP-9 Step 3 Shell Integration Tests complete.
+  - `tests/test_freqtrade_shell/test_integration.py` — 62 integration tests.
+  - Complete in-process MVP-9 shell flow: MVP-8 runtime payload dict → `validate_runtime_payload()` → `ShellValidationResult` → `shell_validation_result_to_metadata()` → `determine_research_signal()` → `apply_research_metadata_to_dataframe()` → research-only dataframe metadata verification.
+  - Happy paths: long research (`LONG_RESEARCH`), short research (`SHORT_RESEARCH`).
+  - Fail-closed blocking paths: missing payload, invalid payload, version mismatch, dry_run false, live_trading_enabled true, real_orders_enabled true, leverage_enabled true, shorting_enabled true, invalid timestamp, stale runtime context, invalid strategy state, invalid signal action, `BLOCK_SIGNAL`, `NO_SIGNAL`, `BLOCKED`/`UNKNOWN`/`DISABLED` states.
+  - Forbidden trade columns: `enter_long`, `enter_short`, `exit_long`, `exit_short` all rejected.
+  - Metadata verification and safety assertions.
+  - Full test suite: 1716 tests passing.
+  - No model changes, no validator changes, no adapter changes, no `__init__.py` changes, no file reads/writes, no production data access, no Freqtrade import, no Freqtrade strategy class.
 
 ## Next Step
 
-MVP-9 Step 3 — Shell Integration Tests.
-- Future file: `tests/test_freqtrade_shell/test_integration.py`.
-- Allowed: in-process payload validation to ShellValidationResult, ShellValidationResult to research metadata, research metadata applied to dataframe-like object, long/short happy paths, blocked/fail-closed paths, forbidden trade columns rejected, no production data writes, no runtime/exchange/network calls.
-- Not allowed: no model/validator/adapter changes unless strictly necessary, no real Freqtrade strategy class, no freqtrade import, no config YAML, no JSON schema, no Freqtrade runtime connection, no Binance, no real exchange, no API keys, no live trading, no real orders, no leverage, no shorting, no real entry/exit execution logic.
+MVP-9 Step 4 — Final Review.
+- Allowed: review SPEC-010 against implementation, review models/validator/adapter/integration tests, run full test suite, check git status, verify safety constraints, produce final review verdict.
+- Not allowed: no new features, no config YAML, no JSON schema, no Freqtrade strategy class, no freqtrade import, no Freqtrade runtime connection, no Binance, no real exchange, no API keys, no live trading, no real orders, no leverage, no shorting, no real entry/exit execution logic.
 
 ## Previous State (MVP-7 Complete)
 

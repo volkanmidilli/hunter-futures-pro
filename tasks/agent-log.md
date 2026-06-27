@@ -1953,6 +1953,56 @@ MVP-4 Step 1 — Execution Bridge Models.
 
 ---
 
+---
+
+### 0.8.0-dev — MVP-9 Step 3: Shell Integration Tests
+
+Date: 2026-06-18
+
+Agent: WrongStack
+
+Task: MVP-9 Step 3 — Shell Integration Tests
+
+Files created:
+
+- tests/test_freqtrade_shell/test_integration.py
+
+Summary:
+
+Added in-process integration tests for the SPEC-010 Freqtrade Dry-Run Strategy Shell.
+Verified MVP-8 runtime payload dict to ShellValidationResult to research metadata to dataframe research-only metadata flow.
+Covered long and short research happy paths, fail-closed blocking paths, forbidden trade column rejection, metadata serialization, unsafe flag checks, and safety assertions.
+Added 62 integration tests.
+Full test suite passes with 1716 tests using pytest --import-mode=importlib.
+
+Safety:
+
+- No model changes.
+- No validator changes.
+- No adapter changes.
+- No __init__.py changes.
+- No file reads/writes.
+- No production data access.
+- No config YAML.
+- No JSON schema.
+- No Freqtrade strategy class.
+- No freqtrade import.
+- No Freqtrade runtime connection.
+- No Binance integration.
+- No real exchange connection.
+- No API keys.
+- No live trading.
+- No real orders.
+- No leverage.
+- No shorting.
+- No real entry/exit execution logic.
+
+Next step:
+
+MVP-9 Step 4 — Final Review.
+
+---
+
 ### 0.8.0-dev — MVP-9 Step 2: Shell Adapter Boundary
 
 Date: 2026-06-18
