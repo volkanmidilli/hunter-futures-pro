@@ -6,11 +6,11 @@ Hunter Futures Pro
 
 ## Version
 
-0.13.0-dev
+0.14.0-dev
 
 ## Current Phase
 
-MVP-13 is complete and committed. SPEC-015 for MVP-14 Local Research Bundle / Evidence Pack has been drafted and approved. MVP-14 planning complete. Version 0.13.0-dev. Full test suite: 2728 tests passing, 1 skipped using `pytest --import-mode=importlib`. Next step: MVP-14 Step 1 — Research Bundle Models and Engine, not started. Research bundles are human-audit artifacts only, not trading signals, not trade approvals, and must not be consumed by execution, strategy, Freqtrade shell, order, exchange, or any MVP execution path. No bundle feedback into execution paths. File references remain local strings only and must not be traversed, opened, followed, validated, or executed. No Web UI, no dashboard, no database persistence, no config YAML, no JSON schema, no Freqtrade strategy class, no freqtrade import, no Binance, no real exchange, no API keys, no live trading, no real orders, no leverage, no shorting, no real entry/exit execution logic, no report feedback into execution paths, no operator feedback into execution paths, no index feedback into execution paths, no search feedback into execution paths, no production data reads/writes.
+MVP-14 is complete and committed. SPEC-015 for MVP-14 Local Research Bundle / Evidence Pack is complete and approved. Version 0.14.0-dev. Full test suite: 2922 tests passing, 1 skipped using `pytest --import-mode=importlib`. Next step: MVP-15 planning, not started. Research bundles are human-audit artifacts only, not trading signals, not trade approvals, and must not be consumed by execution, strategy, Freqtrade shell, order, exchange, or any MVP execution path. No bundle feedback into execution paths. File references remain local strings only and must not be traversed, opened, followed, validated, or executed. No Web UI, no dashboard, no database persistence, no config YAML, no JSON schema, no Freqtrade strategy class, no freqtrade import, no Binance, no real exchange, no API keys, no live trading, no real orders, no leverage, no shorting, no real entry/exit execution logic, no report feedback into execution paths, no operator feedback into execution paths, no index feedback into execution paths, no search feedback into execution paths, no bundle feedback into execution paths, no production data reads/writes.
 
 ## Current Status
 
@@ -135,19 +135,25 @@ MVP-13 — Review Search / Query Layer is complete and committed.
 - No report/operator/index/search feedback into execution paths.
 - File references remain strings only, never traversed, opened, followed, validated, or executed.
 
-MVP-14 — Local Research Bundle / Evidence Pack (Planning Complete).
+MVP-14 — Local Research Bundle / Evidence Pack is complete and committed.
 - SPEC-015: `specs/SPEC-015-Local-Research-Bundle-Evidence-Pack.md` — approved with no critical issues.
-- Package: `src/hunter/research_bundle/`
-- Models: BundleState, BundleItemKind, BundleConfig, BundleSafetyFlags, BundleItem, BundleSummary, BundleDataQuality, ResearchBundle.
-- Engine: build_bundle_safety_flags, has_unsafe_bundle_content, validate_bundle_item, build_bundle_item, build_bundle_summary, build_bundle_data_quality, build_research_bundle.
-- Writer: research_bundle_to_dict, research_bundle_to_markdown, atomic_write_json_research_bundle, atomic_write_markdown_research_bundle, write_research_bundle.
-- Outputs: `data/research_bundle/latest_research_bundle.json`, `reports/research_bundle/latest_research_bundle.md`.
+- `src/hunter/research_bundle/models.py` — frozen bundle dataclasses, enums, 12 reason codes, 22 forbidden terms, 8 bundle output safety flags, 13 unsafe safety flags.
+- `src/hunter/research_bundle/engine.py` — 7 engine functions: build_bundle_safety_flags, has_unsafe_bundle_content, validate_bundle_item, build_bundle_item, build_bundle_summary, build_bundle_data_quality, build_research_bundle.
+- `src/hunter/research_bundle/writer.py` — JSON/Markdown serialization, atomic file writing.
+- `src/hunter/research_bundle/__init__.py` — updated with engine and writer exports.
+- `tests/test_research_bundle/test_models.py` — 54 model tests.
+- `tests/test_research_bundle/test_engine.py` — 58 engine tests.
+- `tests/test_research_bundle/test_writer.py` — 49 writer tests.
+- `tests/test_research_bundle/test_integration.py` — 33 integration tests.
+- 194 research_bundle tests total. 1 skipped.
+- Full suite: 2922 tests passing, 1 skipped using `pytest --import-mode=importlib`.
+- Z.ai Step 3 review: APPROVED. Engine `human_note_count` fix validated — counts items with non-empty notes (not just HUMAN_NOTE kind), aligning with SPEC-015 semantic definition.
 - Safety: human-audit only, no execution feedback, no trading signals, no file reference traversal.
-- MVP-14 implementation not started. Next step: MVP-14 Step 1.
+- Next step: MVP-15 planning, not started.
 
 ## Next Step
 
-MVP-14 Step 1 — Research Bundle Models and Engine. SPEC-015 approved. Ready for implementation.
+MVP-15 planning, not started. No SPEC drafted yet. Requires human approval before any implementation.
 
 ### Not Allowed Until Future SPEC
 - No config YAML.

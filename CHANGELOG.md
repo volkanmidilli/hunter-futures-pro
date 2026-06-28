@@ -57,6 +57,58 @@ All important project changes will be recorded in this file.
 
 ---
 
+## MVP-14 — Local Research Bundle / Evidence Pack (Complete)
+
+**Version:** 0.13.0-dev → 0.14.0-dev.
+
+**SPEC-015:** `specs/SPEC-015-Local-Research-Bundle-Evidence-Pack.md` — approved with no critical issues.
+
+**Commit:** `TBD` — feat: add MVP-14 research bundle models and engine.
+**Commit:** `TBD` — feat: add MVP-14 research bundle writer.
+**Commit:** `TBD` — feat: add MVP-14 research bundle integration tests.
+
+- **MVP-14 Step 1 — Research Bundle Models and Engine (Complete)**
+  - `src/hunter/research_bundle/__init__.py` — public API exports.
+  - `src/hunter/research_bundle/models.py` — frozen bundle dataclasses, enums, 12 reason codes, 22 forbidden terms, 8 bundle output safety flags, 13 unsafe safety flags, `BundleConfig`, `BundleSafetyFlags`, `BundleItem`, `BundleSummary`, `BundleDataQuality`, `ResearchBundle`.
+  - `src/hunter/research_bundle/engine.py` — 7 in-memory bundle engine functions: `build_bundle_safety_flags`, `has_unsafe_bundle_content`, `validate_bundle_item`, `build_bundle_item`, `build_bundle_summary`, `build_bundle_data_quality`, `build_research_bundle`.
+  - `tests/test_research_bundle/test_models.py` — 54 model tests.
+  - `tests/test_research_bundle/test_engine.py` — 58 engine tests.
+
+- **MVP-14 Step 2 — Research Bundle Writer (Complete)**
+  - `src/hunter/research_bundle/writer.py` — JSON/Markdown serialization, atomic file writing.
+  - `src/hunter/research_bundle/__init__.py` — updated with writer exports.
+  - `tests/test_research_bundle/test_writer.py` — 49 writer tests.
+  - Default JSON path: `data/research_bundle/latest_research_bundle.json`.
+  - Default Markdown path: `reports/research_bundle/latest_research_bundle.md`.
+  - `research_bundle_to_dict()` — deterministic JSON-safe serialization.
+  - `research_bundle_to_markdown()` — human-readable Markdown with explicit safety notice.
+  - `atomic_write_json_research_bundle()` / `atomic_write_markdown_research_bundle()` — atomic writes with temp file + fsync + os.replace.
+  - `write_research_bundle()` — writes both JSON and Markdown, returns paths.
+
+- **MVP-14 Step 3 — Research Bundle Integration Tests (Complete)**
+  - `tests/test_research_bundle/test_integration.py` — 33 integration tests.
+  - End-to-end flows: build → serialize → write → validate, empty bundle, unsafe content, max items exceeded, blocked items, deterministic summary, deterministic data quality, deterministic bundle ID, JSON round-trip, markdown safety notice, item references as plain strings, no file reads from references, no secrets in output, no executable instructions, no network calls, no trading logic, no execution feedback, no Freqtrade/Binance/exchange/live/leverage/shorting references.
+  - **Z.ai Step 3 Review:** APPROVED. Engine `human_note_count` fix validated — counts items with non-empty notes (not just HUMAN_NOTE kind), aligning with SPEC-015 semantic definition.
+  - 194 research_bundle tests total (54 model + 58 engine + 49 writer + 33 integration). 1 skipped.
+  - **Full suite: 2922 tests passing, 1 skipped** using `pytest --import-mode=importlib`.
+
+- **MVP-14 Step 4 — Final Review and Version Bump (Complete)**
+  - Verdict: PASS. No defects found.
+  - Version bumped to 0.14.0-dev.
+  - All safety invariants verified.
+
+- **Safety:**
+  - Research bundles are human-audit artifacts only.
+  - Not trading signals. Not trade approvals.
+  - Must not be consumed by execution, strategy, Freqtrade shell, order, exchange, or any MVP execution path.
+  - No Web UI. No dashboard. No database persistence.
+  - No config YAML. No JSON schema. No Freqtrade strategy class. No freqtrade import. No Freqtrade runtime.
+  - No Binance. No real exchange. No API keys. No live trading. No real orders. No leverage. No shorting.
+  - No report/operator/index/search/bundle feedback into execution paths.
+  - File references remain strings only and are not traversed, opened, followed, validated, or executed.
+
+---
+
 ## MVP-13 — Local Review Search / Query Layer (Complete)
 
 **Version:** 0.12.0-dev → 0.13.0-dev.
