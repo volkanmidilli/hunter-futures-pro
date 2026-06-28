@@ -34,6 +34,20 @@ from .engine import (
     validate_bundle_item,
 )
 
+from .writer import (
+    DEFAULT_BUNDLE_JSON_PATH,
+    DEFAULT_BUNDLE_MARKDOWN_PATH,
+    atomic_write_json_research_bundle,
+    atomic_write_markdown_research_bundle,
+    bundle_data_quality_to_dict,
+    bundle_item_to_dict,
+    bundle_safety_flags_to_dict,
+    bundle_summary_to_dict,
+    research_bundle_to_dict,
+    research_bundle_to_markdown,
+    write_research_bundle,
+)
+
 __all__ = (
     # Enums
     "BundleState",
@@ -68,4 +82,17 @@ __all__ = (
     "build_bundle_summary",
     "build_bundle_data_quality",
     "build_research_bundle",
+    # Writer constants
+    "DEFAULT_BUNDLE_JSON_PATH",
+    "DEFAULT_BUNDLE_MARKDOWN_PATH",
+    # Writer functions
+    "bundle_safety_flags_to_dict",
+    "bundle_item_to_dict",
+    "bundle_summary_to_dict",
+    "bundle_data_quality_to_dict",
+    "research_bundle_to_dict",
+    "research_bundle_to_markdown",
+    "atomic_write_json_research_bundle",
+    "atomic_write_markdown_research_bundle",
+    "write_research_bundle",
 )
