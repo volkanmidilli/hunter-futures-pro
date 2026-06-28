@@ -4,7 +4,7 @@
 
 After MVP-10 through MVP-14, the system produces five categories of human-audit artifacts:
 
-- **MVP-10 Observation Reports:** `data/observation/latest_observation_report.json` — research-only summaries.
+- **MVP-10 Observation Reports:** `data/observation/latest_observation_report.json` — research-only summaries. `ObservationReport` has no `report_id` field; chronicle entries synthesize a deterministic `trace_id` from `generated_at` and `version`.
 - **MVP-11 Review Audit Records:** `data/review/latest_review_audit_record.json` — operator review summaries.
 - **MVP-12 Review Index:** `data/review_index/latest_review_index.json` — catalog entries linking reports to reviews.
 - **MVP-13 Search Results:** `data/review_search/latest_search_result.json` — query results over the review index.
@@ -31,7 +31,7 @@ SPEC-016 designs a **Local Research Chronicle** layer (MVP-15) that consumes MVP
 - **M4:** Produce `ChronicleDataQuality` frozen dataclass — completeness metrics.
 - **M5:** Produce `ChronicleSafetyFlags` frozen dataclass — all unsafe flags default `False`.
 - **M6:** Produce `ResearchChronicle` frozen dataclass — full timeline container.
-- **M7:** Entries sorted by `timestamp` ascending for deterministic output.
+- **M7:** Entries sorted by `timestamp` ascending, with deterministic tie-breaking `(timestamp, artifact_type.value, trace_id)` for deterministic output.
 - **M8:** Each entry has an `artifact_type` enum (`OBSERVATION`, `REVIEW`, `INDEX`, `SEARCH`, `BUNDLE`).
 - **M9:** Each entry has a `trace_id` linking related artifacts across MVPs.
 - **M10:** Fail-closed: missing/invalid inputs → blocked chronicle with `CHRONICLE_ERROR`.
@@ -80,6 +80,12 @@ class ArtifactType(Enum):
     BUNDLE = "bundle"
 ```
 
+#### Chronicle Version
+
+```python
+CHRONICLE_VERSION = "1.0"
+```
+
 #### `ChronicleEntry`
 
 ```python
@@ -96,15 +102,17 @@ class ChronicleEntry:
     actor: str | None = None
     notes: str | None = None
     tags: tuple[str, ...] = ()
-    metadata: dict[str, Any] = field(default_factory=dict)
+    metadata: Mapping[str, Any] = field(default_factory=dict)
     related_trace_ids: tuple[str, ...] = ()
 ```
 
 Validation:
+- `entry_id` must be a non-empty, deterministic string (not a random UUID). Recommended derivation: `entry_id = f"{artifact_type}:{trace_id}:{timestamp_iso}"`.
 - `timestamp` timezone-aware.
 - `artifact_type` in `{"observation", "review", "index", "search", "bundle"}`.
 - `notes` and `metadata` filtered through forbidden content check.
 - File references are local strings only — not traversed, opened, followed, validated, or executed.
+- `entry_id` must not use `uuid.uuid4()` or any other non-deterministic source. Same inputs → same `entry_id` → same sort order → same output.
 
 #### `ChronicleSummary`
 
@@ -165,6 +173,30 @@ class ChronicleSafetyFlags:
     chronicle_output_not_for_freqtrade: bool = True
     chronicle_output_not_for_order: bool = True
     chronicle_output_not_for_exchange: bool = True
+    chronicle_feedback_into_execution: bool = False
+
+    def __post_init__(self) -> None:
+        unsafe_flags = (
+            self.live_trading_enabled,
+            self.real_orders_enabled,
+            self.leverage_enabled,
+            self.shorting_enabled,
+            self.chronicle_feedback_into_execution,
+        )
+        if any(unsafe_flags):
+            raise ValueError("unsafe chronicle safety flags are enabled")
+        safe_flags = (
+            self.chronicle_output_is_human_audit_only,
+            self.chronicle_output_not_trading_signal,
+            self.chronicle_output_not_trade_approval,
+            self.chronicle_output_not_for_execution,
+            self.chronicle_output_not_for_strategy,
+            self.chronicle_output_not_for_freqtrade,
+            self.chronicle_output_not_for_order,
+            self.chronicle_output_not_for_exchange,
+        )
+        if not all(safe_flags):
+            raise ValueError("safe chronicle output flags must be True")
 ```
 
 #### `ResearchChronicle`
@@ -174,7 +206,7 @@ class ChronicleSafetyFlags:
 class ResearchChronicle:
     chronicle_id: str
     generated_at: datetime
-    version: str = "1.0"
+    version: str = CHRONICLE_VERSION
     entries: tuple[ChronicleEntry, ...] = ()
     summary: ChronicleSummary = field(default_factory=ChronicleSummary)
     data_quality: ChronicleDataQuality = field(default_factory=ChronicleDataQuality)
@@ -189,7 +221,7 @@ def blocked(cls, reason: str = "CHRONICLE_ERROR") -> "ResearchChronicle":
     return cls(
         chronicle_id="blocked",
         generated_at=datetime.now(timezone.utc),
-        version="1.0",
+        version=CHRONICLE_VERSION,
         entries=(),
         summary=ChronicleSummary(...),
         data_quality=ChronicleDataQuality(...),
@@ -200,25 +232,42 @@ def blocked(cls, reason: str = "CHRONICLE_ERROR") -> "ResearchChronicle":
 
 ### 3.2 Reason Codes
 
+Deterministic, priority-ordered. Blocking codes short-circuit chronicle construction. Non-blocking codes are tracked in `ChronicleDataQuality` only.
+
+**Blocking priority (short-circuit evaluation):**
+
 ```python
-CHRONICLE_REASON_CODES = (
-    "MISSING_ARTIFACTS",
-    "INVALID_OBSERVATION",
-    "INVALID_REVIEW",
-    "INVALID_INDEX",
-    "INVALID_SEARCH",
-    "INVALID_BUNDLE",
-    "UNSUPPORTED_OBSERVATION_VERSION",
-    "UNSUPPORTED_REVIEW_VERSION",
-    "UNSUPPORTED_INDEX_VERSION",
-    "UNSUPPORTED_SEARCH_VERSION",
-    "UNSUPPORTED_BUNDLE_VERSION",
-    "STALE_ARTIFACT",
-    "ORPHAN_OBSERVATION",
-    "ORPHAN_REVIEW",
-    "UNSAFE_CHRONICLE_CONTENT",
-    "CHRONICLE_ERROR",
+CHRONICLE_BLOCKING_REASON_CODES = (
+    "MISSING_ARTIFACTS",              # 1 — no artifacts provided at all
+    "INVALID_OBSERVATION",          # 2 — observation missing required fields
+    "INVALID_REVIEW",                 # 3 — review missing required fields
+    "INVALID_INDEX",                  # 4 — index missing required fields
+    "INVALID_SEARCH",                 # 5 — search result missing required fields
+    "INVALID_BUNDLE",                 # 6 — bundle missing required fields
+    "UNSUPPORTED_OBSERVATION_VERSION",  # 7 — observation version not recognized
+    "UNSUPPORTED_REVIEW_VERSION",     # 8 — review version not recognized
+    "UNSUPPORTED_INDEX_VERSION",      # 9 — index version not recognized
+    "UNSUPPORTED_SEARCH_VERSION",     # 10 — search version not recognized
+    "UNSUPPORTED_BUNDLE_VERSION",     # 11 — bundle version not recognized
+    "UNSAFE_CHRONICLE_CONTENT",       # 12 — forbidden terms in notes/metadata
+    "CHRONICLE_ERROR",                # 13 — catch-all for unexpected errors
 )
+```
+
+**Non-blocking tracking (data_quality only):**
+
+```python
+CHRONICLE_TRACKING_REASON_CODES = (
+    "STALE_ARTIFACT",                 # tracked in data_quality, not blocking
+    "ORPHAN_OBSERVATION",             # tracked in data_quality, not blocking
+    "ORPHAN_REVIEW",                  # tracked in data_quality, not blocking
+)
+```
+
+**Combined tuple:**
+
+```python
+CHRONICLE_REASON_CODES = CHRONICLE_BLOCKING_REASON_CODES + CHRONICLE_TRACKING_REASON_CODES
 ```
 
 ### 3.3 Forbidden Content
@@ -237,11 +286,47 @@ FORBIDDEN_CHRONICLE_TERMS = frozenset({
 ```python
 def has_unsafe_chronicle_content(text: str) -> bool: ...
 
-def build_chronicle_entry_from_observation(report: ObservationReport | dict) -> ChronicleEntry: ...
+def build_chronicle_entry_from_observation(report: ObservationReport | dict) -> ChronicleEntry:
+    """Build a ChronicleEntry from an ObservationReport.
 
-def build_chronicle_entry_from_review(audit_record: ReviewAuditRecord | dict, related_trace_ids: tuple[str, ...] = ()) -> ChronicleEntry: ...
+    `ObservationReport` has no `report_id` field. The builder synthesizes a
+    deterministic `trace_id` from `report.generated_at` and `report.version`:
 
-def build_chronicle_entry_from_index(index: ReviewIndex | dict) -> ChronicleEntry: ...
+        trace_id = "observation:{generated_at_iso}:{version}"
+
+    If `generated_at` is missing or invalid, the builder raises `ValueError`
+    with `INVALID_TIMESTAMP` (or `MISSING_TRACE_ID` if `generated_at` is absent).
+    If `version` is missing, raises `UNSUPPORTED_OBSERVATION_VERSION`.
+    The `trace_id` is never a random UUID — same inputs always produce the same ID.
+    """
+
+def build_chronicle_entry_from_review(
+    audit_record: ReviewAuditRecord | dict,
+    related_trace_ids: tuple[str, ...] = (),
+) -> ChronicleEntry:
+    """Build a ChronicleEntry from a ReviewAuditRecord at the container level.
+
+    `ReviewAuditRecord` is a container of `ReviewRecord` child objects. The
+    chronicle entry represents the container, not individual child records.
+    Fields used:
+
+        trace_id = "review-audit:{audit_record.generated_at_iso}:{version}"
+        timestamp = audit_record.generated_at
+        state = audit_record.audit_state
+        version = audit_record.version
+
+    `ReviewAuditRecord` does not have `reviewed_at`, `review_status`, `reviewer`,
+    `notes`, or `tags` at the container level. Child `ReviewRecord` fields may be
+    summarized into `metadata` for human context only — they are not used for trace
+    linkage, routing, or any automated logic. The chronicle entry is advisory only.
+    """
+
+def build_chronicle_entry_from_index(index: ReviewIndex | dict) -> ChronicleEntry:
+    """Build a ChronicleEntry from a ReviewIndex.
+
+    The `entry_count` field is derived as `len(index.entries)` — there is no
+    `entry_count` field on `ReviewIndex` itself.
+    """
 
 def build_chronicle_entry_from_search(search_result: SearchResult | dict) -> ChronicleEntry: ...
 
@@ -250,7 +335,12 @@ def build_chronicle_entry_from_bundle(bundle: ResearchBundle | dict) -> Chronicl
 def build_chronicle_summary(entries: Sequence[ChronicleEntry]) -> ChronicleSummary: ...
 
 def build_chronicle_data_quality(
-    observations, reviews, indices, searches, bundles, entries,
+    observations: Sequence[ObservationReport | dict],
+    reviews: Sequence[ReviewAuditRecord | dict],
+    indices: Sequence[ReviewIndex | dict],
+    searches: Sequence[SearchResult | dict],
+    bundles: Sequence[ResearchBundle | dict],
+    entries: Sequence[ChronicleEntry],
     stale_threshold_seconds: int = 86400,
     gap_threshold_seconds: int = 3600,
 ) -> ChronicleDataQuality: ...
@@ -270,10 +360,13 @@ Fail-closed priority:
 1. `MISSING_ARTIFACTS` → blocked
 2. `INVALID_*` → blocked
 3. `UNSUPPORTED_*_VERSION` → blocked
-4. `STALE_ARTIFACT` → warning only
-5. `ORPHAN_*` → tracked in data_quality
-6. `UNSAFE_CHRONICLE_CONTENT` → blocked
-7. `CHRONICLE_ERROR` → blocked
+4. `UNSAFE_CHRONICLE_CONTENT` → blocked
+5. `CHRONICLE_ERROR` → blocked
+
+Non-blocking tracking (data_quality only, never short-circuits):
+- `STALE_ARTIFACT` → warning in data_quality
+- `ORPHAN_OBSERVATION` → tracked in data_quality
+- `ORPHAN_REVIEW` → tracked in data_quality
 
 ### 3.5 Writer
 
@@ -329,7 +422,7 @@ tests/test_chronicle/
 7. Atomic writes (temp + fsync + replace + cleanup).
 8. Explicit safety notice in Markdown.
 9. Fail-closed — all errors produce blocked chronicle with reason code.
-10. Deterministic — same inputs → same output every time.
+10. Deterministic — same inputs → same output every time. Entries sorted by `(timestamp, artifact_type.value, trace_id)`. `entry_id` must be deterministic, never a random UUID.
 11. File references are local strings only — not traversed, opened, followed, validated, or executed.
 12. No repair of bad inputs — summarized as BLOCKED/UNKNOWN/INVALID in data quality.
 13. Trace linkage is advisory only — not used for automated routing or execution.
@@ -413,7 +506,7 @@ alt unsafe
     Eng -> Mdl : ResearchChronicle.blocked(UNSAFE_CHRONICLE_CONTENT)
 else safe
     Eng -> Eng : build entries for all artifacts
-    Eng -> Eng : sort by timestamp
+    Eng -> Eng : sort by (timestamp, artifact_type, trace_id)
     Eng -> Mdl : build_chronicle_summary
     Eng -> Mdl : build_chronicle_data_quality
     Eng -> Mdl : build_research_chronicle
@@ -438,8 +531,10 @@ end note
 
 - Create `src/hunter/chronicle/__init__.py` with public API exports.
 - Create `src/hunter/chronicle/models.py` with:
+  - `CHRONICLE_VERSION` constant.
   - `ArtifactType`, `ChronicleEntry`, `ChronicleSummary`, `ChronicleDataQuality`, `ChronicleSafetyFlags`, `ResearchChronicle` frozen dataclasses.
-  - `CHRONICLE_REASON_CODES` tuple.
+  - `CHRONICLE_BLOCKING_REASON_CODES` and `CHRONICLE_TRACKING_REASON_CODES` tuples.
+  - `CHRONICLE_REASON_CODES` combined tuple.
   - `FORBIDDEN_CHRONICLE_TERMS` frozenset.
   - `__post_init__` validation on all models.
 - Create `src/hunter/chronicle/engine.py` with:
