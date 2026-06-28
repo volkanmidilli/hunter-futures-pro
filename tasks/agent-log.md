@@ -1,5 +1,68 @@
 ---
 
+### MVP-12 Step 3 — Review Index Integration Tests
+
+Date: 2026-06-28
+
+Agent: WrongStack
+
+Task: MVP-12 Step 3 — Review Index Integration Tests.
+
+Files created:
+
+- `tests/test_review_index/test_integration.py` — 21 integration tests.
+
+Files modified:
+
+- `CHANGELOG.md` — added MVP-12 Step 3 section.
+- `docs/handoff/CURRENT_STATE.md` — marked Step 3 complete.
+- `tasks/active.md` — marked Step 3 complete, set Step 4 as next.
+- `tasks/agent-log.md` — this entry.
+
+Summary:
+
+Implemented 21 integration tests for the review_index end-to-end pipeline: `build_review_index` → `review_index_to_dict`, `review_index_to_markdown`, and `write_review_index`.
+
+`TestBuildReviewIndexToDict` (9 tests): linked entry roundtrip, observation-only roundtrip, fail-closed missing inputs, invalid/unsafe inputs, mixed ready + blocked entries, deterministic timestamps, file references as strings, no production paths in output.
+
+`TestBuildReviewIndexToMarkdown` (5 tests): linked entry markdown, fail-closed markdown, mixed entries, file references not opened, no production paths.
+
+`TestBuildReviewIndexWrite` (7 tests): JSON + Markdown write, fail-closed write, mixed entries, deterministic JSON output, no temp files left behind, file references not traversed, tmp_path used exclusively.
+
+239 review_index tests total (166 model/engine + 52 writer + 21 integration). 1 skipped.
+Full suite: 2450 tests passing, 1 skipped using `pytest --import-mode=importlib`.
+No source changes were needed.
+
+Safety:
+
+No source changes.
+No config YAML.
+No JSON schema.
+No Freqtrade strategy class.
+No freqtrade import.
+No Freqtrade runtime connection.
+No Binance.
+No real exchange.
+No API keys.
+No live trading.
+No real orders.
+No leverage.
+No shorting.
+No real entry/exit execution logic.
+No report feedback into execution paths.
+No operator feedback into execution paths.
+No index feedback into execution paths.
+No Web UI.
+No dashboard.
+No database persistence.
+File references are local strings only and are not traversed, opened, followed, validated, or executed.
+
+Next step:
+
+MVP-12 Step 4 — Final MVP-12 validation and version bump, not started.
+
+---
+
 ### MVP-12 Step 2 — Review Index Writer
 
 Date: 2026-06-27

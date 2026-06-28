@@ -2,6 +2,51 @@
 
 All important project changes will be recorded in this file.
 
+## MVP-12 Step 3 — Review Index Integration Tests (Complete)
+
+**Version:** 0.12.0-dev (MVP-12 Step 2 complete) → MVP-12 Step 3 complete.
+
+**SPEC-013:** `specs/SPEC-013-Local-Review-Index.md` — approved with notes and polished.
+
+**Commit:** `TBD` — test: add MVP-12 review index integration tests.
+
+- **Files created:**
+  - `tests/test_review_index/test_integration.py` — 21 integration tests.
+- **Coverage:**
+  - `build_review_index` → `review_index_to_dict` — linked entries, observation-only, fail-closed missing inputs, invalid/unsafe inputs, mixed ready + blocked entries, deterministic timestamps, file references as strings, no production paths.
+  - `build_review_index` → `review_index_to_markdown` — linked entries, fail-closed, mixed entries, file references not opened, no production paths.
+  - `build_review_index` → `write_review_index` with custom `tmp_path` — JSON + Markdown write, fail-closed write, mixed entries, deterministic JSON output, no temp files left behind, file references not traversed, `tmp_path` used exclusively.
+- **Tests:**
+  - 21 new integration tests.
+  - 239 review_index tests total (166 model/engine + 52 writer + 21 integration). 1 skipped.
+  - **Full suite: 2450 tests passing, 1 skipped** using `pytest --import-mode=importlib`.
+- **Safety:**
+  - No source changes.
+  - No config YAML.
+  - No JSON schema.
+  - No Freqtrade strategy class.
+  - No freqtrade import.
+  - No Freqtrade runtime connection.
+  - No Binance.
+  - No real exchange.
+  - No API keys.
+  - No live trading.
+  - No real orders.
+  - No leverage.
+  - No shorting.
+  - No real entry/exit execution logic.
+  - No report feedback into execution paths.
+  - No operator feedback into execution paths.
+  - No index feedback into execution paths.
+  - No Web UI.
+  - No dashboard.
+  - No database persistence.
+  - File references are local strings only and are not traversed, opened, followed, validated, or executed.
+- **Next:**
+  - MVP-12 Step 4 — Final MVP-12 validation and version bump, not started.
+
+---
+
 ## MVP-12 Step 2 — Review Index Writer (Complete)
 
 **Version:** 0.12.0-dev (MVP-12 Step 1 complete) → MVP-12 Step 2 complete.
