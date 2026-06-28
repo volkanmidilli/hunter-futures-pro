@@ -2,11 +2,11 @@
 
 ## Current Task
 
-MVP-13 planning, not started.
+MVP-13 Step 1 — Review Search Models and Engine, not started.
 
 ## Status
 
-MVP-12 complete. SPEC-013 implementation complete. Version 0.12.0-dev. Full test suite: 2450 tests passing, 1 skipped using `pytest --import-mode=importlib`.
+MVP-13 planning complete. SPEC-014 approved with minor notes (SearchConfig added, no critical issues). Ready for Step 1 implementation. Version 0.12.0-dev. Full test suite: 2450 tests passing, 1 skipped using `pytest --import-mode=importlib`.
 
 MVP-12 Step 1 Review Index Models and Engine is complete.
 - `src/hunter/review_index/__init__.py` — public API exports.
@@ -42,32 +42,49 @@ MVP-12 Step 4 — Final validation and version bump (Complete).
 - `src/hunter/__init__.py` updated.
 - Full suite: 2450 tests passing, 1 skipped. No regressions.
 
+MVP-13 Step 1 — Review Search Models and Engine (Not Started).
+- `src/hunter/review_search/__init__.py` — public API exports.
+- `src/hunter/review_search/models.py` — frozen search dataclasses, enums, reason codes, forbidden search content detection.
+- `src/hunter/review_search/engine.py` — in-memory search engine functions.
+- `tests/test_review_search/__init__.py` — test package init.
+- `tests/test_review_search/test_models.py` — model tests.
+- `tests/test_review_search/test_engine.py` — engine tests.
+- Target: ~120 tests.
+
+MVP-13 Step 2 — Review Search Writer (Not Started).
+- `src/hunter/review_search/writer.py` — JSON/Markdown serialization, atomic file writing.
+- `tests/test_review_search/test_writer.py` — writer tests.
+- Default JSON path: `data/review_search/latest_search_result.json`.
+- Default Markdown path: `reports/review_search/latest_search_result.md`.
+- Target: ~50 tests.
+
+MVP-13 Step 3 — Review Search Integration Tests (Not Started).
+- `tests/test_review_search/test_integration.py` — integration tests.
+- Target: ~70 tests.
+
+MVP-13 Step 4 — Final Review and Version Bump (Not Started).
+- Verdict: PASS / PASS WITH NOTES / FAIL.
+- If PASS: version bump to 0.13.0-dev.
+
 ## Scope
 
-MVP-13 planning, not started.
-- No implementation until SPEC is drafted and approved.
+MVP-13 Step 1 — Review Search Models and Engine, not started.
+- SPEC-014: Local Review Search / Query Layer.
+- Approved with minor notes. Ready for implementation.
 
-### Not Allowed Until Future SPEC
-- No config YAML.
-- No JSON schema.
-- No Freqtrade strategy class.
-- No freqtrade import.
-- No Freqtrade runtime connection.
-- No Binance.
-- No real exchange.
-- No API keys.
-- No live trading.
-- No real orders.
-- No leverage.
-- No shorting.
-- No real entry/exit execution logic.
-- No report feedback into execution paths.
-- No operator feedback into execution paths.
-- No index feedback into execution paths.
-- No Web UI.
-- No dashboard.
-- No database persistence.
-- No production data reads/writes.
+### Allowed
+- `src/hunter/review_search/` package creation.
+- `tests/test_review_search/` test package creation.
+- `specs/SPEC-014-Local-Review-Search-Query-Layer.md` reference only.
+- `src/hunter/review_index/models.py` import for `IndexEntry`, `ReviewIndex`, `IndexState`, `IndexEntryKind`, `IndexSafetyFlags`.
+- No source code changes outside `src/hunter/review_search/`.
+- No changes to `src/hunter/review_index/`.
+
+### Not Allowed
+- No changes to existing source code outside `src/hunter/review_search/`.
+- No changes to existing tests outside `tests/test_review_search/`.
+- No changes to `src/hunter/review_index/`.
+- No config YAML, no JSON schema, no Freqtrade strategy class, no freqtrade import, no Freqtrade runtime connection, no Binance, no real exchange, no API keys, no live trading, no real orders, no leverage, no shorting, no real entry/exit execution logic, no production data reads/writes, no report feedback into execution paths, no operator feedback into execution paths, no index feedback into execution paths, no search feedback into execution paths, no Web UI, no dashboard, no database persistence.
 - File references remain local strings only and must not be traversed/opened/followed/validated/executed.
 
 ## Previous Task
@@ -105,9 +122,15 @@ MVP-12 Step 4 — Final validation and version bump (Complete).
 - [x] MVP-12 Step 4 complete: final validation and version bump.
 - [x] Version bumped to 0.12.0-dev.
 - [x] Full suite 2450 tests pass, 1 skipped. No regressions.
+- [x] SPEC-014 drafted for MVP-13 planning.
+- [x] SPEC-014 reviewed and approved with minor notes.
+- [ ] MVP-13 Step 1: review search models and engine, not started.
+- [ ] MVP-13 Step 2: review search writer, not started.
+- [ ] MVP-13 Step 3: review search integration tests, not started.
+- [ ] MVP-13 Step 4: final review and version bump, not started.
 
 ## Next Step
 
-MVP-13 planning, not started. Requires human approval before any implementation.
+MVP-13 Step 1 — Review Search Models and Engine. Ready for implementation.
 
-Future review index integration tests or operator workflow UI may be considered only in a future SPEC, but is not implemented yet.
+Future review search integration tests or operator workflow UI may be considered only in a future SPEC, but is not implemented yet.

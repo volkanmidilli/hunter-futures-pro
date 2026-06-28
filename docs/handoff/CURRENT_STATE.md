@@ -10,7 +10,7 @@ Hunter Futures Pro
 
 ## Current Phase
 
-MVP-12 complete. SPEC-013 implementation complete. Version 0.12.0-dev. Full test suite: 2450 tests passing, 1 skipped using `pytest --import-mode=importlib`. Review index package has models, engine, writer, and integration tests. Next step: MVP-13 planning, not started. No source code changes, no config YAML, no JSON schema, no Freqtrade strategy class, no freqtrade import, no Freqtrade runtime connection, no Binance, no real exchange connection, no API keys, no live trading, no real orders, no leverage, no shorting, no real entry/exit execution logic, no production data reads/writes, no report feedback into execution paths, no operator feedback into execution paths, no index feedback into execution paths, no Web UI, no dashboard, no database persistence.
+MVP-13 planning complete. SPEC-014 approved with minor notes (SearchConfig added, no critical issues). Ready for Step 1 implementation. Version 0.12.0-dev. Full test suite: 2450 tests passing, 1 skipped using `pytest --import-mode=importlib`. Review index package has models, engine, writer, and integration tests. Next step: MVP-13 Step 1 — Review Search Models and Engine, not started. No source code changes, no config YAML, no JSON schema, no Freqtrade strategy class, no freqtrade import, no Freqtrade runtime connection, no Binance, no real exchange connection, no API keys, no live trading, no real orders, no leverage, no shorting, no real entry/exit execution logic, no production data reads/writes, no report feedback into execution paths, no operator feedback into execution paths, no index feedback into execution paths, no search feedback into execution paths, no Web UI, no dashboard, no database persistence.
 
 ## Current Status
 

@@ -1,5 +1,36 @@
 ---
 
+### SPEC-014 Approved / MVP-13 Planning
+
+Date: 2026-06-28
+
+Agent: WrongStack
+
+Task: SPEC-014 review and approval; update memory for MVP-13 planning.
+
+Files modified:
+
+- `CHANGELOG.md` — added MVP-13 planning section with SPEC-014 approval.
+- `docs/handoff/CURRENT_STATE.md` — marked MVP-13 planning complete, SPEC-014 approved.
+- `tasks/active.md` — set MVP-13 Step 1 as active task.
+- `tasks/agent-log.md` — this entry.
+
+Summary:
+
+SPEC-014 approved with minor notes (SearchConfig added to resolve undefined type reference, no critical issues). MVP-13 planning complete. Ready for Step 1 implementation. Version remains 0.12.0-dev. Full suite 2450 tests passing, 1 skipped.
+
+MVP-13 scope:
+- Package: `src/hunter/review_search/`
+- Models: SearchQuery, SearchFilter, SearchSort, SearchConfig, SearchResultEntry, SearchResultSummary, SearchResult, SearchSafetyFlags
+- Engine: build_search_safety_flags, validate_search_query, entry_matches_query, score_search_entry, sort_search_results, build_search_result
+- Writer: search_result_to_dict, search_result_to_markdown, atomic_write_json_search_result, atomic_write_markdown_search_result, write_search_result
+- Outputs: `data/review_search/latest_search_result.json`, `reports/review_search/latest_search_result.md`
+- Safety: human-audit only, no execution feedback, no trading signals, no file reference traversal.
+
+Next step: MVP-13 Step 1 — Review Search Models and Engine.
+
+---
+
 ### MVP-12 Step 4 — Final Validation and Version Bump
 
 Date: 2026-06-28

@@ -57,6 +57,45 @@ All important project changes will be recorded in this file.
 
 ---
 
+## MVP-13 — Local Review Search / Query Layer (Planning)
+
+**Version:** 0.12.0-dev.
+
+**SPEC-014:** `specs/SPEC-014-Local-Review-Search-Query-Layer.md` — approved with minor notes (SearchConfig added, no critical issues).
+
+**Status:** Planning complete. Ready for Step 1 implementation.
+
+- **MVP-13 Step 1 — Review Search Models and Engine (Not Started)**
+  - `src/hunter/review_search/__init__.py` — public API exports.
+  - `src/hunter/review_search/models.py` — frozen search dataclasses, enums, reason codes, forbidden search content detection.
+  - `src/hunter/review_search/engine.py` — in-memory search engine functions.
+  - `tests/test_review_search/__init__.py` — test package init.
+  - `tests/test_review_search/test_models.py` — model tests.
+  - `tests/test_review_search/test_engine.py` — engine tests.
+
+- **MVP-13 Step 2 — Review Search Writer (Not Started)**
+  - `src/hunter/review_search/writer.py` — JSON/Markdown serialization, atomic file writing.
+  - `tests/test_review_search/test_writer.py` — writer tests.
+  - Default JSON path: `data/review_search/latest_search_result.json`.
+  - Default Markdown path: `reports/review_search/latest_search_result.md`.
+
+- **MVP-13 Step 3 — Review Search Integration Tests (Not Started)**
+  - `tests/test_review_search/test_integration.py` — integration tests.
+
+- **MVP-13 Step 4 — Final Review and Version Bump (Not Started)**
+  - Verdict: PASS / PASS WITH NOTES / FAIL.
+  - If PASS: version bump to 0.13.0-dev.
+
+- **Safety:**
+  - Search results are human-audit artifacts only.
+  - Not trading signals. Not trade approvals.
+  - Must not be consumed by execution, strategy, Freqtrade shell, order, exchange, or any MVP execution path.
+  - No Web UI. No dashboard. No database persistence.
+  - No config YAML. No JSON schema. No Freqtrade strategy class. No freqtrade import. No Freqtrade runtime.
+  - No Binance. No real exchange. No API keys. No live trading. No real orders. No leverage. No shorting.
+  - No report/operator/index/search feedback into execution paths.
+  - File references remain strings only and are not traversed, opened, followed, validated, or executed.
+
 ## MVP-12 Step 3 — Review Index Integration Tests (Complete)
 
 **Version:** 0.11.0-dev (MVP-12 Step 2 complete) → MVP-12 Step 3 complete.
