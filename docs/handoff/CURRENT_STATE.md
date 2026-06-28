@@ -10,7 +10,7 @@ Hunter Futures Pro
 
 ## Current Phase
 
-MVP-13 is complete and committed. All 4 steps passed. Version 0.13.0-dev. Full test suite: 2728 tests passing, 1 skipped using `pytest --import-mode=importlib`. Review search package has models, engine, writer, and integration tests. Next step: Human direction for next MVP or SPEC.
+MVP-13 is complete and committed. SPEC-015 for MVP-14 Local Research Bundle / Evidence Pack has been drafted and approved. MVP-14 planning complete. Version 0.13.0-dev. Full test suite: 2728 tests passing, 1 skipped using `pytest --import-mode=importlib`. Next step: MVP-14 Step 1 — Research Bundle Models and Engine, not started. Research bundles are human-audit artifacts only, not trading signals, not trade approvals, and must not be consumed by execution, strategy, Freqtrade shell, order, exchange, or any MVP execution path. No bundle feedback into execution paths. File references remain local strings only and must not be traversed, opened, followed, validated, or executed. No Web UI, no dashboard, no database persistence, no config YAML, no JSON schema, no Freqtrade strategy class, no freqtrade import, no Binance, no real exchange, no API keys, no live trading, no real orders, no leverage, no shorting, no real entry/exit execution logic, no report feedback into execution paths, no operator feedback into execution paths, no index feedback into execution paths, no search feedback into execution paths, no production data reads/writes.
 
 ## Current Status
 
@@ -135,9 +135,19 @@ MVP-13 — Review Search / Query Layer is complete and committed.
 - No report/operator/index/search feedback into execution paths.
 - File references remain strings only, never traversed, opened, followed, validated, or executed.
 
+MVP-14 — Local Research Bundle / Evidence Pack (Planning Complete).
+- SPEC-015: `specs/SPEC-015-Local-Research-Bundle-Evidence-Pack.md` — approved with no critical issues.
+- Package: `src/hunter/research_bundle/`
+- Models: BundleState, BundleItemKind, BundleConfig, BundleSafetyFlags, BundleItem, BundleSummary, BundleDataQuality, ResearchBundle.
+- Engine: build_bundle_safety_flags, has_unsafe_bundle_content, validate_bundle_item, build_bundle_item, build_bundle_summary, build_bundle_data_quality, build_research_bundle.
+- Writer: research_bundle_to_dict, research_bundle_to_markdown, atomic_write_json_research_bundle, atomic_write_markdown_research_bundle, write_research_bundle.
+- Outputs: `data/research_bundle/latest_research_bundle.json`, `reports/research_bundle/latest_research_bundle.md`.
+- Safety: human-audit only, no execution feedback, no trading signals, no file reference traversal.
+- MVP-14 implementation not started. Next step: MVP-14 Step 1.
+
 ## Next Step
 
-Human direction for next MVP or SPEC. All current MVPs are complete.
+MVP-14 Step 1 — Research Bundle Models and Engine. SPEC-015 approved. Ready for implementation.
 
 ### Not Allowed Until Future SPEC
 - No config YAML.
@@ -157,6 +167,7 @@ Human direction for next MVP or SPEC. All current MVPs are complete.
 - No operator feedback into execution paths.
 - No index feedback into execution paths.
 - No search feedback into execution paths.
+- No bundle feedback into execution paths.
 - No Web UI.
 - No dashboard.
 - No database persistence.

@@ -1,5 +1,64 @@
 ---
 
+### SPEC-015 Approved / MVP-14 Planning
+
+Date: 2026-06-28
+
+Agent: WrongStack
+
+Task: SPEC-015 review and approval; update memory for MVP-14 planning.
+
+Files modified:
+
+- `docs/handoff/CURRENT_STATE.md` — marked MVP-14 planning complete, SPEC-015 approved, set MVP-14 Step 1 as next.
+- `tasks/active.md` — set MVP-14 Step 1 as active task, marked SPEC-015 approved, updated definition of done.
+- `tasks/agent-log.md` — this entry.
+
+Summary:
+
+SPEC-015 approved with no critical issues. MVP-14 planning complete. Ready for Step 1 implementation. Version remains 0.13.0-dev. Full suite 2728 tests passing, 1 skipped.
+
+MVP-14 scope:
+- Package: `src/hunter/research_bundle/`
+- Models: BundleState, BundleItemKind, BundleConfig, BundleSafetyFlags, BundleItem, BundleSummary, BundleDataQuality, ResearchBundle
+- Engine: build_bundle_safety_flags, has_unsafe_bundle_content, validate_bundle_item, build_bundle_item, build_bundle_summary, build_bundle_data_quality, build_research_bundle
+- Writer: research_bundle_to_dict, research_bundle_to_markdown, atomic_write_json_research_bundle, atomic_write_markdown_research_bundle, write_research_bundle
+- Outputs: `data/research_bundle/latest_research_bundle.json`, `reports/research_bundle/latest_research_bundle.md`
+- Safety: human-audit only, no execution feedback, no trading signals, no file reference traversal, no bundle feedback into execution paths.
+
+No code changes made. No MVP-14 implementation started.
+
+Safety:
+
+No source code.
+No tests.
+No config YAML.
+No JSON schema.
+No Freqtrade strategy class.
+No freqtrade import.
+No Freqtrade runtime connection.
+No Binance integration.
+No real exchange connection.
+No API keys.
+No live trading.
+No real orders.
+No leverage.
+No shorting.
+No real entry/exit execution logic.
+No report feedback into execution paths.
+No operator feedback into execution paths.
+No index feedback into execution paths.
+No search feedback into execution paths.
+No bundle feedback into execution paths.
+No Web UI.
+No dashboard.
+No database persistence.
+No production data reads/writes.
+
+Next step: MVP-14 Step 1 — Research Bundle Models and Engine.
+
+---
+
 ### SPEC-014 Approved / MVP-13 Planning
 
 Date: 2026-06-28
