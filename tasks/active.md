@@ -2,11 +2,11 @@
 
 ## Current Task
 
-MVP-12 Step 4 — Final MVP-12 validation and version bump, not started.
+MVP-13 planning, not started.
 
 ## Status
 
-MVP-12 Step 3 complete. SPEC-013 implementation in progress. Version 0.11.0-dev. Full test suite: 2450 tests passing, 1 skipped using `pytest --import-mode=importlib`.
+MVP-12 complete. SPEC-013 implementation complete. Version 0.12.0-dev. Full test suite: 2450 tests passing, 1 skipped using `pytest --import-mode=importlib`.
 
 MVP-12 Step 1 Review Index Models and Engine is complete.
 - `src/hunter/review_index/__init__.py` — public API exports.
@@ -17,7 +17,6 @@ MVP-12 Step 1 Review Index Models and Engine is complete.
 - `tests/test_review_index/test_engine.py` — 97 engine tests.
 - 166 review_index tests passing. 1 skipped INDEX_ERROR edge test.
 - Full suite: 2377 tests passing, 1 skipped using `pytest --import-mode=importlib`.
-- No writer. No integration tests. No Web UI. No dashboard. No database persistence.
 
 MVP-12 Step 2 — Review Index Writer (Complete).
 - `src/hunter/review_index/writer.py` — JSON/Markdown serialization, atomic file writing.
@@ -25,31 +24,28 @@ MVP-12 Step 2 — Review Index Writer (Complete).
 - `tests/test_review_index/test_writer.py` — 52 writer tests.
 - Default JSON path: `data/review_index/latest_review_index.json`.
 - Default Markdown path: `reports/review_index/latest_review_index.md`.
-- 218 review_index tests total (166 model/engine + 52 writer). 1 skipped INDEX_ERROR edge test.
+- 218 review_index tests total (166 model/engine + 52 writer). 1 skipped.
 - Full suite: 2429 tests passing, 1 skipped using `pytest --import-mode=importlib`.
-- No integration tests. No Web UI. No dashboard. No database persistence.
 
 MVP-12 Step 3 — Review Index Integration Tests (Complete).
 - `tests/test_review_index/test_integration.py` — 21 integration tests.
-- `TestBuildReviewIndexToDict` — 9 tests (linked, observation-only, fail-closed missing, invalid, unsafe, mixed ready/blocked, deterministic timestamps, file references as strings, no production paths).
-- `TestBuildReviewIndexToMarkdown` — 5 tests (linked entry, fail-closed, mixed entries, file references not opened, no production paths).
-- `TestBuildReviewIndexWrite` — 7 tests (JSON+Markdown write, fail-closed write, mixed entries, deterministic JSON, no temp files left, file references not traversed, tmp_path used exclusively).
+- `TestBuildReviewIndexToDict` — 9 tests.
+- `TestBuildReviewIndexToMarkdown` — 5 tests.
+- `TestBuildReviewIndexWrite` — 7 tests.
 - 239 review_index tests total (166 model/engine + 52 writer + 21 integration). 1 skipped.
 - Full suite: 2450 tests passing, 1 skipped using `pytest --import-mode=importlib`.
 - No source changes. No Web UI. No dashboard. No database persistence.
 
-MVP-12 Step 4 — Final MVP-12 validation and version bump, not started.
+MVP-12 Step 4 — Final validation and version bump (Complete).
+- Version bumped from 0.11.0-dev to 0.12.0-dev.
+- `pyproject.toml` updated.
+- `src/hunter/__init__.py` updated.
+- Full suite: 2450 tests passing, 1 skipped. No regressions.
 
 ## Scope
 
-MVP-12 Step 4 — Final validation and version bump only.
-- Run full test suite, verify no regressions.
-- Update version to 0.12.0 if approved.
-- No new features unless a defect is found.
-
-### Allowed
-- Version bump.
-- Final review and changelog update.
+MVP-13 planning, not started.
+- No implementation until SPEC is drafted and approved.
 
 ### Not Allowed Until Future SPEC
 - No config YAML.
@@ -76,9 +72,8 @@ MVP-12 Step 4 — Final validation and version bump only.
 
 ## Previous Task
 
-MVP-12 Step 3 — Review Index Integration Tests (Complete).
-- 21 integration tests pass.
-- 239 review_index tests total. 1 skipped.
+MVP-12 Step 4 — Final validation and version bump (Complete).
+- Version bumped to 0.12.0-dev.
 - Full suite: 2450 tests passing, 1 skipped.
 - No source changes.
 
@@ -107,10 +102,12 @@ MVP-12 Step 3 — Review Index Integration Tests (Complete).
 - [x] MVP-12 Step 3 complete: review index integration tests implemented.
 - [x] 21 review index integration tests pass.
 - [x] Full suite 2450 tests pass, 1 skipped.
-- [ ] MVP-12 Step 4 complete: final validation and version bump.
+- [x] MVP-12 Step 4 complete: final validation and version bump.
+- [x] Version bumped to 0.12.0-dev.
+- [x] Full suite 2450 tests pass, 1 skipped. No regressions.
 
 ## Next Step
 
-MVP-12 Step 4 — Final MVP-12 validation and version bump, not started.
+MVP-13 planning, not started. Requires human approval before any implementation.
 
 Future review index integration tests or operator workflow UI may be considered only in a future SPEC, but is not implemented yet.

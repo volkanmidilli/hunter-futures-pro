@@ -1,5 +1,64 @@
 ---
 
+### MVP-12 Step 4 — Final Validation and Version Bump
+
+Date: 2026-06-28
+
+Agent: WrongStack
+
+Task: MVP-12 Step 4 — Final validation and version bump.
+
+Files modified:
+
+- `pyproject.toml` — version bumped from 0.11.0-dev to 0.12.0-dev.
+- `src/hunter/__init__.py` — version bumped from 0.11.0-dev to 0.12.0-dev.
+- `CHANGELOG.md` — added MVP-12 completion summary section.
+- `docs/handoff/CURRENT_STATE.md` — marked MVP-12 complete, version 0.12.0-dev.
+- `tasks/active.md` — marked MVP-12 Step 4 complete, set MVP-13 as next.
+- `tasks/agent-log.md` — this entry.
+
+Summary:
+
+Final validation of MVP-12 Local Review Index. Full test suite passes with 2450 tests passing, 1 skipped. No regressions. Version bumped to 0.12.0-dev.
+
+MVP-12 is now complete with:
+- Step 1: Models and Engine (166 tests)
+- Step 2: Writer (52 tests)
+- Step 3: Integration Tests (21 tests)
+- Step 4: Final validation and version bump
+
+Total review_index tests: 239 (166 + 52 + 21). 1 skipped.
+
+Safety:
+
+No source changes in Step 4.
+No config YAML.
+No JSON schema.
+No Freqtrade strategy class.
+No freqtrade import.
+No Freqtrade runtime connection.
+No Binance.
+No real exchange.
+No API keys.
+No live trading.
+No real orders.
+No leverage.
+No shorting.
+No real entry/exit execution logic.
+No report feedback into execution paths.
+No operator feedback into execution paths.
+No index feedback into execution paths.
+No Web UI.
+No dashboard.
+No database persistence.
+File references are local strings only and are not traversed, opened, followed, validated, or executed.
+
+Next step:
+
+MVP-13 planning, not started. Requires human approval before any implementation.
+
+---
+
 ### MVP-12 Step 3 — Review Index Integration Tests
 
 Date: 2026-06-28

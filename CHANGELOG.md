@@ -2,9 +2,64 @@
 
 All important project changes will be recorded in this file.
 
+## MVP-12 — Local Review Index (Complete)
+
+**Version:** 0.11.0-dev → 0.12.0-dev.
+
+**SPEC-013:** `specs/SPEC-013-Local-Review-Index.md` — approved with notes and polished.
+
+**Commit:** `TBD` — feat: complete MVP-12 local review index.
+
+- **MVP-12 Step 1 — Review Index Models and Engine (Complete)**
+  - `src/hunter/review_index/models.py` — frozen index dataclasses, enums, reason codes, forbidden index content detection.
+  - `src/hunter/review_index/engine.py` — in-memory review index engine functions.
+  - `tests/test_review_index/test_models.py` — 70 model tests.
+  - `tests/test_review_index/test_engine.py` — 97 engine tests.
+
+- **MVP-12 Step 2 — Review Index Writer (Complete)**
+  - `src/hunter/review_index/writer.py` — JSON/Markdown serialization, atomic file writing.
+  - `tests/test_review_index/test_writer.py` — 52 writer tests.
+  - Default JSON path: `data/review_index/latest_review_index.json`.
+  - Default Markdown path: `reports/review_index/latest_review_index.md`.
+
+- **MVP-12 Step 3 — Review Index Integration Tests (Complete)**
+  - `tests/test_review_index/test_integration.py` — 21 integration tests.
+  - Coverage: `build_review_index` → `review_index_to_dict`, `review_index_to_markdown`, `write_review_index`.
+
+- **Tests:**
+  - 239 review_index tests total (166 model/engine + 52 writer + 21 integration). 1 skipped.
+  - **Full suite: 2450 tests passing, 1 skipped** using `pytest --import-mode=importlib`.
+
+- **Safety:**
+  - No config YAML.
+  - No JSON schema.
+  - No Freqtrade strategy class.
+  - No freqtrade import.
+  - No Freqtrade runtime connection.
+  - No Binance.
+  - No real exchange.
+  - No API keys.
+  - No live trading.
+  - No real orders.
+  - No leverage.
+  - No shorting.
+  - No real entry/exit execution logic.
+  - No report feedback into execution paths.
+  - No operator feedback into execution paths.
+  - No index feedback into execution paths.
+  - No Web UI.
+  - No dashboard.
+  - No database persistence.
+  - File references are local strings only and are not traversed, opened, followed, validated, or executed.
+
+- **Next:**
+  - MVP-13 planning, not started.
+
+---
+
 ## MVP-12 Step 3 — Review Index Integration Tests (Complete)
 
-**Version:** 0.12.0-dev (MVP-12 Step 2 complete) → MVP-12 Step 3 complete.
+**Version:** 0.11.0-dev (MVP-12 Step 2 complete) → MVP-12 Step 3 complete.
 
 **SPEC-013:** `specs/SPEC-013-Local-Review-Index.md` — approved with notes and polished.
 
