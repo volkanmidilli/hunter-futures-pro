@@ -2,6 +2,67 @@
 
 All important project changes will be recorded in this file.
 
+## MVP-12 Step 2 — Review Index Writer (Complete)
+
+**Version:** 0.12.0-dev (MVP-12 Step 1 complete) → MVP-12 Step 2 complete.
+
+**SPEC-013:** `specs/SPEC-013-Local-Review-Index.md` — approved with notes and polished.
+
+**Commit:** `64bc10b` — feat: add MVP-12 review index writer.
+
+- **Files created/modified:**
+  - `src/hunter/review_index/writer.py` — JSON/Markdown serialization, atomic file writing.
+  - `src/hunter/review_index/__init__.py` — updated with writer exports.
+  - `tests/test_review_index/test_writer.py` — writer unit tests.
+- **Implemented:**
+  - `DEFAULT_REVIEW_INDEX_JSON_PATH = Path("data/review_index/latest_review_index.json")`
+  - `DEFAULT_REVIEW_INDEX_MARKDOWN_PATH = Path("reports/review_index/latest_review_index.md")`
+  - `_iso()` — ISO-8601 timestamp helper.
+  - `_serialize_value()` — deterministic JSON-safe value serialization.
+  - `index_entry_to_dict()` — serializes `IndexEntry` to JSON-compatible dict.
+  - `index_summary_to_dict()` — serializes `IndexSummary` to JSON-compatible dict.
+  - `index_data_quality_to_dict()` — serializes `IndexDataQuality` to JSON-compatible dict.
+  - `index_safety_flags_to_dict()` — serializes `IndexSafetyFlags` to JSON-compatible dict.
+  - `review_index_to_dict()` — full `ReviewIndex` serialization with nested entries/summary/data_quality/safety_flags.
+  - `review_index_to_markdown()` — human-readable Markdown with explicit safety notice.
+  - `_atomic_write()` — atomic temp-file write with parent dirs, fsync, os.replace, cleanup.
+  - `atomic_write_json_review_index()` — atomic JSON writer.
+  - `atomic_write_markdown_review_index()` — atomic Markdown writer.
+  - `write_review_index()` — writes both JSON and Markdown, returns paths.
+- **Outputs:**
+  - Local JSON index artifact: `data/review_index/latest_review_index.json`
+  - Local Markdown index artifact: `reports/review_index/latest_review_index.md`
+- **Tests:**
+  - 52 new writer tests.
+  - 218 review_index tests total (166 model/engine + 52 writer).
+  - **Full suite: 2429 tests passing, 1 skipped** using `pytest --import-mode=importlib`.
+- **Safety:**
+  - No integration tests created.
+  - No config YAML.
+  - No JSON schema.
+  - No Freqtrade strategy class.
+  - No freqtrade import.
+  - No Freqtrade runtime connection.
+  - No Binance.
+  - No real exchange.
+  - No API keys.
+  - No live trading.
+  - No real orders.
+  - No leverage.
+  - No shorting.
+  - No real entry/exit execution logic.
+  - No report feedback into execution paths.
+  - No operator feedback into execution paths.
+  - No index feedback into execution paths.
+  - No Web UI.
+  - No dashboard.
+  - No database persistence.
+  - File references are local strings only and are not traversed, opened, followed, validated, or executed.
+- **Next:**
+  - MVP-12 Step 3 — Review Index Integration Tests, not started.
+
+---
+
 ## MVP-12 Step 1 — Review Index Models and Engine (Complete)
 
 **Version:** 0.11.0-dev (MVP-11 complete) → MVP-12 Step 1 complete.

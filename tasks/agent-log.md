@@ -1,5 +1,63 @@
 ---
 
+### MVP-12 Step 2 — Review Index Writer
+
+Date: 2026-06-27
+
+Agent: WrongStack
+
+Task: MVP-12 Step 2 — Review Index Writer.
+
+Files created:
+
+- `src/hunter/review_index/writer.py` — JSON/Markdown serialization, atomic file writing.
+- `tests/test_review_index/test_writer.py` — writer unit tests.
+
+Files modified:
+
+- `src/hunter/review_index/__init__.py` — updated with writer exports.
+- `CHANGELOG.md` — added MVP-12 Step 2 section.
+- `tasks/agent-log.md` — this entry.
+
+Summary:
+
+Implemented SPEC-013 review index writer for local JSON/Markdown review index artifacts.
+Added deterministic JSON-safe serialization for index entries, summaries, data quality, safety flags, and full review index.
+Added human-audit-only Markdown rendering with explicit safety notice that review index artifacts are not trading signals, not trade approvals, and must not be consumed by execution, strategy, Freqtrade shell, order, exchange, or any MVP execution path.
+Added atomic JSON/Markdown local writers and combined writer.
+Default paths: `data/review_index/latest_review_index.json` and `reports/review_index/latest_review_index.md`.
+Added 52 writer tests. Full suite passes with 2429 tests (1 skipped) using `pytest --import-mode=importlib`.
+
+Safety:
+
+No integration tests created.
+No config YAML.
+No JSON schema.
+No Freqtrade strategy class.
+No freqtrade import.
+No Freqtrade runtime connection.
+No Binance.
+No real exchange.
+No API keys.
+No live trading.
+No real orders.
+No leverage.
+No shorting.
+No real entry/exit execution logic.
+No report feedback into execution paths.
+No operator feedback into execution paths.
+No index feedback into execution paths.
+No Web UI.
+No dashboard.
+No database persistence.
+File references are local strings only and are not traversed, opened, followed, validated, or executed.
+
+Next step:
+
+MVP-12 Step 3 — Review Index Integration Tests, not started.
+
+---
+
 ### MVP-12 Step 1 — Review Index Models and Engine
 
 Date: 2026-06-27
