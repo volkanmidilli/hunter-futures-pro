@@ -290,6 +290,14 @@ class TestSearchSafetyFlags:
         assert flags.database_persistence_enabled is False
         assert flags.web_ui_enabled is False
         assert flags.dashboard_enabled is False
+        assert flags.search_output_is_human_audit_only is True
+        assert flags.search_output_not_trading_signal is True
+        assert flags.search_output_not_trade_approval is True
+        assert flags.search_output_not_for_execution is True
+        assert flags.search_output_not_for_strategy is True
+        assert flags.search_output_not_for_freqtrade is True
+        assert flags.search_output_not_for_order is True
+        assert flags.search_output_not_for_exchange is True
 
     @pytest.mark.parametrize(
         "field_name",
@@ -311,6 +319,23 @@ class TestSearchSafetyFlags:
     def test_unsafe_flags_are_rejected(self, field_name: str) -> None:
         with pytest.raises(ValueError, match="unsafe"):
             SearchSafetyFlags(**{field_name: True})
+
+    @pytest.mark.parametrize(
+        "field_name",
+        (
+            "search_output_is_human_audit_only",
+            "search_output_not_trading_signal",
+            "search_output_not_trade_approval",
+            "search_output_not_for_execution",
+            "search_output_not_for_strategy",
+            "search_output_not_for_freqtrade",
+            "search_output_not_for_order",
+            "search_output_not_for_exchange",
+        ),
+    )
+    def test_safe_output_flags_must_be_true(self, field_name: str) -> None:
+        with pytest.raises(ValueError, match="safe"):
+            SearchSafetyFlags(**{field_name: False})
 
     def test_safety_flags_are_frozen(self) -> None:
         flags = SearchSafetyFlags()

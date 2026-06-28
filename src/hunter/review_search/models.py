@@ -283,6 +283,15 @@ class SearchSafetyFlags:
     database_persistence_enabled: bool = False
     web_ui_enabled: bool = False
     dashboard_enabled: bool = False
+    # Search output is human-audit only — these must be True
+    search_output_is_human_audit_only: bool = True
+    search_output_not_trading_signal: bool = True
+    search_output_not_trade_approval: bool = True
+    search_output_not_for_execution: bool = True
+    search_output_not_for_strategy: bool = True
+    search_output_not_for_freqtrade: bool = True
+    search_output_not_for_order: bool = True
+    search_output_not_for_exchange: bool = True
 
     def __post_init__(self) -> None:
         unsafe_flags = (
@@ -301,6 +310,18 @@ class SearchSafetyFlags:
         )
         if any(unsafe_flags):
             raise ValueError("unsafe search safety flags are enabled")
+        safe_flags = (
+            self.search_output_is_human_audit_only,
+            self.search_output_not_trading_signal,
+            self.search_output_not_trade_approval,
+            self.search_output_not_for_execution,
+            self.search_output_not_for_strategy,
+            self.search_output_not_for_freqtrade,
+            self.search_output_not_for_order,
+            self.search_output_not_for_exchange,
+        )
+        if not all(safe_flags):
+            raise ValueError("safe search output flags must be True")
 
 
 @dataclass(frozen=True)
