@@ -151,7 +151,7 @@ def build_bundle_summary(items: tuple[BundleItem, ...]) -> BundleSummary:
         review_audit_count=counts[BundleItemKind.REVIEW_AUDIT],
         review_index_count=counts[BundleItemKind.REVIEW_INDEX],
         search_result_count=counts[BundleItemKind.SEARCH_RESULT],
-        human_note_count=counts[BundleItemKind.HUMAN_NOTE],
+        human_note_count=sum(1 for i in sorted_items if i.note),
     )
 
 

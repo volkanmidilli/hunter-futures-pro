@@ -285,7 +285,7 @@ class TestBuildBundleSummary:
             build_bundle_item(BundleItemKind.OBSERVATION_REPORT, "obs1.json"),
             build_bundle_item(BundleItemKind.REVIEW_AUDIT, "review1.md"),
             build_bundle_item(BundleItemKind.OBSERVATION_REPORT, "obs2.json"),
-            build_bundle_item(BundleItemKind.HUMAN_NOTE, "note.txt"),
+            build_bundle_item(BundleItemKind.HUMAN_NOTE, "note.txt", note="A human note"),
             build_bundle_item(BundleItemKind.REVIEW_INDEX, "index.json"),
             build_bundle_item(BundleItemKind.SEARCH_RESULT, "search.json"),
         )
@@ -295,7 +295,7 @@ class TestBuildBundleSummary:
         assert summary.review_audit_count == 1
         assert summary.review_index_count == 1
         assert summary.search_result_count == 1
-        assert summary.human_note_count == 1
+        assert summary.human_note_count == 1  # Counts items with non-empty note, not HUMAN_NOTE kind
 
     def test_sort_order_determinism(self) -> None:
         item1 = build_bundle_item(
