@@ -39,6 +39,15 @@ from .engine import (
     sort_search_results,
     validate_search_query,
 )
+from .writer import (
+    DEFAULT_SEARCH_JSON_PATH,
+    DEFAULT_SEARCH_MARKDOWN_PATH,
+    atomic_write_json_search_result,
+    atomic_write_markdown_search_result,
+    search_result_to_dict,
+    search_result_to_markdown,
+    write_search_result,
+)
 
 __all__ = (
     "DEFAULT_BLOCKED",
@@ -72,4 +81,13 @@ __all__ = (
     "score_search_entry",
     "sort_search_results",
     "build_search_result",
+    # Writer constants
+    "DEFAULT_SEARCH_JSON_PATH",
+    "DEFAULT_SEARCH_MARKDOWN_PATH",
+    # Writer functions
+    "search_result_to_dict",
+    "search_result_to_markdown",
+    "atomic_write_json_search_result",
+    "atomic_write_markdown_search_result",
+    "write_search_result",
 )
