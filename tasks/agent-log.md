@@ -1,5 +1,67 @@
 ---
 
+### MVP-14 Step 4 — Final Validation and Version Bump
+
+Date: 2026-06-28
+
+Agent: WrongStack
+
+Task: MVP-14 Step 4 — Final validation and version bump.
+
+Files modified:
+
+- `pyproject.toml` — version bumped from 0.13.0-dev to 0.14.0-dev.
+- `src/hunter/__init__.py` — version bumped from 0.13.0-dev to 0.14.0-dev.
+- `CHANGELOG.md` — added MVP-14 completion summary section.
+- `docs/handoff/CURRENT_STATE.md` — marked MVP-14 complete, version 0.14.0-dev, set MVP-15 planning as next.
+- `tasks/active.md` — marked MVP-14 Step 4 complete, set MVP-15 planning as next.
+- `tasks/agent-log.md` — this entry.
+
+Summary:
+
+Final validation of MVP-14 Local Research Bundle / Evidence Pack. Full test suite passes with 2922 tests passing, 1 skipped. No regressions. Version bumped to 0.14.0-dev.
+
+MVP-14 is now complete with:
+- Step 1: Models and Engine (112 tests)
+- Step 2: Writer (49 tests)
+- Step 3: Integration Tests (33 tests)
+- Step 4: Final validation and version bump
+
+Total research_bundle tests: 194 (54 model + 58 engine + 49 writer + 33 integration). 1 skipped.
+Z.ai Step 3 review: APPROVED. Engine `human_note_count` fix validated — counts items with non-empty notes (not just HUMAN_NOTE kind), aligning with SPEC-015 semantic definition.
+
+Safety:
+
+No source changes in Step 4.
+No config YAML.
+No JSON schema.
+No Freqtrade strategy class.
+No freqtrade import.
+No Freqtrade runtime connection.
+No Binance.
+No real exchange.
+No API keys.
+No live trading.
+No real orders.
+No leverage.
+No shorting.
+No real entry/exit execution logic.
+No report feedback into execution paths.
+No operator feedback into execution paths.
+No index feedback into execution paths.
+No search feedback into execution paths.
+No bundle feedback into execution paths.
+No Web UI.
+No dashboard.
+No database persistence.
+File references are local strings only and are not traversed, opened, followed, validated, or executed.
+
+Next step:
+
+MVP-15 planning, not started. No SPEC drafted yet. Requires human approval before any implementation.
+
+---
+
 ### SPEC-015 Approved / MVP-14 Planning
 
 Date: 2026-06-28
