@@ -1,0 +1,71 @@
+"""Public API exports for hunter.research_bundle package."""
+
+from .models import (
+    DEFAULT_BLOCKED,
+    BUNDLE_ERROR,
+    EMPTY_BUNDLE,
+    FORBIDDEN_BUNDLE_TERMS,
+    INVALID_BUNDLE,
+    INVALID_ITEM,
+    INVALID_REFERENCE,
+    MAX_ITEMS_EXCEEDED,
+    MISSING_ITEMS,
+    MISSING_REFERENCE,
+    REASON_CODES,
+    UNSAFE_BUNDLE_CONTENT,
+    UNSAFE_ITEM_CONTENT,
+    UNSAFE_SAFETY_FLAGS,
+    BundleConfig,
+    BundleDataQuality,
+    BundleItem,
+    BundleItemKind,
+    BundleSafetyFlags,
+    BundleState,
+    BundleSummary,
+    ResearchBundle,
+)
+from .engine import (
+    build_bundle_data_quality,
+    build_bundle_item,
+    build_bundle_safety_flags,
+    build_bundle_summary,
+    build_research_bundle,
+    has_unsafe_bundle_content,
+    validate_bundle_item,
+)
+
+__all__ = (
+    # Enums
+    "BundleState",
+    "BundleItemKind",
+    # Models
+    "BundleConfig",
+    "BundleSafetyFlags",
+    "BundleItem",
+    "BundleSummary",
+    "BundleDataQuality",
+    "ResearchBundle",
+    # Reason codes
+    "MISSING_ITEMS",
+    "EMPTY_BUNDLE",
+    "INVALID_BUNDLE",
+    "INVALID_ITEM",
+    "MISSING_REFERENCE",
+    "INVALID_REFERENCE",
+    "UNSAFE_BUNDLE_CONTENT",
+    "UNSAFE_ITEM_CONTENT",
+    "UNSAFE_SAFETY_FLAGS",
+    "BUNDLE_ERROR",
+    "DEFAULT_BLOCKED",
+    "MAX_ITEMS_EXCEEDED",
+    "REASON_CODES",
+    "FORBIDDEN_BUNDLE_TERMS",
+    # Engine functions
+    "build_bundle_safety_flags",
+    "has_unsafe_bundle_content",
+    "validate_bundle_item",
+    "build_bundle_item",
+    "build_bundle_summary",
+    "build_bundle_data_quality",
+    "build_research_bundle",
+)
