@@ -57,34 +57,44 @@ All important project changes will be recorded in this file.
 
 ---
 
-## MVP-13 — Local Review Search / Query Layer (Planning)
+## MVP-13 — Local Review Search / Query Layer (Complete)
 
-**Version:** 0.12.0-dev.
+**Version:** 0.12.0-dev → 0.13.0-dev.
 
 **SPEC-014:** `specs/SPEC-014-Local-Review-Search-Query-Layer.md` — approved with minor notes (SearchConfig added, no critical issues).
 
-**Status:** Planning complete. Ready for Step 1 implementation.
+**Commit:** `aa4dc25` — feat: add MVP-13 review search models and engine.
+**Commit:** `b1465f0` — feat: add MVP-13 review search writer.
+**Commit:** `c70d341` — feat: add MVP-13 review search integration tests.
 
-- **MVP-13 Step 1 — Review Search Models and Engine (Not Started)**
+- **MVP-13 Step 1 — Review Search Models and Engine (Complete)**
   - `src/hunter/review_search/__init__.py` — public API exports.
-  - `src/hunter/review_search/models.py` — frozen search dataclasses, enums, reason codes, forbidden search content detection.
-  - `src/hunter/review_search/engine.py` — in-memory search engine functions.
-  - `tests/test_review_search/__init__.py` — test package init.
-  - `tests/test_review_search/test_models.py` — model tests.
-  - `tests/test_review_search/test_engine.py` — engine tests.
+  - `src/hunter/review_search/models.py` — frozen search dataclasses, enums, 12 reason codes, forbidden search content detection, 8 search output safety flags (human-audit-only, not-trading-signal, not-trade-approval, not-for-execution, not-for-strategy, not-for-freqtrade, not-for-order, not-for-exchange).
+  - `src/hunter/review_search/engine.py` — 6 in-memory search engine functions: `build_search_safety_flags`, `validate_search_query`, `entry_matches_query`, `score_search_entry`, `sort_search_results`, `build_search_result`.
+  - `tests/test_review_search/test_models.py` — 92 model tests.
+  - `tests/test_review_search/test_engine.py` — 82 engine tests.
 
-- **MVP-13 Step 2 — Review Search Writer (Not Started)**
+- **MVP-13 Step 2 — Review Search Writer (Complete)**
   - `src/hunter/review_search/writer.py` — JSON/Markdown serialization, atomic file writing.
-  - `tests/test_review_search/test_writer.py` — writer tests.
+  - `src/hunter/review_search/__init__.py` — updated with writer exports.
+  - `tests/test_review_search/test_writer.py` — 51 writer tests.
   - Default JSON path: `data/review_search/latest_search_result.json`.
   - Default Markdown path: `reports/review_search/latest_search_result.md`.
+  - `search_result_to_dict()` — deterministic JSON-safe serialization.
+  - `search_result_to_markdown()` — human-readable Markdown with explicit safety notice.
+  - `atomic_write_json_search_result()` / `atomic_write_markdown_search_result()` — atomic writes with temp file + fsync + os.replace.
+  - `write_search_result()` — writes both JSON and Markdown, returns paths.
 
-- **MVP-13 Step 3 — Review Search Integration Tests (Not Started)**
-  - `tests/test_review_search/test_integration.py` — integration tests.
+- **MVP-13 Step 3 — Review Search Integration Tests (Complete)**
+  - `tests/test_review_search/test_integration.py` — 45 integration tests.
+  - End-to-end flows: search → serialize → write → validate, score-based ranking, pagination, filter combinations, timestamp ranges, sort modes, blocked index, empty index, blocked query, empty query, unsafe query, safety flag violations, fail-closed summary, empty output, write-only mode, human-audit-only notice, markdown generation, markdown safety notice, no secrets in output, no executable instructions, no file reads from production paths, no network calls, no trading logic, no execution feedback, no Freqtrade/Binance/exchange/live/leverage/shorting references.
+  - 278 review_search tests total (92 model + 82 engine + 51 writer + 45 integration + 8 safety flag tests). 1 skipped.
+  - **Full suite: 2728 tests passing, 1 skipped** using `pytest --import-mode=importlib`.
 
-- **MVP-13 Step 4 — Final Review and Version Bump (Not Started)**
-  - Verdict: PASS / PASS WITH NOTES / FAIL.
-  - If PASS: version bump to 0.13.0-dev.
+- **MVP-13 Step 4 — Final Review and Version Bump (Complete)**
+  - Verdict: PASS. No defects found.
+  - Version bumped to 0.13.0-dev.
+  - All safety invariants verified.
 
 - **Safety:**
   - Search results are human-audit artifacts only.

@@ -6,11 +6,11 @@ Hunter Futures Pro
 
 ## Version
 
-0.12.0-dev
+0.13.0-dev
 
 ## Current Phase
 
-MVP-13 planning complete. SPEC-014 approved with minor notes (SearchConfig added, no critical issues). Ready for Step 1 implementation. Version 0.12.0-dev. Full test suite: 2450 tests passing, 1 skipped using `pytest --import-mode=importlib`. Review index package has models, engine, writer, and integration tests. Next step: MVP-13 Step 1 — Review Search Models and Engine, not started. No source code changes, no config YAML, no JSON schema, no Freqtrade strategy class, no freqtrade import, no Freqtrade runtime connection, no Binance, no real exchange connection, no API keys, no live trading, no real orders, no leverage, no shorting, no real entry/exit execution logic, no production data reads/writes, no report feedback into execution paths, no operator feedback into execution paths, no index feedback into execution paths, no search feedback into execution paths, no Web UI, no dashboard, no database persistence.
+MVP-13 is complete and committed. All 4 steps passed. Version 0.13.0-dev. Full test suite: 2728 tests passing, 1 skipped using `pytest --import-mode=importlib`. Review search package has models, engine, writer, and integration tests. Next step: Human direction for next MVP or SPEC.
 
 ## Current Status
 
@@ -107,27 +107,39 @@ SPEC-011 Freqtrade Dry-Run Research Observation Reports design is approved with 
 - No integration tests yet. → now complete with integration tests.
 - No Freqtrade strategy class. No freqtrade import. No Freqtrade runtime connection. No Binance. No real exchange. No API keys. No live trading. No real orders. No leverage. No shorting. No real entry/exit execution logic. No report feedback into execution paths. No production data reads/writes.
 
-MVP-12 Step 2 — Review Index Writer (Complete).
+MVP-12 — Review Index is complete and committed.
+- `src/hunter/review_index/models.py` — frozen index dataclasses, enums, reason codes, forbidden index content detection.
+- `src/hunter/review_index/engine.py` — in-memory review index engine functions.
 - `src/hunter/review_index/writer.py` — JSON/Markdown serialization, atomic file writing.
 - `src/hunter/review_index/__init__.py` — updated with writer exports.
+- `tests/test_review_index/test_models.py` — 70 model tests.
+- `tests/test_review_index/test_engine.py` — 97 engine tests.
 - `tests/test_review_index/test_writer.py` — 52 writer tests.
-- Default JSON path: `data/review_index/latest_review_index.json`.
-- Default Markdown path: `reports/review_index/latest_review_index.md`.
-- 218 review_index tests total (166 model/engine + 52 writer). 1 skipped INDEX_ERROR edge test.
-- Full suite: 2429 tests passing, 1 skipped using `pytest --import-mode=importlib`.
-- No integration tests. No Web UI. No dashboard. No database persistence.
+- `tests/test_review_index/test_integration.py` — 21 integration tests.
+- 239 review_index tests total. 1 skipped.
+- Full suite: 2450 tests passing, 1 skipped.
 
-MVP-12 Step 3 — Review Index Integration Tests, not started. Requires human approval before implementation.
+MVP-13 — Review Search / Query Layer is complete and committed.
+- `src/hunter/review_search/models.py` — frozen search dataclasses, 12 reason codes, 8 search output safety flags, forbidden search content detection.
+- `src/hunter/review_search/engine.py` — 6 engine functions: build_search_safety_flags, validate_search_query, entry_matches_query, score_search_entry, sort_search_results, build_search_result.
+- `src/hunter/review_search/writer.py` — JSON/Markdown serialization, atomic file writing.
+- `src/hunter/review_search/__init__.py` — updated with engine and writer exports.
+- `tests/test_review_search/test_models.py` — 92 model tests.
+- `tests/test_review_search/test_engine.py` — 82 engine tests.
+- `tests/test_review_search/test_writer.py` — 51 writer tests.
+- `tests/test_review_search/test_integration.py` — 45 integration tests.
+- 278 review_search tests total. 1 skipped.
+- Full suite: 2728 tests passing, 1 skipped using `pytest --import-mode=importlib`.
+- Search results are human-audit artifacts only. Not trading signals. Not trade approvals.
+- No file reads, no network, no Freqtrade, no Binance, no exchange, no API keys, no live trading, no real orders, no leverage, no shorting, no entry/exit execution logic.
+- No report/operator/index/search feedback into execution paths.
+- File references remain strings only, never traversed, opened, followed, validated, or executed.
 
 ## Next Step
 
-MVP-12 Step 3 — Review Index Integration Tests, not started. Requires human approval before implementation.
-
-Future review index integration tests or operator workflow UI may be considered only in a future SPEC, but is not implemented yet.
+Human direction for next MVP or SPEC. All current MVPs are complete.
 
 ### Not Allowed Until Future SPEC
-- No source code.
-- No tests.
 - No config YAML.
 - No JSON schema.
 - No Freqtrade strategy class.
@@ -144,6 +156,7 @@ Future review index integration tests or operator workflow UI may be considered 
 - No report feedback into execution paths.
 - No operator feedback into execution paths.
 - No index feedback into execution paths.
+- No search feedback into execution paths.
 - No Web UI.
 - No dashboard.
 - No database persistence.
@@ -151,12 +164,12 @@ Future review index integration tests or operator workflow UI may be considered 
 
 ---
 
-## Previous State (MVP-7 Complete)
+## Previous State (MVP-12 Complete)
 
-MVP-7 Freqtrade Dry-Run Strategy Adapter is complete and committed. All 1214 tests pass.
-- Strategy Adapter Models, Engine, Writer, Integration Tests, Final Review all implemented.
-- 63 final review checklist items passed. No issues found.
+MVP-12 — Review Index is complete and committed. All 239 tests pass (1 skipped).
+- Review Index Models, Engine, Writer, Integration Tests all implemented.
 - No config YAML. No JSON schema. No deployable strategy class. No Freqtrade runtime.
 - No Binance. No API keys. No live trading. No real orders. No leverage. No shorting. No entry/exit execution logic.
+- File references are local strings only and are not traversed, opened, followed, validated, or executed.
 
 ---
