@@ -5,7 +5,7 @@ They are not trading signals, not trade approvals, and must not be consumed by
 execution, strategy, Freqtrade shell, order, exchange, or any MVP execution path.
 """
 
-from hunter.review_search.models import (
+from .models import (
     DEFAULT_BLOCKED,
     EMPTY_INDEX,
     EMPTY_QUERY,
@@ -30,6 +30,14 @@ from hunter.review_search.models import (
     SearchSafetyFlags,
     SearchSort,
     SearchState,
+)
+from .engine import (
+    build_search_result,
+    build_search_safety_flags,
+    entry_matches_query,
+    score_search_entry,
+    sort_search_results,
+    validate_search_query,
 )
 
 __all__ = (
@@ -57,4 +65,11 @@ __all__ = (
     "SearchSafetyFlags",
     "SearchSort",
     "SearchState",
+    # Engine functions
+    "build_search_safety_flags",
+    "validate_search_query",
+    "entry_matches_query",
+    "score_search_entry",
+    "sort_search_results",
+    "build_search_result",
 )
