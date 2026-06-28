@@ -10,6 +10,8 @@ Hunter Futures Pro
 
 ## Current Phase
 
+MVP-15 planning — SPEC-016 drafted for Local Research Chronicle / Audit Timeline. Not started. Requires human approval before implementation.
+
 MVP-14 is complete and committed. SPEC-015 for MVP-14 Local Research Bundle / Evidence Pack is complete and approved. Version 0.14.0-dev. Full test suite: 2922 tests passing, 1 skipped using `pytest --import-mode=importlib`. Next step: MVP-15 planning, not started. Research bundles are human-audit artifacts only, not trading signals, not trade approvals, and must not be consumed by execution, strategy, Freqtrade shell, order, exchange, or any MVP execution path. No bundle feedback into execution paths. File references remain local strings only and must not be traversed, opened, followed, validated, or executed. No Web UI, no dashboard, no database persistence, no config YAML, no JSON schema, no Freqtrade strategy class, no freqtrade import, no Binance, no real exchange, no API keys, no live trading, no real orders, no leverage, no shorting, no real entry/exit execution logic, no report feedback into execution paths, no operator feedback into execution paths, no index feedback into execution paths, no search feedback into execution paths, no bundle feedback into execution paths, no production data reads/writes.
 
 ## Current Status

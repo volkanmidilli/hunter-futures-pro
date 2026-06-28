@@ -6,7 +6,9 @@ MVP-15 planning, not started.
 
 ## Status
 
-MVP-14 is complete and committed. SPEC-015 approved with no critical issues. All MVP-14 steps completed successfully. Version 0.14.0-dev. Full test suite: 2922 tests passing, 1 skipped using `pytest --import-mode=importlib`. Current active task: MVP-15 planning, not started. No SPEC drafted yet. Requires human approval before any implementation.
+MVP-15 planning — SPEC-016 drafted for Local Research Chronicle / Audit Timeline. Not started. No implementation until SPEC approved by human.
+
+MVP-14 is complete and committed. SPEC-015 approved with no critical issues. All MVP-14 steps completed successfully. Version 0.14.0-dev. Full test suite: 2922 tests passing, 1 skipped using `pytest --import-mode=importlib`. Current active task: MVP-15 planning, not started. SPEC-016 drafted. Requires human approval before any implementation.
 
 MVP-13 is complete and committed.
 - `src/hunter/review_search/models.py` — frozen search dataclasses, 12 reason codes, 8 search output safety flags, forbidden search content detection.

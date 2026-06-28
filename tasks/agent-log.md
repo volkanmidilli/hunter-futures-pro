@@ -62,6 +62,74 @@ MVP-15 planning, not started. No SPEC drafted yet. Requires human approval befor
 
 ---
 
+### SPEC-016 Drafted / MVP-15 Planning
+
+Date: 2026-06-28
+
+Agent: WrongStack
+
+Task: SPEC-016 draft for MVP-15 Local Research Chronicle / Audit Timeline.
+
+Files created:
+
+- `specs/SPEC-016-Local-Research-Chronicle-Audit-Timeline.md` — MVP-15 planning document.
+
+Files modified:
+
+- `docs/handoff/CURRENT_STATE.md` — marked SPEC-016 drafted, MVP-15 planning not started.
+- `tasks/active.md` — updated current task to MVP-15 planning, SPEC-016 drafted.
+- `tasks/agent-log.md` — this entry.
+
+Summary:
+
+Drafted SPEC-016 for MVP-15 planning. Designed a Local Research Chronicle / Audit Timeline layer that consumes MVP-10 through MVP-14 artifacts as read-only human-audit inputs and produces a deterministic, chronological, immutable timeline for human audit.
+
+MVP-15 scope:
+- Package: `src/hunter/chronicle/`
+- Models: ArtifactType, ChronicleEntry, ChronicleSummary, ChronicleDataQuality, ChronicleSafetyFlags, ResearchChronicle
+- Engine: has_unsafe_chronicle_content, 5 build_chronicle_entry_* functions, build_chronicle_summary, build_chronicle_data_quality, build_research_chronicle
+- Writer: research_chronicle_to_dict, research_chronicle_to_markdown, atomic_write_json_research_chronicle, atomic_write_markdown_research_chronicle, write_research_chronicle
+- Outputs: `data/chronicle/latest_research_chronicle.json`, `reports/chronicle/latest_research_chronicle.md`
+- Safety: human-audit only, no execution feedback, no trading signals, no file reference traversal, trace linkage is advisory only
+- Expected tests: ~215 (50 model + 70 engine + 50 writer + 45 integration)
+- Expected full suite: ~3137 tests
+
+No MVP-15 implementation started. Requires human approval of SPEC-016 before Step 1.
+
+Safety:
+
+No source code.
+No tests.
+No config YAML.
+No JSON schema.
+No Freqtrade strategy class.
+No freqtrade import.
+No Freqtrade runtime connection.
+No Binance integration.
+No real exchange connection.
+No API keys.
+No live trading.
+No real orders.
+No leverage.
+No shorting.
+No real entry/exit execution logic.
+No report feedback into execution paths.
+No operator feedback into execution paths.
+No index feedback into execution paths.
+No search feedback into execution paths.
+No bundle feedback into execution paths.
+No chronicle feedback into execution paths.
+No Web UI.
+No dashboard.
+No database persistence.
+No production data reads/writes.
+
+Next step:
+
+Human review of SPEC-016 before MVP-15 implementation.
+
+---
+
 ### SPEC-015 Approved / MVP-14 Planning
 
 Date: 2026-06-28
