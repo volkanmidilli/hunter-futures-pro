@@ -6,11 +6,11 @@ Hunter Futures Pro
 
 ## Version
 
-0.16.0-dev
+0.17.0-dev
 
 ## Current Phase
 
-MVP-16 is complete and committed. SPEC-017 for MVP-16 Local Research Digest / Executive Summary is complete and approved. Version 0.16.0-dev. Full test suite: 3302 tests passing, 1 skipped using `pytest --import-mode=importlib`. Next step: MVP-17 planning, not started. Research digest is a human-audit artifact only, not a trading signal, not a trade approval, not a recommendation engine, not an action-command generator, and must not be consumed by execution, strategy, Freqtrade shell, order, exchange, or any MVP execution path. No digest feedback into execution paths. File references and metadata strings are not traversed, opened, followed, validated, or executed. No Web UI, no dashboard, no database persistence, no config YAML, no JSON schema, no Freqtrade strategy class, no freqtrade import, no Binance, no real exchange, no API keys, no live trading, no real orders, no leverage, no shorting, no real entry/exit execution logic, no report feedback into execution paths, no operator feedback into execution paths, no index feedback into execution paths, no search feedback into execution paths, no bundle feedback into execution paths, no chronicle feedback into execution paths, no digest feedback into execution paths, no production data reads/writes.
+MVP-17 is complete and committed. SPEC-018 for MVP-17 Local Research Quality Gate / Audit Readiness is complete and approved. Version 0.17.0-dev. Full test suite: 3454 tests passing, 1 skipped using `pytest --import-mode=importlib`. Next step: MVP-18 planning, not started. Research quality gate is a human-audit artifact only, not a trading signal, not a trade approval, not execution readiness, not strategy readiness, not release/deployment approval, not transaction permission, and must not be consumed by execution, strategy, Freqtrade shell, order, exchange, or any MVP execution path. No quality gate feedback into execution paths. File references and metadata strings are not traversed, opened, followed, validated, or executed. No Web UI, no dashboard, no database persistence, no config YAML, no JSON schema, no Freqtrade strategy class, no freqtrade import, no Binance, no real exchange, no API keys, no live trading, no real orders, no leverage, no shorting, no real entry/exit execution logic, no report feedback into execution paths, no operator feedback into execution paths, no index feedback into execution paths, no search feedback into execution paths, no bundle feedback into execution paths, no chronicle feedback into execution paths, no digest feedback into execution paths, no quality gate feedback into execution paths, no production data reads/writes.
 
 ## Current Status
 
@@ -166,6 +166,22 @@ MVP-15 — Local Research Chronicle / Audit Timeline is complete and committed.
 - Z.ai Step 3 review: APPROVED. No critical issues found.
 - Safety: human-audit only, no execution feedback, no trading signals, trace linkage advisory only, no file reference traversal, no chronicle feedback into execution paths.
 
+MVP-17 — Local Research Quality Gate / Audit Readiness is complete and committed.
+- SPEC-018: `specs/SPEC-018-Local-Research-Quality-Gate-Audit-Readiness.md` — approved with one minor source defect found and fixed before Step 4.
+- `src/hunter/research_quality_gate/__init__.py` — public API exports.
+- `src/hunter/research_quality_gate/models.py` — frozen quality gate dataclasses, enums, 29 reason codes, forbidden quality gate content detection, QualityGateConfig, QualityGateSafetyFlags, QualityGateCheck, QualityGateCheckKind, QualityGateSummary, QualityGateDataQuality, ResearchQualityGate.
+- `src/hunter/research_quality_gate/engine.py` — in-memory quality gate engine functions: has_unsafe_quality_gate_content, build_quality_gate_safety_flags, build_quality_gate_check, build_quality_gate_summary, build_quality_gate_data_quality, build_research_quality_gate.
+- `src/hunter/research_quality_gate/writer.py` — JSON/Markdown serialization, atomic file writing.
+- `src/hunter/research_quality_gate/__init__.py` — updated with writer exports.
+- `tests/test_research_quality_gate/test_models.py` — model tests.
+- `tests/test_research_quality_gate/test_engine.py` — engine tests.
+- `tests/test_research_quality_gate/test_writer.py` — writer tests.
+- `tests/test_research_quality_gate/test_integration.py` — 31 integration tests.
+- 152 research_quality_gate tests total.
+- Full suite: 3454 tests passing, 1 skipped using `pytest --import-mode=importlib`.
+- Z.ai Step 3 review: APPROVED. Source defect `_is_blocking_reason` not treating `UNRESOLVED_BLOCKERS` as blocking was identified and fixed before Step 4. `engine._is_blocking_reason` now aligns with canonical `QUALITY_GATE_BLOCKING_REASON_CODES`; `UNRESOLVED_BLOCKERS` is included in gate-level `ResearchQualityGate.reason_codes`; `STALE_ARTIFACT` remains non-blocking per SPEC-018 §3.3.
+- Safety: human-audit only, no execution feedback, no trading signals, not execution readiness, not strategy readiness, not release/deployment approval, not transaction permission, no file reference traversal, no quality gate feedback into execution paths.
+
 MVP-16 — Local Research Digest / Executive Summary is complete and committed.
 - SPEC-017: `specs/SPEC-017-Local-Research-Digest-Executive-Summary.md` — approved with no critical issues.
 - `src/hunter/research_digest/__init__.py` — public API exports.
@@ -184,7 +200,7 @@ MVP-16 — Local Research Digest / Executive Summary is complete and committed.
 
 ## Next Step
 
-MVP-17 planning, not started. No SPEC drafted yet. Requires human approval before any implementation.
+MVP-18 planning, not started. No SPEC drafted yet. Requires human approval before any implementation.
 
 ### Not Allowed Until Future SPEC
 - No config YAML.
@@ -207,6 +223,7 @@ MVP-17 planning, not started. No SPEC drafted yet. Requires human approval befor
 - No bundle feedback into execution paths.
 - No chronicle feedback into execution paths.
 - No digest feedback into execution paths.
+- No quality gate feedback into execution paths.
 - No Web UI.
 - No dashboard.
 - No database persistence.

@@ -2,6 +2,71 @@
 
 All important project changes will be recorded in this file.
 
+## MVP-17 — Local Research Quality Gate / Audit Readiness (Complete)
+
+**Version:** 0.16.0-dev → 0.17.0-dev.
+
+**SPEC-018:** `specs/SPEC-018-Local-Research-Quality-Gate-Audit-Readiness.md` — approved with one minor source defect found and fixed before Step 4.
+
+**Commit:** `TBD` — feat: complete MVP-17 local research quality gate / audit readiness.
+
+- **MVP-17 Step 1 — Research Quality Gate Models and Engine (Complete)**
+  - `src/hunter/research_quality_gate/__init__.py` — public API exports.
+  - `src/hunter/research_quality_gate/models.py` — frozen quality gate dataclasses, enums, 29 reason codes, forbidden quality gate content detection, `QualityGateConfig`, `QualityGateSafetyFlags`, `QualityGateCheck`, `QualityGateCheckKind`, `QualityGateSummary`, `QualityGateDataQuality`, `ResearchQualityGate`.
+  - `src/hunter/research_quality_gate/engine.py` — in-memory quality gate engine functions: `has_unsafe_quality_gate_content`, `build_quality_gate_safety_flags`, `build_quality_gate_check`, `build_quality_gate_summary`, `build_quality_gate_data_quality`, `build_research_quality_gate`.
+  - `tests/test_research_quality_gate/test_models.py` — model tests.
+  - `tests/test_research_quality_gate/test_engine.py` — engine tests.
+
+- **MVP-17 Step 2 — Research Quality Gate Writer (Complete)**
+  - `src/hunter/research_quality_gate/writer.py` — JSON/Markdown serialization, atomic file writing.
+  - `src/hunter/research_quality_gate/__init__.py` — updated with writer exports.
+  - `tests/test_research_quality_gate/test_writer.py` — writer tests.
+  - Default JSON path: `data/research_quality_gate/latest_research_quality_gate.json`.
+  - Default Markdown path: `reports/research_quality_gate/latest_research_quality_gate.md`.
+  - `research_quality_gate_to_dict()` — deterministic JSON-safe serialization.
+  - `research_quality_gate_to_markdown()` — human-readable Markdown with explicit safety notice.
+  - `atomic_write_json_research_quality_gate()` / `atomic_write_markdown_research_quality_gate()` — atomic writes with temp file + fsync + os.replace.
+  - `write_research_quality_gate()` — writes both JSON and Markdown, returns paths.
+
+- **MVP-17 Step 3 — Research Quality Gate Integration Tests (Complete)**
+  - `tests/test_research_quality_gate/test_integration.py` — 31 integration tests.
+  - End-to-end flows: build → serialize → write → validate, PASS gate, WARN gate for non-blocking issues, BLOCK gate for blocked/missing/unsafe checks, UNKNOWN gate, deterministic check ordering, deterministic `gate_id` and `generated_at`, JSON round-trip, Markdown safety notice, Markdown checks as plain text, file references as plain strings, no production path writes, no network calls, no trading logic, no execution feedback, no Freqtrade/Binance/exchange/live/leverage/shorting references.
+  - **Z.ai Step 3 Review:** APPROVED. One minor pre-existing source defect identified and fixed before Step 4.
+
+- **Pre-Step 4 Source Fix (Complete)**
+  - `engine._is_blocking_reason` aligned with canonical `QUALITY_GATE_BLOCKING_REASON_CODES` from `models.py`.
+  - `UNRESOLVED_BLOCKERS` is now included in gate-level `ResearchQualityGate.reason_codes` when present.
+  - `STALE_ARTIFACT` remains non-blocking per SPEC-018 §3.3 intent.
+  - `EMPTY_GATE` remains fail-closed.
+  - Added focused engine tests covering the fix.
+
+- **MVP-17 Step 4 — Final Validation and Version Bump (Complete)**
+  - Verdict: PASS. No defects found after source fix.
+  - Version bumped to 0.17.0-dev.
+  - All safety invariants verified.
+
+- **Tests:**
+  - 152 research_quality_gate tests total.
+  - **Full suite: 3454 tests passing, 1 skipped** using `pytest --import-mode=importlib`.
+
+- **Safety:**
+  - Research quality gate is a human-audit artifact only.
+  - Not a trading signal. Not a trade approval.
+  - Not execution readiness. Not strategy readiness.
+  - Not release/deployment approval. Not transaction permission.
+  - Must not be consumed by execution, strategy, Freqtrade shell, order, exchange, or any MVP execution path.
+  - No quality gate feedback into execution paths.
+  - No report/operator/index/search/bundle/chronicle/digest/quality-gate feedback into execution paths.
+  - No Binance, exchange, API keys, live trading, real orders, leverage, shorting.
+  - File references and metadata strings are not traversed, opened, followed, validated, or executed.
+  - No Web UI, dashboard, database persistence, server/API/auth.
+  - No database, event store, scheduler, routing layer, or feedback layer.
+
+- **Next:**
+  - MVP-18 planning, not started.
+
+---
+
 ## MVP-16 — Local Research Digest / Executive Summary (Complete)
 
 **Version:** 0.15.0-dev → 0.16.0-dev.

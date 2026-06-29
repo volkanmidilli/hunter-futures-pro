@@ -2,13 +2,15 @@
 
 ## Current Task
 
-MVP-17 planning, not started.
+MVP-18 planning, not started.
 
 ## Status
 
-MVP-17 planning — not started. No SPEC drafted yet. Requires human approval before any implementation.
+MVP-18 planning — not started. No SPEC drafted yet. Requires human approval before any implementation.
 
-MVP-16 is complete and committed. SPEC-017 approved with no critical issues. All MVP-16 steps completed successfully. Version 0.16.0-dev. Full test suite: 3302 tests passing, 1 skipped using `pytest --import-mode=importlib`. Current active task: MVP-17 planning, not started. No SPEC drafted yet. Requires human approval before any implementation.
+MVP-17 is complete and committed. SPEC-018 approved with one minor source defect found and fixed before Step 4. All MVP-17 steps completed successfully. Version 0.17.0-dev. Full test suite: 3454 tests passing, 1 skipped using `pytest --import-mode=importlib`. Current active task: MVP-18 planning, not started. No SPEC drafted yet. Requires human approval before any implementation.
+
+MVP-16 is complete and committed. SPEC-017 approved with no critical issues. All MVP-16 steps completed successfully. Version 0.16.0-dev. Full test suite: 3302 tests passing, 1 skipped using `pytest --import-mode=importlib`.
 
 MVP-15 is complete and committed. SPEC-016 approved with notes and polished. All MVP-15 steps completed successfully. Version 0.15.0-dev. Full test suite: 3161 tests passing, 1 skipped using `pytest --import-mode=importlib`.
 
@@ -53,9 +55,9 @@ MVP-14 Step 4 — Final Review and Version Bump (Complete).
 
 ## Scope
 
-MVP-17 planning, not started.
+MVP-18 planning, not started.
 - No SPEC drafted yet. Requires human approval before any implementation.
-- No source code changes until MVP-17 planning approved.
+- No source code changes until MVP-18 planning approved.
 
 ### Allowed
 - Planning documents, discussion, SPEC drafting (outside repo or in docs/ if needed).
@@ -157,10 +159,17 @@ MVP-15 Step 4 — Final validation and version bump (Complete).
 - [x] MVP-16 Step 3 complete: research digest integration tests implemented.
 - [x] MVP-16 Step 4 complete: final validation passed, version bumped to 0.16.0-dev.
 - [x] MVP-16 complete.
-- [ ] MVP-17 planning: not started. No SPEC drafted yet. Requires human approval before any implementation.
+- [x] MVP-17 Step 1 complete: research quality gate models and engine implemented.
+- [x] MVP-17 Step 2 complete: research quality gate writer implemented.
+- [x] MVP-17 Step 3 complete: research quality gate integration tests implemented.
+- [x] MVP-17 Step 3 Z.ai review: APPROVED.
+- [x] MVP-17 pre-Step 4 source fix complete: `_is_blocking_reason` aligned with `QUALITY_GATE_BLOCKING_REASON_CODES`.
+- [x] MVP-17 Step 4 complete: final validation passed, version bumped to 0.17.0-dev.
+- [x] MVP-17 complete.
+- [ ] MVP-18 planning: not started. No SPEC drafted yet. Requires human approval before any implementation.
 
 ## Next Step
 
-MVP-17 planning, not started. No SPEC drafted yet. Requires human approval before any implementation.
+MVP-18 planning, not started. No SPEC drafted yet. Requires human approval before any implementation.
 
 Future research bundle search engine, operator workflow UI, or cross-reference validation may be considered only in a future SPEC, but is not implemented yet.
