@@ -2,6 +2,65 @@
 
 All important project changes will be recorded in this file.
 
+## MVP-19 — Local Research Archive Manifest (Complete)
+
+**Version:** 0.18.0-dev → 0.19.0-dev.
+
+**SPEC-020:** `specs/SPEC-020-Local-Research-Archive-Manifest.md` — approved with no critical issues.
+
+**Commit:** `TBD` — feat: complete MVP-19 local research archive manifest.
+
+- **MVP-19 Step 1 — Research Archive Manifest Models and Engine (Complete)**
+  - `src/hunter/research_archive_manifest/__init__.py` — public API exports.
+  - `src/hunter/research_archive_manifest/models.py` — frozen archive manifest dataclasses, enums, 34 reason codes, forbidden archive manifest content detection, `ArchiveManifestConfig`, `ArchiveManifestSafetyFlags`, `ArchiveArtifactFamily`, `ArchiveManifestState`, `ArchiveArtifactEntry`, `ArchiveManifestSummary`, `ArchiveManifestDataQuality`, `ResearchArchiveManifest`.
+  - `src/hunter/research_archive_manifest/engine.py` — in-memory archive manifest engine functions: `has_unsafe_archive_manifest_content`, `build_archive_manifest_safety_flags`, `build_archive_artifact_entry`, `build_archive_manifest_summary`, `build_archive_manifest_data_quality`, `build_research_archive_manifest`.
+  - `tests/test_research_archive_manifest/test_models.py` — model tests.
+  - `tests/test_research_archive_manifest/test_engine.py` — engine tests.
+
+- **MVP-19 Step 2 — Research Archive Manifest Writer (Complete)**
+  - `src/hunter/research_archive_manifest/writer.py` — JSON/Markdown serialization, atomic file writing.
+  - `src/hunter/research_archive_manifest/__init__.py` — updated with writer exports.
+  - `tests/test_research_archive_manifest/test_writer.py` — writer tests.
+  - Default JSON path: `data/research_archive_manifest/latest_research_archive_manifest.json`.
+  - Default Markdown path: `reports/research_archive_manifest/latest_research_archive_manifest.md`.
+  - `research_archive_manifest_to_dict()` — deterministic JSON-safe serialization.
+  - `research_archive_manifest_to_markdown()` — human-readable Markdown with explicit safety notice.
+  - `atomic_write_json_research_archive_manifest()` / `atomic_write_markdown_research_archive_manifest()` — atomic writes with temp file + fsync + os.replace.
+  - `write_research_archive_manifest()` — writes both JSON and Markdown, returns paths.
+
+- **MVP-19 Step 3 — Research Archive Manifest Integration Tests (Complete)**
+  - `tests/test_research_archive_manifest/test_integration.py` — 42 integration tests.
+  - End-to-end flows: build → serialize → write → validate, READY manifest, WARN manifest for stale artifacts, BLOCK manifest for missing/unsafe/unresolved-blocker artifacts, UNKNOWN handling, block_on_unknown True/False, required_families customization, optional family None handling, summary counts, data quality public fields, safety flags, manifest notes disclaimers, deterministic family ordering, deterministic manifest_id, JSON round-trip, Markdown safety notice, Markdown family/reference/state/reason-code rendering, file references as plain strings, no production path writes, no network calls, no trading logic, no execution feedback, no Freqtrade/Binance/exchange/live/leverage/shorting references.
+  - **Z.ai Step 3 Review:** APPROVED. No critical issues found.
+
+- **MVP-19 Step 4 — Final Validation and Version Bump (Complete)**
+  - Verdict: PASS. No defects found.
+  - Version bumped to 0.19.0-dev.
+  - All safety invariants verified.
+
+- **Tests:**
+  - 164 research_archive_manifest tests total.
+  - **Full suite: 3764 tests passing, 1 skipped** using `pytest --import-mode=importlib`.
+
+- **Safety:**
+  - Research archive manifest is a human-audit inventory artifact only.
+  - Not a trading signal. Not a trade approval.
+  - Not execution readiness. Not strategy readiness.
+  - Not release/deployment approval. Not transaction permission.
+  - Must not be consumed by execution, strategy, Freqtrade shell, order, exchange, or any MVP execution path.
+  - No archive manifest feedback into execution paths.
+  - No report/operator/index/search/bundle/chronicle/digest/quality-gate/handoff/archive-manifest feedback into execution paths.
+  - No Binance, exchange, API keys, live trading, real orders, leverage, shorting.
+  - File references and metadata strings are not traversed, opened, followed, validated, or executed.
+  - Referenced artifact files are not read.
+  - No Web UI, dashboard, database persistence, server/API/auth.
+  - No database, event store, scheduler, routing layer, or feedback layer.
+
+- **Next:**
+  - MVP-20 planning, not started.
+
+---
+
 ## MVP-18 — Local Research Handoff Packet (Complete)
 
 **Version:** 0.17.0-dev → 0.18.0-dev.

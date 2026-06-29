@@ -6,11 +6,11 @@ Hunter Futures Pro
 
 ## Version
 
-0.18.0-dev
+0.19.0-dev
 
 ## Current Phase
 
-MVP-18 is complete and committed. SPEC-019 for MVP-18 Local Research Handoff Packet is complete and approved. Version 0.18.0-dev. Full test suite: 3600 tests passing, 1 skipped using `pytest --import-mode=importlib`. Next step: MVP-19 planning, not started. Research handoff packet is a human-audit / contractor-handoff artifact only, not a trading signal, not a trade approval, not execution readiness, not strategy readiness, not release/deployment approval, not transaction permission, and must not be consumed by execution, strategy, Freqtrade shell, order, exchange, or any MVP execution path. No handoff feedback into execution paths. No report/operator/index/search/bundle/chronicle/digest/quality-gate/handoff feedback into execution paths. File references and metadata strings are not traversed, opened, followed, validated, or executed. No Web UI, no dashboard, no database persistence, no config YAML, no JSON schema, no Freqtrade strategy class, no freqtrade import, no Binance, no real exchange, no API keys, no live trading, no real orders, no leverage, no shorting, no real entry/exit execution logic, no production data reads/writes.
+MVP-19 is complete and committed. SPEC-020 for MVP-19 Local Research Archive Manifest is complete and approved. Version 0.19.0-dev. Full test suite: 3764 tests passing, 1 skipped using `pytest --import-mode=importlib`. Next step: MVP-20 planning, not started. Research archive manifest is a human-audit inventory artifact only, not a trading signal, not a trade approval, not execution readiness, not strategy readiness, not release/deployment approval, not transaction permission, and must not be consumed by execution, strategy, Freqtrade shell, order, exchange, or any MVP execution path. No archive manifest feedback into execution paths. No report/operator/index/search/bundle/chronicle/digest/quality-gate/handoff/archive-manifest feedback into execution paths. Referenced artifact files are not read. File references and metadata strings are not traversed, opened, followed, validated, or executed. No Web UI, no dashboard, no database persistence, no config YAML, no JSON schema, no Freqtrade strategy class, no freqtrade import, no Binance, no real exchange, no API keys, no live trading, no real orders, no leverage, no shorting, no real entry/exit execution logic, no production data reads/writes.
 
 ## Current Status
 
@@ -197,6 +197,22 @@ MVP-18 — Local Research Handoff Packet is complete and committed.
 - Full suite: 3600 tests passing, 1 skipped using `pytest --import-mode=importlib`.
 - Z.ai Step 3 review: APPROVED. No critical issues found.
 - Safety: human-audit / contractor-handoff artifact only, no execution feedback, no trading signals, not execution readiness, not strategy readiness, not release/deployment approval, not transaction permission, no file reference traversal, no handoff feedback into execution paths, no report/operator/index/search/bundle/chronicle/digest/quality-gate/handoff feedback into execution paths.
+
+MVP-19 — Local Research Archive Manifest is complete and committed.
+- SPEC-020: `specs/SPEC-020-Local-Research-Archive-Manifest.md` — approved with no critical issues.
+- `src/hunter/research_archive_manifest/__init__.py` — public API exports.
+- `src/hunter/research_archive_manifest/models.py` — frozen archive manifest dataclasses, enums, 34 reason codes, forbidden archive manifest content detection, ArchiveManifestConfig, ArchiveManifestSafetyFlags, ArchiveArtifactFamily, ArchiveManifestState, ArchiveArtifactEntry, ArchiveManifestSummary, ArchiveManifestDataQuality, ResearchArchiveManifest.
+- `src/hunter/research_archive_manifest/engine.py` — in-memory archive manifest engine functions: has_unsafe_archive_manifest_content, build_archive_manifest_safety_flags, build_archive_artifact_entry, build_archive_manifest_summary, build_archive_manifest_data_quality, build_research_archive_manifest.
+- `src/hunter/research_archive_manifest/writer.py` — JSON/Markdown serialization, atomic file writing.
+- `src/hunter/research_archive_manifest/__init__.py` — updated with writer exports.
+- `tests/test_research_archive_manifest/test_models.py` — model tests.
+- `tests/test_research_archive_manifest/test_engine.py` — engine tests.
+- `tests/test_research_archive_manifest/test_writer.py` — writer tests.
+- `tests/test_research_archive_manifest/test_integration.py` — 42 integration tests.
+- 164 research_archive_manifest tests total.
+- Full suite: 3764 tests passing, 1 skipped using `pytest --import-mode=importlib`.
+- Z.ai Step 3 review: APPROVED. No critical issues found.
+- Safety: human-audit inventory artifact only, no execution feedback, no trading signals, not execution readiness, not strategy readiness, not release/deployment approval, not transaction permission, referenced artifact files are not read, file references and metadata strings are not traversed/opened/followed/validated/executed, no archive manifest feedback into execution paths, no report/operator/index/search/bundle/chronicle/digest/quality-gate/handoff/archive-manifest feedback into execution paths.
 
 MVP-16 — Local Research Digest / Executive Summary is complete and committed.
 - SPEC-017: `specs/SPEC-017-Local-Research-Digest-Executive-Summary.md` — approved with no critical issues.
