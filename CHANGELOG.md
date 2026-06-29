@@ -2,6 +2,63 @@
 
 All important project changes will be recorded in this file.
 
+## MVP-16 — Local Research Digest / Executive Summary (Complete)
+
+**Version:** 0.15.0-dev → 0.16.0-dev.
+
+**SPEC-017:** `specs/SPEC-017-Local-Research-Digest-Executive-Summary.md` — approved with no critical issues.
+
+**Commit:** `TBD` — feat: complete MVP-16 local research digest / executive summary.
+
+- **MVP-16 Step 1 — Research Digest Models and Engine (Complete)**
+  - `src/hunter/research_digest/__init__.py` — public API exports.
+  - `src/hunter/research_digest/models.py` — frozen digest dataclasses, enums, 17 reason codes, forbidden digest content detection, `DigestConfig`, `DigestSafetyFlags`, `DigestSection`, `DigestSectionKind`, `DigestSummary`, `DigestDataQuality`, `ResearchDigest`.
+  - `src/hunter/research_digest/engine.py` — in-memory digest engine functions: `has_unsafe_digest_content`, `build_digest_safety_flags`, `build_digest_section`, `build_digest_summary`, `build_digest_data_quality`, `build_research_digest`.
+  - `tests/test_research_digest/test_models.py` — model tests.
+  - `tests/test_research_digest/test_engine.py` — engine tests.
+
+- **MVP-16 Step 2 — Research Digest Writer (Complete)**
+  - `src/hunter/research_digest/writer.py` — JSON/Markdown serialization, atomic file writing.
+  - `src/hunter/research_digest/__init__.py` — updated with writer exports.
+  - `tests/test_research_digest/test_writer.py` — writer tests.
+  - Default JSON path: `data/research_digest/latest_research_digest.json`.
+  - Default Markdown path: `reports/research_digest/latest_research_digest.md`.
+  - `research_digest_to_dict()` — deterministic JSON-safe serialization.
+  - `research_digest_to_markdown()` — human-readable Markdown with explicit safety notice.
+  - `atomic_write_json_research_digest()` / `atomic_write_markdown_research_digest()` — atomic writes with temp file + fsync + os.replace.
+  - `write_research_digest()` — writes both JSON and Markdown, returns paths.
+
+- **MVP-16 Step 3 — Research Digest Integration Tests (Complete)**
+  - `tests/test_research_digest/test_integration.py` — 26 integration tests.
+  - End-to-end flows: build → serialize → write → validate, READY digest, BLOCKED digest for missing/invalid/unsafe inputs, deterministic section ordering, deterministic `digest_id` and `generated_at`, JSON round-trip, Markdown safety notice, Markdown sections as plain text, file references as plain strings, no file reads from production paths, no network calls, no trading logic, no execution feedback, no Freqtrade/Binance/exchange/live/leverage/shorting references.
+  - **Z.ai Step 3 Review:** APPROVED. No critical issues found.
+
+- **MVP-16 Step 4 — Final Validation and Version Bump (Complete)**
+  - Verdict: PASS. No defects found.
+  - Version bumped to 0.16.0-dev.
+  - All safety invariants verified.
+
+- **Tests:**
+  - 141 research_digest tests total. 1 skipped.
+  - **Full suite: 3302 tests passing, 1 skipped** using `pytest --import-mode=importlib`.
+
+- **Safety:**
+  - Research digest is a human-audit artifact only.
+  - Not a trading signal. Not a trade approval.
+  - Not a recommendation engine. Not an action-command generator.
+  - Must not be consumed by execution, strategy, Freqtrade shell, order, exchange, or any MVP execution path.
+  - No digest feedback into execution paths.
+  - No report/operator/index/search/bundle/chronicle/digest feedback into execution paths.
+  - No Binance, exchange, API keys, live trading, real orders, leverage, shorting.
+  - File references and metadata strings are not traversed, opened, followed, validated, or executed.
+  - No Web UI, dashboard, database persistence, server/API/auth.
+  - No database, event store, scheduler, routing layer, or feedback layer.
+
+- **Next:**
+  - MVP-17 planning, not started.
+
+---
+
 ## MVP-15 — Local Research Chronicle / Audit Timeline (Complete)
 
 **Version:** 0.14.0-dev → 0.15.0-dev.

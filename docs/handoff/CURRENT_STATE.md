@@ -6,11 +6,11 @@ Hunter Futures Pro
 
 ## Version
 
-0.15.0-dev
+0.16.0-dev
 
 ## Current Phase
 
-MVP-15 is complete and committed. SPEC-016 for MVP-15 Local Research Chronicle / Audit Timeline is complete and approved. Version 0.15.0-dev. Full test suite: 3161 tests passing, 1 skipped using `pytest --import-mode=importlib`. Next step: MVP-16 planning, not started. Research chronicle is a human-audit artifact only, not a trading signal, not a trade approval, and must not be consumed by execution, strategy, Freqtrade shell, order, exchange, or any MVP execution path. Trace linkage is advisory only. No chronicle feedback into execution paths. File references and metadata strings are not traversed, opened, followed, validated, or executed. No Web UI, no dashboard, no database persistence, no config YAML, no JSON schema, no Freqtrade strategy class, no freqtrade import, no Binance, no real exchange, no API keys, no live trading, no real orders, no leverage, no shorting, no real entry/exit execution logic, no report feedback into execution paths, no operator feedback into execution paths, no index feedback into execution paths, no search feedback into execution paths, no bundle feedback into execution paths, no chronicle feedback into execution paths, no production data reads/writes.
+MVP-16 is complete and committed. SPEC-017 for MVP-16 Local Research Digest / Executive Summary is complete and approved. Version 0.16.0-dev. Full test suite: 3302 tests passing, 1 skipped using `pytest --import-mode=importlib`. Next step: MVP-17 planning, not started. Research digest is a human-audit artifact only, not a trading signal, not a trade approval, not a recommendation engine, not an action-command generator, and must not be consumed by execution, strategy, Freqtrade shell, order, exchange, or any MVP execution path. No digest feedback into execution paths. File references and metadata strings are not traversed, opened, followed, validated, or executed. No Web UI, no dashboard, no database persistence, no config YAML, no JSON schema, no Freqtrade strategy class, no freqtrade import, no Binance, no real exchange, no API keys, no live trading, no real orders, no leverage, no shorting, no real entry/exit execution logic, no report feedback into execution paths, no operator feedback into execution paths, no index feedback into execution paths, no search feedback into execution paths, no bundle feedback into execution paths, no chronicle feedback into execution paths, no digest feedback into execution paths, no production data reads/writes.
 
 ## Current Status
 
@@ -166,9 +166,25 @@ MVP-15 — Local Research Chronicle / Audit Timeline is complete and committed.
 - Z.ai Step 3 review: APPROVED. No critical issues found.
 - Safety: human-audit only, no execution feedback, no trading signals, trace linkage advisory only, no file reference traversal, no chronicle feedback into execution paths.
 
+MVP-16 — Local Research Digest / Executive Summary is complete and committed.
+- SPEC-017: `specs/SPEC-017-Local-Research-Digest-Executive-Summary.md` — approved with no critical issues.
+- `src/hunter/research_digest/__init__.py` — public API exports.
+- `src/hunter/research_digest/models.py` — frozen digest dataclasses, enums, 17 reason codes, forbidden digest content detection, DigestConfig, DigestSafetyFlags, DigestSection, DigestSectionKind, DigestSummary, DigestDataQuality, ResearchDigest.
+- `src/hunter/research_digest/engine.py` — in-memory digest engine functions: has_unsafe_digest_content, build_digest_safety_flags, build_digest_section, build_digest_summary, build_digest_data_quality, build_research_digest.
+- `src/hunter/research_digest/writer.py` — JSON/Markdown serialization, atomic file writing.
+- `src/hunter/research_digest/__init__.py` — updated with writer exports.
+- `tests/test_research_digest/test_models.py` — model tests.
+- `tests/test_research_digest/test_engine.py` — engine tests.
+- `tests/test_research_digest/test_writer.py` — writer tests.
+- `tests/test_research_digest/test_integration.py` — 26 integration tests.
+- 141 research_digest tests total. 1 skipped.
+- Full suite: 3302 tests passing, 1 skipped using `pytest --import-mode=importlib`.
+- Z.ai Step 3 review: APPROVED. No critical issues found.
+- Safety: human-audit only, no execution feedback, no trading signals, no recommendation engine, no action-command generator, no file reference traversal, no digest feedback into execution paths.
+
 ## Next Step
 
-MVP-16 planning, not started. No SPEC drafted yet. Requires human approval before any implementation.
+MVP-17 planning, not started. No SPEC drafted yet. Requires human approval before any implementation.
 
 ### Not Allowed Until Future SPEC
 - No config YAML.
@@ -189,6 +205,8 @@ MVP-16 planning, not started. No SPEC drafted yet. Requires human approval befor
 - No index feedback into execution paths.
 - No search feedback into execution paths.
 - No bundle feedback into execution paths.
+- No chronicle feedback into execution paths.
+- No digest feedback into execution paths.
 - No Web UI.
 - No dashboard.
 - No database persistence.

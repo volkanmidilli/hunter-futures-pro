@@ -1,5 +1,74 @@
 ---
 
+### MVP-16 Step 4 — Final Validation and Version Bump
+
+Date: 2026-06-29
+
+Agent: WrongStack
+
+Task: MVP-16 Step 4 — Final validation and version bump.
+
+Files modified:
+
+- `pyproject.toml` — version bumped from 0.15.0-dev to 0.16.0-dev.
+- `src/hunter/__init__.py` — version bumped from 0.15.0-dev to 0.16.0-dev.
+- `CHANGELOG.md` — added MVP-16 completion summary section.
+- `docs/handoff/CURRENT_STATE.md` — marked MVP-16 complete, version 0.16.0-dev, set MVP-17 planning as next.
+- `tasks/active.md` — marked MVP-16 Step 4 complete, set MVP-17 planning as next.
+- `tasks/agent-log.md` — this entry.
+
+Summary:
+
+Final validation of MVP-16 Local Research Digest / Executive Summary. Full test suite passes with 3302 tests passing, 1 skipped. No regressions. Version bumped to 0.16.0-dev.
+
+MVP-16 is now complete with:
+- Step 1: Models and Engine (research_digest model/engine tests)
+- Step 2: Writer (research_digest writer tests)
+- Step 3: Integration Tests (26 integration tests)
+- Step 4: Final validation and version bump
+
+Total research_digest tests: 141. 1 skipped.
+Step 3 Z.ai review: APPROVED. No critical issues found.
+
+Safety:
+
+No source changes in Step 4.
+No config YAML.
+No JSON schema.
+No Freqtrade strategy class.
+No freqtrade import.
+No Freqtrade runtime connection.
+No Binance.
+No real exchange.
+No API keys.
+No live trading.
+No real orders.
+No leverage.
+No shorting.
+No real entry/exit execution logic.
+No report feedback into execution paths.
+No operator feedback into execution paths.
+No index feedback into execution paths.
+No search feedback into execution paths.
+No bundle feedback into execution paths.
+No chronicle feedback into execution paths.
+No digest feedback into execution paths.
+No Web UI.
+No dashboard.
+No database persistence.
+No database, event store, scheduler, routing layer, or feedback layer.
+File references and metadata strings are local strings only and are not traversed, opened, followed, validated, or executed.
+Research digest is a human-audit artifact only.
+Not a trading signal. Not a trade approval.
+Not a recommendation engine. Not an action-command generator.
+Must not be consumed by execution, strategy, Freqtrade shell, order, exchange, or any MVP execution path.
+
+Next step:
+
+MVP-17 planning, not started. No SPEC drafted yet. Requires human approval before any implementation.
+
+---
+
 ### MVP-15 Step 4 — Final Validation and Version Bump
 
 Date: 2026-06-29
