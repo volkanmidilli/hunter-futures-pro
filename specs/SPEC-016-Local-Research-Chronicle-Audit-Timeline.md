@@ -93,7 +93,7 @@ CHRONICLE_VERSION = "1.0"
 class ChronicleEntry:
     entry_id: str
     timestamp: datetime
-    artifact_type: str
+    artifact_type: ArtifactType
     trace_id: str
     state: str
     version: str
@@ -107,9 +107,9 @@ class ChronicleEntry:
 ```
 
 Validation:
-- `entry_id` must be a non-empty, deterministic string (not a random UUID). Recommended derivation: `entry_id = f"{artifact_type}:{trace_id}:{timestamp_iso}"`.
+- `entry_id` must be a non-empty, deterministic string (not a random UUID). Recommended derivation: `entry_id = f"{artifact_type.value}:{trace_id}:{timestamp_iso}"`.
 - `timestamp` timezone-aware.
-- `artifact_type` in `{"observation", "review", "index", "search", "bundle"}`.
+- `artifact_type` must be an `ArtifactType` enum instance (`isinstance` check).
 - `notes` and `metadata` filtered through forbidden content check.
 - File references are local strings only — not traversed, opened, followed, validated, or executed.
 - `entry_id` must not use `uuid.uuid4()` or any other non-deterministic source. Same inputs → same `entry_id` → same sort order → same output.
@@ -244,13 +244,15 @@ CHRONICLE_BLOCKING_REASON_CODES = (
     "INVALID_INDEX",                  # 4 — index missing required fields
     "INVALID_SEARCH",                 # 5 — search result missing required fields
     "INVALID_BUNDLE",                 # 6 — bundle missing required fields
-    "UNSUPPORTED_OBSERVATION_VERSION",  # 7 — observation version not recognized
-    "UNSUPPORTED_REVIEW_VERSION",     # 8 — review version not recognized
-    "UNSUPPORTED_INDEX_VERSION",      # 9 — index version not recognized
-    "UNSUPPORTED_SEARCH_VERSION",     # 10 — search version not recognized
-    "UNSUPPORTED_BUNDLE_VERSION",     # 11 — bundle version not recognized
-    "UNSAFE_CHRONICLE_CONTENT",       # 12 — forbidden terms in notes/metadata
-    "CHRONICLE_ERROR",                # 13 — catch-all for unexpected errors
+    "INVALID_TIMESTAMP",              # 7 — timestamp missing or not timezone-aware
+    "MISSING_TRACE_ID",               # 8 — trace_id could not be derived or is absent
+    "UNSUPPORTED_OBSERVATION_VERSION",  # 9 — observation version not recognized
+    "UNSUPPORTED_REVIEW_VERSION",     # 10 — review version not recognized
+    "UNSUPPORTED_INDEX_VERSION",      # 11 — index version not recognized
+    "UNSUPPORTED_SEARCH_VERSION",     # 12 — search version not recognized
+    "UNSUPPORTED_BUNDLE_VERSION",     # 13 — bundle version not recognized
+    "UNSAFE_CHRONICLE_CONTENT",       # 14 — forbidden terms in notes/metadata
+    "CHRONICLE_ERROR",                # 15 — catch-all for unexpected errors
 )
 ```
 
@@ -313,10 +315,10 @@ def build_chronicle_entry_from_review(
         trace_id = "review-audit:{audit_record.generated_at_iso}:{version}"
         timestamp = audit_record.generated_at
         state = audit_record.audit_state
-        version = audit_record.version
+        version = "1.0"
 
-    `ReviewAuditRecord` does not have `reviewed_at`, `review_status`, `reviewer`,
-    `notes`, or `tags` at the container level. Child `ReviewRecord` fields may be
+    `ReviewAuditRecord` does not have `version`, `reviewed_at`, `review_status`,
+    `reviewer`, `notes`, or `tags` at the container level. Child `ReviewRecord` fields may be
     summarized into `metadata` for human context only — they are not used for trace
     linkage, routing, or any automated logic. The chronicle entry is advisory only.
     """
