@@ -27,6 +27,17 @@ from hunter.chronicle.models import (
     FORBIDDEN_CHRONICLE_TERMS,
     ResearchChronicle,
 )
+from hunter.chronicle.writer import (
+    atomic_write_json_research_chronicle,
+    atomic_write_markdown_research_chronicle,
+    chronicle_data_quality_to_dict,
+    chronicle_entry_to_dict,
+    chronicle_safety_flags_to_dict,
+    chronicle_summary_to_dict,
+    research_chronicle_to_dict,
+    research_chronicle_to_markdown,
+    write_research_chronicle,
+)
 
 __all__ = [
     # Models
@@ -52,4 +63,14 @@ __all__ = [
     "build_chronicle_summary",
     "build_chronicle_data_quality",
     "build_research_chronicle",
+    # Writer
+    "research_chronicle_to_dict",
+    "research_chronicle_to_markdown",
+    "chronicle_entry_to_dict",
+    "chronicle_summary_to_dict",
+    "chronicle_data_quality_to_dict",
+    "chronicle_safety_flags_to_dict",
+    "atomic_write_json_research_chronicle",
+    "atomic_write_markdown_research_chronicle",
+    "write_research_chronicle",
 ]
