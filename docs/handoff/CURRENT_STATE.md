@@ -6,11 +6,11 @@ Hunter Futures Pro
 
 ## Version
 
-0.19.0-dev
+0.20.0-dev
 
 ## Current Phase
 
-MVP-19 is complete and committed. SPEC-020 for MVP-19 Local Research Archive Manifest is complete and approved. Version 0.19.0-dev. Full test suite: 3764 tests passing, 1 skipped using `pytest --import-mode=importlib`. Next step: MVP-20 planning, not started. Research archive manifest is a human-audit inventory artifact only, not a trading signal, not a trade approval, not execution readiness, not strategy readiness, not release/deployment approval, not transaction permission, and must not be consumed by execution, strategy, Freqtrade shell, order, exchange, or any MVP execution path. No archive manifest feedback into execution paths. No report/operator/index/search/bundle/chronicle/digest/quality-gate/handoff/archive-manifest feedback into execution paths. Referenced artifact files are not read. File references and metadata strings are not traversed, opened, followed, validated, or executed. No Web UI, no dashboard, no database persistence, no config YAML, no JSON schema, no Freqtrade strategy class, no freqtrade import, no Binance, no real exchange, no API keys, no live trading, no real orders, no leverage, no shorting, no real entry/exit execution logic, no production data reads/writes.
+MVP-20 is complete and committed. SPEC-021 for MVP-20 Local Research Release Notes / Audit Change Summary is complete and approved. Version 0.20.0-dev. Full test suite: 3921 tests passing, 1 skipped using `pytest --import-mode=importlib`. Next step: MVP-21 planning, not started. Research release notes / audit change summary is a human-audit / contractor-handoff artifact only, not a release approval, not a deployment approval, not a publish approval, not a trading signal, not a trade approval, not execution readiness, not strategy readiness, not transaction permission, and must not be consumed by execution, strategy, Freqtrade shell, order, exchange, or any MVP execution path. No release-notes feedback into execution paths. No report/operator/index/search/bundle/chronicle/digest/quality-gate/handoff/archive-manifest/release-notes feedback into execution paths. Referenced artifact files are not read. File references and metadata strings are not traversed, opened, followed, validated, or executed. Human review guide is advisory-only and not gating. No action commands are emitted. No release/deployment checklist semantics. No Web UI, no dashboard, no database persistence, no config YAML, no JSON schema, no Freqtrade strategy class, no freqtrade import, no Binance, no real exchange, no API keys, no live trading, no real orders, no leverage, no shorting, no real entry/exit execution logic, no production data reads/writes.
 
 ## Current Status
 
@@ -198,6 +198,22 @@ MVP-18 — Local Research Handoff Packet is complete and committed.
 - Z.ai Step 3 review: APPROVED. No critical issues found.
 - Safety: human-audit / contractor-handoff artifact only, no execution feedback, no trading signals, not execution readiness, not strategy readiness, not release/deployment approval, not transaction permission, no file reference traversal, no handoff feedback into execution paths, no report/operator/index/search/bundle/chronicle/digest/quality-gate/handoff feedback into execution paths.
 
+MVP-20 — Local Research Release Notes / Audit Change Summary is complete and committed.
+- SPEC-021: `specs/SPEC-021-Local-Research-Release-Notes-Audit-Change-Summary.md` — approved with no critical issues.
+- `src/hunter/research_release_notes/__init__.py` — public API exports.
+- `src/hunter/research_release_notes/models.py` — frozen release notes dataclasses, enums, reason codes, forbidden release notes content detection, ReleaseNotesConfig, ReleaseNotesSafetyFlags, ReleaseNotesSectionKind, ReleaseNotesChangeSeverity, ReleaseNotesState, ReleaseNotesChangeItem, ReleaseNotesSection, ReleaseNotesSummary, ReleaseNotesDataQuality, ResearchReleaseNotes.
+- `src/hunter/research_release_notes/engine.py` — in-memory release notes engine functions: has_unsafe_release_notes_content, build_release_notes_safety_flags, build_release_notes_change_item, build_release_notes_section, build_release_notes_summary, build_release_notes_data_quality, build_research_release_notes.
+- `src/hunter/research_release_notes/writer.py` — JSON/Markdown serialization, atomic file writing.
+- `src/hunter/research_release_notes/__init__.py` — updated with writer exports.
+- `tests/test_research_release_notes/test_models.py` — model tests.
+- `tests/test_research_release_notes/test_engine.py` — engine tests.
+- `tests/test_research_release_notes/test_writer.py` — writer tests.
+- `tests/test_research_release_notes/test_integration.py` — 46 integration tests.
+- 157 research_release_notes tests total.
+- Full suite: 3921 tests passing, 1 skipped using `pytest --import-mode=importlib`.
+- Z.ai Step 3 review: APPROVED. No critical issues found.
+- Safety: human-audit / contractor-handoff artifact only, not release approval, not deployment approval, not publish approval, no execution feedback, no trading signals, not execution readiness, not strategy readiness, not transaction permission, referenced artifact files are not read, file references and metadata strings are not traversed/opened/followed/validated/executed, human review guide advisory-only and not gating, no action commands emitted, no release/deployment checklist semantics, no release-notes feedback into execution paths, no report/operator/index/search/bundle/chronicle/digest/quality-gate/handoff/archive-manifest/release-notes feedback into execution paths.
+
 MVP-19 — Local Research Archive Manifest is complete and committed.
 - SPEC-020: `specs/SPEC-020-Local-Research-Archive-Manifest.md` — approved with no critical issues.
 - `src/hunter/research_archive_manifest/__init__.py` — public API exports.
@@ -232,7 +248,7 @@ MVP-16 — Local Research Digest / Executive Summary is complete and committed.
 
 ## Next Step
 
-MVP-19 planning, not started. No SPEC drafted yet. Requires human approval before any implementation.
+MVP-21 planning, not started. No SPEC drafted yet. Requires human approval before any implementation.
 
 ### Not Allowed Until Future SPEC
 - No config YAML.
@@ -257,6 +273,8 @@ MVP-19 planning, not started. No SPEC drafted yet. Requires human approval befor
 - No digest feedback into execution paths.
 - No quality gate feedback into execution paths.
 - No handoff feedback into execution paths.
+- No archive manifest feedback into execution paths.
+- No release-notes feedback into execution paths.
 - No Web UI.
 - No dashboard.
 - No database persistence.

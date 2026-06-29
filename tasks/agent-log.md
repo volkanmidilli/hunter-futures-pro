@@ -1,5 +1,56 @@
 ---
 
+### MVP-20 Step 4 — Final Validation and Version Bump
+
+Date: 2026-06-29
+
+Agent: WrongStack
+
+Task: MVP-20 Step 4 — Final validation, memory update, version bump, and release tag prep.
+
+Files modified:
+
+- `pyproject.toml` — version bumped from 0.19.0-dev to 0.20.0-dev.
+- `src/hunter/__init__.py` — version bumped from 0.19.0-dev to 0.20.0-dev.
+- `CHANGELOG.md` — added MVP-20 completion summary section.
+- `docs/handoff/CURRENT_STATE.md` — marked MVP-20 complete, version 0.20.0-dev, set MVP-21 planning as next.
+- `tasks/active.md` — marked MVP-20 Step 4 complete, set MVP-21 planning as next.
+- `tasks/agent-log.md` — this entry.
+
+Summary:
+
+Final validation of MVP-20 Local Research Release Notes / Audit Change Summary. Full test suite passes with 3921 tests passing, 1 skipped. No regressions. Version bumped to 0.20.0-dev.
+
+MVP-20 is now complete with:
+- Step 1: Models and Engine (research_release_notes model/engine tests)
+- Step 2: Writer (research_release_notes writer tests)
+- Step 3: Integration Tests (46 integration tests)
+- Step 3 Z.ai review: APPROVED. No critical issues found.
+- Step 4: Final validation, memory update, and version bump
+
+Next phase: MVP-21 planning, not started.
+
+Total research_release_notes tests: 157.
+
+Safety:
+
+- Research release notes / audit change summary is a human-audit / contractor-handoff artifact only.
+- Not release approval. Not deployment approval. Not publish approval.
+- Not a trading signal. Not a trade approval.
+- Not execution readiness. Not strategy readiness.
+- Not transaction permission.
+- Must not be consumed by execution, strategy, Freqtrade shell, order, exchange, or any MVP execution path.
+- No release-notes feedback into execution paths.
+- No report/operator/index/search/bundle/chronicle/digest/quality-gate/handoff/archive-manifest/release-notes feedback into execution paths.
+- No Binance, exchange, API keys, live trading, real orders, leverage, shorting.
+- File references and metadata strings are not traversed, opened, followed, validated, or executed.
+- Referenced artifact files are not read.
+- Human review guide is advisory-only and not gating.
+- No action commands are emitted.
+- No release/deployment checklist semantics.
+- No Web UI, dashboard, database persistence, server/API/auth.
+- No database, event store, scheduler, routing layer, indexer, crawler, runtime registry, task runner, or feedback layer.
+
 ### MVP-19 Step 4 — Final Validation and Version Bump
 
 Date: 2026-06-29

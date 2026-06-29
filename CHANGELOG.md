@@ -2,6 +2,69 @@
 
 All important project changes will be recorded in this file.
 
+## MVP-20 — Local Research Release Notes / Audit Change Summary (Complete)
+
+**Version:** 0.19.0-dev → 0.20.0-dev.
+
+**SPEC-021:** `specs/SPEC-021-Local-Research-Release-Notes-Audit-Change-Summary.md` — approved with no critical issues.
+
+**Commit:** `TBD` — feat: complete MVP-20 local research release notes / audit change summary.
+
+- **MVP-20 Step 1 — Research Release Notes Models and Engine (Complete)**
+  - `src/hunter/research_release_notes/__init__.py` — public API exports.
+  - `src/hunter/research_release_notes/models.py` — frozen release notes dataclasses, enums, reason codes, forbidden release notes content detection, `ReleaseNotesConfig`, `ReleaseNotesSafetyFlags`, `ReleaseNotesSectionKind`, `ReleaseNotesChangeSeverity`, `ReleaseNotesState`, `ReleaseNotesChangeItem`, `ReleaseNotesSection`, `ReleaseNotesSummary`, `ReleaseNotesDataQuality`, `ResearchReleaseNotes`.
+  - `src/hunter/research_release_notes/engine.py` — in-memory release notes engine functions: `has_unsafe_release_notes_content`, `build_release_notes_safety_flags`, `build_release_notes_change_item`, `build_release_notes_section`, `build_release_notes_summary`, `build_release_notes_data_quality`, `build_research_release_notes`.
+  - `tests/test_research_release_notes/test_models.py` — model tests.
+  - `tests/test_research_release_notes/test_engine.py` — engine tests.
+
+- **MVP-20 Step 2 — Research Release Notes Writer (Complete)**
+  - `src/hunter/research_release_notes/writer.py` — JSON/Markdown serialization, atomic file writing.
+  - `src/hunter/research_release_notes/__init__.py` — updated with writer exports.
+  - `tests/test_research_release_notes/test_writer.py` — writer tests.
+  - Default JSON path: `data/research_release_notes/latest_research_release_notes.json`.
+  - Default Markdown path: `reports/research_release_notes/latest_research_release_notes.md`.
+  - `research_release_notes_to_dict()` — deterministic JSON-safe serialization.
+  - `research_release_notes_to_markdown()` — human-readable Markdown with explicit safety notice.
+  - `atomic_write_json_research_release_notes()` / `atomic_write_markdown_research_release_notes()` — atomic writes with temp file + fsync + os.replace.
+  - `write_research_release_notes()` — writes both JSON and Markdown, returns paths.
+
+- **MVP-20 Step 3 — Research Release Notes Integration Tests (Complete)**
+  - `tests/test_research_release_notes/test_integration.py` — 46 integration tests.
+  - End-to-end flows: build → serialize → write → validate, READY release notes, WARN release notes for empty required sections, BLOCK release notes for missing/unsafe/unresolved-blocker artifacts, fail-closed UNKNOWN handling, required_sections customization, human review guide advisory semantics, summary counts, data quality public fields, all output safety flags, document notes disclaimers, deterministic section ordering, deterministic change item ordering (severity then MVP), insertion-order tiebreak, deterministic release_notes_id, JSON round-trip, Markdown safety notice first, Markdown section/change-item/reference rendering, file references as plain strings, no production path writes, no action commands emitted, no network calls, no trading logic, no execution feedback, no Freqtrade/Binance/exchange/live/leverage/shorting references.
+  - **Z.ai Step 3 Review:** APPROVED. No critical issues found.
+
+- **MVP-20 Step 4 — Final Validation and Version Bump (Complete)**
+  - Verdict: PASS. No defects found.
+  - Version bumped to 0.20.0-dev.
+  - All safety invariants verified.
+
+- **Tests:**
+  - 157 research_release_notes tests total.
+  - **Full suite: 3921 tests passing, 1 skipped** using `pytest --import-mode=importlib`.
+
+- **Safety:**
+  - Research release notes / audit change summary is a human-audit / contractor-handoff artifact only.
+  - Not a release approval. Not a deployment approval. Not a publish approval.
+  - Not a trading signal. Not a trade approval.
+  - Not execution readiness. Not strategy readiness.
+  - Not transaction permission.
+  - Must not be consumed by execution, strategy, Freqtrade shell, order, exchange, or any MVP execution path.
+  - No release-notes feedback into execution paths.
+  - No report/operator/index/search/bundle/chronicle/digest/quality-gate/handoff/archive-manifest/release-notes feedback into execution paths.
+  - No Binance, exchange, API keys, live trading, real orders, leverage, shorting.
+  - File references and metadata strings are not traversed, opened, followed, validated, or executed.
+  - Referenced artifact files are not read.
+  - Human review guide is advisory-only and not gating.
+  - No action commands are emitted.
+  - No release/deployment checklist semantics.
+  - No Web UI, dashboard, database persistence, server/API/auth.
+  - No database, event store, scheduler, routing layer, indexer, crawler, runtime registry, task runner, or feedback layer.
+
+- **Next:**
+  - MVP-21 planning, not started.
+
+---
+
 ## MVP-19 — Local Research Archive Manifest (Complete)
 
 **Version:** 0.18.0-dev → 0.19.0-dev.
