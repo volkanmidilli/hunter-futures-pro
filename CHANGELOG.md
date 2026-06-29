@@ -2,6 +2,64 @@
 
 All important project changes will be recorded in this file.
 
+## MVP-18 — Local Research Handoff Packet (Complete)
+
+**Version:** 0.17.0-dev → 0.18.0-dev.
+
+**SPEC-019:** `specs/SPEC-019-Local-Research-Handoff-Packet.md` — approved with no critical issues.
+
+**Commit:** `TBD` — feat: complete MVP-18 local research handoff packet.
+
+- **MVP-18 Step 1 — Research Handoff Models and Engine (Complete)**
+  - `src/hunter/research_handoff/__init__.py` — public API exports.
+  - `src/hunter/research_handoff/models.py` — frozen handoff dataclasses, enums, 32 reason codes, forbidden handoff content detection, `HandoffConfig`, `HandoffSafetyFlags`, `HandoffPacketKind`, `HandoffState`, `HandoffSection`, `HandoffSummary`, `HandoffDataQuality`, `ResearchHandoffPacket`.
+  - `src/hunter/research_handoff/engine.py` — in-memory handoff engine functions: `has_unsafe_handoff_content`, `build_handoff_safety_flags`, `build_handoff_section`, `build_handoff_summary`, `build_handoff_data_quality`, `build_research_handoff_packet`.
+  - `tests/test_research_handoff/test_models.py` — model tests.
+  - `tests/test_research_handoff/test_engine.py` — engine tests.
+
+- **MVP-18 Step 2 — Research Handoff Writer (Complete)**
+  - `src/hunter/research_handoff/writer.py` — JSON/Markdown serialization, atomic file writing.
+  - `src/hunter/research_handoff/__init__.py` — updated with writer exports.
+  - `tests/test_research_handoff/test_writer.py` — writer tests.
+  - Default JSON path: `data/research_handoff/latest_research_handoff_packet.json`.
+  - Default Markdown path: `reports/research_handoff/latest_research_handoff_packet.md`.
+  - `research_handoff_packet_to_dict()` — deterministic JSON-safe serialization.
+  - `research_handoff_packet_to_markdown()` — human-readable Markdown with explicit safety notice.
+  - `atomic_write_json_research_handoff_packet()` / `atomic_write_markdown_research_handoff_packet()` — atomic writes with temp file + fsync + os.replace.
+  - `write_research_handoff_packet()` — writes both JSON and Markdown, returns paths.
+
+- **MVP-18 Step 3 — Research Handoff Integration Tests (Complete)**
+  - `tests/test_research_handoff/test_integration.py` — 25 integration tests.
+  - End-to-end flows: build → serialize → write → validate, READY packet, WARN packet for stale artifacts, BLOCK packet for blocked/missing/unresolved-blocker sections, UNKNOWN handling, quality gate verdict extraction, deterministic section ordering, deterministic `packet_id` and `generated_at`, JSON round-trip, Markdown safety notice, Markdown sections as plain text, file references as plain strings, no production path writes, no network calls, no trading logic, no execution feedback, no Freqtrade/Binance/exchange/live/leverage/shorting references.
+  - **Z.ai Step 3 Review:** APPROVED. No critical issues found.
+
+- **MVP-18 Step 4 — Final Validation and Version Bump (Complete)**
+  - Verdict: PASS. No defects found.
+  - Version bumped to 0.18.0-dev.
+  - All safety invariants verified.
+
+- **Tests:**
+  - 146 research_handoff tests total.
+  - **Full suite: 3600 tests passing, 1 skipped** using `pytest --import-mode=importlib`.
+
+- **Safety:**
+  - Research handoff packet is a human-audit / contractor-handoff artifact only.
+  - Not a trading signal. Not a trade approval.
+  - Not execution readiness. Not strategy readiness.
+  - Not release/deployment approval. Not transaction permission.
+  - Must not be consumed by execution, strategy, Freqtrade shell, order, exchange, or any MVP execution path.
+  - No handoff feedback into execution paths.
+  - No report/operator/index/search/bundle/chronicle/digest/quality-gate/handoff feedback into execution paths.
+  - No Binance, exchange, API keys, live trading, real orders, leverage, shorting.
+  - File references and metadata strings are not traversed, opened, followed, validated, or executed.
+  - No Web UI, dashboard, database persistence, server/API/auth.
+  - No database, event store, scheduler, routing layer, or feedback layer.
+
+- **Next:**
+  - MVP-19 planning, not started.
+
+---
+
 ## MVP-17 — Local Research Quality Gate / Audit Readiness (Complete)
 
 **Version:** 0.16.0-dev → 0.17.0-dev.

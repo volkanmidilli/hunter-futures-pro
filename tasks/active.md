@@ -2,13 +2,15 @@
 
 ## Current Task
 
-MVP-18 planning, not started.
+MVP-19 planning, not started.
 
 ## Status
 
-MVP-18 planning — not started. No SPEC drafted yet. Requires human approval before any implementation.
+MVP-19 planning — not started. No SPEC drafted yet. Requires human approval before any implementation.
 
-MVP-17 is complete and committed. SPEC-018 approved with one minor source defect found and fixed before Step 4. All MVP-17 steps completed successfully. Version 0.17.0-dev. Full test suite: 3454 tests passing, 1 skipped using `pytest --import-mode=importlib`. Current active task: MVP-18 planning, not started. No SPEC drafted yet. Requires human approval before any implementation.
+MVP-18 is complete and committed. SPEC-019 approved with no critical issues. All MVP-18 steps completed successfully. Version 0.18.0-dev. Full test suite: 3600 tests passing, 1 skipped using `pytest --import-mode=importlib`. Current active task: MVP-19 planning, not started. No SPEC drafted yet. Requires human approval before any implementation.
+
+MVP-17 is complete and committed. SPEC-018 approved with one minor source defect found and fixed before Step 4. All MVP-17 steps completed successfully. Version 0.17.0-dev. Full test suite: 3454 tests passing, 1 skipped using `pytest --import-mode=importlib`.
 
 MVP-16 is complete and committed. SPEC-017 approved with no critical issues. All MVP-16 steps completed successfully. Version 0.16.0-dev. Full test suite: 3302 tests passing, 1 skipped using `pytest --import-mode=importlib`.
 
@@ -55,18 +57,18 @@ MVP-14 Step 4 — Final Review and Version Bump (Complete).
 
 ## Scope
 
-MVP-18 planning, not started.
+MVP-19 planning, not started.
 - No SPEC drafted yet. Requires human approval before any implementation.
-- No source code changes until MVP-18 planning approved.
+- No source code changes until MVP-19 planning approved.
 
 ### Allowed
 - Planning documents, discussion, SPEC drafting (outside repo or in docs/ if needed).
-- No source code changes until MVP-17 planning approved.
+- No source code changes until MVP-19 planning approved.
 
 ### Not Allowed
 - No changes to existing source code.
 - No changes to existing tests.
-- No config YAML, no JSON schema, no Freqtrade strategy class, no freqtrade import, no Freqtrade runtime connection, no Binance, no real exchange, no API keys, no live trading, no real orders, no leverage, no shorting, no real entry/exit execution logic, no production data reads/writes, no report feedback into execution paths, no operator feedback into execution paths, no index feedback into execution paths, no search feedback into execution paths, no bundle feedback into execution paths, no chronicle feedback into execution paths, no digest feedback into execution paths, no Web UI, no dashboard, no database persistence.
+- No config YAML, no JSON schema, no Freqtrade strategy class, no freqtrade import, no Freqtrade runtime connection, no Binance, no real exchange, no API keys, no live trading, no real orders, no leverage, no shorting, no real entry/exit execution logic, no production data reads/writes, no report feedback into execution paths, no operator feedback into execution paths, no index feedback into execution paths, no search feedback into execution paths, no bundle feedback into execution paths, no chronicle feedback into execution paths, no digest feedback into execution paths, no quality gate feedback into execution paths, no handoff feedback into execution paths, no Web UI, no dashboard, no database persistence.
 - File references and metadata strings remain local strings only and must not be traversed/opened/followed/validated/executed.
 
 ## Previous Task
@@ -166,10 +168,16 @@ MVP-15 Step 4 — Final validation and version bump (Complete).
 - [x] MVP-17 pre-Step 4 source fix complete: `_is_blocking_reason` aligned with `QUALITY_GATE_BLOCKING_REASON_CODES`.
 - [x] MVP-17 Step 4 complete: final validation passed, version bumped to 0.17.0-dev.
 - [x] MVP-17 complete.
-- [ ] MVP-18 planning: not started. No SPEC drafted yet. Requires human approval before any implementation.
+- [x] MVP-18 Step 1 complete: research handoff models and engine implemented.
+- [x] MVP-18 Step 2 complete: research handoff writer implemented.
+- [x] MVP-18 Step 3 complete: research handoff integration tests implemented.
+- [x] MVP-18 Step 3 Z.ai review: APPROVED.
+- [x] MVP-18 Step 4 complete: final validation passed, version bumped to 0.18.0-dev.
+- [x] MVP-18 complete.
+- [ ] MVP-19 planning: not started. No SPEC drafted yet. Requires human approval before any implementation.
 
 ## Next Step
 
-MVP-18 planning, not started. No SPEC drafted yet. Requires human approval before any implementation.
+MVP-19 planning, not started. No SPEC drafted yet. Requires human approval before any implementation.
 
-Future research bundle search engine, operator workflow UI, or cross-reference validation may be considered only in a future SPEC, but is not implemented yet.
+Future research bundle search engine, operator workflow UI, cross-reference validation, or handoff packet consumers may be considered only in a future SPEC, but is not implemented yet.
