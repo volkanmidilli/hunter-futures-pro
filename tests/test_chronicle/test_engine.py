@@ -132,8 +132,8 @@ class TestBuildChronicleEntryFromObservation:
         report = self._observation(generated_at)
         entry = build_chronicle_entry_from_observation(report)
         assert entry.artifact_type is ArtifactType.OBSERVATION
-        assert entry.trace_id == f"observation:2025-01-01T12:00:00:1.0"
-        assert entry.entry_id == f"observation:{entry.trace_id}:2025-01-01T12:00:00"
+        assert entry.trace_id == f"observation:2025-01-01T12:00:00.000000:1.0"
+        assert entry.entry_id == f"observation:{entry.trace_id}:2025-01-01T12:00:00.000000"
         assert entry.state == "READY"
         assert entry.version == "1.0"
         assert entry.entry_count == 1
@@ -154,7 +154,7 @@ class TestBuildChronicleEntryFromObservation:
         }
         entry = build_chronicle_entry_from_observation(report_dict)
         assert entry.artifact_type is ArtifactType.OBSERVATION
-        assert entry.trace_id == "observation:2025-01-01T12:00:00:1.0"
+        assert entry.trace_id == "observation:2025-01-01T12:00:00.000000:1.0"
 
     def test_missing_generated_at(self) -> None:
         with pytest.raises(ValueError, match="MISSING_TRACE_ID"):
@@ -162,7 +162,7 @@ class TestBuildChronicleEntryFromObservation:
 
     def test_naive_generated_at(self) -> None:
         naive = datetime(2025, 1, 1, 12, 0, 0)
-        with pytest.raises(ValueError, match="MISSING_TRACE_ID"):
+        with pytest.raises(ValueError, match="INVALID_TIMESTAMP"):
             build_chronicle_entry_from_observation({"generated_at": naive, "version": "1.0"})
 
     def test_missing_version(self) -> None:
@@ -286,7 +286,7 @@ class TestBuildChronicleEntryFromReview:
         audit = self._audit_record(generated_at)
         entry = build_chronicle_entry_from_review(audit)
         assert entry.artifact_type is ArtifactType.REVIEW
-        assert entry.trace_id == f"review-audit:2025-01-01T12:00:00:1.0"
+        assert entry.trace_id == f"review-audit:2025-01-01T12:00:00.000000:1.0"
         assert entry.state == "READY"
         assert entry.version == "1.0"
         assert entry.entry_count == 1
@@ -298,6 +298,7 @@ class TestBuildChronicleEntryFromReview:
             "generated_at": generated_at,
             "audit_state": ReviewState.READY,
             "records": (),
+            "version": "1.0",
             "reason_codes": ("READY",),
         }
         entry = build_chronicle_entry_from_review(audit_dict)
@@ -453,7 +454,7 @@ class TestBuildChronicleEntryFromIndex:
         index = self._index(generated_at)
         entry = build_chronicle_entry_from_index(index)
         assert entry.artifact_type is ArtifactType.INDEX
-        assert entry.trace_id == f"index:2025-01-01T12:00:00:1.0"
+        assert entry.trace_id == f"index:2025-01-01T12:00:00.000000:1.0"
         assert entry.state == "READY"
         assert entry.entry_count == 1
 
@@ -507,7 +508,7 @@ class TestBuildChronicleEntryFromSearch:
         search = self._search_result(generated_at)
         entry = build_chronicle_entry_from_search(search)
         assert entry.artifact_type is ArtifactType.SEARCH
-        assert entry.trace_id == f"search:2025-01-01T12:00:00:1.0"
+        assert entry.trace_id == f"search:2025-01-01T12:00:00.000000:1.0"
         assert entry.state == "READY"
         assert entry.entry_count == 0
 
@@ -585,7 +586,7 @@ class TestBuildChronicleEntryFromBundle:
         bundle = self._bundle(generated_at)
         entry = build_chronicle_entry_from_bundle(bundle)
         assert entry.artifact_type is ArtifactType.BUNDLE
-        assert entry.trace_id == f"bundle:2025-01-01T12:00:00:1.0"
+        assert entry.trace_id == f"bundle:2025-01-01T12:00:00.000000:1.0"
         assert entry.entry_count == 1
 
     def test_from_dict(self) -> None:
@@ -786,6 +787,33 @@ class TestBuildChronicleDataQuality:
         assert dq.orphan_observation_count == 1
         assert dq.orphan_review_count == 1
 
+    def test_orphan_zero_without_explicit_links(self) -> None:
+        """Without explicit related_trace_ids, orphan counts remain 0."""
+        t1 = datetime(2025, 1, 1, 12, 0, 0, tzinfo=timezone.utc)
+        obs_entry = ChronicleEntry(
+            entry_id="obs:e1:ts",
+            timestamp=t1,
+            artifact_type=ArtifactType.OBSERVATION,
+            trace_id="obs-trace",
+            state="READY",
+            version="1.0",
+        )
+        review_entry = ChronicleEntry(
+            entry_id="review:e2:ts",
+            timestamp=t1,
+            artifact_type=ArtifactType.REVIEW,
+            trace_id="review-trace",
+            state="READY",
+            version="1.0",
+        )
+        dq = build_chronicle_data_quality(
+            observations=("dummy",),
+            reviews=("dummy",),
+            entries=(obs_entry, review_entry),
+        )
+        assert dq.orphan_observation_count == 0
+        assert dq.orphan_review_count == 0
+
     def test_trace_completeness(self) -> None:
         t1 = datetime(2025, 1, 1, 12, 0, 0, tzinfo=timezone.utc)
         e1 = ChronicleEntry(
@@ -966,6 +994,18 @@ class TestBuildResearchChronicle:
         chronicle = build_research_chronicle(observations=({},))
         assert chronicle.chronicle_id == "blocked"
         assert chronicle.reason_codes == ("INVALID_OBSERVATION",)
+
+    def test_fail_closed_on_naive_observation(self) -> None:
+        obs = {"generated_at": datetime(2025, 1, 1, 12, 0, 0), "version": "1.0"}
+        chronicle = build_research_chronicle(observations=(obs,))
+        assert chronicle.chronicle_id == "blocked"
+        assert chronicle.reason_codes == ("INVALID_OBSERVATION",)
+
+    def test_fail_closed_on_unsupported_observation_version(self) -> None:
+        obs = {"generated_at": datetime(2025, 1, 1, 12, 0, 0, tzinfo=timezone.utc)}
+        chronicle = build_research_chronicle(observations=(obs,))
+        assert chronicle.chronicle_id == "blocked"
+        assert chronicle.reason_codes == ("UNSUPPORTED_OBSERVATION_VERSION",)
 
     def test_unsafe_content_blocked(self) -> None:
         obs = {"generated_at": datetime(2025, 1, 1, 12, 0, 0, tzinfo=timezone.utc), "version": "1.0", "notes": "enter_long"}

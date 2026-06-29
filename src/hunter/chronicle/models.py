@@ -13,6 +13,7 @@ from collections.abc import Mapping
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
 from enum import Enum
+from types import MappingProxyType
 from typing import Any
 
 
@@ -143,6 +144,7 @@ class ChronicleEntry:
         for rtid in self.related_trace_ids:
             if not isinstance(rtid, str) or not rtid:
                 raise ValueError("related_trace_ids must contain non-empty strings")
+        object.__setattr__(self, "metadata", MappingProxyType(dict(self.metadata)))
 
     @classmethod
     def blocked(
@@ -251,6 +253,11 @@ class ChronicleSummary:
                     raise ValueError("daily_counts inner keys must be non-empty strings")
                 if v < 0:
                     raise ValueError(f"daily_counts value for '{k}' must be >= 0")
+        _daily = {k: MappingProxyType(dict(v)) for k, v in self.daily_counts.items()}
+        object.__setattr__(self, "reason_code_counts", MappingProxyType(dict(self.reason_code_counts)))
+        object.__setattr__(self, "tag_counts", MappingProxyType(dict(self.tag_counts)))
+        object.__setattr__(self, "actor_counts", MappingProxyType(dict(self.actor_counts)))
+        object.__setattr__(self, "daily_counts", MappingProxyType(dict(_daily)))
 
 
 @dataclass(frozen=True)

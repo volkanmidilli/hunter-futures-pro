@@ -14,14 +14,11 @@ from typing import Any
 
 from hunter.chronicle.models import (
     ArtifactType,
-    CHRONICLE_BLOCKING_REASON_CODES,
-    CHRONICLE_TRACKING_REASON_CODES,
     CHRONICLE_VERSION,
     ChronicleDataQuality,
     ChronicleEntry,
     ChronicleSafetyFlags,
     ChronicleSummary,
-    FORBIDDEN_CHRONICLE_TERMS,
     ResearchChronicle,
     _has_unsafe_chronicle_content,
 )
@@ -40,8 +37,8 @@ def _get_attr(obj: Any, name: str, default: Any = None) -> Any:
 
 
 def _iso_str(dt: datetime) -> str:
-    """ISO format string for a datetime."""
-    return dt.strftime("%Y-%m-%dT%H:%M:%S")
+    """ISO format string for a datetime including microseconds for uniqueness."""
+    return dt.strftime("%Y-%m-%dT%H:%M:%S.%f")
 
 
 def _get_timestamp(obj: Any) -> datetime | None:
@@ -107,12 +104,18 @@ def build_chronicle_entry_from_observation(report: Any) -> ChronicleEntry:
 
         trace_id = "observation:{generated_at_iso}:{version}"
 
-    If generated_at is missing or invalid, raises ValueError.
-    If version is missing, raises ValueError.
+    If generated_at is missing, raises ValueError with MISSING_TRACE_ID.
+    If generated_at is naive (not timezone-aware), raises ValueError with INVALID_TIMESTAMP.
+    If version is missing, raises ValueError with UNSUPPORTED_OBSERVATION_VERSION.
     """
-    generated_at = _get_timestamp(report)
-    if generated_at is None:
+    raw_generated_at = _get_attr(report, "generated_at")
+    if raw_generated_at is None:
         raise ValueError("MISSING_TRACE_ID")
+    if isinstance(raw_generated_at, datetime) and raw_generated_at.tzinfo is None:
+        raise ValueError("INVALID_TIMESTAMP")
+    generated_at = raw_generated_at if isinstance(raw_generated_at, datetime) else _get_timestamp(report)
+    if generated_at is None:
+        raise ValueError("INVALID_TIMESTAMP")
     version = _get_version(report)
     if version is None:
         raise ValueError("UNSUPPORTED_OBSERVATION_VERSION")
@@ -158,12 +161,16 @@ def build_chronicle_entry_from_review(
         trace_id = "review-audit:{generated_at_iso}:{version}"
         timestamp = audit_record.generated_at
         state = audit_record.audit_state
-        version = "1.0"
+        version = audit_record.version (defaults to "1.0")
+
+    Raises ValueError with INVALID_TIMESTAMP if generated_at is missing/naive.
     """
     generated_at = _get_timestamp(audit_record)
     if generated_at is None:
         raise ValueError("INVALID_TIMESTAMP")
-    version = "1.0"
+    version = _get_version(audit_record)
+    if version is None:
+        version = "1.0"
     trace_id = f"review-audit:{_iso_str(generated_at)}:{version}"
     state = _get_state(audit_record, "UNKNOWN")
     entry_id = f"{ArtifactType.REVIEW.value}:{trace_id}:{_iso_str(generated_at)}"
@@ -195,6 +202,8 @@ def build_chronicle_entry_from_index(index: Any) -> ChronicleEntry:
     """Build a ChronicleEntry from a ReviewIndex.
 
     The entry_count field is derived as len(index.entries).
+
+    Raises ValueError with INVALID_TIMESTAMP if generated_at is missing/naive.
     """
     generated_at = _get_timestamp(index)
     if generated_at is None:
@@ -224,7 +233,10 @@ def build_chronicle_entry_from_index(index: Any) -> ChronicleEntry:
 
 
 def build_chronicle_entry_from_search(search_result: Any) -> ChronicleEntry:
-    """Build a ChronicleEntry from a SearchResult."""
+    """Build a ChronicleEntry from a SearchResult.
+
+    Raises ValueError with INVALID_TIMESTAMP if generated_at is missing/naive.
+    """
     generated_at = _get_timestamp(search_result)
     if generated_at is None:
         raise ValueError("INVALID_TIMESTAMP")
@@ -260,7 +272,10 @@ def build_chronicle_entry_from_search(search_result: Any) -> ChronicleEntry:
 
 
 def build_chronicle_entry_from_bundle(bundle: Any) -> ChronicleEntry:
-    """Build a ChronicleEntry from a ResearchBundle."""
+    """Build a ChronicleEntry from a ResearchBundle.
+
+    Raises ValueError with INVALID_TIMESTAMP if generated_at is missing/naive.
+    """
     generated_at = _get_timestamp(bundle)
     if generated_at is None:
         raise ValueError("INVALID_TIMESTAMP")
@@ -402,29 +417,31 @@ def build_chronicle_data_quality(
     has_search = len(searches) > 0
     has_bundle = len(bundles) > 0
 
-    # Orphan detection: entries that reference a trace_id not seen elsewhere
+    # Orphan detection: only count when at least one entry has explicit
+    # related_trace_ids. Without explicit cross-links, orphan counts remain 0.
     all_trace_ids: set[str] = set()
     for entry in entries:
         all_trace_ids.add(entry.trace_id)
 
+    has_any_related = any(e.related_trace_ids for e in entries)
     orphan_observation_count = 0
     orphan_review_count = 0
-    for entry in entries:
-        if entry.artifact_type is ArtifactType.OBSERVATION:
-            # An observation is orphan if no other entry references it
-            has_related = any(
-                e.trace_id != entry.trace_id and entry.trace_id in e.related_trace_ids
-                for e in entries
-            )
-            if not has_related and len(all_trace_ids) > 1:
-                orphan_observation_count += 1
-        elif entry.artifact_type is ArtifactType.REVIEW:
-            has_related = any(
-                e.trace_id != entry.trace_id and entry.trace_id in e.related_trace_ids
-                for e in entries
-            )
-            if not has_related and len(all_trace_ids) > 1:
-                orphan_review_count += 1
+    if has_any_related:
+        for entry in entries:
+            if entry.artifact_type is ArtifactType.OBSERVATION:
+                has_related = any(
+                    e.trace_id != entry.trace_id and entry.trace_id in e.related_trace_ids
+                    for e in entries
+                )
+                if not has_related:
+                    orphan_observation_count += 1
+            elif entry.artifact_type is ArtifactType.REVIEW:
+                has_related = any(
+                    e.trace_id != entry.trace_id and entry.trace_id in e.related_trace_ids
+                    for e in entries
+                )
+                if not has_related:
+                    orphan_review_count += 1
 
     # Trace completeness: how many entries have at least one related entry
     entries_with_related = 0
@@ -452,9 +469,6 @@ def build_chronicle_data_quality(
         if age > stale_threshold_seconds:
             stale_entry_count += 1
 
-    # Validation errors: collect errors from entry building
-    validation_errors: list[str] = []
-
     return ChronicleDataQuality(
         has_observations=has_observations,
         has_reviews=has_reviews,
@@ -466,7 +480,7 @@ def build_chronicle_data_quality(
         trace_completeness_pct=trace_completeness_pct,
         gap_count=gap_count,
         stale_entry_count=stale_entry_count,
-        validation_errors=tuple(validation_errors),
+        validation_errors=(),
     )
 
 
@@ -513,43 +527,53 @@ def build_research_chronicle(
                     if has_unsafe_chronicle_content(key):
                         return ResearchChronicle.blocked("UNSAFE_CHRONICLE_CONTENT")
 
-    # Build entries from each artifact type
+    # Build entries from each artifact type. Preserve distinct UNSUPPORTED_*_VERSION
+    # reason codes instead of collapsing them into INVALID_*.
     entries: list[ChronicleEntry] = []
-    validation_errors: list[str] = []
 
     for obs in observations:
         try:
             entries.append(build_chronicle_entry_from_observation(obs))
         except ValueError as e:
-            validation_errors.append(f"INVALID_OBSERVATION: {e}")
+            msg = str(e)
+            if msg == "UNSUPPORTED_OBSERVATION_VERSION":
+                return ResearchChronicle.blocked("UNSUPPORTED_OBSERVATION_VERSION")
             return ResearchChronicle.blocked("INVALID_OBSERVATION")
 
     for rev in reviews:
         try:
             entries.append(build_chronicle_entry_from_review(rev))
         except ValueError as e:
-            validation_errors.append(f"INVALID_REVIEW: {e}")
+            msg = str(e)
+            if msg == "UNSUPPORTED_REVIEW_VERSION":
+                return ResearchChronicle.blocked("UNSUPPORTED_REVIEW_VERSION")
             return ResearchChronicle.blocked("INVALID_REVIEW")
 
     for idx in indices:
         try:
             entries.append(build_chronicle_entry_from_index(idx))
         except ValueError as e:
-            validation_errors.append(f"INVALID_INDEX: {e}")
+            msg = str(e)
+            if msg == "UNSUPPORTED_INDEX_VERSION":
+                return ResearchChronicle.blocked("UNSUPPORTED_INDEX_VERSION")
             return ResearchChronicle.blocked("INVALID_INDEX")
 
     for srch in searches:
         try:
             entries.append(build_chronicle_entry_from_search(srch))
         except ValueError as e:
-            validation_errors.append(f"INVALID_SEARCH: {e}")
+            msg = str(e)
+            if msg == "UNSUPPORTED_SEARCH_VERSION":
+                return ResearchChronicle.blocked("UNSUPPORTED_SEARCH_VERSION")
             return ResearchChronicle.blocked("INVALID_SEARCH")
 
     for bndl in bundles:
         try:
             entries.append(build_chronicle_entry_from_bundle(bndl))
         except ValueError as e:
-            validation_errors.append(f"INVALID_BUNDLE: {e}")
+            msg = str(e)
+            if msg == "UNSUPPORTED_BUNDLE_VERSION":
+                return ResearchChronicle.blocked("UNSUPPORTED_BUNDLE_VERSION")
             return ResearchChronicle.blocked("INVALID_BUNDLE")
 
     # Sort by deterministic sort key
