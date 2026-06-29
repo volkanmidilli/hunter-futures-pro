@@ -536,6 +536,64 @@ class TestBuildResearchQualityGate:
         assert "not execution approval" in gate.handoff_notes
         assert "not strategy approval" in gate.handoff_notes
 
+    def test_unresolved_blockers_in_gate_reason_codes(self) -> None:
+        gate = build_research_quality_gate(
+            config=QualityGateConfig(generated_at=_now()),
+            observation_artifact=_make_artifact("READY", reason_codes=("MISSING_REVIEW",)),
+            review_artifact=_make_artifact("READY"),
+            index_artifact=_make_artifact("READY"),
+            search_artifact=_make_artifact("READY"),
+            bundle_artifact=_make_artifact("READY"),
+            chronicle_artifact=_make_artifact("READY"),
+            digest_artifact=_make_artifact("READY"),
+        )
+        assert gate.verdict is QualityGateVerdict.BLOCK
+        assert "UNRESOLVED_BLOCKERS" in gate.reason_codes
+        observation_check = next(
+            check for check in gate.checks if check.check_kind is QualityGateCheckKind.OBSERVATION
+        )
+        assert observation_check.state == "BLOCK"
+        assert "UNRESOLVED_BLOCKERS" in observation_check.reason_codes
+
+    def test_stale_artifact_non_blocking(self) -> None:
+        stale = _now() - timedelta(hours=2)
+        gate = build_research_quality_gate(
+            config=QualityGateConfig(generated_at=_now()),
+            observation_artifact=_make_artifact("READY", generated_at=stale),
+            review_artifact=_make_artifact("READY"),
+            index_artifact=_make_artifact("READY"),
+            search_artifact=_make_artifact("READY"),
+            bundle_artifact=_make_artifact("READY"),
+            chronicle_artifact=_make_artifact("READY"),
+            digest_artifact=_make_artifact("READY"),
+        )
+        assert gate.verdict is QualityGateVerdict.WARN
+        assert "STALE_ARTIFACT" not in gate.reason_codes
+        observation_check = next(
+            check for check in gate.checks if check.check_kind is QualityGateCheckKind.OBSERVATION
+        )
+        assert observation_check.state == "WARN"
+        assert "STALE_ARTIFACT" in observation_check.reason_codes
+
+    def test_verdict_correctness_after_blocking_reason_fix(self) -> None:
+        # Mix of non-blocking stale and blocking unresolved blockers must still be BLOCK.
+        stale = _now() - timedelta(hours=2)
+        gate = build_research_quality_gate(
+            config=QualityGateConfig(generated_at=_now()),
+            observation_artifact=_make_artifact(
+                "READY", reason_codes=("MISSING_REVIEW",), generated_at=stale
+            ),
+            review_artifact=_make_artifact("READY"),
+            index_artifact=_make_artifact("READY"),
+            search_artifact=_make_artifact("READY"),
+            bundle_artifact=_make_artifact("READY"),
+            chronicle_artifact=_make_artifact("READY"),
+            digest_artifact=_make_artifact("READY"),
+        )
+        assert gate.verdict is QualityGateVerdict.BLOCK
+        assert "UNRESOLVED_BLOCKERS" in gate.reason_codes
+        assert "STALE_ARTIFACT" not in gate.reason_codes
+
 
 # ---------------------------------------------------------------------------
 # Safety invariants

@@ -35,7 +35,6 @@ from hunter.research_quality_gate.models import (
 
 _VALID_OUTPUT_FORMATS = ("json", "markdown", "both")
 _VALID_ARTIFACT_STATES = ("DISABLED", "READY", "BLOCKED", "UNKNOWN")
-_BLOCKING_REASON_PREFIXES = ("MISSING_", "BLOCKED_", "UNKNOWN_", "UNSAFE_")
 
 # Map check kinds to the attribute/key names used by the corresponding MVP artifact.
 _STATE_ATTR_NAMES: dict[QualityGateCheckKind, tuple[str, ...]] = {
@@ -110,18 +109,18 @@ def _is_recognized_state(raw: str | None) -> bool:
 
 
 def _is_blocking_reason(reason: str) -> bool:
-    """Return True if reason indicates a blocking condition."""
+    """Return True if reason indicates a blocking condition.
+
+    Uses the canonical QUALITY_GATE_BLOCKING_REASON_CODES from models.py.
+    STALE_ARTIFACT is explicitly non-blocking per SPEC-018 §3.3.
+    EMPTY_GATE remains fail-closed even though the canonical constant excludes it.
+    """
     upper = reason.upper()
-    if upper.startswith(_BLOCKING_REASON_PREFIXES):
+    if upper == "STALE_ARTIFACT":
+        return False
+    if upper == "EMPTY_GATE":
         return True
-    if upper in {
-        "QUALITY_GATE_ERROR",
-        "EMPTY_GATE",
-        "INVALID_CONFIG",
-        "UNSAFE_CONFIG",
-    }:
-        return True
-    return False
+    return upper in QUALITY_GATE_BLOCKING_REASON_CODES
 
 
 def _get_attr_or_item(obj: Any, names: tuple[str, ...], default: Any = None) -> Any:
