@@ -2,6 +2,62 @@
 
 All important project changes will be recorded in this file.
 
+## MVP-15 — Local Research Chronicle / Audit Timeline (Complete)
+
+**Version:** 0.14.0-dev → 0.15.0-dev.
+
+**SPEC-016:** `specs/SPEC-016-Local-Research-Chronicle-Audit-Timeline.md` — approved with notes and polished.
+
+**Commit:** `TBD` — feat: complete MVP-15 local research chronicle / audit timeline.
+
+- **MVP-15 Step 1 — Chronicle Models and Engine (Complete)**
+  - `src/hunter/chronicle/__init__.py` — public API exports.
+  - `src/hunter/chronicle/models.py` — frozen chronicle dataclasses, enums, 12 reason codes, forbidden chronicle content detection, `ArtifactType`, `ChronicleEntry`, `ChronicleSummary`, `ChronicleDataQuality`, `ChronicleSafetyFlags`, `ResearchChronicle`.
+  - `src/hunter/chronicle/engine.py` — in-memory chronicle engine functions: `has_unsafe_chronicle_content`, `build_chronicle_safety_flags`, `build_chronicle_entry_*` builders, `build_chronicle_summary`, `build_chronicle_data_quality`, `build_research_chronicle`.
+  - `tests/test_chronicle/test_models.py` — model tests.
+  - `tests/test_chronicle/test_engine.py` — engine tests.
+
+- **MVP-15 Step 2 — Chronicle Writer (Complete)**
+  - `src/hunter/chronicle/writer.py` — JSON/Markdown serialization, atomic file writing.
+  - `src/hunter/chronicle/__init__.py` — updated with writer exports.
+  - `tests/test_chronicle/test_writer.py` — writer tests.
+  - Default JSON path: `data/chronicle/latest_research_chronicle.json`.
+  - Default Markdown path: `reports/chronicle/latest_research_chronicle.md`.
+  - `research_chronicle_to_dict()` — deterministic JSON-safe serialization.
+  - `research_chronicle_to_markdown()` — human-readable Markdown with explicit safety notice.
+  - `atomic_write_json_research_chronicle()` / `atomic_write_markdown_research_chronicle()` — atomic writes with temp file + fsync + os.replace.
+  - `write_research_chronicle()` — writes both JSON and Markdown, returns paths.
+
+- **MVP-15 Step 3 — Chronicle Integration Tests (Complete)**
+  - `tests/test_chronicle/test_integration.py` — integration tests.
+  - End-to-end flows: build → serialize → write → validate, empty chronicle, unsafe content, trace linkage advisory only, deterministic summary, deterministic data quality, deterministic chronicle ID, JSON round-trip, markdown safety notice, artifact references as plain strings, no file reads from references, no secrets in output, no executable instructions, no network calls, no trading logic, no execution feedback, no Freqtrade/Binance/exchange/live/leverage/shorting references.
+  - **Z.ai Step 3 Review:** APPROVED. No critical issues found.
+
+- **MVP-15 Step 4 — Final Validation and Version Bump (Complete)**
+  - Verdict: PASS. No defects found.
+  - Version bumped to 0.15.0-dev.
+  - All safety invariants verified.
+
+- **Tests:**
+  - 239 chronicle tests total. 1 skipped.
+  - **Full suite: 3161 tests passing, 1 skipped** using `pytest --import-mode=importlib`.
+
+- **Safety:**
+  - Research chronicle is a human-audit artifact only.
+  - Not a trading signal. Not a trade approval.
+  - Must not be consumed by execution, strategy, Freqtrade shell, order, exchange, or any MVP execution path.
+  - Trace linkage is advisory only.
+  - No database, event store, scheduler, routing layer, or feedback layer.
+  - No Binance, exchange, API keys, live trading, real orders, leverage, shorting.
+  - No report/operator/index/search/bundle/chronicle feedback into execution paths.
+  - File references and metadata strings are not traversed, opened, followed, validated, or executed.
+  - No Web UI, dashboard, database persistence, server/API/auth.
+
+- **Next:**
+  - MVP-16 planning, not started.
+
+---
+
 ## MVP-12 — Local Review Index (Complete)
 
 **Version:** 0.11.0-dev → 0.12.0-dev.

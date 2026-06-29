@@ -2,13 +2,15 @@
 
 ## Current Task
 
-MVP-15 planning, not started.
+MVP-16 planning, not started.
 
 ## Status
 
-MVP-15 planning — SPEC-016 drafted for Local Research Chronicle / Audit Timeline. Not started. No implementation until SPEC approved by human.
+MVP-16 planning — not started. No SPEC drafted yet. Requires human approval before any implementation.
 
-MVP-14 is complete and committed. SPEC-015 approved with no critical issues. All MVP-14 steps completed successfully. Version 0.14.0-dev. Full test suite: 2922 tests passing, 1 skipped using `pytest --import-mode=importlib`. Current active task: MVP-15 planning, not started. SPEC-016 drafted. Requires human approval before any implementation.
+MVP-15 is complete and committed. SPEC-016 approved with notes and polished. All MVP-15 steps completed successfully. Version 0.15.0-dev. Full test suite: 3161 tests passing, 1 skipped using `pytest --import-mode=importlib`. Current active task: MVP-16 planning, not started. No SPEC drafted yet. Requires human approval before any implementation.
+
+MVP-14 is complete and committed. SPEC-015 approved with no critical issues. All MVP-14 steps completed successfully. Version 0.14.0-dev. Full test suite: 2922 tests passing, 1 skipped using `pytest --import-mode=importlib`.
 
 MVP-13 is complete and committed.
 - `src/hunter/review_search/models.py` — frozen search dataclasses, 12 reason codes, 8 search output safety flags, forbidden search content detection.
@@ -49,26 +51,28 @@ MVP-14 Step 4 — Final Review and Version Bump (Complete).
 
 ## Scope
 
-MVP-15 planning, not started.
+MVP-16 planning, not started.
 - No SPEC drafted yet. Requires human approval before any implementation.
-- No source code changes until SPEC approved and planning complete.
+- No source code changes until MVP-16 planning approved.
 
 ### Allowed
 - Planning documents, discussion, SPEC drafting (outside repo or in docs/ if needed).
-- No source code changes until MVP-15 planning approved.
+- No source code changes until MVP-16 planning approved.
 
 ### Not Allowed
 - No changes to existing source code.
 - No changes to existing tests.
-- No config YAML, no JSON schema, no Freqtrade strategy class, no freqtrade import, no Freqtrade runtime connection, no Binance, no real exchange, no API keys, no live trading, no real orders, no leverage, no shorting, no real entry/exit execution logic, no production data reads/writes, no report feedback into execution paths, no operator feedback into execution paths, no index feedback into execution paths, no search feedback into execution paths, no bundle feedback into execution paths, no Web UI, no dashboard, no database persistence.
-- File references remain local strings only and must not be traversed/opened/followed/validated/executed.
+- No config YAML, no JSON schema, no Freqtrade strategy class, no freqtrade import, no Freqtrade runtime connection, no Binance, no real exchange, no API keys, no live trading, no real orders, no leverage, no shorting, no real entry/exit execution logic, no production data reads/writes, no report feedback into execution paths, no operator feedback into execution paths, no index feedback into execution paths, no search feedback into execution paths, no bundle feedback into execution paths, no chronicle feedback into execution paths, no Web UI, no dashboard, no database persistence.
+- File references and metadata strings remain local strings only and must not be traversed/opened/followed/validated/executed.
 
 ## Previous Task
 
-MVP-13 Step 4 — Final validation and version bump (Complete).
-- Version bumped to 0.13.0-dev.
-- Full suite: 2728 tests passing, 1 skipped.
-- No source changes.
+MVP-15 Step 4 — Final validation and version bump (Complete).
+- Version bumped to 0.15.0-dev.
+- Full suite: 3161 tests passing, 1 skipped.
+- No source changes in Step 4.
+- All safety invariants verified.
+- MVP-15 complete.
 
 ## Definition of Done
 
@@ -129,10 +133,27 @@ MVP-13 Step 4 — Final validation and version bump (Complete).
 - [x] MVP-14 Step 4: final review and version bump, complete.
 - [x] Version bumped to 0.14.0-dev.
 - [x] Full suite 2922 tests pass, 1 skipped. No regressions.
-- [ ] MVP-15 planning: not started. No SPEC drafted yet. Requires human approval before any implementation.
+- [x] SPEC-016 drafted for MVP-15 planning.
+- [x] SPEC-016 reviewed and approved with notes.
+- [x] MVP-15 Step 1: chronicle models and engine, complete.
+- [x] Chronicle model tests pass.
+- [x] Chronicle engine tests pass.
+- [x] Full suite passes after Step 1, 1 skipped.
+- [x] MVP-15 Step 2: chronicle writer, complete.
+- [x] Chronicle writer tests pass.
+- [x] Full suite passes after Step 2, 1 skipped.
+- [x] MVP-15 Step 3: chronicle integration tests, complete.
+- [x] Chronicle integration tests pass.
+- [x] 239 chronicle tests total pass, 1 skipped.
+- [x] Full suite 3161 tests pass, 1 skipped.
+- [x] Z.ai Step 3 review: APPROVED.
+- [x] MVP-15 Step 4: final validation and version bump, complete.
+- [x] Version bumped to 0.15.0-dev.
+- [x] Full suite 3161 tests pass, 1 skipped. No regressions.
+- [ ] MVP-16 planning: not started. No SPEC drafted yet. Requires human approval before any implementation.
 
 ## Next Step
 
-MVP-15 planning, not started. No SPEC drafted yet. Requires human approval before any implementation.
+MVP-16 planning, not started. No SPEC drafted yet. Requires human approval before any implementation.
 
 Future research bundle search engine, operator workflow UI, or cross-reference validation may be considered only in a future SPEC, but is not implemented yet.

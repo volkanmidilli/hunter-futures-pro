@@ -6,13 +6,11 @@ Hunter Futures Pro
 
 ## Version
 
-0.14.0-dev
+0.15.0-dev
 
 ## Current Phase
 
-MVP-15 planning — SPEC-016 drafted for Local Research Chronicle / Audit Timeline. Not started. Requires human approval before implementation.
-
-MVP-14 is complete and committed. SPEC-015 for MVP-14 Local Research Bundle / Evidence Pack is complete and approved. Version 0.14.0-dev. Full test suite: 2922 tests passing, 1 skipped using `pytest --import-mode=importlib`. Next step: MVP-15 planning, not started. Research bundles are human-audit artifacts only, not trading signals, not trade approvals, and must not be consumed by execution, strategy, Freqtrade shell, order, exchange, or any MVP execution path. No bundle feedback into execution paths. File references remain local strings only and must not be traversed, opened, followed, validated, or executed. No Web UI, no dashboard, no database persistence, no config YAML, no JSON schema, no Freqtrade strategy class, no freqtrade import, no Binance, no real exchange, no API keys, no live trading, no real orders, no leverage, no shorting, no real entry/exit execution logic, no report feedback into execution paths, no operator feedback into execution paths, no index feedback into execution paths, no search feedback into execution paths, no bundle feedback into execution paths, no production data reads/writes.
+MVP-15 is complete and committed. SPEC-016 for MVP-15 Local Research Chronicle / Audit Timeline is complete and approved. Version 0.15.0-dev. Full test suite: 3161 tests passing, 1 skipped using `pytest --import-mode=importlib`. Next step: MVP-16 planning, not started. Research chronicle is a human-audit artifact only, not a trading signal, not a trade approval, and must not be consumed by execution, strategy, Freqtrade shell, order, exchange, or any MVP execution path. Trace linkage is advisory only. No chronicle feedback into execution paths. File references and metadata strings are not traversed, opened, followed, validated, or executed. No Web UI, no dashboard, no database persistence, no config YAML, no JSON schema, no Freqtrade strategy class, no freqtrade import, no Binance, no real exchange, no API keys, no live trading, no real orders, no leverage, no shorting, no real entry/exit execution logic, no report feedback into execution paths, no operator feedback into execution paths, no index feedback into execution paths, no search feedback into execution paths, no bundle feedback into execution paths, no chronicle feedback into execution paths, no production data reads/writes.
 
 ## Current Status
 
@@ -151,11 +149,26 @@ MVP-14 — Local Research Bundle / Evidence Pack is complete and committed.
 - Full suite: 2922 tests passing, 1 skipped using `pytest --import-mode=importlib`.
 - Z.ai Step 3 review: APPROVED. Engine `human_note_count` fix validated — counts items with non-empty notes (not just HUMAN_NOTE kind), aligning with SPEC-015 semantic definition.
 - Safety: human-audit only, no execution feedback, no trading signals, no file reference traversal.
-- Next step: MVP-15 planning, not started.
+
+MVP-15 — Local Research Chronicle / Audit Timeline is complete and committed.
+- SPEC-016: `specs/SPEC-016-Local-Research-Chronicle-Audit-Timeline.md` — approved with notes and polished.
+- `src/hunter/chronicle/__init__.py` — public API exports.
+- `src/hunter/chronicle/models.py` — frozen chronicle dataclasses, enums, 12 reason codes, forbidden chronicle content detection, ArtifactType, ChronicleEntry, ChronicleSummary, ChronicleDataQuality, ChronicleSafetyFlags, ResearchChronicle.
+- `src/hunter/chronicle/engine.py` — in-memory chronicle engine functions: has_unsafe_chronicle_content, build_chronicle_safety_flags, build_chronicle_entry_* builders, build_chronicle_summary, build_chronicle_data_quality, build_research_chronicle.
+- `src/hunter/chronicle/writer.py` — JSON/Markdown serialization, atomic file writing.
+- `src/hunter/chronicle/__init__.py` — updated with writer exports.
+- `tests/test_chronicle/test_models.py` — model tests.
+- `tests/test_chronicle/test_engine.py` — engine tests.
+- `tests/test_chronicle/test_writer.py` — writer tests.
+- `tests/test_chronicle/test_integration.py` — integration tests.
+- 239 chronicle tests total. 1 skipped.
+- Full suite: 3161 tests passing, 1 skipped using `pytest --import-mode=importlib`.
+- Z.ai Step 3 review: APPROVED. No critical issues found.
+- Safety: human-audit only, no execution feedback, no trading signals, trace linkage advisory only, no file reference traversal, no chronicle feedback into execution paths.
 
 ## Next Step
 
-MVP-15 planning, not started. No SPEC drafted yet. Requires human approval before any implementation.
+MVP-16 planning, not started. No SPEC drafted yet. Requires human approval before any implementation.
 
 ### Not Allowed Until Future SPEC
 - No config YAML.

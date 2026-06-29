@@ -1,5 +1,70 @@
 ---
 
+### MVP-15 Step 4 — Final Validation and Version Bump
+
+Date: 2026-06-29
+
+Agent: WrongStack
+
+Task: MVP-15 Step 4 — Final validation and version bump.
+
+Files modified:
+
+- `pyproject.toml` — version bumped from 0.14.0-dev to 0.15.0-dev.
+- `src/hunter/__init__.py` — version bumped from 0.14.0-dev to 0.15.0-dev.
+- `CHANGELOG.md` — added MVP-15 completion summary section.
+- `docs/handoff/CURRENT_STATE.md` — marked MVP-15 complete, version 0.15.0-dev, set MVP-16 planning as next.
+- `tasks/active.md` — marked MVP-15 Step 4 complete, set MVP-16 planning as next.
+- `tasks/agent-log.md` — this entry.
+
+Summary:
+
+Final validation of MVP-15 Local Research Chronicle / Audit Timeline. Full test suite passes with 3161 tests passing, 1 skipped. No regressions. Version bumped to 0.15.0-dev.
+
+MVP-15 is now complete with:
+- Step 1: Models and Engine (chronicle tests)
+- Step 2: Writer (chronicle writer tests)
+- Step 3: Integration Tests (chronicle integration tests)
+- Step 4: Final validation and version bump
+
+Total chronicle tests: 239. 1 skipped.
+Step 3 Z.ai review: APPROVED. No critical issues found.
+
+Safety:
+
+No source changes in Step 4.
+No config YAML.
+No JSON schema.
+No Freqtrade strategy class.
+No freqtrade import.
+No Freqtrade runtime connection.
+No Binance.
+No real exchange.
+No API keys.
+No live trading.
+No real orders.
+No leverage.
+No shorting.
+No real entry/exit execution logic.
+No report feedback into execution paths.
+No operator feedback into execution paths.
+No index feedback into execution paths.
+No search feedback into execution paths.
+No bundle feedback into execution paths.
+No chronicle feedback into execution paths.
+No Web UI.
+No dashboard.
+No database persistence.
+No database, event store, scheduler, routing layer, or feedback layer.
+File references and metadata strings are local strings only and are not traversed, opened, followed, validated, or executed.
+Trace linkage is advisory only.
+
+Next step:
+
+MVP-16 planning, not started. No SPEC drafted yet. Requires human approval before any implementation.
+
+---
+
 ### MVP-14 Step 4 — Final Validation and Version Bump
 
 Date: 2026-06-28
