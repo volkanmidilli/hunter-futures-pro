@@ -2,6 +2,76 @@
 
 All important project changes will be recorded in this file.
 
+## MVP-22 — Local Research Audit Closure Report (Complete)
+
+**Version:** 0.21.0-dev → 0.22.0-dev.
+
+**SPEC-023:** `specs/SPEC-023-Local-Research-Audit-Closure-Report.md` — approved with minor notes. No critical issues found.
+
+**Commit:** `TBD` — feat: complete MVP-22 local research audit closure report.
+
+- **MVP-22 Step 1 — Research Audit Closure Models and Engine (Complete)**
+  - `src/hunter/research_audit_closure/__init__.py` — public API exports.
+  - `src/hunter/research_audit_closure/models.py` — frozen closure dataclasses, enums, reason codes, forbidden closure content detection, `AuditClosureConfig`, `AuditClosureSafetyFlags`, `AuditClosureSectionKind`, `AuditClosureFindingSeverity`, `AuditClosureState`, `AuditClosureKind`, `AuditClosureFinding`, `AuditClosureSection`, `AuditClosureSummary`, `AuditClosureDataQuality`, `ResearchAuditClosureReport`.
+  - `src/hunter/research_audit_closure/engine.py` — in-memory closure engine functions: `has_unsafe_audit_closure_content`, `build_audit_closure_safety_flags`, `build_audit_closure_finding`, `build_audit_closure_section`, `build_audit_closure_summary`, `build_audit_closure_data_quality`, `build_research_audit_closure_report`.
+  - `tests/test_research_audit_closure/test_models.py` — model tests.
+  - `tests/test_research_audit_closure/test_engine.py` — engine tests.
+
+- **MVP-22 Step 2 — Research Audit Closure Writer (Complete)**
+  - `src/hunter/research_audit_closure/writer.py` — JSON/Markdown serialization, atomic file writing.
+  - `src/hunter/research_audit_closure/__init__.py` — updated with writer exports.
+  - `tests/test_research_audit_closure/test_writer.py` — writer tests.
+  - Default JSON path: `data/research_audit_closure/latest_research_audit_closure_report.json`.
+  - Default Markdown path: `reports/research_audit_closure/latest_research_audit_closure_report.md`.
+  - `research_audit_closure_report_to_dict()` — deterministic JSON-safe serialization.
+  - `research_audit_closure_report_to_markdown()` — human-readable Markdown with explicit safety notice.
+  - `atomic_write_json_research_audit_closure_report()` / `atomic_write_markdown_research_audit_closure_report()` — atomic writes with temp file + fsync + os.replace.
+  - `write_research_audit_closure_report()` — writes both JSON and Markdown, returns paths.
+
+- **MVP-22 Step 3 — Research Audit Closure Integration Tests (Complete)**
+  - `tests/test_research_audit_closure/test_integration.py` — 42 integration tests (after Step 3.1 cleanup).
+  - End-to-end flows: build → serialize → write → validate, READY closure report, BLOCK closure report for missing/unsafe/invalid artifacts, INCOMPLETE closure report with `block_on_incomplete=True`, UNKNOWN blocked factory behavior, deterministic section ordering, deterministic finding ordering (severity → MVP number → insertion order), deterministic `closure_id` and `generated_at`, JSON round-trip, Markdown safety notice first, Markdown section/finding/reference/reason-code rendering, file references as plain strings, no production path writes, no action commands emitted, no network calls, no trading logic, no execution feedback, no Freqtrade/Binance/exchange/live/leverage/shorting references.
+  - **Z.ai Step 3 Review:** APPROVED with minor notes. No critical issues found.
+
+- **MVP-22 Step 3.1 — Integration Test Cleanup (Complete)**
+  - Fixed logically inverted release/deployment checklist assertion to check for positive checklist semantics (`"is a release checklist" not in md.lower()`).
+  - Added `test_blocked_for_unsafe_backlog_notes` — engine-level unsafe backlog note rejection.
+  - Added `test_blocked_for_unsafe_references` — engine-level unsafe reference string rejection.
+  - Added `test_incomplete_state_with_block_on_incomplete` — `AuditClosureState.INCOMPLETE` path coverage.
+  - Expanded `test_default_safety_flags_are_fail_closed` with additional execution/strategy/exchange/file-ref/event-store/task-runner safety flags.
+
+- **MVP-22 Step 4 — Final Validation and Version Bump (Complete)**
+  - Verdict: PASS. No defects found.
+  - Version bumped to 0.22.0-dev.
+  - All safety invariants verified.
+
+- **Tests:**
+  - 183 research_audit_closure tests total.
+  - **Full suite: 4261 tests passing, 1 skipped** using `pytest --import-mode=importlib`.
+
+- **Safety:**
+  - Research audit closure report is a human-audit / contractor-handoff artifact only.
+  - Not a release approval. Not a deployment approval.
+  - Not a trading signal. Not a trade approval.
+  - Not execution approval. Not strategy approval.
+  - Not transaction permission.
+  - Must not be consumed by execution, strategy, Freqtrade shell, order, exchange, or any MVP execution path.
+  - No audit-closure feedback into execution paths.
+  - No report/operator/index/search/bundle/chronicle/digest/quality-gate/handoff/archive-manifest/release-notes/audit-catalog/audit-closure feedback into execution paths.
+  - No Binance, exchange, API keys, live trading, real orders, leverage, shorting.
+  - File references and metadata strings are not traversed, opened, followed, validated, or executed.
+  - Referenced artifact files are not read.
+  - Human archival guide is advisory-only and not gating.
+  - No action commands are emitted.
+  - No release/deployment checklist semantics.
+  - No Web UI, dashboard, database persistence, server/API/auth.
+  - Not a runtime registry, indexer, crawler, scheduler, routing layer, dashboard, database, API, event store, or task runner.
+
+- **Next:**
+  - MVP-23 planning, not started.
+
+---
+
 ## MVP-21 — Local Research Audit Catalog (Complete)
 
 **Version:** 0.20.0-dev → 0.21.0-dev.

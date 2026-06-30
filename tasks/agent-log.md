@@ -1,5 +1,47 @@
 ---
 
+### MVP-22 Step 4 — Final Validation and Version Bump
+
+Date: 2026-06-30
+
+Agent: WrongStack
+
+Task: MVP-22 Step 4 — Final validation, memory update, version bump, and release tag prep.
+
+Files modified:
+
+- `pyproject.toml` — version bumped from 0.21.0-dev to 0.22.0-dev.
+- `src/hunter/__init__.py` — version bumped from 0.21.0-dev to 0.22.0-dev.
+- `CHANGELOG.md` — added MVP-22 completion summary section.
+- `docs/handoff/CURRENT_STATE.md` — marked MVP-22 complete, version 0.22.0-dev, set MVP-23 planning as next.
+- `tasks/active.md` — marked MVP-22 Step 4 complete, set MVP-23 planning as next.
+- `tasks/agent-log.md` — this entry.
+
+Summary:
+
+Final validation of MVP-22 Local Research Audit Closure Report. Full test suite passes with 4261 tests passing, 1 skipped. No regressions. Version bumped to 0.22.0-dev.
+
+MVP-22 is now complete with:
+- Step 1: Models and Engine (research_audit_closure model/engine tests)
+- Step 2: Writer (research_audit_closure writer tests)
+- Step 3: Integration Tests (42 integration tests after Step 3.1 cleanup)
+- Step 3 Z.ai review: APPROVED with minor notes. No critical issues found.
+- Step 3.1 cleanup: fixed inverted release/deployment checklist assertion, added unsafe backlog notes coverage, added unsafe references coverage, added INCOMPLETE state coverage, expanded safety flag assertions.
+- Step 4: Final validation, memory update, and version bump
+
+Safety invariants preserved:
+- Research audit closure report is a human-audit / contractor-handoff artifact only.
+- Not release approval, not deployment approval, not trading signal, not trade approval, not execution approval, not strategy approval, not transaction permission.
+- Not a runtime registry, indexer, crawler, scheduler, routing layer, dashboard, database, API, event store, or task runner.
+- Must not be consumed by execution, strategy, Freqtrade shell, order, exchange, or any MVP execution path.
+- No audit-closure feedback into execution paths.
+- File references and metadata strings are not traversed, opened, followed, validated, or executed.
+- Referenced artifact files are not read.
+- Human archival guide is advisory-only and not gating.
+- No action commands emitted.
+
+---
+
 ### MVP-21 Step 4 — Final Validation and Version Bump
 
 Date: 2026-06-30
