@@ -413,6 +413,43 @@ class TestClosureStates:
         # The blocked factory always returns BLOCK regardless of reason code.
         assert "UNKNOWN_CLOSURE_STATE" in report.reason_codes
 
+    def test_blocked_for_unsafe_backlog_notes(self) -> None:
+        summaries = (_make_artifact_summary("obs-001", "OBSERVATION_REPORT"),)
+        report = build_research_audit_closure_report(
+            summaries,
+            backlog_notes=("deploy immediately before market opens",),
+            closure_id="unsafe-backlog-test",
+            generated_at=datetime(2026, 6, 29, 12, 0, 0, tzinfo=timezone.utc),
+        )
+        assert report.closure_state is AuditClosureState.BLOCK
+        assert "UNSAFE_CLOSURE_CONTENT" in report.reason_codes
+
+    def test_blocked_for_unsafe_references(self) -> None:
+        summaries = (_make_artifact_summary("obs-001", "OBSERVATION_REPORT"),)
+        report = build_research_audit_closure_report(
+            summaries,
+            references=("execute_trade_now.json",),
+            closure_id="unsafe-refs-test",
+            generated_at=datetime(2026, 6, 29, 12, 0, 0, tzinfo=timezone.utc),
+        )
+        assert report.closure_state is AuditClosureState.BLOCK
+        assert "UNSAFE_CLOSURE_CONTENT" in report.reason_codes
+
+    def test_incomplete_state_with_block_on_incomplete(self) -> None:
+        # Provide only one artifact when 12 are expected; no blocking code is
+        # generated, so with block_on_incomplete=True the report resolves to
+        # INCOMPLETE rather than READY.
+        summaries = (_make_artifact_summary("obs-001", "OBSERVATION_REPORT"),)
+        config = AuditClosureConfig(block_on_incomplete=True)
+        report = build_research_audit_closure_report(
+            summaries,
+            config=config,
+            closure_id="incomplete-state-test",
+            generated_at=datetime(2026, 6, 29, 12, 0, 0, tzinfo=timezone.utc),
+        )
+        assert report.closure_state is AuditClosureState.INCOMPLETE
+        assert "INCOMPLETE_ARTIFACT_CHAIN" in report.reason_codes
+
 
 # ---------------------------------------------------------------------------
 # Required sections customization
@@ -536,6 +573,15 @@ class TestSafetyFlags:
         assert flags.no_action_commands_emitted is True
         assert flags.artifact_files_not_read is True
         assert flags.human_archival_guide_is_non_gating is True
+        # Additional execution/strategy/exchange safety flags.
+        assert flags.closure_output_not_for_execution is True
+        assert flags.closure_output_not_for_strategy is True
+        assert flags.closure_output_not_for_freqtrade is True
+        assert flags.closure_output_not_for_order is True
+        assert flags.closure_output_not_for_exchange is True
+        assert flags.file_refs_not_traversed is True
+        assert flags.event_store_enabled is False
+        assert flags.task_runner_enabled is False
 
     def test_unsafe_safety_flags_rejected(self) -> None:
         with pytest.raises(ValueError):
@@ -570,8 +616,10 @@ class TestClosureNotesAndDisclaimers:
         assert "API" in md
         assert "must not be consumed by execution" in md
         assert "not gating criteria" in md
-        assert "not release checklist" not in md.lower()
-        assert "not deployment checklist" not in md.lower()
+        # The report must not positively describe itself as a release or
+        # deployment checklist. Negated disclaimer phrasing is fine.
+        assert "is a release checklist" not in md.lower()
+        assert "is a deployment checklist" not in md.lower()
 
     def test_dict_contains_document_notes(self) -> None:
         summaries = (_make_artifact_summary("obs-001", "OBSERVATION_REPORT"),)
