@@ -9,9 +9,8 @@ from __future__ import annotations
 
 import json
 from dataclasses import dataclass
-from datetime import datetime, timedelta, timezone
+from datetime import datetime, timezone
 from pathlib import Path
-from types import MappingProxyType
 from typing import Any
 
 import pytest
@@ -142,7 +141,7 @@ class TestEndToEndBuild:
                 source_version=a.version,
                 generated_at=a.generated_at,
                 title=a.title,
-                spec_reference=f"SPEC-0{10 + _mvp_number(a.kind):02d}",
+                spec_reference=CATALOG_ARTIFACT_SPEC_REFERENCE[a.kind],
                 local_reference=a.local_reference,
                 metadata=a.metadata,
             )
@@ -606,3 +605,27 @@ def test_catalog_object_is_frozen() -> None:
 
     with pytest.raises(FrozenInstanceError):
         catalog.catalog_id = "mutated"
+
+
+# ---------------------------------------------------------------------------
+# Full layer coverage
+# ---------------------------------------------------------------------------
+
+
+class TestFullLayerCoverage:
+    def test_all_eleven_kinds_produce_full_coverage(self) -> None:
+        entries = tuple(
+            _make_entry(f"id-{kind.value}", kind) for kind in CatalogArtifactKind
+        )
+        catalog = build_research_audit_catalog(entries, catalog_id="full-coverage")
+
+        assert catalog.catalog_state is CatalogState.READY
+        assert catalog.summary.total_entries == len(CatalogArtifactKind)
+        assert catalog.summary.layers_covered == len(CatalogArtifactKind)
+        assert catalog.summary.layers_missing == 0
+        assert catalog.data_quality.has_missing_layers is False
+
+        for kind in CatalogArtifactKind:
+            assert catalog.summary.kind_counts[kind] == 1
+            assert kind.value in catalog.data_quality.covered_layer_kinds
+            assert kind.value not in catalog.data_quality.missing_layer_kinds
