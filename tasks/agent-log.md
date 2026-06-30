@@ -1,5 +1,60 @@
 ---
 
+### MVP-21 Step 4 — Final Validation and Version Bump
+
+Date: 2026-06-30
+
+Agent: WrongStack
+
+Task: MVP-21 Step 4 — Final validation, memory update, version bump, and release tag prep.
+
+Files modified:
+
+- `pyproject.toml` — version bumped from 0.20.0-dev to 0.21.0-dev.
+- `src/hunter/__init__.py` — version bumped from 0.20.0-dev to 0.21.0-dev.
+- `CHANGELOG.md` — added MVP-21 completion summary section.
+- `docs/handoff/CURRENT_STATE.md` — marked MVP-21 complete, version 0.21.0-dev, set MVP-22 planning as next.
+- `tasks/active.md` — marked MVP-21 Step 4 complete, set MVP-22 planning as next.
+- `tasks/agent-log.md` — this entry.
+
+Summary:
+
+Final validation of MVP-21 Local Research Audit Catalog. Full test suite passes with 4078 tests passing, 1 skipped. No regressions. Version bumped to 0.21.0-dev.
+
+MVP-21 is now complete with:
+- Step 1: Models and Engine (research_audit_catalog model/engine tests)
+- Step 2: Writer (research_audit_catalog writer tests)
+- Step 3: Integration Tests (28 integration tests after Step 3.1 cleanup)
+- Step 3 Z.ai review: APPROVED with minor notes. No critical issues found.
+- Step 3.1 cleanup: canonical spec_reference mapping, all-11-layer coverage test, removed unused imports.
+- Step 4: Final validation, memory update, and version bump
+
+Next phase: MVP-22 planning, not started.
+
+Total research_audit_catalog tests: 157.
+
+Safety:
+
+- Research audit catalog is a human-audit / contractor-handoff artifact only.
+- Not release approval. Not deployment approval.
+- Not a trading signal. Not a trade approval.
+- Not execution approval. Not strategy approval.
+- Not transaction permission.
+- Must not be consumed by execution, strategy, Freqtrade shell, order, exchange, or any MVP execution path.
+- No audit-catalog feedback into execution paths.
+- No report/operator/index/search/bundle/chronicle/digest/quality-gate/handoff/archive-manifest/release-notes/audit-catalog feedback into execution paths.
+- No Binance, exchange, API keys, live trading, real orders, leverage, shorting.
+- File references and metadata strings are not traversed, opened, followed, validated, or executed.
+- Referenced artifact files are not read.
+- Human audit guide is advisory-only and not gating.
+- No action commands are emitted.
+- No release/deployment checklist semantics.
+- No Web UI, dashboard, database persistence, server/API/auth.
+- Not a runtime registry, indexer, crawler, scheduler, routing layer, dashboard, database, API, event store, or task runner.
+
+Backlog (non-blocking):
+- Review `EMPTY_CATALOG` reason code reachability in `research_audit_catalog/engine.py` vs SPEC-022 §3.5.
+
 ### MVP-20 Step 4 — Final Validation and Version Bump
 
 Date: 2026-06-29

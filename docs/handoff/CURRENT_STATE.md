@@ -1,16 +1,14 @@
 # Current State
 
-## Project
-
 Hunter Futures Pro
 
 ## Version
 
-0.20.0-dev
+0.21.0-dev
 
 ## Current Phase
 
-MVP-20 is complete and committed. SPEC-021 for MVP-20 Local Research Release Notes / Audit Change Summary is complete and approved. Version 0.20.0-dev. Full test suite: 3921 tests passing, 1 skipped using `pytest --import-mode=importlib`. Next step: MVP-21 planning, not started. Research release notes / audit change summary is a human-audit / contractor-handoff artifact only, not a release approval, not a deployment approval, not a publish approval, not a trading signal, not a trade approval, not execution readiness, not strategy readiness, not transaction permission, and must not be consumed by execution, strategy, Freqtrade shell, order, exchange, or any MVP execution path. No release-notes feedback into execution paths. No report/operator/index/search/bundle/chronicle/digest/quality-gate/handoff/archive-manifest/release-notes feedback into execution paths. Referenced artifact files are not read. File references and metadata strings are not traversed, opened, followed, validated, or executed. Human review guide is advisory-only and not gating. No action commands are emitted. No release/deployment checklist semantics. No Web UI, no dashboard, no database persistence, no config YAML, no JSON schema, no Freqtrade strategy class, no freqtrade import, no Binance, no real exchange, no API keys, no live trading, no real orders, no leverage, no shorting, no real entry/exit execution logic, no production data reads/writes.
+MVP-21 is complete and committed. SPEC-022 for MVP-21 Local Research Audit Catalog is complete and approved. Version 0.21.0-dev. Full test suite: 4078 tests passing, 1 skipped using `pytest --import-mode=importlib`. Next step: MVP-22 planning, not started. Research audit catalog is a human-audit / contractor-handoff artifact only, not a release approval, not a deployment approval, not a trading signal, not a trade approval, not execution approval, not strategy approval, not transaction permission, and must not be consumed by execution, strategy, Freqtrade shell, order, exchange, or any MVP execution path. No audit-catalog feedback into execution paths. No report/operator/index/search/bundle/chronicle/digest/quality-gate/handoff/archive-manifest/release-notes/audit-catalog feedback into execution paths. Referenced artifact files are not read. File references and metadata strings are not traversed, opened, followed, validated, or executed. Human audit guide is advisory-only and not gating. No action commands are emitted. No release/deployment checklist semantics. No Web UI, no dashboard, no database persistence, no config YAML, no JSON schema, no Freqtrade strategy class, no freqtrade import, no Binance, no real exchange, no API keys, no live trading, no real orders, no leverage, no shorting, no real entry/exit execution logic, no production data reads/writes. Not a runtime registry, indexer, crawler, scheduler, routing layer, dashboard, database, API, event store, or task runner.
 
 ## Current Status
 
@@ -198,6 +196,24 @@ MVP-18 — Local Research Handoff Packet is complete and committed.
 - Z.ai Step 3 review: APPROVED. No critical issues found.
 - Safety: human-audit / contractor-handoff artifact only, no execution feedback, no trading signals, not execution readiness, not strategy readiness, not release/deployment approval, not transaction permission, no file reference traversal, no handoff feedback into execution paths, no report/operator/index/search/bundle/chronicle/digest/quality-gate/handoff feedback into execution paths.
 
+MVP-21 — Local Research Audit Catalog is complete and committed.
+- SPEC-022: `specs/SPEC-022-Local-Research-Audit-Catalog.md` — approved with no critical issues.
+- `src/hunter/research_audit_catalog/__init__.py` — public API exports.
+- `src/hunter/research_audit_catalog/models.py` — frozen catalog dataclasses, enums, 13 reason codes, forbidden catalog content detection, CatalogArtifactKind, CatalogState, CatalogConfig, CatalogSafetyFlags, CatalogEntry, CatalogSummary, CatalogDataQuality, ResearchCatalog.
+- `src/hunter/research_audit_catalog/engine.py` — in-memory catalog engine functions: has_unsafe_audit_catalog_content, build_audit_catalog_safety_flags, build_audit_catalog_entry, build_audit_catalog_summary, build_audit_catalog_data_quality, build_research_audit_catalog.
+- `src/hunter/research_audit_catalog/writer.py` — JSON/Markdown serialization, atomic file writing.
+- `src/hunter/research_audit_catalog/__init__.py` — updated with writer exports.
+- `tests/test_research_audit_catalog/test_models.py` — model tests.
+- `tests/test_research_audit_catalog/test_engine.py` — engine tests.
+- `tests/test_research_audit_catalog/test_writer.py` — writer tests.
+- `tests/test_research_audit_catalog/test_integration.py` — 28 integration tests (after Step 3.1 cleanup).
+- 157 research_audit_catalog tests total.
+- Full suite: 4078 tests passing, 1 skipped using `pytest --import-mode=importlib`.
+- Z.ai Step 3 review: APPROVED with minor notes. No critical issues found.
+- Step 3.1 cleanup: canonical spec_reference mapping, all-11-layer coverage test, removed unused imports.
+- Safety: human-audit / contractor-handoff artifact only, not release approval, not deployment approval, not trading signal, not trade approval, not execution approval, not strategy approval, not transaction permission, referenced artifact files are not read, file references and metadata strings are not traversed/opened/followed/validated/executed, human audit guide advisory-only and not gating, no action commands emitted, no release/deployment checklist semantics, no audit-catalog feedback into execution paths, no report/operator/index/search/bundle/chronicle/digest/quality-gate/handoff/archive-manifest/release-notes/audit-catalog feedback into execution paths. Not a runtime registry, indexer, crawler, scheduler, routing layer, dashboard, database, API, event store, or task runner.
+- Future cleanup backlog (non-blocking): review `EMPTY_CATALOG` reason code reachability in engine vs SPEC-022 §3.5.
+
 MVP-20 — Local Research Release Notes / Audit Change Summary is complete and committed.
 - SPEC-021: `specs/SPEC-021-Local-Research-Release-Notes-Audit-Change-Summary.md` — approved with no critical issues.
 - `src/hunter/research_release_notes/__init__.py` — public API exports.
@@ -248,7 +264,10 @@ MVP-16 — Local Research Digest / Executive Summary is complete and committed.
 
 ## Next Step
 
-MVP-21 planning, not started. No SPEC drafted yet. Requires human approval before any implementation.
+MVP-22 planning, not started. No SPEC drafted yet. Requires human approval before any implementation.
+
+### Backlog (Non-Blocking)
+- Review `EMPTY_CATALOG` reason code reachability in `research_audit_catalog/engine.py` vs SPEC-022 §3.5. Current behavior is fail-closed (`MISSING_ARTIFACTS` when `block_on_empty=True`, READY empty when `block_on_empty=False`); `EMPTY_CATALOG` is defined but not emitted.
 
 ### Not Allowed Until Future SPEC
 - No config YAML.
@@ -275,6 +294,7 @@ MVP-21 planning, not started. No SPEC drafted yet. Requires human approval befor
 - No handoff feedback into execution paths.
 - No archive manifest feedback into execution paths.
 - No release-notes feedback into execution paths.
+- No audit-catalog feedback into execution paths.
 - No Web UI.
 - No dashboard.
 - No database persistence.

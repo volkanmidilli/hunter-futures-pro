@@ -2,13 +2,15 @@
 
 ## Current Task
 
-MVP-21 planning, not started.
+MVP-22 planning, not started.
 
 ## Status
 
-MVP-21 planning — not started. No SPEC drafted yet. Requires human approval before any implementation.
+MVP-22 planning — not started. No SPEC drafted yet. Requires human approval before any implementation.
 
-MVP-20 is complete and committed. SPEC-021 approved with no critical issues. All MVP-20 steps completed successfully. Version 0.20.0-dev. Full test suite: 3921 tests passing, 1 skipped using `pytest --import-mode=importlib`. Current active task: MVP-21 planning, not started. No SPEC drafted yet. Requires human approval before any implementation.
+MVP-21 is complete and committed. SPEC-022 approved with no critical issues. All MVP-21 steps completed successfully. Version 0.21.0-dev. Full test suite: 4078 tests passing, 1 skipped using `pytest --import-mode=importlib`. Current active task: MVP-22 planning, not started. No SPEC drafted yet. Requires human approval before any implementation.
+
+MVP-20 is complete and committed. SPEC-021 approved with no critical issues. All MVP-20 steps completed successfully. Version 0.20.0-dev. Full test suite: 3921 tests passing, 1 skipped using `pytest --import-mode=importlib`.
 
 MVP-19 is complete and committed. SPEC-020 approved with no critical issues. All MVP-19 steps completed successfully. Version 0.19.0-dev. Full test suite: 3764 tests passing, 1 skipped using `pytest --import-mode=importlib`.
 
@@ -192,10 +194,15 @@ MVP-19 Step 4 — Final validation and version bump (Complete).
 - [x] MVP-19 complete.
 - [x] MVP-20 Step 4 complete: final validation passed, version bumped to 0.20.0-dev.
 - [x] MVP-20 complete.
-- [ ] MVP-21 planning: not started. No SPEC drafted yet. Requires human approval before any implementation.
+- [x] MVP-21 Step 4 complete: final validation passed, version bumped to 0.21.0-dev.
+- [x] MVP-21 complete.
+- [ ] MVP-22 planning: not started. No SPEC drafted yet. Requires human approval before any implementation.
+
+## Backlog (Non-Blocking)
+- Review `EMPTY_CATALOG` reason code reachability in `research_audit_catalog/engine.py` vs SPEC-022 §3.5. Current behavior is fail-closed; `EMPTY_CATALOG` is defined but not emitted.
 
 ## Next Step
 
-MVP-21 planning, not started. No SPEC drafted yet. Requires human approval before any implementation.
+MVP-22 planning, not started. No SPEC drafted yet. Requires human approval before any implementation.
 
 Future research bundle search engine, operator workflow UI, cross-reference validation, or handoff packet consumers may be considered only in a future SPEC, but is not implemented yet.

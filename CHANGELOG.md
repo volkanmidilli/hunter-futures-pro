@@ -2,6 +2,72 @@
 
 All important project changes will be recorded in this file.
 
+## MVP-21 — Local Research Audit Catalog (Complete)
+
+**Version:** 0.20.0-dev → 0.21.0-dev.
+
+**SPEC-022:** `specs/SPEC-022-Local-Research-Audit-Catalog.md` — approved with no critical issues.
+
+**Commit:** `TBD` — feat: complete MVP-21 local research audit catalog.
+
+- **MVP-21 Step 1 — Research Audit Catalog Models and Engine (Complete)**
+  - `src/hunter/research_audit_catalog/__init__.py` — public API exports.
+  - `src/hunter/research_audit_catalog/models.py` — frozen catalog dataclasses, enums, reason codes, forbidden catalog content detection, `CatalogArtifactKind`, `CatalogState`, `CatalogConfig`, `CatalogSafetyFlags`, `CatalogEntry`, `CatalogSummary`, `CatalogDataQuality`, `ResearchCatalog`.
+  - `src/hunter/research_audit_catalog/engine.py` — in-memory catalog engine functions: `has_unsafe_audit_catalog_content`, `build_audit_catalog_safety_flags`, `build_audit_catalog_entry`, `build_audit_catalog_summary`, `build_audit_catalog_data_quality`, `build_research_audit_catalog`.
+  - `tests/test_research_audit_catalog/test_models.py` — model tests.
+  - `tests/test_research_audit_catalog/test_engine.py` — engine tests.
+
+- **MVP-21 Step 2 — Research Audit Catalog Writer (Complete)**
+  - `src/hunter/research_audit_catalog/writer.py` — JSON/Markdown serialization, atomic file writing.
+  - `src/hunter/research_audit_catalog/__init__.py` — updated with writer exports.
+  - `tests/test_research_audit_catalog/test_writer.py` — writer tests.
+  - Default JSON path: `data/research_audit_catalog/latest_research_audit_catalog.json`.
+  - Default Markdown path: `reports/research_audit_catalog/latest_research_audit_catalog.md`.
+  - `research_audit_catalog_to_dict()` — deterministic JSON-safe serialization.
+  - `research_audit_catalog_to_markdown()` — human-readable Markdown with explicit safety notice.
+  - `atomic_write_json_research_audit_catalog()` / `atomic_write_markdown_research_audit_catalog()` — atomic writes with temp file + fsync + os.replace.
+  - `write_research_audit_catalog()` — writes both JSON and Markdown, returns paths.
+
+- **MVP-21 Step 3 — Research Audit Catalog Integration Tests (Complete)**
+  - `tests/test_research_audit_catalog/test_integration.py` — 28 integration tests.
+  - End-to-end flows: build → serialize → write → validate, READY catalog, advisory cross-kind artifact_id overlap, BLOCK catalog for duplicate entry_id / missing layers / invalid artifacts, fail-closed unsafe content rejection, fail-closed unsafe safety flags, empty catalog customization, all 11 artifact layers coverage, summary and data quality public fields, deterministic entry ordering, deterministic catalog_id, JSON round-trip, Markdown safety notice first, Markdown artifact/reference/state/reason-code rendering, file references as plain strings, no production path writes, no action commands emitted, no network calls, no trading logic, no execution feedback, no Freqtrade/Binance/exchange/live/leverage/shorting references.
+  - **Z.ai Step 3 Review:** APPROVED with minor notes. No critical issues found.
+
+- **MVP-21 Step 3.1 — Integration Test Cleanup (Complete)**
+  - Fixed incorrect inline `spec_reference` formula in `test_build_from_fake_artifacts` to use canonical `CATALOG_ARTIFACT_SPEC_REFERENCE` mapping.
+  - Removed unused `timedelta` and `MappingProxyType` imports.
+  - Added `TestFullLayerCoverage.test_all_eleven_kinds_produce_full_coverage` — one entry per `CatalogArtifactKind`, asserting full layer coverage and kind counts.
+
+- **MVP-21 Step 4 — Final Validation and Version Bump (Complete)**
+  - Verdict: PASS. No defects found.
+  - Version bumped to 0.21.0-dev.
+  - All safety invariants verified.
+
+- **Tests:**
+  - 157 research_audit_catalog tests total.
+  - **Full suite: 4078 tests passing, 1 skipped** using `pytest --import-mode=importlib`.
+
+- **Safety:**
+  - Research audit catalog is a human-audit / contractor-handoff artifact only.
+  - Not a release approval. Not a deployment approval.
+  - Not a trading signal. Not a trade approval.
+  - Not execution approval. Not strategy approval.
+  - Not transaction permission.
+  - Must not be consumed by execution, strategy, Freqtrade shell, order, exchange, or any MVP execution path.
+  - No audit-catalog feedback into execution paths.
+  - No report/operator/index/search/bundle/chronicle/digest/quality-gate/handoff/archive-manifest/release-notes/audit-catalog feedback into execution paths.
+  - No Binance, exchange, API keys, live trading, real orders, leverage, shorting.
+  - File references and metadata strings are not traversed, opened, followed, validated, or executed.
+  - Referenced artifact files are not read.
+  - Human audit guide is advisory-only and not gating.
+  - No action commands are emitted.
+  - No release/deployment checklist semantics.
+  - No Web UI, dashboard, database persistence, server/API/auth.
+  - Not a runtime registry, indexer, crawler, scheduler, routing layer, dashboard, database, API, event store, or task runner.
+
+- **Future Cleanup (Backlog, not a Step 4 blocker):**
+  - Review `EMPTY_CATALOG` reason code reachability. Current engine emits `MISSING_ARTIFACTS` for empty input when `block_on_empty=True` and produces a READY empty catalog when `block_on_empty=False`; `EMPTY_CATALOG` is defined but not emitted. This is a non-blocking spec/engine alignment item for future cleanup/spec refinement.
+
 ## MVP-20 — Local Research Release Notes / Audit Change Summary (Complete)
 
 **Version:** 0.19.0-dev → 0.20.0-dev.
