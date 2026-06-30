@@ -33,6 +33,7 @@ from hunter.research_audit_snapshot.models import (
     MISSING_REQUIRED_SECTION,
     NO_ACTION_COMMANDS_EMITTED,
     OPEN_ITEMS_PRESENT,
+    ARTIFACT_FILES_NOT_READ,
     SNAPSHOT_VERSION,
     STALE_ARTIFACT_DETECTED,
     UNSAFE_SNAPSHOT_CONTENT,
@@ -48,6 +49,27 @@ from hunter.research_audit_snapshot.models import (
     AuditSnapshotState,
     AuditSnapshotSummary,
     ResearchAuditSnapshot,
+)
+from hunter.research_audit_snapshot.writer import (
+    DEFAULT_AUDIT_SNAPSHOT_JSON_PATH,
+    DEFAULT_AUDIT_SNAPSHOT_MARKDOWN_PATH,
+    _atomic_write,
+    _coerce_path,
+    _iso,
+    _serialize_value,
+    _severity_value,
+    _state_value,
+    atomic_write_json_research_audit_snapshot,
+    atomic_write_markdown_research_audit_snapshot,
+    audit_snapshot_config_to_dict,
+    audit_snapshot_data_quality_to_dict,
+    audit_snapshot_item_to_dict,
+    audit_snapshot_safety_flags_to_dict,
+    audit_snapshot_section_to_dict,
+    audit_snapshot_summary_to_dict,
+    research_audit_snapshot_to_dict,
+    research_audit_snapshot_to_markdown,
+    write_research_audit_snapshot,
 )
 
 __all__ = (
@@ -98,4 +120,27 @@ __all__ = (
     "build_audit_snapshot_summary",
     "build_audit_snapshot_data_quality",
     "build_research_audit_snapshot",
+    # Writer defaults
+    "DEFAULT_AUDIT_SNAPSHOT_JSON_PATH",
+    "DEFAULT_AUDIT_SNAPSHOT_MARKDOWN_PATH",
+    # Writer helpers
+    "_atomic_write",
+    "_coerce_path",
+    "_iso",
+    "_serialize_value",
+    "_severity_value",
+    "_state_value",
+    # Writer serialization
+    "audit_snapshot_config_to_dict",
+    "audit_snapshot_safety_flags_to_dict",
+    "audit_snapshot_item_to_dict",
+    "audit_snapshot_section_to_dict",
+    "audit_snapshot_summary_to_dict",
+    "audit_snapshot_data_quality_to_dict",
+    "research_audit_snapshot_to_dict",
+    "research_audit_snapshot_to_markdown",
+    # Writer I/O
+    "atomic_write_json_research_audit_snapshot",
+    "atomic_write_markdown_research_audit_snapshot",
+    "write_research_audit_snapshot",
 )
