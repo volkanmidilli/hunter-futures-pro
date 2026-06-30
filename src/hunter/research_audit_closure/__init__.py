@@ -16,6 +16,21 @@ from hunter.research_audit_closure.engine import (
     build_research_audit_closure_report,
     has_unsafe_audit_closure_content,
 )
+from hunter.research_audit_closure.writer import (
+    DEFAULT_RESEARCH_AUDIT_CLOSURE_JSON_PATH,
+    DEFAULT_RESEARCH_AUDIT_CLOSURE_MARKDOWN_PATH,
+    atomic_write_json_research_audit_closure_report,
+    atomic_write_markdown_research_audit_closure_report,
+    audit_closure_config_to_dict,
+    audit_closure_data_quality_to_dict,
+    audit_closure_finding_to_dict,
+    audit_closure_safety_flags_to_dict,
+    audit_closure_section_to_dict,
+    audit_closure_summary_to_dict,
+    research_audit_closure_report_to_dict,
+    research_audit_closure_report_to_markdown,
+    write_research_audit_closure_report,
+)
 from hunter.research_audit_closure.models import (
     AUDIT_CLOSURE_BLOCKING_REASON_CODES,
     AUDIT_CLOSURE_INCOMPLETE_REASON_CODES,
@@ -101,4 +116,18 @@ __all__ = (
     "build_audit_closure_summary",
     "build_audit_closure_data_quality",
     "build_research_audit_closure_report",
+    # Writer
+    "DEFAULT_RESEARCH_AUDIT_CLOSURE_JSON_PATH",
+    "DEFAULT_RESEARCH_AUDIT_CLOSURE_MARKDOWN_PATH",
+    "atomic_write_json_research_audit_closure_report",
+    "atomic_write_markdown_research_audit_closure_report",
+    "audit_closure_config_to_dict",
+    "audit_closure_data_quality_to_dict",
+    "audit_closure_finding_to_dict",
+    "audit_closure_safety_flags_to_dict",
+    "audit_closure_section_to_dict",
+    "audit_closure_summary_to_dict",
+    "research_audit_closure_report_to_dict",
+    "research_audit_closure_report_to_markdown",
+    "write_research_audit_closure_report",
 )
