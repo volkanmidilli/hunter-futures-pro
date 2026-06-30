@@ -44,6 +44,20 @@ from hunter.research_audit_catalog.models import (
     CatalogSummary,
     ResearchCatalog,
 )
+from hunter.research_audit_catalog.writer import (
+    DEFAULT_RESEARCH_AUDIT_CATALOG_JSON_PATH,
+    DEFAULT_RESEARCH_AUDIT_CATALOG_MARKDOWN_PATH,
+    atomic_write_json_research_audit_catalog,
+    atomic_write_markdown_research_audit_catalog,
+    catalog_config_to_dict,
+    catalog_data_quality_to_dict,
+    catalog_entry_to_dict,
+    catalog_safety_flags_to_dict,
+    catalog_summary_to_dict,
+    research_audit_catalog_to_dict,
+    research_audit_catalog_to_markdown,
+    write_research_audit_catalog,
+)
 
 __all__ = (
     # Version
@@ -86,4 +100,18 @@ __all__ = (
     "build_audit_catalog_summary",
     "build_audit_catalog_data_quality",
     "build_research_audit_catalog",
+    # Writer
+    "research_audit_catalog_to_dict",
+    "research_audit_catalog_to_markdown",
+    "atomic_write_json_research_audit_catalog",
+    "atomic_write_markdown_research_audit_catalog",
+    "write_research_audit_catalog",
+    "DEFAULT_RESEARCH_AUDIT_CATALOG_JSON_PATH",
+    "DEFAULT_RESEARCH_AUDIT_CATALOG_MARKDOWN_PATH",
+    # Serialization helpers
+    "catalog_config_to_dict",
+    "catalog_safety_flags_to_dict",
+    "catalog_entry_to_dict",
+    "catalog_summary_to_dict",
+    "catalog_data_quality_to_dict",
 )
