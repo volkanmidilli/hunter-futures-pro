@@ -4,13 +4,29 @@ Hunter Futures Pro
 
 ## Version
 
-0.22.0-dev
+0.23.0-dev
 
 ## Current Phase
 
-MVP-22 is complete and committed. SPEC-023 for MVP-22 Local Research Audit Closure Report is complete and approved. Version 0.22.0-dev. Full test suite: 4261 tests passing, 1 skipped using `pytest --import-mode=importlib`. Next step: MVP-23 planning, not started. Research audit closure report is a human-audit / contractor-handoff artifact only, not a release approval, not a deployment approval, not a trading signal, not a trade approval, not execution approval, not strategy approval, not transaction permission, and must not be consumed by execution, strategy, Freqtrade shell, order, exchange, or any MVP execution path. No audit-closure feedback into execution paths. No report/operator/index/search/bundle/chronicle/digest/quality-gate/handoff/archive-manifest/release-notes/audit-catalog/audit-closure feedback into execution paths. Referenced artifact files are not read. File references and metadata strings are not traversed, opened, followed, validated, or executed. Human archival guide is advisory-only and not gating. No action commands are emitted. No release/deployment checklist semantics. No Web UI, no dashboard, no database persistence, no config YAML, no JSON schema, no Freqtrade strategy class, no freqtrade import, no Binance, no real exchange, no API keys, no live trading, no real orders, no leverage, no shorting, no real entry/exit execution logic, no production data reads/writes. Not a runtime registry, indexer, crawler, scheduler, routing layer, dashboard, database, API, event store, or task runner.
+MVP-23 is complete and committed. SPEC-024 for MVP-23 Local Research Audit Snapshot is complete and approved with minor notes. Version 0.23.0-dev. Full test suite: 4499 tests passing, 1 skipped using `pytest --import-mode=importlib`. Next step: MVP-24 planning / SPEC-025 Relative Strength Engine, not started. Research audit snapshot is a human-audit / contractor-handoff artifact only, not a release approval, not a deployment approval, not a trading signal, not a trade approval, not execution readiness, not strategy readiness, not transaction permission, and must not be consumed by execution, strategy, Freqtrade shell, order, exchange, or any MVP execution path. No audit-snapshot feedback into execution paths. No report/operator/index/search/bundle/chronicle/digest/quality-gate/handoff/archive-manifest/release-notes/audit-catalog/audit-closure/audit-snapshot feedback into execution paths. Referenced artifact files are not read. File references and metadata strings are not traversed, opened, followed, validated, or executed. Human audit guide is advisory-only and not gating. No action commands are emitted. No release/deployment checklist semantics. No Web UI, no dashboard, no database persistence, no config YAML, no JSON schema, no Freqtrade strategy class, no freqtrade import, no Binance, no real exchange, no API keys, no live trading, no real orders, no leverage, no shorting, no real entry/exit execution logic, no production data reads/writes. Not a runtime registry, indexer, crawler, scheduler, routing layer, dashboard, database, API, event store, or task runner.
 
 ## Current Status
+
+MVP-23 — Local Research Audit Snapshot is complete and committed.
+- SPEC-024: `specs/SPEC-024-Local-Research-Audit-Snapshot.md` — approved with minor notes.
+- `src/hunter/research_audit_snapshot/__init__.py` — public API exports.
+- `src/hunter/research_audit_snapshot/models.py` — frozen snapshot dataclasses, enums, reason codes, forbidden snapshot content detection, `AuditSnapshotConfig`, `AuditSnapshotSafetyFlags`, `AuditSnapshotSectionKind`, `AuditSnapshotItemSeverity`, `AuditSnapshotItem`, `AuditSnapshotSection`, `AuditSnapshotSummary`, `AuditSnapshotDataQuality`, `ResearchAuditSnapshot`.
+- `src/hunter/research_audit_snapshot/engine.py` — in-memory snapshot engine functions: `has_unsafe_audit_snapshot_content`, `build_audit_snapshot_safety_flags`, `build_audit_snapshot_item`, `build_audit_snapshot_section`, `build_audit_snapshot_summary`, `build_audit_snapshot_data_quality`, `build_research_audit_snapshot`.
+- `src/hunter/research_audit_snapshot/writer.py` — JSON/Markdown serialization, atomic file writing.
+- `tests/test_research_audit_snapshot/test_models.py` — 60 model tests.
+- `tests/test_research_audit_snapshot/test_engine.py` — 41 engine tests.
+- `tests/test_research_audit_snapshot/test_writer.py` — 52 writer tests.
+- `tests/test_research_audit_snapshot/test_integration.py` — 85 integration tests.
+- 238 research_audit_snapshot tests total.
+- Full suite: 4499 tests passing, 1 skipped using `pytest --import-mode=importlib`.
+- Whole MVP-23 review: APPROVED WITH MINOR NOTES. No critical issues found.
+- Safety: human-audit / contractor-handoff artifact only, not release approval, not deployment approval, not execution readiness, not strategy readiness, not trading signal, not trade approval, not transaction permission, not a runtime registry/indexer/crawler/scheduler/routing/dashboard/database/API/event-store/task-runner, no feedback into execution/strategy/Freqtrade/order/exchange paths, no Binance/exchange/API keys/live trading/real orders/leverage/shorting, file references and metadata strings not traversed/opened/followed/validated/executed, referenced artifact files not read, human audit guide advisory-only and non-gating, no action commands emitted, no release/deployment checklist semantics.
+- Non-blocking minor note: `data_quality.sections_present` currently reports `0` and `sections_missing` reports `8` for successful snapshots because `build_audit_snapshot_data_quality` does not receive the section list in its SPEC-024 signature. Fail-closed and SPEC-compliant; future cleanup may refine the metric.
 
 MVP-0 foundation is complete and committed.
 
@@ -280,9 +296,10 @@ MVP-22 — Local Research Audit Closure Report is complete and committed.
 
 ## Next Step
 
-MVP-23 planning, not started. No SPEC drafted yet. Requires human approval before any implementation.
+MVP-24 planning / SPEC-025 Relative Strength Engine, not started. No SPEC drafted yet. Requires human approval before any implementation.
 
 ### Backlog (Non-Blocking)
+- Review `research_audit_snapshot` `data_quality.sections_present` / `sections_missing` reporting so successful snapshots correctly reflect the number of sections present (8) versus missing (0). Current behavior is fail-closed (0 / 8) and SPEC-compliant because `build_audit_snapshot_data_quality` does not receive the section list in its SPEC-024 signature.
 - Review `EMPTY_CATALOG` reason code reachability in `research_audit_catalog/engine.py` vs SPEC-022 §3.5. Current behavior is fail-closed (`MISSING_ARTIFACTS` when `block_on_empty=True`, READY empty when `block_on_empty=False`); `EMPTY_CATALOG` is defined but not emitted.
 
 ### Not Allowed Until Future SPEC

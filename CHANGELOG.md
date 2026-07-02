@@ -2,6 +2,72 @@
 
 All important project changes will be recorded in this file.
 
+## MVP-23 — Local Research Audit Snapshot (Complete)
+
+**Version:** 0.22.0-dev → 0.23.0-dev.
+
+**SPEC-024:** `specs/SPEC-024-Local-Research-Audit-Snapshot.md` — approved with minor notes. No critical issues found.
+
+**Commit:** `TBD` — feat: complete MVP-23 local research audit snapshot.
+
+- **MVP-23 Step 1 — Research Audit Snapshot Models and Engine (Complete)**
+  - `src/hunter/research_audit_snapshot/__init__.py` — public API exports.
+  - `src/hunter/research_audit_snapshot/models.py` — frozen snapshot dataclasses, enums, reason codes, forbidden snapshot content detection, `AuditSnapshotConfig`, `AuditSnapshotSafetyFlags`, `AuditSnapshotSectionKind`, `AuditSnapshotItemSeverity`, `AuditSnapshotItem`, `AuditSnapshotSection`, `AuditSnapshotSummary`, `AuditSnapshotDataQuality`, `ResearchAuditSnapshot`.
+  - `src/hunter/research_audit_snapshot/engine.py` — in-memory snapshot engine functions: `has_unsafe_audit_snapshot_content`, `build_audit_snapshot_safety_flags`, `build_audit_snapshot_item`, `build_audit_snapshot_section`, `build_audit_snapshot_summary`, `build_audit_snapshot_data_quality`, `build_research_audit_snapshot`.
+  - `tests/test_research_audit_snapshot/test_models.py` — 60 model tests.
+  - `tests/test_research_audit_snapshot/test_engine.py` — 41 engine tests.
+
+- **MVP-23 Step 2 — Research Audit Snapshot Writer (Complete)**
+  - `src/hunter/research_audit_snapshot/writer.py` — JSON/Markdown serialization, atomic file writing.
+  - `src/hunter/research_audit_snapshot/__init__.py` — updated with writer exports.
+  - `tests/test_research_audit_snapshot/test_writer.py` — 52 writer tests.
+  - Default JSON path: `data/research_audit_snapshot/latest_research_audit_snapshot.json`.
+  - Default Markdown path: `reports/research_audit_snapshot/latest_research_audit_snapshot.md`.
+  - `research_audit_snapshot_to_dict()` — deterministic JSON-safe serialization.
+  - `research_audit_snapshot_to_markdown()` — human-readable Markdown with explicit safety notice placed immediately after the fixed H1 title and before identity, sections, items, references, metadata, or details.
+  - `atomic_write_json_research_audit_snapshot()` / `atomic_write_markdown_research_audit_snapshot()` — atomic writes with temp file + flush + fsync + os.replace.
+  - `write_research_audit_snapshot()` — writes both JSON and Markdown, returns paths.
+
+- **MVP-23 Step 3 — Research Audit Snapshot Integration Tests (Complete)**
+  - `tests/test_research_audit_snapshot/test_integration.py` — 85 integration tests.
+  - End-to-end flows: build → serialize → write → validate, CURRENT snapshot, BLOCK snapshot for missing/unsafe/invalid artifacts, STALE snapshot and `block_on_stale=True` escalation, INCOMPLETE snapshot and `block_on_incomplete=True` escalation, UNKNOWN blocked factory behavior, deterministic section ordering (OVERVIEW → VERSION_STATE → ARTIFACT_STATE → QUALITY_STATE → OPEN_ITEMS → SAFETY_BOUNDARIES → HUMAN_AUDIT_GUIDE → APPENDIX_REFERENCES), deterministic item ordering (severity → MVP number → insertion order), JSON round-trip, Markdown safety notice first, Markdown section/item/reference/reason-code rendering, file references as plain strings, no production path writes, no action commands emitted, no network calls, no trading logic, no execution feedback, no Freqtrade/Binance/exchange/live/leverage/shorting references.
+  - **Whole MVP-23 Review:** APPROVED WITH MINOR NOTES. No critical issues found.
+
+- **MVP-23 Step 4 — Final Validation and Version Bump (Complete)**
+  - Verdict: PASS. No blocking defects.
+  - Version bumped to 0.23.0-dev.
+  - All safety invariants verified.
+
+- **Tests:**
+  - 60 model + 41 engine + 52 writer + 85 integration = **238 research_audit_snapshot tests** total.
+  - **Full suite: 4499 tests passing, 1 skipped** using `pytest --import-mode=importlib`.
+
+- **Safety:**
+  - Research audit snapshot is a human-audit / contractor-handoff artifact only.
+  - Not a release approval. Not a deployment approval.
+  - Not a trading signal. Not a trade approval.
+  - Not execution readiness. Not strategy readiness.
+  - Not transaction permission.
+  - Must not be consumed by execution, strategy, Freqtrade shell, order, exchange, or any MVP execution path.
+  - No audit-snapshot feedback into execution paths.
+  - No report/operator/index/search/bundle/chronicle/digest/quality-gate/handoff/archive-manifest/release-notes/audit-catalog/audit-closure/audit-snapshot feedback into execution paths.
+  - No Binance, exchange, API keys, live trading, real orders, leverage, shorting.
+  - File references and metadata strings are not traversed, opened, followed, validated, or executed.
+  - Referenced artifact files are not read.
+  - Human audit guide is advisory-only and not gating.
+  - No action commands are emitted.
+  - No release/deployment checklist semantics.
+  - No Web UI, dashboard, database persistence, server/API/auth.
+  - Not a runtime registry, indexer, crawler, scheduler, routing layer, dashboard, database, API, event store, or task runner.
+
+- **Known Non-Blocking Note:**
+  - `data_quality.sections_present` currently reports `0` and `sections_missing` reports `8` for successful snapshots because `build_audit_snapshot_data_quality` does not receive the section list in its SPEC-024 signature. The behavior is fail-closed (safe) and SPEC-compliant; a future cleanup may refine the metric so successful snapshots report `sections_present=8` and `sections_missing=0`.
+
+- **Next:**
+  - MVP-24 planning / SPEC-025 Relative Strength Engine, not started.
+
+---
+
 ## MVP-22 — Local Research Audit Closure Report (Complete)
 
 **Version:** 0.21.0-dev → 0.22.0-dev.

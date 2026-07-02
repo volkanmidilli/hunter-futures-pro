@@ -2,13 +2,13 @@
 
 ## Current Task
 
-MVP-23 planning, not started.
+MVP-24 planning / SPEC-025 Relative Strength Engine, not started.
 
 ## Status
 
-MVP-23 planning — not started. No SPEC drafted yet. Requires human approval before any implementation.
+MVP-24 planning / SPEC-025 Relative Strength Engine — not started. No SPEC drafted yet. Requires human approval before any implementation.
 
-MVP-22 is complete and committed. SPEC-023 approved with minor notes. All MVP-22 steps completed successfully. Version 0.22.0-dev. Full test suite: 4261 tests passing, 1 skipped using `pytest --import-mode=importlib`. Current active task: MVP-23 planning, not started. No SPEC drafted yet. Requires human approval before any implementation.
+MVP-23 is complete and committed. SPEC-024 approved with minor notes. All MVP-23 steps completed successfully. Version 0.23.0-dev. Full test suite: 4499 tests passing, 1 skipped using `pytest --import-mode=importlib`. Current active task: MVP-24 planning / SPEC-025 Relative Strength Engine, not started. No SPEC drafted yet. Requires human approval before any implementation.
 
 MVP-21 is complete and committed. SPEC-022 approved with no critical issues. All MVP-21 steps completed successfully. Version 0.21.0-dev. Full test suite: 4078 tests passing, 1 skipped using `pytest --import-mode=importlib`.
 
@@ -65,34 +65,35 @@ MVP-14 Step 4 — Final Review and Version Bump (Complete).
 
 ## Scope
 
-MVP-21 planning, not started.
+MVP-24 planning / SPEC-025 Relative Strength Engine, not started.
 - No SPEC drafted yet. Requires human approval before any implementation.
-- No source code changes until MVP-21 planning approved.
+- No source code changes until MVP-24 planning approved.
 
 ### Allowed
 - Planning documents, discussion, SPEC drafting (outside repo or in docs/ if needed).
-- No source code changes until MVP-21 planning approved.
+- No source code changes until MVP-24 planning approved.
 
 ### Not Allowed
 - No changes to existing source code.
 - No changes to existing tests.
-- No config YAML, no JSON schema, no Freqtrade strategy class, no freqtrade import, no Freqtrade runtime connection, no Binance, no real exchange, no API keys, no live trading, no real orders, no leverage, no shorting, no real entry/exit execution logic, no production data reads/writes, no report feedback into execution paths, no operator feedback into execution paths, no index feedback into execution paths, no search feedback into execution paths, no bundle feedback into execution paths, no chronicle feedback into execution paths, no digest feedback into execution paths, no quality gate feedback into execution paths, no handoff feedback into execution paths, no archive manifest feedback into execution paths, no release-notes feedback into execution paths, no Web UI, no dashboard, no database persistence.
+- No config YAML, no JSON schema, no Freqtrade strategy class, no freqtrade import, no Freqtrade runtime connection, no Binance, no real exchange, no API keys, no live trading, no real orders, no leverage, no shorting, no real entry/exit execution logic, no production data reads/writes, no report feedback into execution paths, no operator feedback into execution paths, no index feedback into execution paths, no search feedback into execution paths, no bundle feedback into execution paths, no chronicle feedback into execution paths, no digest feedback into execution paths, no quality gate feedback into execution paths, no handoff feedback into execution paths, no archive manifest feedback into execution paths, no release-notes feedback into execution paths, no audit-catalog feedback into execution paths, no audit-closure feedback into execution paths, no audit-snapshot feedback into execution paths, no Web UI, no dashboard, no database persistence.
 - File references and metadata strings remain local strings only and must not be traversed/opened/followed/validated/executed.
 
 ## Previous Task
 
-MVP-19 Step 4 — Final validation and version bump (Complete).
-- Version bumped from 0.18.0-dev to 0.19.0-dev.
+MVP-23 Step 4 — Final validation and version bump (Complete).
+- Version bumped from 0.22.0-dev to 0.23.0-dev.
 - `pyproject.toml` updated.
 - `src/hunter/__init__.py` updated.
-- `CHANGELOG.md` updated with MVP-19 completion summary.
+- `CHANGELOG.md` updated with MVP-23 completion summary.
 - `docs/handoff/CURRENT_STATE.md` updated.
+- `tasks/active.md` updated.
 - `tasks/agent-log.md` updated.
-- Step 3 Z.ai review: APPROVED. No critical issues found.
-- research_archive_manifest tests: 164 passed.
-- Full suite: 3764 tests passing, 1 skipped.
+- Step 3 Whole MVP-23 review: APPROVED WITH MINOR NOTES. No critical issues found.
+- research_audit_snapshot tests: 238 passed.
+- Full suite: 4499 tests passing, 1 skipped.
 - All safety invariants verified.
-- MVP-19 complete.
+- MVP-23 complete.
 
 ## Definition of Done
 
@@ -200,13 +201,20 @@ MVP-19 Step 4 — Final validation and version bump (Complete).
 - [x] MVP-21 complete.
 - [x] MVP-22 Step 4 complete: final validation passed, version bumped to 0.22.0-dev.
 - [x] MVP-22 complete.
-- [ ] MVP-23 planning: not started. No SPEC drafted yet. Requires human approval before any implementation.
+- [x] MVP-23 Step 1 complete: research audit snapshot models and engine implemented.
+- [x] MVP-23 Step 2 complete: research audit snapshot writer implemented.
+- [x] MVP-23 Step 3 complete: research audit snapshot integration tests implemented.
+- [x] MVP-23 Whole MVP-23 review: APPROVED WITH MINOR NOTES. No critical issues found.
+- [x] MVP-23 Step 4 complete: final validation passed, version bumped to 0.23.0-dev.
+- [x] MVP-23 complete.
+- [ ] MVP-24 planning / SPEC-025 Relative Strength Engine: not started. No SPEC drafted yet. Requires human approval before any implementation.
 
 ## Backlog (Non-Blocking)
+- Review `research_audit_snapshot` `data_quality.sections_present` / `sections_missing` reporting so successful snapshots correctly reflect the number of sections present (8) versus missing (0). Current behavior is fail-closed (0 / 8) and SPEC-compliant because `build_audit_snapshot_data_quality` does not receive the section list in its SPEC-024 signature.
 - Review `EMPTY_CATALOG` reason code reachability in `research_audit_catalog/engine.py` vs SPEC-022 §3.5. Current behavior is fail-closed; `EMPTY_CATALOG` is defined but not emitted.
 
 ## Next Step
 
-MVP-23 planning, not started. No SPEC drafted yet. Requires human approval before any implementation.
+MVP-24 planning / SPEC-025 Relative Strength Engine, not started. No SPEC drafted yet. Requires human approval before any implementation.
 
 Future research bundle search engine, operator workflow UI, cross-reference validation, or handoff packet consumers may be considered only in a future SPEC, but is not implemented yet.
