@@ -2,6 +2,50 @@
 
 All important project changes will be recorded in this file.
 
+## MVP-26 — Discovery Engine (Complete)
+
+**Version:** 0.25.0-dev → 0.26.0-dev.
+
+**SPEC-027:** `specs/SPEC-027-Discovery-Engine.md` — implemented across models, engine, writer, and integration tests.
+
+**Commit:** `TBD` — feat: complete MVP-26 discovery engine.
+
+- **MVP-26 Step 1 — Discovery Engine Models and Engine (Complete)**
+  - `src/hunter/discovery/__init__.py` — public API exports including engine and writer functions.
+  - `src/hunter/discovery/models.py` — frozen dataclasses, enums, reason-code partitions, `FORBIDDEN_DISCOVERY_TERMS`, `DiscoveryConfig`, `DiscoverySafetyFlags`, `DiscoveryState`, `DiscoveryClassification`, `DiscoveryInputKind`, `DiscoveryRelativeStrengthSummary`, `DiscoveryOpenInterestSummary`, `DiscoveryInput`, `DiscoveryScore`, `DiscoveryUniverseSummary`, `DiscoveryDataQuality`, `DiscoveryCandidate`, `DiscoveryReport`, plus the fail-closed `DiscoveryReport.blocked(...)` factory.
+  - `src/hunter/discovery/engine.py` — pure local combination engine: aggregates already-loaded Relative Strength and Open Interest summaries, computes alignment, data quality, filter bonus, and weighted 0–100 discovery score, classifies candidates, builds universe summary, and constructs safety flags.
+  - Candidate states: `CANDIDATE`, `WATCHLIST`, `EXCLUDED`, `INSUFFICIENT_DATA`, `BLOCKED`.
+  - Classifications: `STRONG_RESEARCH_CANDIDATE`, `MODERATE_RESEARCH_CANDIDATE`, `WATCHLIST_ONLY`, `EXCLUDED_BY_FILTERS`, `INSUFFICIENT_DATA`, `BLOCKED`.
+  - Deterministic local research-only discovery scoring over caller-provided in-memory context summaries.
+  - `include_excluded_candidates=True` keeps EXCLUDED pairs visible in `DiscoveryReport.candidates`; `include_excluded_candidates=False` omits only EXCLUDED pairs from the candidates tuple while universe summary counts still reflect all inputs.
+  - BLOCKED and INSUFFICIENT_DATA candidates always remain visible regardless of the inclusion flag.
+  - Rounding policy: sub-scores 4 decimals, total score 2 decimals.
+  - Deterministic output ordering by state priority, total score descending, pair ascending.
+
+- **MVP-26 Step 2 — Discovery Engine Writer (Complete)**
+  - `src/hunter/discovery/writer.py` — deterministic serialization and atomic writers.
+  - `discovery_report_to_dict` / `discovery_report_to_json_text` — deterministic JSON with sorted keys, enums as strings, ISO-8601 datetimes, tuples as lists, mappings as plain dicts.
+  - `discovery_report_to_csv_text` — stable column order, one row per candidate, pipe-delimited reason codes and tags, empty cells for `None` values.
+  - `discovery_report_to_markdown` — H1 title, explicit research-only safety notice immediately after H1, report identity, universe summary, data quality, candidate table, reason codes, filter diagnostics, safety flags.
+  - `atomic_write_json_discovery_report`, `atomic_write_csv_discovery_report`, `atomic_write_markdown_discovery_report` — temp-file + fsync + `os.replace` atomic writes, parent directory creation.
+  - `write_discovery_report` — combined writer producing JSON, CSV, and Markdown.
+  - Default output paths:
+    - `data/discovery/latest_discovery_report.json`
+    - `data/discovery/latest_discovery_candidates.csv`
+    - `reports/discovery/latest_discovery_report.md`
+
+- **MVP-26 Step 3 — Discovery Engine Integration Tests (Complete)**
+  - `tests/test_discovery/test_integration.py` — end-to-end report, writer artifacts, all classification paths, include/excluded behavior, missing-context paths, blocked-context paths, alignment paths, threshold behavior, unsafe-content paths, determinism, no-mutation, atomic tmp_path writes, human-research safety assertions, and public export coverage.
+
+- **Safety Constraints**
+  - Output is a human-audit / research-only artifact only; not a trading signal, not trade approval, not strategy approval, not execution approval, not portfolio/universe approval.
+  - No Freqtrade input, no Binance/API/exchange/live-data connection, no order/execution instructions, no leverage/shorting semantics, no action commands.
+  - No feedback into execution, strategy, or portfolio paths.
+  - Engine and writer do not read input files, do not follow metadata/file references, and do not validate/traverse opaque strings.
+
+- **Test Results**
+  - Full test suite: 5020 tests passing, 1 skipped using `pytest --import-mode=importlib`.
+
 ## MVP-25 — Open Interest Engine (Complete)
 
 **Version:** 0.24.0-dev → 0.25.0-dev.
