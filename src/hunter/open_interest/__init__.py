@@ -53,11 +53,28 @@ from hunter.open_interest.models import (
     OpenInterestTrend,
     OpenInterestUniverseSummary,
 )
+from hunter.open_interest.writer import (
+    DEFAULT_CSV_PATH,
+    DEFAULT_JSON_PATH,
+    DEFAULT_MD_PATH,
+    atomic_write_csv_open_interest_report,
+    atomic_write_json_open_interest_report,
+    atomic_write_markdown_open_interest_report,
+    open_interest_report_to_csv_text,
+    open_interest_report_to_dict,
+    open_interest_report_to_json_text,
+    open_interest_report_to_markdown,
+    write_open_interest_report,
+)
 
 __all__ = [
     # Constants
     "OPEN_INTEREST_VERSION",
     "FORBIDDEN_OPEN_INTEREST_TERMS",
+    # Default paths
+    "DEFAULT_JSON_PATH",
+    "DEFAULT_CSV_PATH",
+    "DEFAULT_MD_PATH",
     # Reason code partitions
     "OPEN_INTEREST_BLOCKING_REASON_CODES",
     "OPEN_INTEREST_INSUFFICIENT_DATA_REASON_CODES",
@@ -108,4 +125,13 @@ __all__ = [
     "build_open_interest_score",
     "build_open_interest_universe_summary",
     "build_open_interest_report",
+    # Writer functions
+    "open_interest_report_to_dict",
+    "open_interest_report_to_json_text",
+    "open_interest_report_to_csv_text",
+    "open_interest_report_to_markdown",
+    "atomic_write_json_open_interest_report",
+    "atomic_write_csv_open_interest_report",
+    "atomic_write_markdown_open_interest_report",
+    "write_open_interest_report",
 ]
