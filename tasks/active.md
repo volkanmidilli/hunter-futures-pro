@@ -2,13 +2,15 @@
 
 ## Current Task
 
-MVP-24 planning / SPEC-025 Relative Strength Engine, not started.
+MVP-24 — Relative Strength Engine is complete. Next recommended step: Open Interest Engine planning only; implementation not started.
 
 ## Status
 
-MVP-24 planning / SPEC-025 Relative Strength Engine — not started. No SPEC drafted yet. Requires human approval before any implementation.
+MVP-24 — Relative Strength Engine is complete. SPEC-025 implemented across models, engine, writer, and integration tests. Version 0.24.0-dev. Full test suite: 4628 tests passing, 1 skipped using `pytest --import-mode=importlib`. All four steps (Step 1 models/engine, Step 2 writer, Step 3 integration tests, Step 4 finalization) completed. No source changes made in finalization. Safety boundaries preserved: output is research-only, no trading signals, no approvals, no Freqtrade input, no Binance/exchange/API/live data, no action commands, no leverage/shorting, no feedback into execution/strategy/portfolio paths. Next task: Open Interest Engine planning only; requires human approval before implementation.
 
-MVP-23 is complete and committed. SPEC-024 approved with minor notes. All MVP-23 steps completed successfully. Version 0.23.0-dev. Full test suite: 4499 tests passing, 1 skipped using `pytest --import-mode=importlib`. Current active task: MVP-24 planning / SPEC-025 Relative Strength Engine, not started. No SPEC drafted yet. Requires human approval before any implementation.
+MVP-24 planning / SPEC-025 Relative Strength Engine — not started. No SPEC drafted yet. Requires human approval before any implementation. [SUPERSEDED]
+
+MVP-23 is complete and committed. SPEC-024 approved with minor notes. All MVP-23 steps completed successfully. Version 0.23.0-dev. Full test suite: 4499 tests passing, 1 skipped using `pytest --import-mode=importlib`. Current active task: MVP-24 planning / SPEC-025 Relative Strength Engine, not started. No SPEC drafted yet. Requires human approval before any implementation. [SUPERSEDED]
 
 MVP-21 is complete and committed. SPEC-022 approved with no critical issues. All MVP-21 steps completed successfully. Version 0.21.0-dev. Full test suite: 4078 tests passing, 1 skipped using `pytest --import-mode=importlib`.
 

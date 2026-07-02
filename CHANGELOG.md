@@ -2,6 +2,46 @@
 
 All important project changes will be recorded in this file.
 
+## MVP-24 — Relative Strength Engine (Complete)
+
+**Version:** 0.23.0-dev → 0.24.0-dev.
+
+**SPEC-025:** `specs/SPEC-025-Relative-Strength-Engine.md` — implemented across models, engine, writer, and integration tests.
+
+**Commit:** `TBD` — feat: complete MVP-24 relative strength engine.
+
+- **MVP-24 Step 1 — Relative Strength Engine Models and Engine (Complete)**
+  - `src/hunter/relative_strength/models.py` — frozen dataclasses, enums, reason codes, forbidden-content detection, `RelativeStrengthConfig`, `RelativeStrengthSafetyFlags`, `RelativeStrengthState`, `RelativeStrengthDecision`, `RelativeStrengthBenchmarkKind`, `RelativeStrengthInput`, `OhlcvRow`, `RelativeStrengthPeriodReturn`, `RelativeStrengthRatioTrend`, `RelativeStrengthScore`, `RelativeStrengthDataQuality`, `RelativeStrengthUniverseSummary`, `RelativeStrengthReport`.
+  - `src/hunter/relative_strength/engine.py` — pure local computation engine: period returns, relative returns vs BTC/ETH, Coin/BTC ratio series and ratio trend, rank percentiles with deterministic tie-breaking, weighted total score, universe summary, and safety-flag construction.
+  - Deterministic local research-only relative strength scoring over caller-provided in-memory OHLCV rows.
+  - Coin/BTC and Coin/ETH relative returns across configured lookback windows.
+  - Coin/BTC ratio trend (last ratio, moving-average ratio, slope, trend score).
+  - 30-day rank percentile over the supplied universe with tie-breaking.
+
+- **MVP-24 Step 2 — Relative Strength Engine Writer (Complete)**
+  - `src/hunter/relative_strength/writer.py` — deterministic serialization and atomic writers.
+  - `relative_strength_report_to_dict` / `relative_strength_report_to_json_text` — deterministic JSON with sorted keys, enums as strings, ISO-8601 datetimes, tuples as lists, decimals as floats.
+  - `relative_strength_report_to_csv_text` — stable column order, one row per score, pipe-delimited reason codes, empty cells for `None` values.
+  - `relative_strength_report_to_markdown` — H1 title, explicit research-only safety notice, report identity, universe summary, data quality, score table, ratio trend summary, safety flags, reason codes.
+  - `atomic_write_json_relative_strength_report`, `atomic_write_csv_relative_strength_report`, `atomic_write_markdown_relative_strength_report` — temp-file + fsync + `os.replace` atomic writes, parent directory creation.
+  - `write_relative_strength_report` — combined writer producing JSON, CSV, and Markdown.
+  - Default output paths:
+    - `data/relative_strength/latest_relative_strength_scores.json`
+    - `data/relative_strength/latest_relative_strength_scores.csv`
+    - `reports/relative_strength/latest_relative_strength_report.md`
+
+- **MVP-24 Step 3 — Relative Strength Engine Integration Tests (Complete)**
+  - `tests/test_relative_strength/test_integration.py` — end-to-end report, writer artifacts, missing ETH paths, insufficient-data paths, unsafe-content paths, determinism, no-mutation, atomic tmp_path writes, human-research safety assertions, and public export coverage.
+
+- **Safety Constraints**
+  - Output is a human-audit / research-only artifact only; not a trading signal, not trade approval, not strategy approval, not execution approval, not portfolio/universe approval.
+  - No Freqtrade input, no Binance/API/exchange/live-data connection, no order/execution instructions, no leverage/shorting semantics, no action commands.
+  - No feedback into execution, strategy, or portfolio paths.
+  - Writer does not read input files or follow metadata/file references.
+
+- **Test Results**
+  - Full test suite: 4628 tests passing, 1 skipped using `pytest --import-mode=importlib`.
+
 ## MVP-23 — Local Research Audit Snapshot (Complete)
 
 **Version:** 0.22.0-dev → 0.23.0-dev.

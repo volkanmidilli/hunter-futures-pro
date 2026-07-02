@@ -4,13 +4,32 @@ Hunter Futures Pro
 
 ## Version
 
-0.23.0-dev
+0.24.0-dev
 
 ## Current Phase
 
-MVP-23 is complete and committed. SPEC-024 for MVP-23 Local Research Audit Snapshot is complete and approved with minor notes. Version 0.23.0-dev. Full test suite: 4499 tests passing, 1 skipped using `pytest --import-mode=importlib`. Next step: MVP-24 planning / SPEC-025 Relative Strength Engine, not started. Research audit snapshot is a human-audit / contractor-handoff artifact only, not a release approval, not a deployment approval, not a trading signal, not a trade approval, not execution readiness, not strategy readiness, not transaction permission, and must not be consumed by execution, strategy, Freqtrade shell, order, exchange, or any MVP execution path. No audit-snapshot feedback into execution paths. No report/operator/index/search/bundle/chronicle/digest/quality-gate/handoff/archive-manifest/release-notes/audit-catalog/audit-closure/audit-snapshot feedback into execution paths. Referenced artifact files are not read. File references and metadata strings are not traversed, opened, followed, validated, or executed. Human audit guide is advisory-only and not gating. No action commands are emitted. No release/deployment checklist semantics. No Web UI, no dashboard, no database persistence, no config YAML, no JSON schema, no Freqtrade strategy class, no freqtrade import, no Binance, no real exchange, no API keys, no live trading, no real orders, no leverage, no shorting, no real entry/exit execution logic, no production data reads/writes. Not a runtime registry, indexer, crawler, scheduler, routing layer, dashboard, database, API, event store, or task runner.
+MVP-24 is complete. SPEC-025 for MVP-24 Relative Strength Engine is implemented across models, engine, writer, and integration tests. Version 0.24.0-dev. Full test suite: 4628 tests passing, 1 skipped using `pytest --import-mode=importlib`. Next step: Open Interest Engine planning only; implementation not started. Research audit snapshot is a human-audit / contractor-handoff artifact only, not a release approval, not a deployment approval, not a trading signal, not a trade approval, not execution readiness, not strategy readiness, not transaction permission, and must not be consumed by execution, strategy, Freqtrade shell, order, exchange, or any MVP execution path. No audit-snapshot feedback into execution paths. No report/operator/index/search/bundle/chronicle/digest/quality-gate/handoff/archive-manifest/release-notes/audit-catalog/audit-closure/audit-snapshot feedback into execution paths. Referenced artifact files are not read. File references and metadata strings are not traversed, opened, followed, validated, or executed. Human audit guide is advisory-only and not gating. No action commands are emitted. No release/deployment checklist semantics. No Web UI, no dashboard, no database persistence, no config YAML, no JSON schema, no Freqtrade strategy class, no freqtrade import, no Binance, no real exchange, no API keys, no live trading, no real orders, no leverage, no shorting, no real entry/exit execution logic, no production data reads/writes. Not a runtime registry, indexer, crawler, scheduler, routing layer, dashboard, database, API, event store, or task runner.
 
 ## Current Status
+
+MVP-24 — Relative Strength Engine is complete.
+- SPEC-025: `specs/SPEC-025-Relative-Strength-Engine.md` — implemented.
+- `src/hunter/relative_strength/__init__.py` — public API exports.
+- `src/hunter/relative_strength/models.py` — frozen dataclasses, enums, reason codes, forbidden relative strength content detection, `RelativeStrengthConfig`, `RelativeStrengthSafetyFlags`, `RelativeStrengthState`, `RelativeStrengthDecision`, `RelativeStrengthBenchmarkKind`, `RelativeStrengthInput`, `OhlcvRow`, `RelativeStrengthPeriodReturn`, `RelativeStrengthRatioTrend`, `RelativeStrengthScore`, `RelativeStrengthDataQuality`, `RelativeStrengthUniverseSummary`, `RelativeStrengthReport`.
+- `src/hunter/relative_strength/engine.py` — pure local computation engine: period returns, relative returns vs BTC/ETH, Coin/BTC ratio series and ratio trend, rank percentiles with deterministic tie-breaking, weighted total score, universe summary, and safety-flag construction.
+- `src/hunter/relative_strength/writer.py` — deterministic JSON, CSV, Markdown serialization and atomic writers.
+- `tests/test_relative_strength/test_models.py` — model tests.
+- `tests/test_relative_strength/test_engine.py` — engine tests.
+- `tests/test_relative_strength/test_writer.py` — writer tests.
+- `tests/test_relative_strength/test_integration.py` — integration tests.
+- 129 relative_strength tests total.
+- Full suite: 4628 tests passing, 1 skipped using `pytest --import-mode=importlib`.
+- Safety: human-audit / research-only artifact only, not a trading signal, not trade approval, not strategy approval, not execution approval, not portfolio/universe approval, no Freqtrade input, no Binance/exchange/API/live data, no order/execution/action commands, no leverage/shorting, no feedback into execution/strategy/portfolio paths, file references and metadata strings not traversed/opened/followed/validated/executed, writer does not read input files.
+- Default outputs:
+  - `data/relative_strength/latest_relative_strength_scores.json`
+  - `data/relative_strength/latest_relative_strength_scores.csv`
+  - `reports/relative_strength/latest_relative_strength_report.md`
+- Next step: Open Interest Engine planning only; implementation not started.
 
 MVP-23 — Local Research Audit Snapshot is complete and committed.
 - SPEC-024: `specs/SPEC-024-Local-Research-Audit-Snapshot.md` — approved with minor notes.

@@ -1,5 +1,35 @@
 ---
 
+### MVP-24 Step 4 — Finalization
+
+Date: 2026-07-02
+
+Agent: WrongStack
+
+Task: MVP-24 Step 4 — Finalize Relative Strength Engine: version bump, changelog, current state, active task, and agent log.
+
+Files modified:
+
+- `pyproject.toml` — version bumped from 0.23.0-dev to 0.24.0-dev.
+- `src/hunter/__init__.py` — version bumped from 0.23.0-dev to 0.24.0-dev.
+- `CHANGELOG.md` — added MVP-24 completion section covering models/engine, writer, integration tests, safety constraints, and test results.
+- `docs/handoff/CURRENT_STATE.md` — marked MVP-24 complete, version 0.24.0-dev, set Open Interest Engine planning as next step.
+- `tasks/active.md` — marked MVP-24 complete, set Open Interest Engine planning only as next recommended task.
+- `tasks/agent-log.md` — this entry.
+
+Summary:
+
+Finalized MVP-24 Relative Strength Engine. Full implementation spanned Step 1 (models/engine), Step 2 (writer), and Step 3 (integration tests). This finalization step updated documentation and version metadata without modifying `src/hunter/relative_strength/` or `tests/`. All safety boundaries remain intact: relative strength output is research-only, not a trading signal, not trade/strategy/execution/portfolio/universe approval, not Freqtrade input, no Binance/exchange/API/live data, no action commands, no leverage/shorting, and no feedback into execution paths. The writer only writes explicit output paths and never reads input files or follows metadata references.
+
+Final validation:
+
+- `pytest -q --import-mode=importlib tests/test_relative_strength` — 129 passed.
+- `pytest -q --import-mode=importlib` — 4628 passed, 1 skipped.
+
+Next step: Open Interest Engine planning only; implementation not started and requires human approval.
+
+---
+
 ### MVP-23 Step 4 — Final Validation and Version Bump
 
 Date: 2026-07-02
