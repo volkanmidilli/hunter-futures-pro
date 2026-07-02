@@ -52,6 +52,19 @@ from hunter.discovery.models import (
     DiscoveryState,
     DiscoveryUniverseSummary,
 )
+from hunter.discovery.writer import (
+    DEFAULT_CSV_PATH,
+    DEFAULT_JSON_PATH,
+    DEFAULT_MD_PATH,
+    atomic_write_csv_discovery_report,
+    atomic_write_json_discovery_report,
+    atomic_write_markdown_discovery_report,
+    discovery_report_to_csv_text,
+    discovery_report_to_dict,
+    discovery_report_to_json_text,
+    discovery_report_to_markdown,
+    write_discovery_report,
+)
 
 __all__ = [
     # Version
@@ -109,4 +122,16 @@ __all__ = [
     "build_discovery_score",
     "build_discovery_universe_summary",
     "build_discovery_report",
+    # Writer functions
+    "DEFAULT_JSON_PATH",
+    "DEFAULT_CSV_PATH",
+    "DEFAULT_MD_PATH",
+    "discovery_report_to_dict",
+    "discovery_report_to_json_text",
+    "discovery_report_to_csv_text",
+    "discovery_report_to_markdown",
+    "atomic_write_json_discovery_report",
+    "atomic_write_csv_discovery_report",
+    "atomic_write_markdown_discovery_report",
+    "write_discovery_report",
 ]
