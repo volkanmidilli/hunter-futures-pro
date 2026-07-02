@@ -2,11 +2,15 @@
 
 ## Current Task
 
-MVP-24 — Relative Strength Engine is complete. Next recommended step: Open Interest Engine planning only; implementation not started.
+MVP-25 — Open Interest Engine is complete. Next recommended step: Discovery Engine planning only; implementation not started.
 
 ## Status
 
-MVP-24 — Relative Strength Engine is complete. SPEC-025 implemented across models, engine, writer, and integration tests. Version 0.24.0-dev. Full test suite: 4628 tests passing, 1 skipped using `pytest --import-mode=importlib`. All four steps (Step 1 models/engine, Step 2 writer, Step 3 integration tests, Step 4 finalization) completed. No source changes made in finalization. Safety boundaries preserved: output is research-only, no trading signals, no approvals, no Freqtrade input, no Binance/exchange/API/live data, no action commands, no leverage/shorting, no feedback into execution/strategy/portfolio paths. Next task: Open Interest Engine planning only; requires human approval before implementation.
+MVP-25 — Open Interest Engine is complete. SPEC-026 implemented across models, engine, writer, and integration tests. Version 0.25.0-dev. Full test suite: 4835 tests passing, 1 skipped using `pytest --import-mode=importlib`. All four steps (Step 1 models/engine, Step 2 writer, Step 3 integration tests, Step 4 finalization) completed. No source changes made in finalization. Safety boundaries preserved: output is research-only, no trading signals, no approvals, no Freqtrade input, no Binance/exchange/API/live data, no action commands, no leverage/shorting, no feedback into execution/strategy/portfolio paths. Next task: Discovery Engine planning only; requires human approval before implementation.
+
+MVP-25 planning / SPEC-026 Open Interest Engine — not started. No SPEC drafted yet. Requires human approval before any implementation. [SUPERSEDED]
+
+MVP-24 — Relative Strength Engine is complete and committed. SPEC-025 implemented across models, engine, writer, and integration tests. Version 0.24.0-dev. Full test suite: 4628 tests passing, 1 skipped using `pytest --import-mode=importlib`. All four steps (Step 1 models/engine, Step 2 writer, Step 3 integration tests, Step 4 finalization) completed. No source changes made in finalization. Safety boundaries preserved. [SUPERSEDED]
 
 MVP-24 planning / SPEC-025 Relative Strength Engine — not started. No SPEC drafted yet. Requires human approval before any implementation. [SUPERSEDED]
 

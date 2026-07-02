@@ -2,6 +2,52 @@
 
 All important project changes will be recorded in this file.
 
+## MVP-25 — Open Interest Engine (Complete)
+
+**Version:** 0.24.0-dev → 0.25.0-dev.
+
+**SPEC-026:** `specs/SPEC-026-Open-Interest-Engine.md` — implemented across models, engine, writer, and integration tests.
+
+**Commit:** `TBD` — feat: complete MVP-25 open interest engine.
+
+- **MVP-25 Step 1 — Open Interest Engine Models and Engine (Complete)**
+  - `src/hunter/open_interest/__init__.py` — public API exports.
+  - `src/hunter/open_interest/models.py` — frozen dataclasses, enums, reason-code partitions, `FORBIDDEN_OPEN_INTEREST_TERMS`, `OpenInterestConfig`, `OpenInterestSafetyFlags`, `OpenInterestState`, `OpenInterestPositioning`, `OpenInterestTrend`, `OpenInterestFundingContext`, `OpenInterestObservation`, `OpenInterestInput`, `OpenInterestPeriodChange`, `OpenInterestScore`, `OpenInterestDataQuality`, `OpenInterestUniverseSummary`, `OpenInterestReport`, plus the fail-closed `OpenInterestReport.blocked(...)` factory.
+  - `src/hunter/open_interest/engine.py` — pure local computation engine: OI and price period changes, OI/price positioning classification, OI trend classification, optional caller-provided funding context, weighted 0–100 research score, deterministic universe summary, and safety-flag construction.
+  - Deterministic local research-only open interest scoring over caller-provided in-memory OI/price rows.
+  - Open-interest period changes across 1d, 3d, 7d, and 14d (configurable) lookback windows, with proportional weight redistribution when a specific window is missing.
+  - OI/price positioning categories: `price_up_oi_up`, `price_up_oi_down`, `price_down_oi_up`, `price_down_oi_down`, `mixed`, `insufficient_data`, `blocked`.
+  - OI trend categories: `expanding`, `contracting`, `flat`, `unstable`, `insufficient_data`, `blocked`.
+  - Optional funding context classification: `positive`, `negative`, `neutral`, `missing`, `insufficient_data`, `blocked`.
+  - Rounding policy: raw metrics 8 decimals, sub-scores 4 decimals, total score 2 decimals.
+  - Input rows sorted by timestamp ascending before calculations without mutating caller input.
+  - Deterministic output ordering by state priority, total score descending, pair ascending.
+  - `block_on_missing_data=False` keeps pair as `INSUFFICIENT_DATA`; `block_on_missing_data=True` keeps pair as `BLOCKED`. Pairs are never silently dropped.
+
+- **MVP-25 Step 2 — Open Interest Engine Writer (Complete)**
+  - `src/hunter/open_interest/writer.py` — deterministic serialization and atomic writers.
+  - `open_interest_report_to_dict` / `open_interest_report_to_json_text` — deterministic JSON with sorted keys, enums as strings, ISO-8601 datetimes, tuples as lists, mappings as plain dicts.
+  - `open_interest_report_to_csv_text` — stable column order, one row per score, pipe-delimited reason codes, empty cells for `None` values.
+  - `open_interest_report_to_markdown` — H1 title, explicit research-only safety notice immediately after H1, report identity, universe summary, data quality, score table, period changes / positioning summary, funding context summary, reason codes, safety flags.
+  - `atomic_write_json_open_interest_report`, `atomic_write_csv_open_interest_report`, `atomic_write_markdown_open_interest_report` — temp-file + fsync + `os.replace` atomic writes, parent directory creation.
+  - `write_open_interest_report` — combined writer producing JSON, CSV, and Markdown.
+  - Default output paths:
+    - `data/open_interest/latest_open_interest_report.json`
+    - `data/open_interest/latest_open_interest_scores.csv`
+    - `reports/open_interest/latest_open_interest_report.md`
+
+- **MVP-25 Step 3 — Open Interest Engine Integration Tests (Complete)**
+  - `tests/test_open_interest/test_integration.py` — end-to-end report, writer artifacts, positioning/trend paths, funding-context paths, insufficient-data paths, unsafe-content paths, determinism, no-mutation, atomic tmp_path writes, human-research safety assertions, and public export coverage.
+
+- **Safety Constraints**
+  - Output is a human-audit / research-only artifact only; not a trading signal, not trade approval, not strategy approval, not execution approval, not portfolio/universe approval.
+  - No Freqtrade input, no Binance/API/exchange/live-data connection, no order/execution instructions, no leverage/shorting semantics, no action commands.
+  - No feedback into execution, strategy, or portfolio paths.
+  - Engine and writer do not read input files, do not follow metadata/file references, and do not validate/traverse opaque strings.
+
+- **Test Results**
+  - Full test suite: 4835 tests passing, 1 skipped using `pytest --import-mode=importlib`.
+
 ## MVP-24 — Relative Strength Engine (Complete)
 
 **Version:** 0.23.0-dev → 0.24.0-dev.

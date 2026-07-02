@@ -4,15 +4,34 @@ Hunter Futures Pro
 
 ## Version
 
-0.24.0-dev
+0.25.0-dev
 
 ## Current Phase
 
-MVP-24 is complete. SPEC-025 for MVP-24 Relative Strength Engine is implemented across models, engine, writer, and integration tests. Version 0.24.0-dev. Full test suite: 4628 tests passing, 1 skipped using `pytest --import-mode=importlib`. Next step: Open Interest Engine planning only; implementation not started. Research audit snapshot is a human-audit / contractor-handoff artifact only, not a release approval, not a deployment approval, not a trading signal, not a trade approval, not execution readiness, not strategy readiness, not transaction permission, and must not be consumed by execution, strategy, Freqtrade shell, order, exchange, or any MVP execution path. No audit-snapshot feedback into execution paths. No report/operator/index/search/bundle/chronicle/digest/quality-gate/handoff/archive-manifest/release-notes/audit-catalog/audit-closure/audit-snapshot feedback into execution paths. Referenced artifact files are not read. File references and metadata strings are not traversed, opened, followed, validated, or executed. Human audit guide is advisory-only and not gating. No action commands are emitted. No release/deployment checklist semantics. No Web UI, no dashboard, no database persistence, no config YAML, no JSON schema, no Freqtrade strategy class, no freqtrade import, no Binance, no real exchange, no API keys, no live trading, no real orders, no leverage, no shorting, no real entry/exit execution logic, no production data reads/writes. Not a runtime registry, indexer, crawler, scheduler, routing layer, dashboard, database, API, event store, or task runner.
+MVP-25 is complete. SPEC-026 for MVP-25 Open Interest Engine is implemented across models, engine, writer, and integration tests. Version 0.25.0-dev. Full test suite: 4835 tests passing, 1 skipped using `pytest --import-mode=importlib`. Next step: Discovery Engine planning only; implementation not started. Open interest reports are a human-audit / contractor-handoff artifact only, not a release approval, not a deployment approval, not a trading signal, not a trade approval, not execution readiness, not strategy readiness, not transaction permission, and must not be consumed by execution, strategy, Freqtrade shell, order, exchange, or any MVP execution path. No open-interest feedback into execution paths. No report/operator/index/search/bundle/chronicle/digest/quality-gate/handoff/archive-manifest/release-notes/audit-catalog/audit-closure/audit-snapshot feedback into execution paths. Referenced artifact files are not read. File references and metadata strings are not traversed, opened, followed, validated, or executed. Human audit guide is advisory-only and not gating. No action commands are emitted. No release/deployment checklist semantics. No Web UI, no dashboard, no database persistence, no config YAML, no JSON schema, no Freqtrade strategy class, no freqtrade import, no Binance, no real exchange, no API keys, no live trading, no real orders, no leverage, no shorting, no real entry/exit execution logic, no production data reads/writes. Not a runtime registry, indexer, crawler, scheduler, routing layer, dashboard, database, API, event store, or task runner.
 
 ## Current Status
 
-MVP-24 — Relative Strength Engine is complete.
+MVP-25 — Open Interest Engine is complete.
+- SPEC-026: `specs/SPEC-026-Open-Interest-Engine.md` — implemented.
+- `src/hunter/open_interest/__init__.py` — public API exports.
+- `src/hunter/open_interest/models.py` — frozen dataclasses, enums, reason-code partitions, `FORBIDDEN_OPEN_INTEREST_TERMS`, `OpenInterestConfig`, `OpenInterestSafetyFlags`, `OpenInterestState`, `OpenInterestPositioning`, `OpenInterestTrend`, `OpenInterestFundingContext`, `OpenInterestObservation`, `OpenInterestInput`, `OpenInterestPeriodChange`, `OpenInterestScore`, `OpenInterestDataQuality`, `OpenInterestUniverseSummary`, `OpenInterestReport`.
+- `src/hunter/open_interest/engine.py` — pure local computation engine: OI and price period changes, OI/price positioning classification, OI trend classification, optional caller-provided funding context, weighted 0–100 research score, universe summary, and safety-flag construction.
+- `src/hunter/open_interest/writer.py` — deterministic JSON, CSV, Markdown serialization and atomic writers.
+- `tests/test_open_interest/test_models.py` — model tests.
+- `tests/test_open_interest/test_engine.py` — engine tests.
+- `tests/test_open_interest/test_writer.py` — writer tests.
+- `tests/test_open_interest/test_integration.py` — integration tests.
+- 207 open_interest tests total.
+- Full suite: 4835 tests passing, 1 skipped using `pytest --import-mode=importlib`.
+- Safety: human-audit / research-only artifact only, not a trading signal, not trade approval, not strategy approval, not execution approval, not portfolio/universe approval, no Freqtrade input, no Binance/exchange/API/live data, no order/execution/action commands, no leverage/shorting, no feedback into execution/strategy/portfolio paths, file references and metadata strings not traversed/opened/followed/validated/executed, writer does not read input files.
+- Default outputs:
+  - `data/open_interest/latest_open_interest_report.json`
+  - `data/open_interest/latest_open_interest_scores.csv`
+  - `reports/open_interest/latest_open_interest_report.md`
+- Next step: Discovery Engine planning only; implementation not started.
+
+MVP-24 — Relative Strength Engine is complete and committed.
 - SPEC-025: `specs/SPEC-025-Relative-Strength-Engine.md` — implemented.
 - `src/hunter/relative_strength/__init__.py` — public API exports.
 - `src/hunter/relative_strength/models.py` — frozen dataclasses, enums, reason codes, forbidden relative strength content detection, `RelativeStrengthConfig`, `RelativeStrengthSafetyFlags`, `RelativeStrengthState`, `RelativeStrengthDecision`, `RelativeStrengthBenchmarkKind`, `RelativeStrengthInput`, `OhlcvRow`, `RelativeStrengthPeriodReturn`, `RelativeStrengthRatioTrend`, `RelativeStrengthScore`, `RelativeStrengthDataQuality`, `RelativeStrengthUniverseSummary`, `RelativeStrengthReport`.
@@ -23,13 +42,11 @@ MVP-24 — Relative Strength Engine is complete.
 - `tests/test_relative_strength/test_writer.py` — writer tests.
 - `tests/test_relative_strength/test_integration.py` — integration tests.
 - 129 relative_strength tests total.
-- Full suite: 4628 tests passing, 1 skipped using `pytest --import-mode=importlib`.
 - Safety: human-audit / research-only artifact only, not a trading signal, not trade approval, not strategy approval, not execution approval, not portfolio/universe approval, no Freqtrade input, no Binance/exchange/API/live data, no order/execution/action commands, no leverage/shorting, no feedback into execution/strategy/portfolio paths, file references and metadata strings not traversed/opened/followed/validated/executed, writer does not read input files.
 - Default outputs:
   - `data/relative_strength/latest_relative_strength_scores.json`
   - `data/relative_strength/latest_relative_strength_scores.csv`
   - `reports/relative_strength/latest_relative_strength_report.md`
-- Next step: Open Interest Engine planning only; implementation not started.
 
 MVP-23 — Local Research Audit Snapshot is complete and committed.
 - SPEC-024: `specs/SPEC-024-Local-Research-Audit-Snapshot.md` — approved with minor notes.
@@ -315,7 +332,7 @@ MVP-22 — Local Research Audit Closure Report is complete and committed.
 
 ## Next Step
 
-MVP-24 planning / SPEC-025 Relative Strength Engine, not started. No SPEC drafted yet. Requires human approval before any implementation.
+MVP-26 — Discovery Engine planning only; implementation not started. No SPEC drafted yet. Requires human approval before any implementation. Remaining future engines beyond Discovery Engine (portfolio, backtesting, reporting/CLI) are future work and not started.
 
 ### Backlog (Non-Blocking)
 - Review `research_audit_snapshot` `data_quality.sections_present` / `sections_missing` reporting so successful snapshots correctly reflect the number of sections present (8) versus missing (0). Current behavior is fail-closed (0 / 8) and SPEC-compliant because `build_audit_snapshot_data_quality` does not receive the section list in its SPEC-024 signature.

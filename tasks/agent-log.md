@@ -1,5 +1,35 @@
 ---
 
+### MVP-25 Step 4 — Finalization
+
+Date: 2026-07-02
+
+Agent: WrongStack
+
+Task: MVP-25 Step 4 — Finalize Open Interest Engine: version bump, changelog, current state, active task, and agent log.
+
+Files modified:
+
+- `pyproject.toml` — version bumped from 0.24.0-dev to 0.25.0-dev.
+- `src/hunter/__init__.py` — version bumped from 0.24.0-dev to 0.25.0-dev.
+- `CHANGELOG.md` — added MVP-25 completion section covering models/engine, writer, integration tests, safety constraints, and test results.
+- `docs/handoff/CURRENT_STATE.md` — marked MVP-25 complete, version 0.25.0-dev, set Discovery Engine planning as next step, noted remaining future engines (portfolio, backtesting, reporting/CLI) as future work.
+- `tasks/active.md` — marked MVP-25 complete, set Discovery Engine planning only as next recommended task.
+- `tasks/agent-log.md` — this entry.
+
+Summary:
+
+Finalized MVP-25 Open Interest Engine. Full implementation spanned Step 1 (models/engine), Step 2 (writer), and Step 3 (integration tests). This finalization step updated documentation and version metadata without modifying `src/hunter/open_interest/` or `tests/`. All safety boundaries remain intact: open interest output is research-only, not a trading signal, not trade/strategy/execution/portfolio/universe approval, not Freqtrade input, no Binance/exchange/API/live data, no action commands, no leverage/shorting, and no feedback into execution paths. The writer only writes explicit output paths and never reads input files or follows metadata references.
+
+Final validation:
+
+- `pytest -q --import-mode=importlib tests/test_open_interest` — 207 passed.
+- `pytest -q --import-mode=importlib` — 4835 passed, 1 skipped.
+
+Next step: Discovery Engine planning only; implementation not started and requires human approval. Remaining future engines beyond Discovery Engine (portfolio, backtesting, reporting/CLI) are future work and not started.
+
+---
+
 ### MVP-24 Step 4 — Finalization
 
 Date: 2026-07-02
