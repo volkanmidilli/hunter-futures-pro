@@ -53,6 +53,16 @@ from hunter.backtest.models import (
     WATCHLIST_ZERO_WEIGHT,
     has_unsafe_backtest_content,
 )
+from hunter.backtest.writer import (
+    atomic_write_csv_backtest_report,
+    atomic_write_json_backtest_report,
+    atomic_write_markdown_backtest_report,
+    backtest_report_to_csv_text,
+    backtest_report_to_dict,
+    backtest_report_to_json_text,
+    backtest_report_to_markdown,
+    write_backtest_report,
+)
 
 __all__ = [
     "BACKTEST_ADVISORY_REASON_CODES",
@@ -92,7 +102,15 @@ __all__ = [
     "NOT_TRADING_ADVICE",
     "UNSAFE_BACKTEST_CONTENT",
     "WATCHLIST_ZERO_WEIGHT",
+    "atomic_write_csv_backtest_report",
+    "atomic_write_json_backtest_report",
+    "atomic_write_markdown_backtest_report",
+    "backtest_report_to_csv_text",
+    "backtest_report_to_dict",
+    "backtest_report_to_json_text",
+    "backtest_report_to_markdown",
     "build_backtest_report",
     "build_backtest_safety_flags",
     "has_unsafe_backtest_content",
+    "write_backtest_report",
 ]
