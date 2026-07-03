@@ -2,13 +2,13 @@
 
 ## Current Task
 
-MVP-27 — Portfolio Construction Engine is complete. Next phase: not started; requires human direction.
+MVP-28 — Local Research Backtesting Engine is complete. Next phase: not started; requires human direction.
 
 ## Status
 
-MVP-27 — Portfolio Construction Engine is complete. SPEC-028 implemented across models, engine, writer, and integration tests. Version 0.27.0-dev. Full test suite: 5178 tests passing, 1 skipped using `pytest --import-mode=importlib`. All four steps (Step 1 models/engine, Step 2 writer, Step 3 integration tests, Step 4 finalization) completed. No source changes made in finalization. Safety boundaries preserved: output is research-only, not a trading signal, not trade/strategy/execution/portfolio/universe approval, and not position sizing; no Freqtrade input, no Binance/exchange/API/live data, no order/execution/action commands, no leverage/shorting, no feedback into execution/strategy/portfolio paths. The writer only writes explicit output paths and never reads input files or follows metadata references. Next phase: not started; requires human direction.
+MVP-28 — Local Research Backtesting Engine is complete. SPEC-029 implemented across models, engine, writer, and integration tests. Version 0.28.0-dev. Full test suite: 5299 tests passing, 1 skipped using `pytest --import-mode=importlib`. All four steps (Step 1 models/engine, Step 2 writer, Step 3 integration tests, Step 4 finalization) completed. No source changes made in finalization. Safety boundaries preserved: output is research-only, not a trading signal, not trade/strategy/execution/portfolio approval, and not Freqtrade input; no Freqtrade input, no Binance/exchange/API/live data, no order/execution/action commands, no leverage/shorting, no feedback into execution/strategy/portfolio paths. The writer only writes explicit output paths and never reads input files or follows metadata references. Next phase: not started; requires human direction.
 
-MVP-26 — Discovery Engine is complete. Next recommended step: Portfolio Construction planning only; implementation not started. [SUPERSEDED]
+MVP-27 — Portfolio Construction Engine is complete. Next recommended step: not started; requires human direction. [SUPERSEDED]
 
 MVP-24 — Relative Strength Engine is complete and committed. SPEC-025 implemented across models, engine, writer, and integration tests. Version 0.24.0-dev. Full test suite: 4628 tests passing, 1 skipped using `pytest --import-mode=importlib`. All four steps (Step 1 models/engine, Step 2 writer, Step 3 integration tests, Step 4 finalization) completed. No source changes made in finalization. Safety boundaries preserved. [SUPERSEDED]
 

@@ -2,6 +2,51 @@
 
 All important project changes will be recorded in this file.
 
+## MVP-28 — Local Research Backtesting Engine (Complete)
+
+**Version:** 0.27.0-dev → 0.28.0-dev.
+
+**SPEC-029:** `specs/SPEC-029-Local-Research-Backtesting-Engine.md` — implemented across models, engine, writer, and integration tests.
+
+**Commit:** `TBD` — feat: complete MVP-28 local research backtesting engine.
+
+- **MVP-28 Step 1 — Backtest Models and Engine (Complete)**
+  - `src/hunter/backtest/__init__.py` — public API exports including engine and writer functions and constants.
+  - `src/hunter/backtest/models.py` — frozen dataclasses, enums, reason-code partitions, `FORBIDDEN_BACKTEST_TERMS`, `BacktestState`, `BacktestAllocationMode`, `BacktestInputKind`, `BacktestPriceBar`, `BacktestCandidateDecision`, `BacktestInput`, `BacktestRunConfig`, `BacktestPortfolioSnapshot`, `BacktestCandidateResult`, `BacktestPortfolioResult`, `BacktestDataQuality`, `BacktestSafetyFlags`, `BacktestReport`, plus the fail-closed `BacktestReport.blocked(...)` factory.
+  - `src/hunter/backtest/engine.py` — pure local backtest engine: safety-flag construction, forbidden-content detection, config validation, candidate classification, period-return calculation, candidate-level metrics (total return, max drawdown, volatility, win rate, observation count, missing data), simulated allocation weights for `EQUAL_WEIGHT`, `RESEARCH_WEIGHT`, and `CUSTOM_WEIGHT` modes, portfolio equity curve built from the union of included/capped candidate timestamps with no carry-forward, missing bars contributing zero weight/return, portfolio-level metrics derived from the equity curve, data quality, and fail-closed report construction.
+  - States: `INCLUDED`, `CAPPED`, `WATCHLIST`, `EXCLUDED`, `INSUFFICIENT_DATA`, `BLOCKED`.
+  - Deterministic local research-only backtesting over caller-provided in-memory `BacktestInput` objects and `BacktestPriceBar` price history.
+  - `include_excluded_candidates=True` keeps EXCLUDED pairs visible in `BacktestReport.candidate_results`; `include_excluded_candidates=False` omits only EXCLUDED pairs from the candidate results tuple while `portfolio_result` and `data_quality` counts still reflect all inputs.
+  - BLOCKED and INSUFFICIENT_DATA candidates always remain visible regardless of the inclusion flag.
+  - `block_on_missing_context=False` keeps missing-decision pairs as `INSUFFICIENT_DATA`; `block_on_missing_context=True` marks them as `BLOCKED`.
+  - `allow_missing_decision=True` allows candidates with price bars but no decision to be simulated as equal-weight when the allocation mode permits.
+  - Rounding policy: raw prices 8 decimals, period returns 8 decimals, sub-metrics 4 decimals, final percentage metrics 2 decimals.
+  - Deterministic output ordering by state priority, total return descending, max drawdown ascending, pair ascending.
+
+- **MVP-28 Step 2 — Backtest Writer (Complete)**
+  - `src/hunter/backtest/writer.py` — deterministic serialization and atomic writers.
+  - `backtest_report_to_dict` / `backtest_report_to_json_text` — deterministic JSON with sorted keys, enums as strings, ISO-8601 datetimes, tuples as lists, mappings as plain dicts.
+  - `backtest_report_to_csv_text` — stable column order, one row per candidate, pipe-delimited reason codes and tags, empty cells for `None` values.
+  - `backtest_report_to_markdown` — H1 title, explicit research-only safety notice immediately after H1, report identity, portfolio summary, data quality, candidate results, equity curve summary, configuration, reason codes, safety flags, and metadata.
+  - `atomic_write_json_backtest_report`, `atomic_write_csv_backtest_report`, `atomic_write_markdown_backtest_report` — temp-file + fsync + `os.replace` atomic writes, parent directory creation.
+  - `write_backtest_report` — combined writer producing JSON, CSV, and Markdown.
+  - Default output paths:
+    - `data/backtest/latest_backtest_report.json`
+    - `data/backtest/latest_backtest_results.csv`
+    - `reports/backtest/latest_backtest_report.md`
+
+- **MVP-28 Step 3 — Backtest Integration Tests (Complete)**
+  - `tests/test_backtest/test_integration.py` — end-to-end report builds, deterministic output, candidate-level metrics, portfolio-level metrics from equity curve, timestamp union alignment, no carry-forward, missing-bar handling, missing/insufficient price history, invalid close rejection, unsafe-content fail-closed behavior, metadata opacity, `volatility_scale_factor` config, `start_timestamp`/`end_timestamp` filtering, JSON/CSV/Markdown writer artifacts, determinism, no-mutation, and public export coverage.
+
+- **Safety Constraints**
+  - Output is a human-audit / research-only artifact only; not a trading signal, not trade approval, not strategy approval, not execution approval, not portfolio approval, and not Freqtrade input.
+  - No Freqtrade input, no Binance/API/exchange/live-data connection, no order/execution instructions, no leverage/shorting semantics, no action commands.
+  - No feedback into execution, strategy, or portfolio paths.
+  - Engine and writer do not read input files, do not follow metadata/file references, and do not validate/traverse opaque strings.
+
+- **Test Results**
+  - Full test suite: 5299 tests passing, 1 skipped using `pytest --import-mode=importlib`.
+
 ## MVP-27 — Portfolio Construction Engine (Complete)
 
 **Version:** 0.26.0-dev → 0.27.0-dev.
