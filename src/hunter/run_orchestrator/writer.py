@@ -18,6 +18,7 @@ import io
 import json
 import os
 from collections.abc import Mapping
+from dataclasses import is_dataclass
 from datetime import datetime, timezone
 from enum import Enum
 from pathlib import Path
@@ -74,8 +75,15 @@ def _serialize_value(value: Any) -> Any:
         return [_serialize_value(v) for v in value]
     if isinstance(value, list):
         return [_serialize_value(v) for v in value]
+    if isinstance(value, (set, frozenset)):
+        return [_serialize_value(v) for v in sorted(value, key=str)]
     if isinstance(value, Mapping):
         return {str(k): _serialize_value(v) for k, v in sorted(value.items())}
+    if is_dataclass(value):
+        return {
+            name: _serialize_value(getattr(value, name))
+            for name in value.__dataclass_fields__
+        }
     return value
 
 

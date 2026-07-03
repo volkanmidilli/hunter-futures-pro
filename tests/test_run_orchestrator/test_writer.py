@@ -14,6 +14,13 @@ from typing import Any
 
 import pytest
 
+from hunter.backtest import (
+    BacktestAllocationMode,
+    BacktestCandidateDecision,
+    BacktestInput,
+    BacktestPriceBar,
+    BacktestRunConfig,
+)
 from hunter.run_orchestrator import (
     DEFAULT_CSV_PATH,
     DEFAULT_JSON_PATH,
@@ -51,6 +58,31 @@ from hunter.run_orchestrator import (
 @pytest.fixture
 def fixed_generated_at() -> datetime:
     return datetime(2024, 1, 1, 12, 0, 0, tzinfo=timezone.utc)
+
+
+@pytest.fixture
+def backtest_dataclass_step() -> ResearchRunStep:
+    """A backtest step whose inputs contain nested engine dataclasses."""
+    decision = BacktestCandidateDecision(
+        pair="BTC/USDT",
+        state="INCLUDED",
+        classification="CORE_RESEARCH_ALLOCATION",
+        final_weight_pct=50.0,
+    )
+    bars = (
+        BacktestPriceBar(
+            pair="BTC/USDT",
+            timestamp=datetime(2024, 1, 1, tzinfo=timezone.utc),
+            close=100.0,
+        ),
+    )
+    inp = BacktestInput(pair="BTC/USDT", decision=decision, price_bars=bars)
+    config = BacktestRunConfig(allocation_mode=BacktestAllocationMode.EQUAL_WEIGHT)
+    return ResearchRunStep(
+        kind=ResearchRunStepKind.BACKTEST,
+        step_id="bt-dc",
+        inputs={"inputs": (inp,), "config": config},
+    )
 
 
 @pytest.fixture
@@ -139,6 +171,28 @@ def sample_result(
         state=ResearchRunState.COMPLETED,
         metadata={"mode": "test"},
         notes=("completed run",),
+    )
+
+
+def _make_result_for_step(
+    step: ResearchRunStep, generated_at: datetime, run_id: str
+) -> ResearchRunResult:
+    """Build a minimal ResearchRunResult wrapping the given step."""
+    config = ResearchRunConfig(generated_at=generated_at)
+    plan = ResearchRunPlan(run_id=run_id, steps=(step,))
+    return ResearchRunResult(
+        run_id=run_id,
+        config=config,
+        plan=plan,
+        steps=(),
+        artifacts=(),
+        data_quality=ResearchRunDataQuality(),
+        safety_flags=ResearchRunSafetyFlags(),
+        reason_codes=(RESEARCH_ONLY,),
+        generated_at=generated_at,
+        state=ResearchRunState.COMPLETED,
+        metadata={},
+        notes=(),
     )
 
 
@@ -325,6 +379,50 @@ class TestAtomicWrites:
 
 
 # ---------------------------------------------------------------------------
+# Nested dataclass serialization (defect fix)
+# ---------------------------------------------------------------------------
+
+
+class TestNestedDataclassSerialization:
+    def test_json_serializes_backtest_step_inputs(
+        self,
+        backtest_dataclass_step: ResearchRunStep,
+        fixed_generated_at: datetime,
+    ) -> None:
+        result = _make_result_for_step(backtest_dataclass_step, fixed_generated_at, "r-dc")
+        text = research_run_result_to_json_text(result)
+        parsed = json.loads(text)
+        step_inputs = parsed["plan"]["steps"][0]["inputs"]
+        assert step_inputs["config"]["allocation_mode"] == "EQUAL_WEIGHT"
+        assert len(step_inputs["inputs"]) == 1
+        assert step_inputs["inputs"][0]["pair"] == "BTC/USDT"
+        assert step_inputs["inputs"][0]["decision"]["state"] == "INCLUDED"
+
+    def test_atomic_write_backtest_step_inputs(
+        self,
+        backtest_dataclass_step: ResearchRunStep,
+        fixed_generated_at: datetime,
+        tmp_path: Path,
+    ) -> None:
+        result = _make_result_for_step(backtest_dataclass_step, fixed_generated_at, "r-write")
+        target = tmp_path / "run_summary.json"
+        atomic_write_json_research_run_result(result, target)
+        assert target.exists()
+        parsed = json.loads(target.read_text(encoding="utf-8"))
+        assert parsed["plan"]["steps"][0]["kind"] == "backtest"
+
+    def test_no_file_reference_traversal(
+        self,
+        backtest_dataclass_step: ResearchRunStep,
+        fixed_generated_at: datetime,
+        tmp_path: Path,
+    ) -> None:
+        # The writer must treat the path-like string in inputs as opaque.
+        result = _make_result_for_step(backtest_dataclass_step, fixed_generated_at, "r-opaque")
+        write_research_run_result(result, json_path=tmp_path / "out.json")
+
+
+# ---------------------------------------------------------------------------
 # Blocked / failed serialization
 # ---------------------------------------------------------------------------
 
@@ -394,7 +492,7 @@ class TestBlockedAndFailedSerialization:
 
 
 # ---------------------------------------------------------------------------
-# No mutation / opaque references
+# No mutation
 # ---------------------------------------------------------------------------
 
 
