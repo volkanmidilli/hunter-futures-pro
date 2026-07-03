@@ -2,11 +2,11 @@
 
 ## Current Task
 
-MVP-29 — Local Research Reporting CLI is complete. Next phase: not started; requires human direction.
+MVP-30 — Local Research Run Orchestrator is complete. Next phase: not started; requires human direction.
 
 ## Status
 
-MVP-29 — Local Research Reporting CLI is complete. SPEC-030 implemented across models, commands, CLI entry, and integration tests. Version 0.29.0-dev. Full test suite: 5405 tests passing, 1 skipped using `pytest --import-mode=importlib`. All four steps (Step 1 models/commands, Step 2 CLI entry, Step 3 integration tests, Step 4 finalization) completed. No source changes made in finalization. Safety boundaries preserved: output is research-only, not a trading signal, not trade/strategy/execution/portfolio/universe approval, and not Freqtrade input; no Freqtrade input, no Binance/exchange/API/live data, no order/execution/action commands, no leverage/shorting, no feedback into execution/strategy/portfolio paths. Current supported entry is the callable `main(argv)` API; no `__main__.py` or console script entry has been added. Next phase: not started; requires human direction.
+MVP-30 — Local Research Run Orchestrator is complete. SPEC-031 implemented across models, engine, writer, and integration tests. Version 0.30.0-dev. Full test suite: 5491 tests passing, 1 skipped using `pytest --import-mode=importlib`. All four steps (Step 1 models/engine, Step 2 writer, Step 3 integration tests, Step 4 finalization) completed. Source changes in finalization limited to version bump and documentation only. Safety boundaries preserved: local, call-triggered, audit-only coordinator; no trading signal, no trade/strategy/execution/portfolio/universe approval, and not Freqtrade input; no Freqtrade input, no Binance/exchange/API/live data, no order/execution/action commands, no leverage/shorting, no feedback into execution/strategy/portfolio paths; no scheduler, daemon, background job runner, server, REST API, database, Web UI, or dashboard introduced. Current supported entry is the callable `build_research_run_result(plan, config)` public API; no standalone runner or console script entry has been added. Next phase: not started; requires human direction.
 
 MVP-28 — Local Research Backtesting Engine is complete. Next recommended step: not started; requires human direction. [SUPERSEDED]
 

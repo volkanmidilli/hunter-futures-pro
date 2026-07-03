@@ -4,13 +4,29 @@ Hunter Futures Pro
 
 ## Version
 
-0.29.0-dev
+0.30.0-dev
 
 ## Current Phase
 
-MVP-29 is complete. SPEC-030 for MVP-29 Local Research Reporting CLI is implemented across models, commands, CLI entry, and integration tests. Version 0.29.0-dev. Full test suite: 5405 tests passing, 1 skipped using `pytest --import-mode=importlib`. Next phase: not started; requires human direction. Reporting CLI output is a human-audit / research-only artifact only, not a trading signal, not a trade approval, not a strategy approval, not an execution approval, not a portfolio approval, not a universe approval, and not Freqtrade input. It must not be consumed by execution, strategy, Freqtrade shell, order, exchange, or any MVP execution path. No reporting CLI feedback into execution paths. No report/discovery/operator/index/search/bundle/chronicle/digest/quality-gate/handoff/archive-manifest/release-notes/audit-catalog/audit-closure/audit-snapshot/backtest feedback into execution paths. Referenced artifact files are not read. File references and metadata strings are not traversed, opened, followed, validated, or executed. Human audit guide is advisory-only and not gating. No action commands are emitted. No release/deployment checklist semantics. No Web UI, no dashboard, no database persistence, no config YAML, no JSON schema, no Freqtrade strategy class, no freqtrade import, no Binance, no real exchange, no API keys, no live trading, no real orders, no leverage, no shorting, no real entry/exit execution logic, no production data reads/writes. Not a runtime registry, indexer, crawler, scheduler, routing layer, dashboard, database, API, event store, or task runner. Current supported entry is the callable `main(argv)` API; no `__main__.py` or console script entry has been added. Remaining future work is not started.
+MVP-30 is complete. SPEC-031 for MVP-30 Local Research Run Orchestrator is implemented across models, engine, writer, and integration tests. Version 0.30.0-dev. Full test suite: 5491 tests passing, 1 skipped using `pytest --import-mode=importlib`. Next phase: not started; requires human direction. The run orchestrator is a local, call-triggered, deterministic, audit-only coordinator over existing local research engines. It is not a trading signal, not trade approval, not strategy approval, not execution approval, not portfolio approval, not universe approval, and not Freqtrade input. It must not be consumed by execution, strategy, Freqtrade shell, order, exchange, or any MVP execution path. No orchestrator feedback into execution paths. No scheduler, daemon, background job runner, server, REST API, database, Web UI, or dashboard introduced. No Binance, exchange, API, live data, network, real trading, order, leverage, shorting, or Freqtrade strategy/runtime semantics introduced. Metadata and file-reference strings remain opaque local strings; they are never opened, traversed, validated, fetched, or executed. All outputs are human-audit / research-only artifacts. Remaining future work is not started.
 
 ## Current Status
+
+MVP-30 — Local Research Run Orchestrator is complete.
+- SPEC-031: `specs/SPEC-031-Local-Research-Run-Orchestrator.md` — implemented.
+- `src/hunter/run_orchestrator/__init__.py` — public API exports for models, engine, writer, reason codes, and safety constants.
+- `src/hunter/run_orchestrator/models.py` — frozen dataclasses, enums, reason codes, and forbidden-term guard.
+- `src/hunter/run_orchestrator/engine.py` — pure call-triggered orchestration engine with plan validation, fail-closed dispatch, deterministic aggregation, safety flags, and reason codes.
+- `src/hunter/run_orchestrator/writer.py` — deterministic JSON/CSV/Markdown serialization and atomic writes for `ResearchRunResult`.
+- `tests/test_run_orchestrator/test_models.py` — model tests.
+- `tests/test_run_orchestrator/test_engine.py` — engine tests.
+- `tests/test_run_orchestrator/test_writer.py` — writer tests.
+- `tests/test_run_orchestrator/test_integration.py` — integration tests.
+- 86 run_orchestrator tests total.
+- Full suite: 5491 tests passing, 1 skipped using `pytest --import-mode=importlib`.
+- Safety: local, call-triggered, audit-only coordinator; no scheduler, daemon, background job runner, server, REST API, database, Web UI, or dashboard; no Freqtrade input, no Binance/exchange/API/live data, no order/execution/action commands, no leverage/shorting, no feedback into execution/strategy/portfolio paths; file references and metadata strings not traversed/opened/followed/validated/executed.
+- Current supported entry: `build_research_run_result(plan, config)` public API; callable only from local code/tests, no standalone runner added.
+- Next phase: not started; requires human direction.
 
 MVP-29 — Local Research Reporting CLI is complete.
 - SPEC-030: `specs/SPEC-030-Local-Research-Reporting-CLI.md` — implemented.

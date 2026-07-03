@@ -1,5 +1,27 @@
 ---
 
+### MVP-30 Step 4 — Finalization
+
+Date: 2026-07-03
+
+Agent: WrongStack
+
+Task: MVP-30 Step 4 — Finalize Local Research Run Orchestrator: version bump to 0.30.0-dev, update CHANGELOG.md, docs/handoff/CURRENT_STATE.md, tasks/active.md, and tasks/agent-log.md.
+
+Files modified:
+
+- `pyproject.toml` — version bumped from 0.29.0-dev to 0.30.0-dev.
+- `src/hunter/__init__.py` — version bumped from 0.29.0-dev to 0.30.0-dev.
+- `CHANGELOG.md` — added MVP-30 completion section covering models/engine, writer, integration tests, nested-dataclass serialization fix, safety boundaries, and test results.
+- `docs/handoff/CURRENT_STATE.md` — marked MVP-30 complete, version 0.30.0-dev, described run_orchestrator as local call-triggered audit-only coordinator, set next phase as not started pending human direction.
+- `tasks/active.md` — marked MVP-30 complete, set next phase as not started pending human direction.
+- `tasks/agent-log.md` — this entry.
+
+Test results:
+
+- `pytest tests/test_run_orchestrator -q --import-mode=importlib`: 86 passed.
+- `pytest -q --import-mode=importlib`: 5491 passed, 1 skipped.
+
 ### MVP-29 Step 4 — Finalization
 
 Date: 2026-07-03

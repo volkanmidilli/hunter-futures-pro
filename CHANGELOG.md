@@ -2,6 +2,46 @@
 
 All important project changes will be recorded in this file.
 
+## MVP-30 — Local Research Run Orchestrator (Complete)
+
+**Version:** 0.29.0-dev → 0.30.0-dev.
+
+**SPEC-031:** `specs/SPEC-031-Local-Research-Run-Orchestrator.md` — implemented across models, engine, writer, and integration tests.
+
+**Commit:** `TBD` — feat: complete MVP-30 local research run orchestrator.
+
+- **MVP-30 Step 1 — Models and Engine (Complete)**
+  - `src/hunter/run_orchestrator/__init__.py` — public API exports for models, engine, writer, reason codes, and safety constants.
+  - `src/hunter/run_orchestrator/models.py` — frozen dataclasses: `ResearchRunPlan`, `ResearchRunStep`, `ResearchRunConfig`, `ResearchRunStepResult`, `ResearchRunResult`, `ResearchRunArtifact`, `ResearchRunDataQuality`, `ResearchRunSafetyFlags`; enums `ResearchRunStepKind`, `ResearchRunStepState`, `ResearchRunState`; reason-code constants and forbidden-term guard.
+  - `src/hunter/run_orchestrator/engine.py` — pure call-triggered orchestration engine: plan validation, fail-closed dispatch to existing local research engines (backtest, portfolio construction, discovery, reporting CLI sample, audit summaries), deterministic aggregation, safety flags, and reason codes.
+  - `tests/test_run_orchestrator/test_models.py` — model validation, safety flags, reason codes.
+  - `tests/test_run_orchestrator/test_engine.py` — plan validation, step dispatch, fail-fast / continue modes, fail-closed behavior, unsafe-content blocking, determinism, no input mutation.
+
+- **MVP-30 Step 2 — Writer (Complete)**
+  - `src/hunter/run_orchestrator/writer.py` — deterministic JSON/CSV/Markdown serialization and atomic writes for `ResearchRunResult`.
+  - Includes `research_run_result_to_dict`, `research_run_result_to_json_text`, `research_run_result_to_csv_text`, `research_run_result_to_markdown_text`, `write_research_run_result`, and atomic write helpers.
+  - Default local artifact paths: `data/run_orchestrator/run_summary.json`, `data/run_orchestrator/run_steps.csv`, `reports/run_orchestrator/run_summary.md`.
+  - Markdown includes H1 title, immediate research-only/audit-only safety notice, and sections for run summary, data quality, step results, artifacts, safety flags, reason codes, metadata, and notes.
+  - `tests/test_run_orchestrator/test_writer.py` — dict/JSON/CSV/Markdown serialization, atomic writes, determinism, blocked/failed runs, no mutation, no file-reference traversal, nested dataclass serialization.
+
+- **MVP-30 Step 3 — Integration Tests (Complete)**
+  - `tests/test_run_orchestrator/test_integration.py` — end-to-end runs, backtest step integration, reporting CLI sample step integration, failure/fail-fast/continue behavior, unsafe content blocking, writer end-to-end, determinism, no mutation, public exports, and safety boundaries.
+
+- **MVP-30 Writer Serialization Fix (Complete)**
+  - Fixed `writer._serialize_value` to recursively serialize dataclasses, resolving `TypeError: Object of type BacktestRunConfig is not JSON serializable` when writing `ResearchRunResult` from a `BACKTEST` step.
+  - Preserved existing enum, datetime, tuple, list, mapping, frozenset, and `MappingProxyType` handling.
+
+- **Safety and Boundaries**
+  - The orchestrator is local, call-triggered, deterministic, and audit-only.
+  - No scheduler, daemon, background job runner, server, REST API, database, Web UI, or dashboard introduced.
+  - No Binance, exchange, API, live data, network, real trading, order, leverage, shorting, or Freqtrade strategy/runtime semantics introduced.
+  - All outputs are human-audit / research-only artifacts; no action commands or feedback into execution paths.
+  - Metadata and file-reference strings remain opaque local strings; they are never opened, traversed, validated, fetched, or executed by the orchestrator.
+
+- **Test Results**
+  - `pytest tests/test_run_orchestrator -q --import-mode=importlib`: 86 passed.
+  - `pytest -q --import-mode=importlib`: 5491 passed, 1 skipped.
+
 ## MVP-29 — Local Research Reporting CLI (Complete)
 
 **Version:** 0.28.0-dev → 0.29.0-dev.
