@@ -9,6 +9,7 @@ execution commands.
 
 from __future__ import annotations
 
+from hunter.reporting_cli.cli import main
 from hunter.reporting_cli.commands import (
     CLI_SAFETY_NOTICE,
     DEFAULT_RENDER_SAMPLE_OUTPUT_DIR,
@@ -46,6 +47,7 @@ __all__ = [
     "CLISafetyFlags",
     "build_baseline_safety_flags",
     "dispatch_command",
+    "main",
     "run_list_artifacts_command",
     "run_render_sample_command",
     "run_safety_summary_command",
