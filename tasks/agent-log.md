@@ -1,5 +1,35 @@
 ---
 
+### MVP-29 Step 4 — Finalization
+
+Date: 2026-07-03
+
+Agent: WrongStack
+
+Task: MVP-29 Step 4 — Finalize Local Research Reporting CLI: version bump, changelog, current state, active task, and agent log.
+
+Files modified:
+
+- `pyproject.toml` — version bumped from 0.28.0-dev to 0.29.0-dev.
+- `src/hunter/__init__.py` — version bumped from 0.28.0-dev to 0.29.0-dev.
+- `CHANGELOG.md` — added MVP-29 completion section covering models/commands, CLI entry, integration tests, safety constraints, and test results.
+- `docs/handoff/CURRENT_STATE.md` — marked MVP-29 complete, version 0.29.0-dev, set next phase as not started pending human direction, noted current supported entry is the callable `main(argv)` API.
+- `tasks/active.md` — marked MVP-29 complete, set next phase as not started pending human direction.
+- `tasks/agent-log.md` — this entry.
+
+Summary:
+
+Finalized MVP-29 Local Research Reporting CLI. Full implementation spanned Step 1 (models/commands), Step 2 (CLI entry), and Step 3 (integration tests). This finalization step updated documentation and version metadata without modifying `src/hunter/reporting_cli/` or `tests/`. All safety boundaries remain intact: reporting CLI output is research-only, not a trading signal, not trade/strategy/execution/portfolio/universe approval, and not Freqtrade input; no Freqtrade input, no Binance/exchange/API/live data, no order/execution/action commands, no leverage/shorting, and no feedback into execution paths. Commands do not read input files or follow metadata references. Current supported entry is the callable `main(argv)` API; no `__main__.py` or console script entry was added.
+
+Final validation:
+
+- `pytest -q --import-mode=importlib tests/test_reporting_cli` — 106 passed.
+- `pytest -q --import-mode=importlib` — 5405 passed, 1 skipped.
+
+Next step: not started; requires human direction.
+
+---
+
 ### MVP-28 Step 4 — Finalization
 
 Date: 2026-07-03

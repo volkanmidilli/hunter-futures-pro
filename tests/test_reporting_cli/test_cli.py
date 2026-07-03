@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import pytest
 
+from hunter import __version__ as hunter_version
 from hunter.reporting_cli import CLIExitCode, CLI_SAFETY_NOTICE, main
 
 
@@ -13,7 +14,7 @@ class TestVersion:
         captured = capsys.readouterr()
         assert code == CLIExitCode.OK.value
         assert "hunter-futures-pro" in captured.out
-        assert "0.28.0" in captured.out
+        assert hunter_version in captured.out
 
     def test_stdout_has_safety_notice(self, capsys: pytest.CaptureFixture[str]) -> None:
         # version command includes safety notice in result.notes, but stdout is

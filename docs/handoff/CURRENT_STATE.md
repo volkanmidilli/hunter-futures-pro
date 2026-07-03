@@ -4,15 +4,34 @@ Hunter Futures Pro
 
 ## Version
 
-0.28.0-dev
+0.29.0-dev
 
 ## Current Phase
 
-MVP-28 is complete. SPEC-029 for MVP-28 Local Research Backtesting Engine is implemented across models, engine, writer, and integration tests. Version 0.28.0-dev. Full test suite: 5299 tests passing, 1 skipped using `pytest --import-mode=importlib`. Next phase: not started; requires human direction. Backtest reports are a human-audit / research-only artifact only, not a trading signal, not a trade approval, not a strategy approval, not an execution approval, not a portfolio approval, and not Freqtrade input. They must not be consumed by execution, strategy, Freqtrade shell, order, exchange, or any MVP execution path. No backtest feedback into execution paths. No report/discovery/operator/index/search/bundle/chronicle/digest/quality-gate/handoff/archive-manifest/release-notes/audit-catalog/audit-closure/audit-snapshot feedback into execution paths. Referenced artifact files are not read. File references and metadata strings are not traversed, opened, followed, validated, or executed. Human audit guide is advisory-only and not gating. No action commands are emitted. No release/deployment checklist semantics. No Web UI, no dashboard, no database persistence, no config YAML, no JSON schema, no Freqtrade strategy class, no freqtrade import, no Binance, no real exchange, no API keys, no live trading, no real orders, no leverage, no shorting, no real entry/exit execution logic, no production data reads/writes. Not a runtime registry, indexer, crawler, scheduler, routing layer, dashboard, database, API, event store, or task runner. Remaining future engines (reporting/CLI) are future work.
+MVP-29 is complete. SPEC-030 for MVP-29 Local Research Reporting CLI is implemented across models, commands, CLI entry, and integration tests. Version 0.29.0-dev. Full test suite: 5405 tests passing, 1 skipped using `pytest --import-mode=importlib`. Next phase: not started; requires human direction. Reporting CLI output is a human-audit / research-only artifact only, not a trading signal, not a trade approval, not a strategy approval, not an execution approval, not a portfolio approval, not a universe approval, and not Freqtrade input. It must not be consumed by execution, strategy, Freqtrade shell, order, exchange, or any MVP execution path. No reporting CLI feedback into execution paths. No report/discovery/operator/index/search/bundle/chronicle/digest/quality-gate/handoff/archive-manifest/release-notes/audit-catalog/audit-closure/audit-snapshot/backtest feedback into execution paths. Referenced artifact files are not read. File references and metadata strings are not traversed, opened, followed, validated, or executed. Human audit guide is advisory-only and not gating. No action commands are emitted. No release/deployment checklist semantics. No Web UI, no dashboard, no database persistence, no config YAML, no JSON schema, no Freqtrade strategy class, no freqtrade import, no Binance, no real exchange, no API keys, no live trading, no real orders, no leverage, no shorting, no real entry/exit execution logic, no production data reads/writes. Not a runtime registry, indexer, crawler, scheduler, routing layer, dashboard, database, API, event store, or task runner. Current supported entry is the callable `main(argv)` API; no `__main__.py` or console script entry has been added. Remaining future work is not started.
 
 ## Current Status
 
-MVP-28 — Local Research Backtesting Engine is complete.
+MVP-29 — Local Research Reporting CLI is complete.
+- SPEC-030: `specs/SPEC-030-Local-Research-Reporting-CLI.md` — implemented.
+- `src/hunter/reporting_cli/__init__.py` — public API exports including `main`, command runners, constants, and models.
+- `src/hunter/reporting_cli/models.py` — frozen dataclasses, enums, `REPORTING_CLI_REASON_CODES`, `CLIExitCode`, `CLIOutputFormat`, `CLICommandKind`, `CLISafetyFlags`, `CLIArtifactSummary`, `CLIInvocation`, `CLICommandResult`.
+- `src/hunter/reporting_cli/commands.py` — pure deterministic command functions: `run_version_command`, `run_safety_summary_command`, `run_list_artifacts_command`, `run_validate_artifact_paths_command`, `run_render_sample_command`, `dispatch_command`.
+- `src/hunter/reporting_cli/cli.py` — thin callable entry wrapper `main(argv)` with argument parsing, help text, and exit-code dispatch.
+- `tests/test_reporting_cli/test_models.py` — model tests.
+- `tests/test_reporting_cli/test_commands.py` — command tests.
+- `tests/test_reporting_cli/test_cli.py` — CLI entry tests.
+- `tests/test_reporting_cli/test_integration.py` — integration tests.
+- 106 reporting_cli tests total.
+- Full suite: 5405 tests passing, 1 skipped using `pytest --import-mode=importlib`.
+- Safety: human-audit / research-only artifact only, not a trading signal, not trade approval, not strategy approval, not execution approval, not portfolio approval, not universe approval, and not Freqtrade input; no Freqtrade input, no Binance/exchange/API/live data, no order/execution/action commands, no leverage/shorting, no feedback into execution/strategy/portfolio paths, file references and metadata strings not traversed/opened/followed/validated/executed, commands do not read input files.
+- Current supported entry: callable `main(argv)` API; no `__main__.py` or console script entry has been added.
+- Commands supported: `version`, `safety-summary`, `list-artifacts`, `validate-artifact-paths`, `render-sample`.
+- Output formats: `TEXT`, `JSON`, `MARKDOWN` (for `safety-summary`).
+- Default outputs (render-sample): `data/reporting_cli/samples/`.
+- Next phase: not started; requires human direction.
+
+MVP-28 — Local Research Backtesting Engine is complete. [SUPERSEDED]
 - SPEC-029: `specs/SPEC-029-Local-Research-Backtesting-Engine.md` — implemented.
 - `src/hunter/backtest/__init__.py` — public API exports including engine and writer functions and constants.
 - `src/hunter/backtest/models.py` — frozen dataclasses, enums, reason-code partitions, `FORBIDDEN_BACKTEST_TERMS`, `BacktestState`, `BacktestAllocationMode`, `BacktestInputKind`, `BacktestPriceBar`, `BacktestCandidateDecision`, `BacktestInput`, `BacktestRunConfig`, `BacktestPortfolioSnapshot`, `BacktestCandidateResult`, `BacktestPortfolioResult`, `BacktestDataQuality`, `BacktestSafetyFlags`, `BacktestReport`.

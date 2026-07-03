@@ -34,7 +34,7 @@ class TestVersionCommand:
         inv = CLIInvocation(command="version")
         result = run_version_command(inv)
         assert result.exit_code == CLIExitCode.OK
-        assert "0.28.0" in result.stdout
+        assert hunter.__version__ in result.stdout
 
     def test_result_has_data(self) -> None:
         inv = CLIInvocation(command="version")
@@ -342,7 +342,7 @@ class TestDispatchCommand:
         inv = CLIInvocation(command="version")
         result = dispatch_command(inv)
         assert result.exit_code == CLIExitCode.OK
-        assert "0.28.0" in result.stdout
+        assert hunter.__version__ in result.stdout
 
     def test_dispatches_safety_summary(self) -> None:
         inv = CLIInvocation(command="safety-summary")

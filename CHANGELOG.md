@@ -2,6 +2,38 @@
 
 All important project changes will be recorded in this file.
 
+## MVP-29 — Local Research Reporting CLI (Complete)
+
+**Version:** 0.28.0-dev → 0.29.0-dev.
+
+**SPEC-030:** `specs/SPEC-030-Local-Research-Reporting-CLI.md` — implemented across models, commands, CLI entry, and integration tests.
+
+**Commit:** `TBD` — feat: complete MVP-29 local research reporting CLI.
+
+- **MVP-29 Step 1 — Reporting CLI Models and Commands (Complete)**
+  - `src/hunter/reporting_cli/__init__.py` — public API exports including `main`, command runners, constants, and models.
+  - `src/hunter/reporting_cli/models.py` — frozen dataclasses, enums, `REPORTING_CLI_REASON_CODES`, `CLIExitCode`, `CLIOutputFormat`, `CLICommandKind`, `CLISafetyFlags`, `CLIArtifactSummary`, `CLIInvocation`, `CLICommandResult`.
+  - `src/hunter/reporting_cli/commands.py` — pure deterministic command functions: `run_version_command`, `run_safety_summary_command`, `run_list_artifacts_command`, `run_validate_artifact_paths_command`, `run_render_sample_command`, `dispatch_command`.
+  - `src/hunter/reporting_cli/cli.py` — thin callable entry wrapper `main(argv)` with argument parsing, help text, and exit-code dispatch.
+
+- **MVP-29 Step 2 — Callable CLI Entry Wrapper (Complete)**
+  - `main(argv)` parses commands and options, builds a `CLIInvocation`, dispatches via `dispatch_command`, and returns a deterministic `int` exit code.
+  - Supported commands: `version`, `safety-summary`, `list-artifacts`, `validate-artifact-paths`, `render-sample`.
+  - Output formats: `TEXT`, `JSON`, `MARKDOWN` (for `safety-summary`).
+
+- **MVP-29 Step 3 — Integration Tests (Complete)**
+  - `tests/test_reporting_cli/test_integration.py` — end-to-end command invocation, version output, safety summary formats, deterministic artifact listing, path validation (safe, traversal, network reference), render-sample dry-run and write behavior, callable `main` entry, and public export coverage.
+
+- **Safety Constraints**
+  - Output is a human-audit / research-only artifact only; not a trading signal, not trade approval, not strategy approval, not execution approval, not portfolio approval, not universe approval, and not Freqtrade input.
+  - No Freqtrade input, no Binance/API/exchange/live-data connection, no order/execution instructions, no leverage/shorting semantics, no action commands.
+  - No feedback into execution, strategy, or portfolio paths.
+  - Commands do not read input files, do not follow metadata/file references, and do not validate/traverse opaque strings except as string-only path safety checks.
+  - No `__main__.py` or console scripts added; current supported entry is the callable `main(argv)` API.
+
+- **Test Results**
+  - Full test suite: 5405 tests passing, 1 skipped using `pytest --import-mode=importlib`.
+
 ## MVP-28 — Local Research Backtesting Engine (Complete)
 
 **Version:** 0.27.0-dev → 0.28.0-dev.
