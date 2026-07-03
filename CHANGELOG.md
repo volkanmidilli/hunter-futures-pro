@@ -2,6 +2,52 @@
 
 All important project changes will be recorded in this file.
 
+## MVP-27 — Portfolio Construction Engine (Complete)
+
+**Version:** 0.26.0-dev → 0.27.0-dev.
+
+**SPEC-028:** `specs/SPEC-028-Portfolio-Construction-Engine.md` — implemented across models, engine, writer, and integration tests.
+
+**Commit:** `TBD` — feat: complete MVP-27 portfolio construction engine.
+
+- **MVP-27 Step 1 — Portfolio Construction Models and Engine (Complete)**
+  - `src/hunter/portfolio_construction/__init__.py` — public API exports including engine and writer functions and constants.
+  - `src/hunter/portfolio_construction/models.py` — frozen dataclasses, enums, reason-code partitions, `FORBIDDEN_PORTFOLIO_CONSTRUCTION_TERMS`, `PortfolioConstructionConfig`, `PortfolioConstructionSafetyFlags`, `PortfolioConstructionState`, `PortfolioConstructionClassification`, `PortfolioConstructionInputKind`, `PortfolioDiscoverySummary`, `PortfolioConstructionInput`, `PortfolioConstructionScore`, `PortfolioConstructionDataQuality`, `PortfolioConstructionUniverseSummary`, `PortfolioConstructionReport`, plus the fail-closed `PortfolioConstructionReport.blocked(...)` factory.
+  - `src/hunter/portfolio_construction/engine.py` — pure local portfolio construction engine: safety-flag construction, forbidden-content detection, discovery sub-scoring, data quality, diversification, cap readiness, filter bonus, allocation score, initial research-weight calculation, max-single-weight cap with deterministic redistribution, candidate classification, universe summary, and fail-closed report construction.
+  - States: `INCLUDED`, `CAPPED`, `WATCHLIST`, `EXCLUDED`, `INSUFFICIENT_DATA`, `BLOCKED`.
+  - Classifications: `CORE_RESEARCH_ALLOCATION`, `SATELLITE_RESEARCH_ALLOCATION`, `WATCHLIST_ALLOCATION`, `EXCLUDED_BY_CONSTRAINTS`, `INSUFFICIENT_DATA`, `BLOCKED`.
+  - Deterministic local research-only portfolio construction over caller-provided in-memory `PortfolioConstructionInput` objects and `PortfolioDiscoverySummary` context.
+  - `include_excluded_candidates=True` keeps EXCLUDED pairs visible in `PortfolioConstructionReport.scores`; `include_excluded_candidates=False` omits only EXCLUDED pairs from the scores tuple while `universe_summary` and `data_quality` counts still reflect all inputs.
+  - BLOCKED and INSUFFICIENT_DATA candidates always remain visible regardless of the inclusion flag.
+  - `block_on_missing_context=False` keeps missing-discovery pairs as `INSUFFICIENT_DATA`; `block_on_missing_context=True` marks them as `BLOCKED`.
+  - `block_on_blocked_context=True` keeps blocked discovery pairs as `BLOCKED`; `block_on_blocked_context=False` keeps them visible but blocked reasons are recorded.
+  - Rounding policy: allocation score 2 decimals, sub-scores 4 decimals, weights 4 decimals.
+  - Deterministic output ordering by state priority, final weight descending, allocation score descending, pair ascending.
+
+- **MVP-27 Step 2 — Portfolio Construction Writer (Complete)**
+  - `src/hunter/portfolio_construction/writer.py` — deterministic serialization and atomic writers.
+  - `portfolio_construction_report_to_dict` / `portfolio_construction_report_to_json_text` — deterministic JSON with sorted keys, enums as strings, ISO-8601 datetimes, tuples as lists, mappings as plain dicts.
+  - `portfolio_construction_report_to_csv_text` — stable column order, one row per allocation score, pipe-delimited reason codes and tags, empty cells for `None` values.
+  - `portfolio_construction_report_to_markdown` — H1 title, explicit research-only safety notice immediately after H1, report identity, universe summary, data quality, allocation table, cap diagnostics, reason codes, filter diagnostics, safety flags, and metadata.
+  - `atomic_write_json_portfolio_construction_report`, `atomic_write_csv_portfolio_construction_report`, `atomic_write_markdown_portfolio_construction_report` — temp-file + fsync + `os.replace` atomic writes, parent directory creation.
+  - `write_portfolio_construction_report` — combined writer producing JSON, CSV, and Markdown.
+  - Default output paths:
+    - `data/portfolio_construction/latest_portfolio_construction_report.json`
+    - `data/portfolio_construction/latest_portfolio_construction_allocations.csv`
+    - `reports/portfolio_construction/latest_portfolio_construction_report.md`
+
+- **MVP-27 Step 3 — Portfolio Construction Integration Tests (Complete)**
+  - `tests/test_portfolio_construction/test_integration.py` — end-to-end report builds, deterministic output, INCLUDED/CAPPED assertions, WATCHLIST zero-weight assertions, missing-context paths, blocked-context paths, include/excluded behavior, JSON/CSV/Markdown writer artifacts, determinism, and public export coverage.
+
+- **Safety Constraints**
+  - Output is a human-audit / research-only artifact only; not a trading signal, not trade approval, not strategy approval, not execution approval, not portfolio/universe approval, and not position sizing.
+  - No Freqtrade input, no Binance/API/exchange/live-data connection, no order/execution instructions, no leverage/shorting semantics, no action commands.
+  - No feedback into execution, strategy, or portfolio paths.
+  - Engine and writer do not read input files, do not follow metadata/file references, and do not validate/traverse opaque strings.
+
+- **Test Results**
+  - Full test suite: 5178 tests passing, 1 skipped using `pytest --import-mode=importlib`.
+
 ## MVP-26 — Discovery Engine (Complete)
 
 **Version:** 0.25.0-dev → 0.26.0-dev.

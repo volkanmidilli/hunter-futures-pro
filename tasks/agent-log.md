@@ -1,5 +1,35 @@
 ---
 
+### MVP-27 Step 4 — Finalization
+
+Date: 2026-07-03
+
+Agent: WrongStack
+
+Task: MVP-27 Step 4 — Finalize Portfolio Construction Engine: version bump, changelog, current state, active task, and agent log.
+
+Files modified:
+
+- `pyproject.toml` — version bumped from 0.26.0-dev to 0.27.0-dev.
+- `src/hunter/__init__.py` — version bumped from 0.26.0-dev to 0.27.0-dev.
+- `CHANGELOG.md` — added MVP-27 completion section covering models/engine, writer, integration tests, safety constraints, and test results.
+- `docs/handoff/CURRENT_STATE.md` — marked MVP-27 complete, version 0.27.0-dev, set next phase as not started pending human direction.
+- `tasks/active.md` — marked MVP-27 complete, set next phase as not started pending human direction.
+- `tasks/agent-log.md` — this entry.
+
+Summary:
+
+Finalized MVP-27 Portfolio Construction Engine. Full implementation spanned Step 1 (models/engine), Step 2 (writer), and Step 3 (integration tests). This finalization step updated documentation and version metadata without modifying `src/hunter/portfolio_construction/` or `tests/`. All safety boundaries remain intact: portfolio construction output is research-only, not a trading signal, not trade/strategy/execution/portfolio/universe approval, and not position sizing; no Freqtrade input, no Binance/exchange/API/live data, no order/execution/action commands, no leverage/shorting, and no feedback into execution paths. The writer only writes explicit output paths and never reads input files or follows metadata references.
+
+Final validation:
+
+- `pytest -q --import-mode=importlib tests/test_portfolio_construction` — 158 passed.
+- `pytest -q --import-mode=importlib` — 5178 passed, 1 skipped.
+
+Next step: not started; requires human direction. Remaining future engines (backtesting, reporting/CLI) are future work and not started.
+
+---
+
 ### MVP-26 Step 4 — Finalization
 
 Date: 2026-07-02

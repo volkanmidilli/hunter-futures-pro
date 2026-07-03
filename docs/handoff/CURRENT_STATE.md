@@ -4,13 +4,32 @@ Hunter Futures Pro
 
 ## Version
 
-0.26.0-dev
+0.27.0-dev
 
 ## Current Phase
 
-MVP-26 is complete. SPEC-027 for MVP-26 Discovery Engine is implemented across models, engine, writer, and integration tests. Version 0.26.0-dev. Full test suite: 5020 tests passing, 1 skipped using `pytest --import-mode=importlib`. Next step: Portfolio Construction planning only; implementation not started. Discovery reports are a human-audit / contractor-handoff artifact only, not a release approval, not a deployment approval, not a trading signal, not a trade approval, not execution readiness, not strategy readiness, not transaction permission, and must not be consumed by execution, strategy, Freqtrade shell, order, exchange, or any MVP execution path. No discovery feedback into execution paths. No report/operator/index/search/bundle/chronicle/digest/quality-gate/handoff/archive-manifest/release-notes/audit-catalog/audit-closure/audit-snapshot feedback into execution paths. Referenced artifact files are not read. File references and metadata strings are not traversed, opened, followed, validated, or executed. Human audit guide is advisory-only and not gating. No action commands are emitted. No release/deployment checklist semantics. No Web UI, no dashboard, no database persistence, no config YAML, no JSON schema, no Freqtrade strategy class, no freqtrade import, no Binance, no real exchange, no API keys, no live trading, no real orders, no leverage, no shorting, no real entry/exit execution logic, no production data reads/writes. Not a runtime registry, indexer, crawler, scheduler, routing layer, dashboard, database, API, event store, or task runner. Remaining future engines (backtesting, reporting/CLI) are future work.
+MVP-27 is complete. SPEC-028 for MVP-27 Portfolio Construction Engine is implemented across models, engine, writer, and integration tests. Version 0.27.0-dev. Full test suite: 5178 tests passing, 1 skipped using `pytest --import-mode=importlib`. Next phase: not started; requires human direction. Portfolio construction reports are a human-audit / research-only artifact only, not a trading signal, not a trade approval, not a strategy approval, not an execution approval, not a portfolio/universe approval, and not position sizing. They must not be consumed by execution, strategy, Freqtrade shell, order, exchange, or any MVP execution path. No portfolio construction feedback into execution paths. No report/discovery/operator/index/search/bundle/chronicle/digest/quality-gate/handoff/archive-manifest/release-notes/audit-catalog/audit-closure/audit-snapshot feedback into execution paths. Referenced artifact files are not read. File references and metadata strings are not traversed, opened, followed, validated, or executed. Human audit guide is advisory-only and not gating. No action commands are emitted. No release/deployment checklist semantics. No Web UI, no dashboard, no database persistence, no config YAML, no JSON schema, no Freqtrade strategy class, no freqtrade import, no Binance, no real exchange, no API keys, no live trading, no real orders, no leverage, no shorting, no real entry/exit execution logic, no production data reads/writes. Not a runtime registry, indexer, crawler, scheduler, routing layer, dashboard, database, API, event store, or task runner. Remaining future engines (backtesting, reporting/CLI) are future work.
 
 ## Current Status
+
+MVP-27 — Portfolio Construction Engine is complete.
+- SPEC-028: `specs/SPEC-028-Portfolio-Construction-Engine.md` — implemented.
+- `src/hunter/portfolio_construction/__init__.py` — public API exports including engine and writer functions and constants.
+- `src/hunter/portfolio_construction/models.py` — frozen dataclasses, enums, reason-code partitions, `FORBIDDEN_PORTFOLIO_CONSTRUCTION_TERMS`, `PortfolioConstructionConfig`, `PortfolioConstructionSafetyFlags`, `PortfolioConstructionState`, `PortfolioConstructionClassification`, `PortfolioConstructionInputKind`, `PortfolioDiscoverySummary`, `PortfolioConstructionInput`, `PortfolioConstructionScore`, `PortfolioConstructionDataQuality`, `PortfolioConstructionUniverseSummary`, `PortfolioConstructionReport`.
+- `src/hunter/portfolio_construction/engine.py` — pure local portfolio construction engine: safety flags, forbidden-content detection, discovery sub-scoring, data quality, diversification, cap readiness, filter bonus, allocation score, initial research weights, weight caps with redistribution, classification, universe summary, and fail-closed report construction.
+- `src/hunter/portfolio_construction/writer.py` — deterministic JSON, CSV, Markdown serialization and atomic writers.
+- `tests/test_portfolio_construction/test_models.py` — model tests.
+- `tests/test_portfolio_construction/test_engine.py` — engine tests.
+- `tests/test_portfolio_construction/test_writer.py` — writer tests.
+- `tests/test_portfolio_construction/test_integration.py` — integration tests.
+- 158 portfolio_construction tests total.
+- Full suite: 5178 tests passing, 1 skipped using `pytest --import-mode=importlib`.
+- Safety: human-audit / research-only artifact only, not a trading signal, not trade approval, not strategy approval, not execution approval, not portfolio/universe approval, and not position sizing; no Freqtrade input, no Binance/exchange/API/live data, no order/execution/action commands, no leverage/shorting, no feedback into execution/strategy/portfolio paths, file references and metadata strings not traversed/opened/followed/validated/executed, writer does not read input files.
+- Default outputs:
+  - `data/portfolio_construction/latest_portfolio_construction_report.json`
+  - `data/portfolio_construction/latest_portfolio_construction_allocations.csv`
+  - `reports/portfolio_construction/latest_portfolio_construction_report.md`
+- Next phase: not started; requires human direction.
 
 MVP-26 — Discovery Engine is complete.
 - SPEC-027: `specs/SPEC-027-Discovery-Engine.md` — implemented.
