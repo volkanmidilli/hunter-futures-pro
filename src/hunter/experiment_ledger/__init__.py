@@ -1,0 +1,101 @@
+"""Public API for hunter.experiment_ledger package.
+
+MVP-31 — Local Research Experiment Ledger.
+
+All exports are deterministic, local, and research-only. They do not connect to
+exchanges, networks, databases, or external services, and do not emit trading or
+execution commands. The ledger runs only when called by local code or tests; it is
+not a scheduler, daemon, server, or background job runner.
+"""
+
+from __future__ import annotations
+
+from hunter.experiment_ledger.engine import (
+    build_experiment_ledger_report,
+    build_experiment_ledger_safety_flags,
+    has_unsafe_experiment_ledger_content,
+)
+from hunter.experiment_ledger.models import (
+    BACKTEST_SOURCE_KIND,
+    BASELINE_MISSING,
+    COMPARABLE_METRICS,
+    DUPLICATE_ID,
+    EXPERIMENT_LEDGER_ADVISORY_REASON_CODES,
+    EXPERIMENT_LEDGER_BLOCKING_REASON_CODES,
+    EXPERIMENT_LEDGER_REASON_CODES,
+    EXPERIMENT_LEDGER_VERSION,
+    FORBIDDEN_EXPERIMENT_LEDGER_TERMS,
+    HUMAN_RESEARCH_ONLY,
+    INVALID_METRICS,
+    METRIC_SNAPSHOT_SOURCE_KIND,
+    MISSING_REQUIRED_FIELDS,
+    NO_ACTION_COMMANDS_EMITTED,
+    NO_DATABASE,
+    NO_DAEMON,
+    NO_EXCHANGE_CONNECTION,
+    NO_FILE_INGESTION,
+    NO_FREQTRADE_INPUT,
+    NO_NETWORK_CONNECTION,
+    NO_SCHEDULER,
+    NO_WEB_UI,
+    NOT_TRADING_ADVICE,
+    OK,
+    RESEARCH_ONLY,
+    RUN_RESULT_METRICS,
+    RUN_SOURCE_KIND,
+    UNSAFE_CONTENT,
+    ExperimentComparisonConfig,
+    ExperimentComparisonResult,
+    ExperimentLedgerDataQuality,
+    ExperimentLedgerInput,
+    ExperimentLedgerReport,
+    ExperimentLedgerSafetyFlags,
+    ExperimentMetricSnapshot,
+    ExperimentReasonCode,
+    ExperimentRecord,
+    ExperimentState,
+)
+
+__all__ = [
+    "BACKTEST_SOURCE_KIND",
+    "BASELINE_MISSING",
+    "COMPARABLE_METRICS",
+    "DUPLICATE_ID",
+    "EXPERIMENT_LEDGER_ADVISORY_REASON_CODES",
+    "EXPERIMENT_LEDGER_BLOCKING_REASON_CODES",
+    "EXPERIMENT_LEDGER_REASON_CODES",
+    "EXPERIMENT_LEDGER_VERSION",
+    "FORBIDDEN_EXPERIMENT_LEDGER_TERMS",
+    "HUMAN_RESEARCH_ONLY",
+    "INVALID_METRICS",
+    "METRIC_SNAPSHOT_SOURCE_KIND",
+    "MISSING_REQUIRED_FIELDS",
+    "NO_ACTION_COMMANDS_EMITTED",
+    "NO_DATABASE",
+    "NO_DAEMON",
+    "NO_EXCHANGE_CONNECTION",
+    "NO_FILE_INGESTION",
+    "NO_FREQTRADE_INPUT",
+    "NO_NETWORK_CONNECTION",
+    "NO_SCHEDULER",
+    "NO_WEB_UI",
+    "NOT_TRADING_ADVICE",
+    "OK",
+    "RESEARCH_ONLY",
+    "RUN_RESULT_METRICS",
+    "RUN_SOURCE_KIND",
+    "UNSAFE_CONTENT",
+    "ExperimentComparisonConfig",
+    "ExperimentComparisonResult",
+    "ExperimentLedgerDataQuality",
+    "ExperimentLedgerInput",
+    "ExperimentLedgerReport",
+    "ExperimentLedgerSafetyFlags",
+    "ExperimentMetricSnapshot",
+    "ExperimentReasonCode",
+    "ExperimentRecord",
+    "ExperimentState",
+    "build_experiment_ledger_report",
+    "build_experiment_ledger_safety_flags",
+    "has_unsafe_experiment_ledger_content",
+]
