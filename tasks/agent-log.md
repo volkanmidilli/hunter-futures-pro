@@ -1,5 +1,33 @@
 ---
 
+### MVP-31 Step 4 — Finalization
+
+Date: 2026-07-03
+
+Agent: WrongStack
+
+Task: MVP-31 Step 4 — Finalize Local Research Experiment Ledger: version bump to 0.31.0-dev, update CHANGELOG.md, docs/handoff/CURRENT_STATE.md, tasks/active.md, and tasks/agent-log.md.
+
+Files modified:
+
+- `pyproject.toml` — version bumped from 0.30.0-dev to 0.31.0-dev.
+- `src/hunter/__init__.py` — version bumped from 0.30.0-dev to 0.31.0-dev.
+- `CHANGELOG.md` — added MVP-31 completion section covering models/engine, writer, integration tests, deterministic local experiment ledger behavior, baseline/delta comparison, audit-review-only ranking, safety boundaries, and test results.
+- `docs/handoff/CURRENT_STATE.md` — marked MVP-31 complete, version 0.31.0-dev, described experiment_ledger as local call-triggered audit-only normalizer, set next phase as not started pending human direction.
+- `tasks/active.md` — marked MVP-31 complete, set next phase as not started pending human direction.
+- `tasks/agent-log.md` — this entry.
+
+Test results:
+
+- `pytest tests/test_experiment_ledger -q --import-mode=importlib`: 138 passed.
+- `pytest -q --import-mode=importlib`: 5629 passed, 1 skipped.
+
+Summary:
+
+Finalized MVP-31 Local Research Experiment Ledger. Full implementation spanned Step 1 (models/engine), Step 2 (writer), and Step 3 (integration tests). This finalization step updated documentation and version metadata without modifying `src/hunter/experiment_ledger/` or `tests/`. All safety boundaries remain intact: experiment ledger output is research-only, not a trading signal, not trade/strategy/execution/portfolio/universe approval, and not Freqtrade input; no Freqtrade input, no Binance/exchange/API/live data, no order/execution/action commands, no leverage/shorting, and no feedback into execution paths. Rankings are for audit-review ordering only and are not recommendations or signals. The writer only writes explicit output paths and never reads input files or follows metadata references.
+
+Next step: not started; requires human direction.
+
 ### MVP-30 Step 4 — Finalization
 
 Date: 2026-07-03

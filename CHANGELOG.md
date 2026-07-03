@@ -2,6 +2,43 @@
 
 All important project changes will be recorded in this file.
 
+## MVP-31 — Local Research Experiment Ledger (Complete)
+
+**Version:** 0.30.0-dev → 0.31.0-dev.
+
+**SPEC-032:** `specs/SPEC-032-Local-Research-Experiment-Ledger.md` — implemented across models, engine, writer, and integration tests.
+
+**Commit:** `TBD` — feat: complete MVP-31 local research experiment ledger.
+
+- **MVP-31 Step 1 — Models and Engine (Complete)**
+  - `src/hunter/experiment_ledger/__init__.py` — public API exports for models, engine, writer, reason codes, safety constants, and default artifact paths.
+  - `src/hunter/experiment_ledger/models.py` — frozen dataclasses: `ExperimentLedgerInput`, `ExperimentRecord`, `ExperimentMetricSnapshot`, `ExperimentComparisonConfig`, `ExperimentComparisonResult`, `ExperimentLedgerReport`, `ExperimentLedgerDataQuality`, `ExperimentLedgerSafetyFlags`; enums `ExperimentState`, `ExperimentReasonCode`; reason-code constants and forbidden-term guard.
+  - `src/hunter/experiment_ledger/engine.py` — pure local experiment ledger engine: input validation, deterministic normalization of `BacktestReport`, `ResearchRunResult`, and `ExperimentMetricSnapshot` into `ExperimentRecord` objects, duplicate `experiment_id` detection, optional baseline lookup, metric deltas, summary metrics, and audit-review-only ranking.
+  - `tests/test_experiment_ledger/test_models.py` — model validation, safety flags, reason codes.
+  - `tests/test_experiment_ledger/test_engine.py` — normalization, comparison, baseline/delta behavior, ranking, fail-closed behavior, determinism, no input mutation.
+
+- **MVP-31 Step 2 — Writer (Complete)**
+  - `src/hunter/experiment_ledger/writer.py` — deterministic JSON/CSV/Markdown serialization and atomic writes for `ExperimentLedgerReport`.
+  - Includes `experiment_ledger_report_to_dict`, `experiment_ledger_report_to_json_text`, `experiment_ledger_report_to_csv_text`, `experiment_ledger_report_to_markdown_text`, `write_experiment_ledger_report`, and atomic write helpers.
+  - Default local artifact paths: `data/experiment_ledger/experiment_ledger.json`, `data/experiment_ledger/experiment_records.csv`, `reports/experiment_ledger/experiment_ledger.md`.
+  - Markdown includes H1 title, immediate research-only/audit-only safety notice, and sections for report identity, comparison summary, ranked experiment records, baseline and deltas, data quality, safety flags, reason codes, metadata, and notes.
+  - `tests/test_experiment_ledger/test_writer.py` — dict/JSON/CSV/Markdown serialization, atomic writes, determinism, blocked reports, no mutation, opaque metadata.
+
+- **MVP-31 Step 3 — Integration Tests (Complete)**
+  - `tests/test_experiment_ledger/test_integration.py` — end-to-end ledger flows with `BacktestReport`, `ResearchRunResult`, and `ExperimentMetricSnapshot` inputs; normalization; baseline and degraded-state tests; ranking behavior; visibility/count tests; unsafe/invalid/duplicate content tests; writer end-to-end tests; determinism; no mutation; public exports; safety boundary assertions.
+
+- **Safety and Boundaries**
+  - The experiment ledger is local, call-triggered, deterministic, and audit-only.
+  - No scheduler, daemon, background job runner, server, REST API, database, Web UI, or dashboard introduced.
+  - No Binance, exchange, API, live data, network, real trading, order, leverage, shorting, or Freqtrade strategy/runtime semantics introduced.
+  - Rankings are for human audit-review ordering only; they are not recommendations, signals, or trading decisions.
+  - All outputs are human-audit / research-only artifacts; no action commands or feedback into execution paths.
+  - Metadata and file-reference strings remain opaque local strings; they are never opened, traversed, validated, fetched, or executed by the ledger engine or writer.
+
+- **Test Results**
+  - `pytest tests/test_experiment_ledger -q --import-mode=importlib`: 138 passed.
+  - `pytest -q --import-mode=importlib`: 5629 passed, 1 skipped.
+
 ## MVP-30 — Local Research Run Orchestrator (Complete)
 
 **Version:** 0.29.0-dev → 0.30.0-dev.

@@ -2,13 +2,13 @@
 
 ## Current Task
 
-MVP-30 — Local Research Run Orchestrator is complete. Next phase: not started; requires human direction.
+MVP-31 — Local Research Experiment Ledger is complete. Next phase: not started; requires human direction.
 
 ## Status
 
-MVP-30 — Local Research Run Orchestrator is complete. SPEC-031 implemented across models, engine, writer, and integration tests. Version 0.30.0-dev. Full test suite: 5491 tests passing, 1 skipped using `pytest --import-mode=importlib`. All four steps (Step 1 models/engine, Step 2 writer, Step 3 integration tests, Step 4 finalization) completed. Source changes in finalization limited to version bump and documentation only. Safety boundaries preserved: local, call-triggered, audit-only coordinator; no trading signal, no trade/strategy/execution/portfolio/universe approval, and not Freqtrade input; no Freqtrade input, no Binance/exchange/API/live data, no order/execution/action commands, no leverage/shorting, no feedback into execution/strategy/portfolio paths; no scheduler, daemon, background job runner, server, REST API, database, Web UI, or dashboard introduced. Current supported entry is the callable `build_research_run_result(plan, config)` public API; no standalone runner or console script entry has been added. Next phase: not started; requires human direction.
+MVP-31 — Local Research Experiment Ledger is complete. SPEC-032 implemented across models, engine, writer, and integration tests. Version 0.31.0-dev. Full test suite: 5629 tests passing, 1 skipped using `pytest --import-mode=importlib`. All four steps (Step 1 models/engine, Step 2 writer, Step 3 integration tests, Step 4 finalization) completed. Source changes in finalization limited to version bump and documentation only. Safety boundaries preserved: local, call-triggered, audit-only normalizer over existing local research engine artifacts; no trading signal, no trade/strategy/execution/portfolio/universe approval, and not Freqtrade input; no Freqtrade input, no Binance/exchange/API/live data, no order/execution/action commands, no leverage/shorting, no feedback into execution/strategy/portfolio paths; rankings are audit-review ordering only and are not recommendations or signals; no scheduler, daemon, background job runner, server, REST API, database, Web UI, or dashboard introduced. Current supported entry is the callable `build_experiment_ledger_report(input, config)` public API; no standalone runner or console script entry has been added. Next phase: not started; requires human direction.
 
-MVP-28 — Local Research Backtesting Engine is complete. Next recommended step: not started; requires human direction. [SUPERSEDED]
+MVP-30 — Local Research Run Orchestrator is complete. Next recommended step: not started; requires human direction. [SUPERSEDED]
 
 MVP-24 — Relative Strength Engine is complete and committed. SPEC-025 implemented across models, engine, writer, and integration tests. Version 0.24.0-dev. Full test suite: 4628 tests passing, 1 skipped using `pytest --import-mode=importlib`. All four steps (Step 1 models/engine, Step 2 writer, Step 3 integration tests, Step 4 finalization) completed. No source changes made in finalization. Safety boundaries preserved. [SUPERSEDED]
 
@@ -71,9 +71,9 @@ MVP-14 Step 4 — Final Review and Version Bump (Complete).
 
 ## Scope
 
-MVP-24 planning / SPEC-025 Relative Strength Engine, not started.
+Next MVP: not started.
 - No SPEC drafted yet. Requires human approval before any implementation.
-- No source code changes until MVP-24 planning approved.
+- No source code changes until next MVP planning approved.
 
 ### Allowed
 - Planning documents, discussion, SPEC drafting (outside repo or in docs/ if needed).
@@ -213,7 +213,14 @@ MVP-23 Step 4 — Final validation and version bump (Complete).
 - [x] MVP-23 Whole MVP-23 review: APPROVED WITH MINOR NOTES. No critical issues found.
 - [x] MVP-23 Step 4 complete: final validation passed, version bumped to 0.23.0-dev.
 - [x] MVP-23 complete.
-- [ ] MVP-24 planning / SPEC-025 Relative Strength Engine: not started. No SPEC drafted yet. Requires human approval before any implementation.
+- [x] MVP-24 through MVP-30 complete (historical entries in tasks/agent-log.md).
+- [x] MVP-31 Step 1 complete: experiment ledger models and engine implemented.
+- [x] MVP-31 Step 2 complete: experiment ledger writer implemented.
+- [x] MVP-31 Step 3 complete: integration tests implemented.
+- [x] MVP-31 Step 4 complete: final validation passed, version bumped to 0.31.0-dev.
+- [x] MVP-31 complete.
+- [x] Full suite 5629 tests pass, 1 skipped.
+- [ ] Next MVP: not started. No SPEC drafted yet. Requires human approval before any implementation.
 
 ## Backlog (Non-Blocking)
 - Review `research_audit_snapshot` `data_quality.sections_present` / `sections_missing` reporting so successful snapshots correctly reflect the number of sections present (8) versus missing (0). Current behavior is fail-closed (0 / 8) and SPEC-compliant because `build_audit_snapshot_data_quality` does not receive the section list in its SPEC-024 signature.
@@ -221,6 +228,6 @@ MVP-23 Step 4 — Final validation and version bump (Complete).
 
 ## Next Step
 
-MVP-24 planning / SPEC-025 Relative Strength Engine, not started. No SPEC drafted yet. Requires human approval before any implementation.
+Next MVP: not started. No SPEC drafted yet. Requires human approval before any implementation.
 
 Future research bundle search engine, operator workflow UI, cross-reference validation, or handoff packet consumers may be considered only in a future SPEC, but is not implemented yet.

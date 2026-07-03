@@ -4,13 +4,29 @@ Hunter Futures Pro
 
 ## Version
 
-0.30.0-dev
+0.31.0-dev
 
 ## Current Phase
 
-MVP-30 is complete. SPEC-031 for MVP-30 Local Research Run Orchestrator is implemented across models, engine, writer, and integration tests. Version 0.30.0-dev. Full test suite: 5491 tests passing, 1 skipped using `pytest --import-mode=importlib`. Next phase: not started; requires human direction. The run orchestrator is a local, call-triggered, deterministic, audit-only coordinator over existing local research engines. It is not a trading signal, not trade approval, not strategy approval, not execution approval, not portfolio approval, not universe approval, and not Freqtrade input. It must not be consumed by execution, strategy, Freqtrade shell, order, exchange, or any MVP execution path. No orchestrator feedback into execution paths. No scheduler, daemon, background job runner, server, REST API, database, Web UI, or dashboard introduced. No Binance, exchange, API, live data, network, real trading, order, leverage, shorting, or Freqtrade strategy/runtime semantics introduced. Metadata and file-reference strings remain opaque local strings; they are never opened, traversed, validated, fetched, or executed. All outputs are human-audit / research-only artifacts. Remaining future work is not started.
+MVP-31 is complete. SPEC-032 for MVP-31 Local Research Experiment Ledger is implemented across models, engine, writer, and integration tests. Version 0.31.0-dev. Full test suite: 5629 tests passing, 1 skipped using `pytest --import-mode=importlib`. Next phase: not started; requires human direction. The experiment ledger is a local, call-triggered, deterministic, audit-only normalizer over existing local research engine artifacts (backtest reports, run results, and plain metric snapshots). It is not a trading signal, not trade approval, not strategy approval, not execution approval, not portfolio approval, not universe approval, and not Freqtrade input. Rankings are for human audit-review ordering only and are not recommendations, signals, or trading decisions. It must not be consumed by execution, strategy, Freqtrade shell, order, exchange, or any MVP execution path. No scheduler, daemon, background job runner, server, REST API, database, Web UI, or dashboard introduced. No Binance, exchange, API, live data, network, real trading, order, leverage, shorting, or Freqtrade strategy/runtime semantics introduced. Metadata and file-reference strings remain opaque local strings; they are never opened, traversed, validated, fetched, or executed. All outputs are human-audit / research-only artifacts. Remaining future work is not started.
 
 ## Current Status
+
+MVP-31 — Local Research Experiment Ledger is complete.
+- SPEC-032: `specs/SPEC-032-Local-Research-Experiment-Ledger.md` — implemented.
+- `src/hunter/experiment_ledger/__init__.py` — public API exports for models, engine, writer, reason codes, and safety constants.
+- `src/hunter/experiment_ledger/models.py` — frozen dataclasses, enums, reason codes, and forbidden-term guard.
+- `src/hunter/experiment_ledger/engine.py` — pure local experiment ledger engine with deterministic normalization, comparison, baseline deltas, ranking, and data quality.
+- `src/hunter/experiment_ledger/writer.py` — deterministic JSON/CSV/Markdown serialization and atomic writes for `ExperimentLedgerReport`.
+- `tests/test_experiment_ledger/test_models.py` — model tests.
+- `tests/test_experiment_ledger/test_engine.py` — engine tests.
+- `tests/test_experiment_ledger/test_writer.py` — writer tests.
+- `tests/test_experiment_ledger/test_integration.py` — integration tests.
+- 138 experiment_ledger tests total.
+- Full suite: 5629 tests passing, 1 skipped using `pytest --import-mode=importlib`.
+- Safety: local, call-triggered, audit-only normalizer; no scheduler, daemon, background job runner, server, REST API, database, Web UI, or dashboard; no Freqtrade input, no Binance/exchange/API/live data, no order/execution/action commands, no leverage/shorting, no feedback into execution/strategy/portfolio paths; rankings are audit-review ordering only, not recommendations or signals; file references and metadata strings not traversed/opened/followed/validated/executed.
+- Current supported entry: `build_experiment_ledger_report(input, config)` public API; callable only from local code/tests, no standalone runner added.
+- Next phase: not started; requires human direction.
 
 MVP-30 — Local Research Run Orchestrator is complete.
 - SPEC-031: `specs/SPEC-031-Local-Research-Run-Orchestrator.md` — implemented.
@@ -424,7 +440,7 @@ MVP-22 — Local Research Audit Closure Report is complete and committed.
 
 ## Next Step
 
-MVP-26 — Discovery Engine planning only; implementation not started. No SPEC drafted yet. Requires human approval before any implementation. Remaining future engines beyond Discovery Engine (portfolio, backtesting, reporting/CLI) are future work and not started.
+Next MVP: not started. No SPEC drafted yet. Requires human approval before any implementation. Remaining future work beyond MVP-31 is future work and not started.
 
 ### Backlog (Non-Blocking)
 - Review `research_audit_snapshot` `data_quality.sections_present` / `sections_missing` reporting so successful snapshots correctly reflect the number of sections present (8) versus missing (0). Current behavior is fail-closed (0 / 8) and SPEC-compliant because `build_audit_snapshot_data_quality` does not receive the section list in its SPEC-024 signature.
