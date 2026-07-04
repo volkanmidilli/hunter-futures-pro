@@ -47,9 +47,25 @@ from hunter.evidence_traceability.models import (
     EvidenceTraceabilitySeverity,
     EvidenceTraceabilityState,
 )
+from hunter.evidence_traceability.writer import (
+    DEFAULT_CSV_PATH,
+    DEFAULT_JSON_PATH,
+    DEFAULT_MD_PATH,
+    atomic_write_csv_evidence_traceability_report,
+    atomic_write_json_evidence_traceability_report,
+    atomic_write_markdown_evidence_traceability_report,
+    evidence_traceability_report_to_csv_text,
+    evidence_traceability_report_to_dict,
+    evidence_traceability_report_to_json_text,
+    evidence_traceability_report_to_markdown_text,
+    write_evidence_traceability_report,
+)
 
 __all__ = [
     "CONSISTENCY_DEGRADED",
+    "DEFAULT_CSV_PATH",
+    "DEFAULT_JSON_PATH",
+    "DEFAULT_MD_PATH",
     "FORBIDDEN_EVIDENCE_TRACEABILITY_TERMS",
     "NO_ACTION_COMMANDS_EMITTED",
     "NO_DAEMON",
@@ -80,6 +96,14 @@ __all__ = [
     "EvidenceTraceabilitySafetyFlags",
     "EvidenceTraceabilitySeverity",
     "EvidenceTraceabilityState",
+    "atomic_write_csv_evidence_traceability_report",
+    "atomic_write_json_evidence_traceability_report",
+    "atomic_write_markdown_evidence_traceability_report",
     "build_evidence_traceability_report",
+    "evidence_traceability_report_to_csv_text",
+    "evidence_traceability_report_to_dict",
+    "evidence_traceability_report_to_json_text",
+    "evidence_traceability_report_to_markdown_text",
     "has_unsafe_evidence_traceability_content",
+    "write_evidence_traceability_report",
 ]
