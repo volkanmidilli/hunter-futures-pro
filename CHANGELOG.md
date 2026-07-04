@@ -2,6 +2,43 @@
 
 All important project changes will be recorded in this file.
 
+## MVP-34 — Local Research Evidence Traceability Matrix (Complete)
+
+**Version:** 0.33.0-dev → 0.34.0-dev.
+
+**SPEC-035:** `specs/SPEC-035-Local-Research-Evidence-Traceability-Matrix.md` — implemented across models, engine, writer, and integration tests.
+
+**Commit:** `TBD` — feat: complete MVP-34 local research evidence traceability matrix.
+
+- **MVP-34 Step 1 — Models and Engine (Complete)**
+  - `src/hunter/evidence_traceability/__init__.py` — public API exports for models, engine, writer, reason codes, safety constants, and default artifact paths.
+  - `src/hunter/evidence_traceability/models.py` — frozen dataclasses: `EvidenceRequirement`, `EvidenceCheck`, `EvidenceArtifactRef`, `EvidenceSectionRef`, `EvidenceLink`, `EvidenceTraceabilityInput`, `EvidenceTraceabilityConfig`, `EvidenceTraceabilityResult`, `EvidenceTraceabilityDataQuality`, `EvidenceTraceabilitySafetyFlags`, `EvidenceTraceabilityReport`; enums `EvidenceTraceabilityState`, `EvidenceTraceabilityReasonCode`, `EvidenceTraceabilitySeverity`, `EvidenceTraceabilityLinkType`, `EvidenceTraceabilityCoverageState`; reason-code constants and forbidden-term guard.
+  - `src/hunter/evidence_traceability/engine.py` — pure local evidence traceability engine: input validation, caller-provided in-memory declarations, deterministic coverage classification (missing/partial/covered), orphan detection for checks/artifacts/sections, conflicting-link detection, stale-evidence detection, missing-manual-review detection, unsafe-content and forbidden-term fail-closed handling, and report aggregation with strict/non-strict modes.
+  - `tests/test_evidence_traceability/test_models.py` — model validation, safety flags, reason codes, link/coverage enums.
+  - `tests/test_evidence_traceability/test_engine.py` — coverage classification, orphans, conflicts, staleness, manual review, duplicate/unsafe blocking, aggregation, determinism, no input mutation.
+
+- **MVP-34 Step 2 — Writer (Complete)**
+  - `src/hunter/evidence_traceability/writer.py` — deterministic JSON/CSV edge/Markdown serialization and atomic writes for `EvidenceTraceabilityReport`.
+  - Includes `evidence_traceability_report_to_dict`, `evidence_traceability_report_to_json_text`, `evidence_traceability_report_to_csv_text`, `evidence_traceability_report_to_markdown_text`, `write_evidence_traceability_report`, and atomic write helpers.
+  - Default local artifact paths: `data/evidence_traceability/evidence_traceability.json`, `data/evidence_traceability/evidence_traceability_edges.csv`, `reports/evidence_traceability/evidence_traceability.md`.
+  - Markdown includes H1 title, immediate research-only/audit-only safety notice, and sections for summary, traceability results, links, data quality, safety flags, reason codes, and notes.
+  - `tests/test_evidence_traceability/test_writer.py` — dict/JSON/CSV/Markdown serialization, atomic writes, determinism, blocked/degraded reports, no mutation, public exports, opaque file references.
+
+- **MVP-34 Step 3 — Integration Tests (Complete)**
+  - `tests/test_evidence_traceability/test_integration.py` — end-to-end evidence traceability flows with caller-provided requirements, checks, artifact refs, section refs, and links; coverage classification (missing/partial/covered); orphan check/artifact/section detection; conflicting links; stale evidence; missing manual review; duplicate/unsafe/fail-closed behavior; writer end-to-end tests; determinism; no input mutation; safety boundary assertions; opaque artifact reference assertions.
+
+- **Safety and Boundaries**
+  - The evidence traceability matrix is local, call-triggered, deterministic, and audit-only.
+  - It is not a production certification, not a certification of trading readiness, not a trading signal, not a recommendation, not a strategy selector, and not an execution/portfolio/universe approval gate.
+  - No scheduler, daemon, background job runner, server, REST API, database, Web UI, or dashboard introduced.
+  - No Binance, exchange, API, live data, network, real trading, order, leverage, shorting, or Freqtrade strategy/runtime semantics introduced.
+  - All outputs are human-audit / research-only artifacts; no action commands or feedback into execution paths.
+  - Artifact and section references remain opaque local strings; they are never opened, traversed, validated, fetched, or executed by the engine or writer.
+
+- **Test Results**
+  - `pytest tests/test_evidence_traceability -q --import-mode=importlib`: 20 passed.
+  - `pytest -q --import-mode=importlib`: 5940 passed, 1 skipped.
+
 ## MVP-33 — Local Research Release Hardening / Consistency Audit (Complete)
 
 **Version:** 0.32.0-dev → 0.33.0-dev.
