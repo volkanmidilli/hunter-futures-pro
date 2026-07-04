@@ -4,13 +4,29 @@ Hunter Futures Pro
 
 ## Version
 
-0.31.0-dev
+0.32.0-dev
 
 ## Current Phase
 
-MVP-31 is complete. SPEC-032 for MVP-31 Local Research Experiment Ledger is implemented across models, engine, writer, and integration tests. Version 0.31.0-dev. Full test suite: 5629 tests passing, 1 skipped using `pytest --import-mode=importlib`. Next phase: not started; requires human direction. The experiment ledger is a local, call-triggered, deterministic, audit-only normalizer over existing local research engine artifacts (backtest reports, run results, and plain metric snapshots). It is not a trading signal, not trade approval, not strategy approval, not execution approval, not portfolio approval, not universe approval, and not Freqtrade input. Rankings are for human audit-review ordering only and are not recommendations, signals, or trading decisions. It must not be consumed by execution, strategy, Freqtrade shell, order, exchange, or any MVP execution path. No scheduler, daemon, background job runner, server, REST API, database, Web UI, or dashboard introduced. No Binance, exchange, API, live data, network, real trading, order, leverage, shorting, or Freqtrade strategy/runtime semantics introduced. Metadata and file-reference strings remain opaque local strings; they are never opened, traversed, validated, fetched, or executed. All outputs are human-audit / research-only artifacts. Remaining future work is not started.
+MVP-32 is complete. SPEC-033 for MVP-32 Local Research Final Audit Pack Export is implemented across models, engine, writer, and integration tests. Version 0.32.0-dev. Full test suite: 5750 tests passing, 1 skipped using `pytest --import-mode=importlib`. Next phase: not started; requires human direction. The final audit pack is a local, call-triggered, deterministic, audit-only final export/manifest layer over caller-provided in-memory research reports and opaque artifact references. It assembles backtest, run-orchestrator, experiment-ledger, portfolio-construction, discovery, and reporting-cli sections into a single human-audit pack. It is not a production release approval system, not a certification of trading readiness, not a strategy selector, not a signal generator, and not a performance attribution tool. It must not be consumed by execution, strategy, Freqtrade shell, order, exchange, or any MVP execution path. No scheduler, daemon, background job runner, server, REST API, database, Web UI, or dashboard introduced. No Binance, exchange, API, live data, network, real trading, order, leverage, shorting, or Freqtrade strategy/runtime semantics introduced. Metadata and file-reference strings remain opaque local strings; they are never opened, traversed, validated, fetched, or executed. All outputs are human-audit / research-only artifacts. Remaining future work is not started.
 
 ## Current Status
+
+MVP-32 — Local Research Final Audit Pack Export is complete.
+- SPEC-033: `specs/SPEC-033-Local-Research-Final-Audit-Pack-Export.md` — implemented.
+- `src/hunter/final_audit_pack/__init__.py` — public API exports for models, engine, writer, reason codes, safety constants, and default artifact paths.
+- `src/hunter/final_audit_pack/models.py` — frozen dataclasses (`FinalAuditPackInput`, `FinalAuditPackSection`, `FinalAuditPackArtifact`, `FinalAuditPackConfig`, `FinalAuditPackCompleteness`, `FinalAuditPackDataQuality`, `FinalAuditPackSafetyFlags`, `FinalAuditPackReport`), enums (`FinalAuditPackState`, `FinalAuditPackReasonCode`), reason codes, section kinds, and forbidden-term guard.
+- `src/hunter/final_audit_pack/engine.py` — pure local final audit pack engine with input validation, deterministic normalization of in-memory reports into sections, duplicate section detection, unsafe-content scanning, completeness/readiness summary, data quality, and safety flags.
+- `src/hunter/final_audit_pack/writer.py` — deterministic JSON/CSV/Markdown serialization and atomic writes for `FinalAuditPackReport`.
+- `tests/test_final_audit_pack/test_models.py` — model tests.
+- `tests/test_final_audit_pack/test_engine.py` — engine tests.
+- `tests/test_final_audit_pack/test_writer.py` — writer tests.
+- `tests/test_final_audit_pack/test_integration.py` — integration tests.
+- 121 final_audit_pack tests total.
+- Full suite: 5750 tests passing, 1 skipped using `pytest --import-mode=importlib`.
+- Safety: local, call-triggered, audit-only final export/manifest layer; no scheduler, daemon, background job runner, server, REST API, database, Web UI, or dashboard; no Freqtrade input, no Binance/exchange/API/live data, no order/execution/action commands, no leverage/shorting, no feedback into execution/strategy/portfolio paths; not a release approval, certification, trading readiness signal, or recommendation; file references and metadata strings not traversed/opened/followed/validated/executed.
+- Current supported entry: `build_final_audit_pack_report(input, config)` public API; callable only from local code/tests, no standalone runner added.
+- Next phase: not started; requires human direction.
 
 MVP-31 — Local Research Experiment Ledger is complete.
 - SPEC-032: `specs/SPEC-032-Local-Research-Experiment-Ledger.md` — implemented.

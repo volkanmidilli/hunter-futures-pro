@@ -2,6 +2,43 @@
 
 All important project changes will be recorded in this file.
 
+## MVP-32 — Local Research Final Audit Pack Export (Complete)
+
+**Version:** 0.31.0-dev → 0.32.0-dev.
+
+**SPEC-033:** `specs/SPEC-033-Local-Research-Final-Audit-Pack-Export.md` — implemented across models, engine, writer, and integration tests.
+
+**Commit:** `TBD` — feat: complete MVP-32 local research final audit pack export.
+
+- **MVP-32 Step 1 — Models and Engine (Complete)**
+  - `src/hunter/final_audit_pack/__init__.py` — public API exports for models, engine, writer, reason codes, safety constants, and default artifact paths.
+  - `src/hunter/final_audit_pack/models.py` — frozen dataclasses: `FinalAuditPackInput`, `FinalAuditPackSection`, `FinalAuditPackArtifact`, `FinalAuditPackConfig`, `FinalAuditPackCompleteness`, `FinalAuditPackDataQuality`, `FinalAuditPackSafetyFlags`, `FinalAuditPackReport`; enums `FinalAuditPackState`, `FinalAuditPackReasonCode`; reason-code constants, section-kind constants, and forbidden-term guard.
+  - `src/hunter/final_audit_pack/engine.py` — pure local final audit pack engine: input validation, deterministic normalization of caller-provided in-memory reports (`BacktestReport`, `ResearchRunResult`, `ExperimentLedgerReport`, `PortfolioConstructionReport`, `DiscoveryReport`, `CLICommandResult`) into `FinalAuditPackSection` objects, duplicate `section_id` detection, unsafe-content scanning, completeness/readiness summary, data quality, safety flags, and deterministic report identifiers.
+  - `tests/test_final_audit_pack/test_models.py` — model validation, safety flags, reason codes.
+  - `tests/test_final_audit_pack/test_engine.py` — normalization, completeness, fail-closed behavior, determinism, no input mutation.
+
+- **MVP-32 Step 2 — Writer (Complete)**
+  - `src/hunter/final_audit_pack/writer.py` — deterministic JSON/CSV/Markdown serialization and atomic writes for `FinalAuditPackReport`.
+  - Includes `final_audit_pack_report_to_dict`, `final_audit_pack_report_to_json_text`, `final_audit_pack_report_to_csv_text`, `final_audit_pack_report_to_markdown_text`, `write_final_audit_pack_report`, and atomic write helpers.
+  - Default local artifact paths: `data/final_audit_pack/final_audit_pack.json`, `data/final_audit_pack/final_audit_pack_sections.csv`, `reports/final_audit_pack/final_audit_pack.md`.
+  - Markdown includes H1 title, immediate research-only/audit-only safety notice, and sections for summary, completeness, sections, artifacts, data quality, safety flags, reason codes, metadata, and notes.
+  - `tests/test_final_audit_pack/test_writer.py` — dict/JSON/CSV/Markdown serialization, atomic writes, determinism, blocked reports, no mutation, public exports, nested dataclass/mapping serialization, opaque file references.
+
+- **MVP-32 Step 3 — Integration Tests (Complete)**
+  - `tests/test_final_audit_pack/test_integration.py` — end-to-end final audit pack flows with `BacktestReport`, `ResearchRunResult`, `ExperimentLedgerReport`, and `CLICommandResult` inputs; normalization; completeness and degraded-state tests; duplicate/unsafe fail-closed behavior; writer end-to-end tests; determinism; no input mutation; public exports; safety boundary assertions.
+
+- **Safety and Boundaries**
+  - The final audit pack is local, call-triggered, deterministic, and audit-only.
+  - It is not a production release approval system, not a certification of trading readiness, not a strategy selector, not a signal generator, and not a performance attribution tool.
+  - No scheduler, daemon, background job runner, server, REST API, database, Web UI, or dashboard introduced.
+  - No Binance, exchange, API, live data, network, real trading, order, leverage, shorting, or Freqtrade strategy/runtime semantics introduced.
+  - All outputs are human-audit / research-only artifacts; no action commands or feedback into execution paths.
+  - Metadata and file-reference strings remain opaque local strings; they are never opened, traversed, validated, fetched, or executed by the engine or writer.
+
+- **Test Results**
+  - `pytest tests/test_final_audit_pack -q --import-mode=importlib`: 121 passed.
+  - `pytest -q --import-mode=importlib`: 5750 passed, 1 skipped.
+
 ## MVP-31 — Local Research Experiment Ledger (Complete)
 
 **Version:** 0.30.0-dev → 0.31.0-dev.

@@ -1,5 +1,33 @@
 ---
 
+### MVP-32 Step 4 — Finalization
+
+Date: 2026-07-04
+
+Agent: WrongStack
+
+Task: MVP-32 Step 4 — Finalize Local Research Final Audit Pack Export: version bump to 0.32.0-dev, update CHANGELOG.md, docs/handoff/CURRENT_STATE.md, tasks/active.md, and tasks/agent-log.md.
+
+Files modified:
+
+- `pyproject.toml` — version bumped from 0.31.0-dev to 0.32.0-dev.
+- `src/hunter/__init__.py` — version bumped from 0.31.0-dev to 0.32.0-dev.
+- `CHANGELOG.md` — added MVP-32 completion section covering models/engine, writer artifacts, integration tests, deterministic final audit pack export over caller-provided in-memory reports and opaque artifact references, completeness/readiness-for-audit summary, explicit non-approval / non-certification / non-trading-readiness semantics, safety/audit-only boundaries, and test results.
+- `docs/handoff/CURRENT_STATE.md` — marked MVP-32 complete, version 0.32.0-dev, described final_audit_pack as local call-triggered audit-only final export/manifest layer, set next phase as not started pending human direction.
+- `tasks/active.md` — marked MVP-32 complete, set next phase as not started pending human direction.
+- `tasks/agent-log.md` — this entry.
+
+Test results:
+
+- `pytest tests/test_final_audit_pack -q --import-mode=importlib`: 121 passed.
+- `pytest -q --import-mode=importlib`: 5750 passed, 1 skipped.
+
+Summary:
+
+Finalized MVP-32 Local Research Final Audit Pack Export. Full implementation spanned Step 1 (models/engine), Step 2 (writer), and Step 3 (integration tests). This finalization step updated documentation and version metadata without modifying `src/hunter/final_audit_pack/` or `tests/`. All safety boundaries remain intact: final audit pack is research-only, not a production release approval system, not a certification of trading readiness, not a strategy selector, not a signal generator, and not a performance attribution tool; not a trading signal, not trade/strategy/execution/portfolio/universe approval, and not Freqtrade input; no Freqtrade input, no Binance/exchange/API/live data, no order/execution/action commands, no leverage/shorting, and no feedback into execution paths. The writer only writes explicit output paths and never reads input files or follows metadata references.
+
+Next step: not started; requires human direction.
+
 ### MVP-31 Step 4 — Finalization
 
 Date: 2026-07-03
