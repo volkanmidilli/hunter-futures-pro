@@ -58,9 +58,25 @@ from hunter.release_hardening.models import (
     ReleaseHardeningSeverity,
     ReleaseHardeningState,
 )
+from hunter.release_hardening.writer import (
+    DEFAULT_CSV_PATH,
+    DEFAULT_JSON_PATH,
+    DEFAULT_MD_PATH,
+    atomic_write_csv_release_hardening_report,
+    atomic_write_json_release_hardening_report,
+    atomic_write_markdown_release_hardening_report,
+    release_hardening_report_to_csv_text,
+    release_hardening_report_to_dict,
+    release_hardening_report_to_json_text,
+    release_hardening_report_to_markdown_text,
+    write_release_hardening_report,
+)
 
 __all__ = [
     "CONSISTENCY_DEGRADED",
+    "DEFAULT_CSV_PATH",
+    "DEFAULT_JSON_PATH",
+    "DEFAULT_MD_PATH",
     "FORBIDDEN_RELEASE_HARDENING_TERMS",
     "HUMAN_RESEARCH_ONLY",
     "MISSING_MARKDOWN_DISCLAIMER",
@@ -101,7 +117,15 @@ __all__ = [
     "ReleaseHardeningSafetyFlags",
     "ReleaseHardeningSeverity",
     "ReleaseHardeningState",
+    "atomic_write_csv_release_hardening_report",
+    "atomic_write_json_release_hardening_report",
+    "atomic_write_markdown_release_hardening_report",
     "build_release_hardening_report",
     "build_release_hardening_safety_flags",
     "has_unsafe_release_hardening_content",
+    "release_hardening_report_to_csv_text",
+    "release_hardening_report_to_dict",
+    "release_hardening_report_to_json_text",
+    "release_hardening_report_to_markdown_text",
+    "write_release_hardening_report",
 ]
