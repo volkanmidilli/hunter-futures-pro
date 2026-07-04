@@ -2,6 +2,43 @@
 
 All important project changes will be recorded in this file.
 
+## MVP-33 — Local Research Release Hardening / Consistency Audit (Complete)
+
+**Version:** 0.32.0-dev → 0.33.0-dev.
+
+**SPEC-034:** `specs/SPEC-034-Local-Research-Release-Hardening-Consistency-Audit.md` — implemented across models, engine, writer, and integration tests.
+
+**Commit:** `TBD` — feat: complete MVP-33 local research release hardening / consistency audit.
+
+- **MVP-33 Step 1 — Models and Engine (Complete)**
+  - `src/hunter/release_hardening/__init__.py` — public API exports for models, engine, writer, reason codes, safety constants, and default artifact paths.
+  - `src/hunter/release_hardening/models.py` — frozen dataclasses: `PackageDeclaration`, `CompletedAuditPackage`, `ReleaseHardeningCheck`, `ReleaseHardeningCheckResult`, `ReleaseHardeningConfig`, `ReleaseHardeningDataQuality`, `ReleaseHardeningSafetyFlags`, `ReleaseHardeningInput`, `ReleaseHardeningReport`; enums `ReleaseHardeningState`, `ReleaseHardeningReasonCode`, `ReleaseHardeningSeverity`, `ReleaseHardeningCheckCategory`; reason-code constants and forbidden-term guard.
+  - `src/hunter/release_hardening/engine.py` — pure local release hardening engine: input validation, deterministic default checks across ten categories (public exports, package presence, writer defaults, safety notices, markdown disclaimer, forbidden terms, version consistency, default path locality, test artifact isolation, artifact path policy), fail-closed duplicate/unsafe handling, and report aggregation with strict/non-strict modes.
+  - `tests/test_release_hardening/test_models.py` — model validation, safety flags, reason codes.
+  - `tests/test_release_hardening/test_engine.py` — check behavior, aggregation, strict mode, determinism, no input mutation, unsafe content blocking.
+
+- **MVP-33 Step 2 — Writer (Complete)**
+  - `src/hunter/release_hardening/writer.py` — deterministic JSON/CSV/Markdown serialization and atomic writes for `ReleaseHardeningReport`.
+  - Includes `release_hardening_report_to_dict`, `release_hardening_report_to_json_text`, `release_hardening_report_to_csv_text`, `release_hardening_report_to_markdown_text`, `write_release_hardening_report`, and atomic write helpers.
+  - Default local artifact paths: `data/release_hardening/release_hardening.json`, `data/release_hardening/release_hardening_checks.csv`, `reports/release_hardening/release_hardening.md`.
+  - Markdown includes H1 title, immediate research-only/audit-only safety notice, and sections for summary, data quality, checks by category, safety flags, reason codes, and notes.
+  - `tests/test_release_hardening/test_writer.py` — dict/JSON/CSV/Markdown serialization, atomic writes, determinism, blocked/degraded reports, no mutation, public exports, nested dataclass/mapping serialization, opaque file references.
+
+- **MVP-33 Step 3 — Integration Tests (Complete)**
+  - `tests/test_release_hardening/test_integration.py` — end-to-end release hardening flows with caller-provided `PackageDeclaration` and `CompletedAuditPackage` inputs; public export, package presence, and test artifact isolation checks; empty-actual behavior; aggregation in strict and non-strict modes; version consistency; duplicate/unsafe fail-closed behavior; writer end-to-end tests; determinism; no input mutation; public exports; safety boundary assertions.
+
+- **Safety and Boundaries**
+  - The release hardening audit is local, call-triggered, deterministic, and audit-only.
+  - It is not a production release approval system, not a certification of trading readiness, not a trading signal, not a recommendation, not a strategy selector, and not an execution/portfolio/universe approval gate.
+  - No scheduler, daemon, background job runner, server, REST API, database, Web UI, or dashboard introduced.
+  - No Binance, exchange, API, live data, network, real trading, order, leverage, shorting, or Freqtrade strategy/runtime semantics introduced.
+  - All outputs are human-audit / research-only artifacts; no action commands or feedback into execution paths.
+  - Metadata and file-reference strings remain opaque local strings; they are never opened, traversed, validated, fetched, or executed by the engine or writer.
+
+- **Test Results**
+  - `pytest tests/test_release_hardening -q --import-mode=importlib`: 94 passed.
+  - `pytest -q --import-mode=importlib`: 5844 passed, 1 skipped.
+
 ## MVP-32 — Local Research Final Audit Pack Export (Complete)
 
 **Version:** 0.31.0-dev → 0.32.0-dev.

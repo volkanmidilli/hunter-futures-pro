@@ -2,11 +2,13 @@
 
 ## Current Task
 
-MVP-32 — Local Research Final Audit Pack Export is complete. Next phase: not started; requires human direction.
+MVP-33 — Local Research Release Hardening / Consistency Audit is complete. Version 0.33.0-dev. Full test suite: 5844 tests passing, 1 skipped using `pytest --import-mode=importlib`. All four steps (Step 1 models/engine, Step 2 writer, Step 3 integration tests, Step 4 finalization) completed. Source changes in finalization limited to version bump and documentation only. Safety boundaries preserved: local, call-triggered, audit-only consistency layer over caller-provided in-memory package declarations and opaque artifact references; not a production release approval system, not a certification of trading readiness, not a trading signal, not a recommendation, not a strategy selector, and not an execution/portfolio/universe approval gate; no Freqtrade input, no Binance/exchange/API/live data, no order/execution/action commands, no leverage/shorting, no feedback into execution/strategy/portfolio paths; no scheduler, daemon, background job runner, server, REST API, database, Web UI, or dashboard introduced. Next phase: not started; requires human direction.
 
 ## Status
 
-MVP-32 — Local Research Final Audit Pack Export is complete. SPEC-033 implemented across models, engine, writer, and integration tests. Version 0.32.0-dev. Full test suite: 5750 tests passing, 1 skipped using `pytest --import-mode=importlib`. All four steps (Step 1 models/engine, Step 2 writer, Step 3 integration tests, Step 4 finalization) completed. Source changes in finalization limited to version bump and documentation only. Safety boundaries preserved: local, call-triggered, audit-only final export/manifest layer over caller-provided in-memory research reports and opaque artifact references; not a production release approval system, not a certification of trading readiness, not a strategy selector, not a signal generator, and not a performance attribution tool; not a trading signal, not trade/strategy/execution/portfolio/universe approval, and not Freqtrade input; no Freqtrade input, no Binance/exchange/API/live data, no order/execution/action commands, no leverage/shorting, no feedback into execution/strategy/portfolio paths; no scheduler, daemon, background job runner, server, REST API, database, Web UI, or dashboard introduced. Current supported entry is the callable `build_final_audit_pack_report(input, config)` public API; no standalone runner or console script entry has been added. Next phase: not started; requires human direction.
+MVP-33 — Local Research Release Hardening / Consistency Audit is complete. SPEC-034 implemented across models, engine, writer, and integration tests. Version 0.33.0-dev. Full test suite: 5844 tests passing, 1 skipped using `pytest --import-mode=importlib`. All four steps (Step 1 models/engine, Step 2 writer, Step 3 integration tests, Step 4 finalization) completed. Source changes in finalization limited to version bump and documentation only. Safety boundaries preserved: local, call-triggered, audit-only consistency layer over caller-provided in-memory package declarations and opaque artifact references; not a production release approval system, not a certification of trading readiness, not a trading signal, not a recommendation, not a strategy selector, and not an execution/portfolio/universe approval gate; no Freqtrade input, no Binance/exchange/API/live data, no order/execution/action commands, no leverage/shorting, no feedback into execution/strategy/portfolio paths; no scheduler, daemon, background job runner, server, REST API, database, Web UI, or dashboard introduced. Tag target: v0.33.0-dev.
+
+MVP-32 — Local Research Final Audit Pack Export is complete. SPEC-033 implemented across models, engine, writer, and integration tests. Version 0.32.0-dev. Full test suite: 5750 tests passing, 1 skipped using `pytest --import-mode=importlib`. All four steps (Step 1 models/engine, Step 2 writer, Step 3 integration tests, Step 4 finalization) completed. Source changes in finalization limited to version bump and documentation only. Safety boundaries preserved: local, call-triggered, audit-only final export/manifest layer over caller-provided in-memory research reports and opaque artifact references; not a production release approval system, not a certification of trading readiness, not a strategy selector, not a signal generator, and not a performance attribution tool; not a trading signal, not trade/strategy/execution/portfolio/universe approval, and not Freqtrade input; no Freqtrade input, no Binance/exchange/API/live data, no order/execution/action commands, no leverage/shorting, no feedback into execution/strategy/portfolio paths; no scheduler, daemon, background job runner, server, REST API, database, Web UI, or dashboard introduced. Current supported entry is the callable `build_final_audit_pack_report(input, config)` public API; no standalone runner or console script entry has been added. Next phase: not started; requires human direction. [SUPERSEDED]
 
 MVP-31 — Local Research Experiment Ledger is complete. Next recommended step: not started; requires human direction. [SUPERSEDED]
 
@@ -220,6 +222,18 @@ MVP-23 Step 4 — Final validation and version bump (Complete).
 - [x] MVP-31 Step 4 complete: final validation passed, version bumped to 0.31.0-dev.
 - [x] MVP-31 complete.
 - [x] Full suite 5629 tests pass, 1 skipped.
+- [x] MVP-33 Step 1 complete: release hardening models and engine implemented.
+- [x] Release hardening model tests pass.
+- [x] Release hardening engine tests pass.
+- [x] Full suite passes after Step 1, 1 skipped.
+- [x] MVP-33 Step 2 complete: release hardening writer implemented.
+- [x] Release hardening writer tests pass.
+- [x] Full suite passes after Step 2, 1 skipped.
+- [x] MVP-33 Step 3 complete: release hardening integration tests implemented.
+- [x] Release hardening integration tests pass.
+- [x] Full suite 5844 tests pass, 1 skipped.
+- [x] MVP-33 Step 4 complete: final validation passed, version bumped to 0.33.0-dev.
+- [x] MVP-33 complete.
 - [ ] Next MVP: not started. No SPEC drafted yet. Requires human approval before any implementation.
 
 ## Backlog (Non-Blocking)
