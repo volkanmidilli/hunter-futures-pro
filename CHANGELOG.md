@@ -2,6 +2,44 @@
 
 All important project changes will be recorded in this file.
 
+## MVP-35 — Local Research Audit Readiness Scorecard (Complete)
+
+**Version:** 0.34.0-dev → 0.35.0-dev.
+
+**SPEC-036:** `specs/SPEC-036-Local-Research-Audit-Readiness-Scorecard.md` — implemented across models, engine, writer, and integration tests.
+
+**Commit:** `TBD` — feat: complete MVP-35 local research audit readiness scorecard.
+
+- **MVP-35 Step 1 — Models and Engine (Complete)**
+  - `src/hunter/audit_scorecard/__init__.py` — public API exports for models, engine, writer, reason codes, safety constants, and default artifact paths.
+  - `src/hunter/audit_scorecard/models.py` — frozen dataclasses: `AuditScorecardInput`, `AuditScorecardDimension`, `AuditScorecardDimensionResult`, `AuditScorecardEvidenceRef`, `AuditScorecardFinding`, `AuditScorecardLink`, `AuditScorecardConfig`, `AuditScorecardDataQuality`, `AuditScorecardSafetyFlags`, `AuditScorecardReport`; enums `AuditScorecardState`, `AuditScorecardReasonCode`, `AuditScorecardSeverity`, `AuditScorecardDimensionState`, `AuditScorecardLinkType`; reason-code constants and forbidden-term guard.
+  - `src/hunter/audit_scorecard/engine.py` — pure local audit readiness scorecard engine: input validation, caller-provided in-memory declarations, deterministic dimension classification (`complete`/`partial`/`missing`/`blocked`/`degraded`/`not_applicable`), upstream state propagation, duplicate detection, stale-evidence detection, missing-manual-review detection, conflicting-finding/link detection, orphan evidence/link detection, unsafe-content and forbidden-term fail-closed handling, and report aggregation with strict/non-strict modes.
+  - `tests/test_audit_scorecard/test_models.py` — model validation, safety flags, reason codes, dimension/link enums.
+  - `tests/test_audit_scorecard/test_engine.py` — dimension classification, upstream states, orphans, conflicts, staleness, manual review, duplicate/unsafe blocking, aggregation, determinism, no input mutation.
+
+- **MVP-35 Step 2 — Writer (Complete)**
+  - `src/hunter/audit_scorecard/writer.py` — deterministic JSON/CSV/Markdown serialization and atomic writes for `AuditScorecardReport`.
+  - Includes `audit_scorecard_report_to_dict`, `audit_scorecard_report_to_json_text`, `audit_scorecard_report_to_csv_text`, `audit_scorecard_report_to_markdown_text`, `write_audit_scorecard_report`, and atomic write helpers.
+  - Default local artifact paths: `data/audit_scorecard/audit_scorecard.json`, `data/audit_scorecard/audit_scorecard_dimensions.csv`, `reports/audit_scorecard/audit_scorecard.md`.
+  - Markdown includes H1 title, immediate research-only/audit-only safety notice, and sections for summary, dimension results, findings, evidence references, links, data quality, safety flags, manual review, reason codes, and notes.
+  - `tests/test_audit_scorecard/test_writer.py` — dict/JSON/CSV/Markdown serialization, atomic writes, determinism, blocked/degraded reports, no mutation, public exports, nested dataclass/mapping serialization, opaque file references.
+
+- **MVP-35 Step 3 — Integration Tests (Complete)**
+  - `tests/test_audit_scorecard/test_integration.py` — end-to-end audit scorecard flows with caller-provided dimensions, evidence refs, findings, links, and upstream states; dimension classification (complete/partial/missing/blocked/degraded/not-applicable); upstream precedence; duplicate/unsafe fail-closed behavior; conflicting findings/links; orphan evidence/links; stale evidence; missing manual review; aggregation in strict and non-strict modes; writer end-to-end tests; determinism; no input mutation; public exports; safety boundary assertions; opaque artifact reference assertions.
+
+- **Safety and Boundaries**
+  - The audit readiness scorecard is local, call-triggered, deterministic, and audit-only.
+  - "Readiness" means only a human audit review completeness snapshot for local research artifacts; it is not a production certification, not a certification of trading readiness, not a trading signal, not a recommendation, not a suitability assessment, and not an execution/portfolio/universe approval gate.
+  - No scheduler, daemon, background job runner, server, REST API, database, Web UI, or dashboard introduced.
+  - No Binance, exchange, API, live data, network, real trading, order, leverage, shorting, or Freqtrade strategy/runtime semantics introduced.
+  - All outputs are human-audit / research-only artifacts; no action commands or feedback into execution paths.
+  - Completeness percentages are descriptive metrics only (0–100 integer) and are not approval scores, certification grades, or pass/fail thresholds.
+  - Artifact, report, and metadata references remain opaque local strings; they are never opened, traversed, validated, fetched, or executed by the engine or writer.
+
+- **Test Results**
+  - `pytest tests/test_audit_scorecard -q --import-mode=importlib`: 115 passed.
+  - `pytest -q --import-mode=importlib`: 6055 passed, 1 skipped.
+
 ## MVP-34 — Local Research Evidence Traceability Matrix (Complete)
 
 **Version:** 0.33.0-dev → 0.34.0-dev.
