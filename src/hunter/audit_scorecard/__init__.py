@@ -68,6 +68,19 @@ from hunter.audit_scorecard.models import (
     AuditScorecardSeverity,
     AuditScorecardState,
 )
+from hunter.audit_scorecard.writer import (
+    DEFAULT_CSV_PATH,
+    DEFAULT_JSON_PATH,
+    DEFAULT_MD_PATH,
+    atomic_write_csv_audit_scorecard_report,
+    atomic_write_json_audit_scorecard_report,
+    atomic_write_markdown_audit_scorecard_report,
+    audit_scorecard_report_to_csv_text,
+    audit_scorecard_report_to_dict,
+    audit_scorecard_report_to_json_text,
+    audit_scorecard_report_to_markdown_text,
+    write_audit_scorecard_report,
+)
 
 __all__ = [
     "AUDIT_SCORECARD_ADVISORY_REASON_CODES",
@@ -76,6 +89,9 @@ __all__ = [
     "CONFLICTING_FINDING",
     "CONFLICTING_LINK",
     "CONSISTENCY_DEGRADED",
+    "DEFAULT_CSV_PATH",
+    "DEFAULT_JSON_PATH",
+    "DEFAULT_MD_PATH",
     "DUPLICATE_DIMENSION_ID",
     "DUPLICATE_EVIDENCE_ID",
     "DUPLICATE_FINDING_ID",
@@ -122,6 +138,14 @@ __all__ = [
     "AuditScorecardSafetyFlags",
     "AuditScorecardSeverity",
     "AuditScorecardState",
+    "atomic_write_csv_audit_scorecard_report",
+    "atomic_write_json_audit_scorecard_report",
+    "atomic_write_markdown_audit_scorecard_report",
+    "audit_scorecard_report_to_csv_text",
+    "audit_scorecard_report_to_dict",
+    "audit_scorecard_report_to_json_text",
+    "audit_scorecard_report_to_markdown_text",
     "build_audit_scorecard_report",
     "has_unsafe_audit_scorecard_content",
+    "write_audit_scorecard_report",
 ]
