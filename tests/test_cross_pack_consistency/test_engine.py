@@ -132,7 +132,7 @@ def test_missing_expected_artifact_ref() -> None:
     )
     inp = CrossPackConsistencyInput(declarations=(decl,))
     report = build_cross_pack_consistency_report(inp)
-    assert report.state is CrossPackConsistencyState.BLOCKED
+    assert report.state is CrossPackConsistencyState.DEGRADED
     issue = report.issues[0]
     assert issue.issue_type is CrossPackConsistencyIssueType.MISSING_EXPECTED_REF
 
@@ -145,7 +145,7 @@ def test_missing_expected_section_ref() -> None:
     )
     inp = CrossPackConsistencyInput(declarations=(decl,))
     report = build_cross_pack_consistency_report(inp)
-    assert report.state is CrossPackConsistencyState.BLOCKED
+    assert report.state is CrossPackConsistencyState.DEGRADED
     issue = report.issues[0]
     assert issue.issue_type is CrossPackConsistencyIssueType.MISSING_EXPECTED_REF
 
@@ -158,7 +158,7 @@ def test_missing_expected_requirement_ref() -> None:
     )
     inp = CrossPackConsistencyInput(declarations=(decl,))
     report = build_cross_pack_consistency_report(inp)
-    assert report.state is CrossPackConsistencyState.BLOCKED
+    assert report.state is CrossPackConsistencyState.DEGRADED
     issue = report.issues[0]
     assert issue.issue_type is CrossPackConsistencyIssueType.MISSING_EXPECTED_REF
 

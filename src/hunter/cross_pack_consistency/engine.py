@@ -334,8 +334,8 @@ def _evaluate_rule(
                 ))
 
     elif rule.rule_type == CrossPackConsistencyRuleType.UNKNOWN_STATE:
+        allowed = {_norm_state(label) for label in input.config.allowed_state_labels}
         if subject_norm and subject_norm in state_claims_by_subject:
-            allowed = {_norm_state(s) for s in rule.forbidden_states}
             for claim in state_claims_by_subject[subject_norm]:
                 claim_state = _norm_state(claim.state_label)
                 if claim_state and allowed and claim_state not in allowed:
@@ -517,7 +517,7 @@ def build_cross_pack_consistency_report(
                 message=f"required pack '{required_pack_id}' is missing",
             ))
 
-    # 5. Expected refs (BLOCKING per SPEC).
+    # 5. Expected refs (ADVISORY per SPEC).
     expected_artifact_ids: set[str] = set()
     expected_section_ids: set[str] = set()
     expected_requirement_ids: set[str] = set()
@@ -530,7 +530,7 @@ def build_cross_pack_consistency_report(
             if norm and norm not in artifact_by_id:
                 issues.append(_issue(
                     issue_type=CrossPackConsistencyIssueType.MISSING_EXPECTED_REF,
-                    severity=CrossPackConsistencySeverity.BLOCKING,
+                    severity=CrossPackConsistencySeverity.ADVISORY,
                     subject_id=norm,
                     source_pack_id=pack_norm,
                     reason_codes=(CrossPackConsistencyReasonCode.MISSING_EXPECTED_ARTIFACT_REF,),
@@ -543,7 +543,7 @@ def build_cross_pack_consistency_report(
             if norm and norm not in section_by_id:
                 issues.append(_issue(
                     issue_type=CrossPackConsistencyIssueType.MISSING_EXPECTED_REF,
-                    severity=CrossPackConsistencySeverity.BLOCKING,
+                    severity=CrossPackConsistencySeverity.ADVISORY,
                     subject_id=norm,
                     source_pack_id=pack_norm,
                     reason_codes=(CrossPackConsistencyReasonCode.MISSING_EXPECTED_SECTION_REF,),
@@ -556,7 +556,7 @@ def build_cross_pack_consistency_report(
             if norm and norm not in requirement_by_id:
                 issues.append(_issue(
                     issue_type=CrossPackConsistencyIssueType.MISSING_EXPECTED_REF,
-                    severity=CrossPackConsistencySeverity.BLOCKING,
+                    severity=CrossPackConsistencySeverity.ADVISORY,
                     subject_id=norm,
                     source_pack_id=pack_norm,
                     reason_codes=(CrossPackConsistencyReasonCode.MISSING_EXPECTED_REQUIREMENT_REF,),
