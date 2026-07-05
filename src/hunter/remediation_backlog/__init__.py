@@ -45,6 +45,19 @@ from hunter.remediation_backlog.models import (
     RemediationDependencyType,
     has_unsafe_remediation_backlog_content,
 )
+from hunter.remediation_backlog.writer import (
+    DEFAULT_CSV_PATH,
+    DEFAULT_JSON_PATH,
+    DEFAULT_MD_PATH,
+    atomic_write_csv_remediation_backlog_report,
+    atomic_write_json_remediation_backlog_report,
+    atomic_write_markdown_remediation_backlog_report,
+    remediation_backlog_report_to_csv_text,
+    remediation_backlog_report_to_dict,
+    remediation_backlog_report_to_json_text,
+    remediation_backlog_report_to_markdown_text,
+    write_remediation_backlog_report,
+)
 
 __all__ = [
     "build_remediation_backlog_report",
@@ -87,4 +100,15 @@ __all__ = [
     "RemediationDependency",
     "RemediationDependencyType",
     "has_unsafe_remediation_backlog_content",
+    "DEFAULT_CSV_PATH",
+    "DEFAULT_JSON_PATH",
+    "DEFAULT_MD_PATH",
+    "atomic_write_csv_remediation_backlog_report",
+    "atomic_write_json_remediation_backlog_report",
+    "atomic_write_markdown_remediation_backlog_report",
+    "remediation_backlog_report_to_csv_text",
+    "remediation_backlog_report_to_dict",
+    "remediation_backlog_report_to_json_text",
+    "remediation_backlog_report_to_markdown_text",
+    "write_remediation_backlog_report",
 ]
