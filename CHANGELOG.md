@@ -2,6 +2,43 @@
 
 All important project changes will be recorded in this file.
 
+## MVP-36 — Local Research Cross-Pack Consistency Validator (Complete)
+
+**Version:** 0.35.0-dev → 0.36.0-dev.
+
+**SPEC-037:** `specs/SPEC-037-Local-Research-Cross-Pack-Consistency-Validator.md` — implemented across models, engine, writer, and integration tests.
+
+**Commit:** `TBD` — feat: complete MVP-36 local research cross-pack consistency validator.
+
+- **MVP-36 Step 1 — Models and Engine (Complete)**
+  - `src/hunter/cross_pack_consistency/__init__.py` — public API exports for models, engine, writer, reason codes, safety constants, and default artifact paths.
+  - `src/hunter/cross_pack_consistency/models.py` — frozen dataclasses: `CrossPackConsistencyInput`, `CrossPackDeclaration`, `CrossPackArtifactRef`, `CrossPackSectionRef`, `CrossPackRequirementRef`, `CrossPackStateClaim`, `CrossPackConsistencyRule`, `CrossPackConsistencyIssue`, `CrossPackConsistencyConfig`, `CrossPackConsistencyDataQuality`, `CrossPackConsistencySafetyFlags`, `CrossPackConsistencyReport`; enums `CrossPackConsistencyState`, `CrossPackConsistencyReasonCode`, `CrossPackConsistencySeverity`, `CrossPackConsistencyIssueType`, `CrossPackConsistencyRuleType`; reason-code constants and forbidden-term guard.
+  - `src/hunter/cross_pack_consistency/engine.py` — pure local cross-pack consistency engine: caller-provided in-memory declarations, deterministic ID normalization, duplicate detection, required-pack detection, expected-ref/orphan-ref detection, incompatible-version detection, stale-declaration detection, incompatible-state-combination detection, conflicting-state detection, missing-manual-review detection, unknown-upstream-state detection, unsafe-content and forbidden-term fail-closed handling, and report aggregation with strict/non-strict modes.
+  - `tests/test_cross_pack_consistency/test_models.py` — model validation, safety flags, reason codes, enums.
+  - `tests/test_cross_pack_consistency/test_engine.py` — duplicate/unsafe blocking, missing required packs, expected/orphan refs, staleness, conflicting states, unknown states, manual review, version/state rules, aggregation, determinism, no input mutation.
+
+- **MVP-36 Step 2 — Writer (Complete)**
+  - `src/hunter/cross_pack_consistency/writer.py` — deterministic JSON/CSV issues/Markdown serialization and atomic writes for `CrossPackConsistencyReport`.
+  - Includes `cross_pack_consistency_report_to_dict`, `cross_pack_consistency_report_to_json_text`, `cross_pack_consistency_report_to_csv_text`, `cross_pack_consistency_report_to_markdown_text`, `write_cross_pack_consistency_report`, and atomic write helpers.
+  - Default local artifact paths: `data/cross_pack_consistency/cross_pack_consistency.json`, `data/cross_pack_consistency/cross_pack_consistency_issues.csv`, `reports/cross_pack_consistency/cross_pack_consistency.md`.
+  - Markdown includes H1 title, immediate research-only/audit-only safety notice, and sections for summary, consistency issues, pack declarations, references, state claims, rules, data quality, safety flags, manual review, and reason codes.
+  - `tests/test_cross_pack_consistency/test_writer.py` — dict/JSON/CSV/Markdown serialization, atomic writes, determinism, blocked/degraded reports, no mutation, public exports, nested dataclass/mapping serialization, opaque file references.
+
+- **MVP-36 Step 3 — Integration Tests (Complete)**
+  - `tests/test_cross_pack_consistency/test_integration.py` — end-to-end cross-pack consistency flows with caller-provided declarations, artifact refs, section refs, requirement refs, state claims, and rules; built-in vs rule-driven checks; missing required packs/expected refs/orphan refs/stale declarations/conflicting states/unknown states/manual review; incompatible version/state combinations; unsafe-content fail-closed behavior; aggregation in strict and non-strict modes; writer end-to-end tests; determinism; no input mutation; public exports; safety boundary assertions; opaque artifact reference assertions.
+
+- **Safety and Boundaries**
+  - The cross-pack consistency validator is local, call-triggered, deterministic, and audit-only.
+  - It is not a production certification, not a certification of trading readiness, not a trading signal, not a recommendation, not a strategy selector, and not an execution/portfolio/universe approval gate.
+  - No scheduler, daemon, background job runner, server, REST API, database, Web UI, or dashboard introduced.
+  - No Binance, exchange, API, live data, network, real trading, order, leverage, shorting, or Freqtrade strategy/runtime semantics introduced.
+  - All outputs are human-audit / research-only artifacts; no action commands or feedback into execution paths.
+  - Artifact, section, requirement, report, and metadata references remain opaque local strings; they are never opened, traversed, validated, fetched, or executed by the engine or writer.
+
+- **Test Results**
+  - `pytest tests/test_cross_pack_consistency -q --import-mode=importlib`: 110 passed.
+  - `pytest -q --import-mode=importlib`: 6165 passed, 1 skipped.
+
 ## MVP-35 — Local Research Audit Readiness Scorecard (Complete)
 
 **Version:** 0.34.0-dev → 0.35.0-dev.
