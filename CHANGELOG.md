@@ -2,6 +2,44 @@
 
 All important project changes will be recorded in this file.
 
+## MVP-37 — Local Research Remediation Backlog Planner (Complete)
+
+**Version:** 0.36.0-dev → 0.37.0-dev.
+
+**SPEC-038:** `specs/SPEC-038-Local-Research-Remediation-Backlog-Planner.md` — implemented across models, engine, writer, and integration tests.
+
+**Commit:** `TBD` — feat: complete MVP-37 local research remediation backlog planner.
+
+- **MVP-37 Step 1 — Models and Engine (Complete)**
+  - `src/hunter/remediation_backlog/__init__.py` — public API exports for models, engine, writer, reason codes, safety constants, and default artifact paths.
+  - `src/hunter/remediation_backlog/models.py` — frozen dataclasses: `RemediationSourceRef`, `RemediationFindingRef`, `RemediationBacklogItem`, `RemediationDependency`, `RemediationAcknowledgement`, `RemediationBacklogConfig`, `RemediationBacklogDataQuality`, `RemediationBacklogSafetyFlags`, `RemediationBacklogReport`; enums `RemediationBacklogState`, `RemediationBacklogReasonCode`, `RemediationBacklogSeverity`, `RemediationBacklogPriority`, `RemediationBacklogItemState`, `RemediationBacklogItemType`, `RemediationDependencyType`; reason-code constants and forbidden-term guard.
+  - `src/hunter/remediation_backlog/engine.py` — pure local remediation backlog engine: caller-provided in-memory declarations, deterministic ID normalization, deterministic `report_id` and generated `item_id`, duplicate ID detection (fail-closed), duplicate backlog-item deduplication by content hash, missing required source detection, orphan finding/dependency detection, dependency-cycle detection, conflicting item-state detection, stale source/finding ref detection, missing owner/reviewer/manual-review detection, acknowledgement handling, priority assignment (first-match-wins), unsafe-content and forbidden-term fail-closed handling, and report aggregation with strict/non-strict modes.
+  - `tests/test_remediation_backlog/test_models.py` — model validation, safety flags, reason codes, enums, frozen data quality assertions.
+  - `tests/test_remediation_backlog/test_engine.py` — duplicate/unsafe blocking, missing required sources, orphan findings/dependencies, dependency cycles, conflicting states, stale refs, manual review, acknowledgements, deduplication, aggregation, determinism, no input mutation.
+
+- **MVP-37 Step 2 — Writer (Complete)**
+  - `src/hunter/remediation_backlog/writer.py` — deterministic JSON/CSV backlog item/Markdown serialization and atomic writes for `RemediationBacklogReport`.
+  - Includes `remediation_backlog_report_to_dict`, `remediation_backlog_report_to_json_text`, `remediation_backlog_report_to_csv_text`, `remediation_backlog_report_to_markdown_text`, `write_remediation_backlog_report`, and atomic write helpers.
+  - Default local artifact paths: `data/remediation_backlog/remediation_backlog.json`, `data/remediation_backlog/remediation_backlog_items.csv`, `reports/remediation_backlog/remediation_backlog.md`.
+  - Markdown includes H1 title, immediate research-only/audit-only safety notice, explicit statement that the backlog is not an approval/certification/production readiness/trading readiness/recommendation/suitability assessment/signal/executable remediation plan, and sections for summary, backlog items, dependencies, acknowledgements, source refs, finding refs, data quality, safety flags, manual review, and reason codes.
+  - `tests/test_remediation_backlog/test_writer.py` — dict/JSON/CSV/Markdown serialization, atomic writes, determinism, blocked/degraded/not_applicable reports, acknowledged/deferred/duplicate/conflicting items, no mutation, public exports, nested dataclass/mapping serialization, opaque file references, default/explicit/None path handling.
+
+- **MVP-37 Step 3 — Integration Tests (Complete)**
+  - `tests/test_remediation_backlog/test_integration.py` — end-to-end remediation backlog flows with caller-provided source refs, finding refs, backlog items, dependencies, and acknowledgements; built-in checks (missing required sources, orphan findings/dependencies, dependency cycles, conflicting states, stale refs, missing owner/reviewer/manual review); acknowledgement and duplicate behavior; priority/severity/aggregation; unsafe-content and forbidden-term fail-closed behavior; false-positive-safe examples; writer end-to-end tests; determinism; no input mutation; public exports; safety boundary assertions; opaque reference assertions.
+
+- **Safety and Boundaries**
+  - The remediation backlog planner is local, call-triggered, deterministic, and audit-only.
+  - It is not a production certification, not a certification of trading readiness, not a trading signal, not a recommendation, not a suitability assessment, and not an execution/portfolio/universe approval gate.
+  - No scheduler, daemon, background job runner, server, REST API, database, Web UI, or dashboard introduced.
+  - No Binance, exchange, API, live data, network, real trading, order, leverage, shorting, or Freqtrade strategy/runtime semantics introduced.
+  - All outputs are human-audit / research-only artifacts; no action commands, shell commands, code patches, deployment steps, infrastructure changes, or feedback into execution paths.
+  - Priority is human-review ordering only and is not an implementation instruction, execution schedule, or automated remediation directive.
+  - Artifact, report, path, finding, source, and metadata references remain opaque local strings; they are never opened, traversed, validated, fetched, or executed by the engine or writer.
+
+- **Test Results**
+  - `pytest tests/test_remediation_backlog -q --import-mode=importlib`: 141 passed.
+  - `pytest -q --import-mode=importlib`: 6306 passed, 1 skipped.
+
 ## MVP-36 — Local Research Cross-Pack Consistency Validator (Complete)
 
 **Version:** 0.35.0-dev → 0.36.0-dev.
