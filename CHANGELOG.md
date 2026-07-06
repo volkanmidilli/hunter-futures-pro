@@ -2,6 +2,43 @@
 
 All important project changes will be recorded in this file.
 
+## MVP-38 — Local Research Remediation Evidence Tracker (Complete)
+
+**Version:** 0.37.0-dev → 0.38.0-dev.
+
+**SPEC-039:** `specs/SPEC-039-Local-Research-Remediation-Evidence-Tracker.md` — implemented across models, engine, writer, and integration tests.
+
+**Commit:** `TBD` — feat: complete MVP-38 local research remediation evidence tracker.
+
+- **MVP-38 Step 1 — Models and Engine (Complete)**
+  - `src/hunter/remediation_evidence/__init__.py` — public API exports for models, engine, writer, reason codes, safety constants, and default artifact paths.
+  - `src/hunter/remediation_evidence/models.py` — frozen dataclasses: `RemediationBacklogItemRef`, `RemediationEvidenceRecord`, `RemediationReviewRecord`, `RemediationEvidenceLink`, `RemediationEvidenceIssue`, `RemediationEvidenceCoverageResult`, `RemediationEvidenceConfig`, `RemediationEvidenceDataQuality`, `RemediationEvidenceSafetyFlags`, `RemediationEvidenceInput`, `RemediationEvidenceReport`; enums `RemediationEvidenceState`, `RemediationEvidenceSeverity`, `RemediationEvidenceReasonCode`, `RemediationEvidenceRecordState`, `RemediationEvidenceCoverageState`, `RemediationEvidenceReviewOutcome`, `RemediationEvidenceLinkType`, `RemediationEvidenceIssueType`; reason-code constants and forbidden-term guard.
+  - `src/hunter/remediation_evidence/engine.py` — pure local remediation evidence engine: caller-provided in-memory declarations, deterministic `report_id`, `issue_id`, and `coverage_id` generation, duplicate ID detection across backlog items/evidence/reviews/links (fail-closed), duplicate evidence deduplication by content hash, orphan evidence/review/link detection, conflicting review outcome detection, stale evidence/review detection using `staleness_threshold_seconds`, missing evidence/review detection, rejected and pending-review evidence detection, backlog-item state mismatch detection (BLOCKED/OPEN/ACKNOWLEDGED/DEFERRED/NOT_APPLICABLE), coverage classification with first-match-wins precedence (NOT_APPLICABLE, MISSING, CONFLICTING, REJECTED, STALE, PENDING_REVIEW, COVERED, PARTIAL), unsafe-content and forbidden-term fail-closed handling, and report aggregation with strict/non-strict modes.
+  - `tests/test_remediation_evidence/test_models.py` — model validation, safety flags, reason codes, enums, frozen data quality assertions.
+  - `tests/test_remediation_evidence/test_engine.py` — duplicate/unsafe blocking, duplicate evidence, orphan detection, conflicting reviews, staleness, missing evidence/review, coverage precedence, backlog item state mismatches, aggregation, determinism, no input mutation.
+
+- **MVP-38 Step 2 — Writer (Complete)**
+  - `src/hunter/remediation_evidence/writer.py` — deterministic JSON/CSV evidence record/Markdown serialization and atomic writes for `RemediationEvidenceReport`.
+  - Includes `remediation_evidence_report_to_dict`, `remediation_evidence_report_to_json_text`, `remediation_evidence_report_to_csv_text`, `remediation_evidence_report_to_markdown_text`, `write_remediation_evidence_report`, and atomic write helpers.
+  - Default local artifact paths: `data/remediation_evidence/remediation_evidence.json`, `data/remediation_evidence/remediation_evidence_records.csv`, `reports/remediation_evidence/remediation_evidence.md`.
+  - Markdown includes H1 title, immediate research-only/audit-only safety notice, explicit statement that evidence coverage is not an approval/certification/production readiness/trading readiness/recommendation/suitability assessment/signal/executable remediation plan, and sections for summary, coverage results, evidence records, review records, links, issues, data quality, safety flags, manual review notes, reason codes, and notes.
+  - `tests/test_remediation_evidence/test_writer.py` — dict/JSON/CSV/Markdown serialization, atomic writes, determinism, blocked/degraded/not_applicable reports, accepted/rejected/pending/stale/conflicting coverage, no mutation, public exports, nested dataclass/mapping serialization, opaque file references, default/explicit/None path handling.
+
+- **MVP-38 Step 3 — Integration Tests (Complete)**
+  - `tests/test_remediation_evidence/test_integration.py` — end-to-end remediation evidence flows with caller-provided backlog item refs, evidence records, review records, and evidence links; built-in checks (duplicate IDs, duplicate evidence, orphan evidence/reviews/links, conflicting reviews, stale records, missing evidence/review, rejected/pending evidence, backlog-item state mismatches); coverage state precedence; strict/non-strict aggregation; unsafe-content and forbidden-term fail-closed behavior; false-positive-safe examples; writer end-to-end tests; determinism; no input mutation; public exports; safety boundary assertions; opaque reference assertions.
+
+- **Safety and Boundaries**
+  - The remediation evidence tracker is local, call-triggered, deterministic, and audit-only.
+  - Evidence coverage is a human-audit tracking label only; it is not an approval, certification, production readiness assessment, trading readiness assessment, recommendation, suitability assessment, or signal, and is not an executable remediation plan.
+  - No scheduler, daemon, background job runner, server, REST API, database, Web UI, or dashboard introduced.
+  - No Binance, exchange, API, live data, network, real trading, order, leverage, shorting, or Freqtrade strategy/runtime semantics introduced.
+  - All outputs are human-audit / research-only artifacts; no action commands, shell commands, code patches, deployment steps, infrastructure changes, or feedback into execution paths.
+  - Artifact, report, path, evidence, backlog, and metadata references remain opaque local strings; they are never opened, traversed, validated, fetched, or executed by the engine or writer.
+
+- **Test Results**
+  - `pytest tests/test_remediation_evidence -q --import-mode=importlib`: 167 passed.
+  - `pytest -q --import-mode=importlib`: 6473 passed, 1 skipped.
+
 ## MVP-37 — Local Research Remediation Backlog Planner (Complete)
 
 **Version:** 0.36.0-dev → 0.37.0-dev.
