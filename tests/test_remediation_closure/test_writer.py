@@ -420,24 +420,14 @@ def test_blocked_report_serialization() -> None:
 def test_degraded_report_serialization() -> None:
     inp = RemediationClosureInput(
         backlog_item_refs=(
-            RemediationClosureBacklogItemRef(backlog_item_id="b1", item_state="open"),
+            RemediationClosureBacklogItemRef(backlog_item_id="b1", item_state="acknowledged"),
         ),
         evidence_summaries=(
             RemediationClosureEvidenceSummary(
                 evidence_summary_id="es1",
-                backlog_item_id="b1",
+                backlog_item_id="b2",  # orphan: references unknown backlog item
                 coverage_state="covered",
             ),
-        ),
-        closure_declarations=(
-            RemediationClosureDeclaration(
-                closure_id="c1",
-                backlog_item_id="b1",
-                evidence_summary_id="es1",
-            ),
-        ),
-        review_records=(
-            RemediationClosureReviewRecord(review_id="r1", closure_id="c1", outcome="accepted"),
         ),
         generated_at=NOW,
     )

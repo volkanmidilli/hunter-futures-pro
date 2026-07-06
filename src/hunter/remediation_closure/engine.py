@@ -60,6 +60,10 @@ _BLOCKING_REASON_CODES: frozenset[str] = frozenset({
     RemediationClosureReasonCode.DUPLICATE_ID.value,
     RemediationClosureReasonCode.CONFLICTING_CLOSURE.value,
     RemediationClosureReasonCode.CONFLICTING_REVIEW.value,
+    RemediationClosureReasonCode.MISSING_EVIDENCE.value,
+    RemediationClosureReasonCode.BLOCKED_BACKLOG_ITEM.value,
+    RemediationClosureReasonCode.OPEN_BACKLOG_ITEM.value,
+    RemediationClosureReasonCode.CONFLICTING_BACKLOG_ITEM.value,
     RemediationClosureReasonCode.SAFETY_BLOCKED.value,
 })
 
@@ -72,15 +76,11 @@ _ADVISORY_REASON_CODES: frozenset[str] = frozenset({
     RemediationClosureReasonCode.STALE_EVIDENCE.value,
     RemediationClosureReasonCode.STALE_CLOSURE.value,
     RemediationClosureReasonCode.STALE_REVIEW.value,
-    RemediationClosureReasonCode.MISSING_EVIDENCE.value,
     RemediationClosureReasonCode.MISSING_REVIEW.value,
     RemediationClosureReasonCode.MISSING_CLOSURE_METADATA.value,
     RemediationClosureReasonCode.REJECTED_REVIEW.value,
     RemediationClosureReasonCode.PENDING_REVIEW.value,
     RemediationClosureReasonCode.DISPUTED_REVIEW.value,
-    RemediationClosureReasonCode.BLOCKED_BACKLOG_ITEM.value,
-    RemediationClosureReasonCode.OPEN_BACKLOG_ITEM.value,
-    RemediationClosureReasonCode.CONFLICTING_BACKLOG_ITEM.value,
     RemediationClosureReasonCode.CONSISTENCY_DEGRADED.value,
 })
 
@@ -620,7 +620,7 @@ def _detect_issues(
             issues.append(
                 _make_issue(
                     issue_type=RemediationClosureIssueType.MISSING_EVIDENCE,
-                    severity=RemediationClosureSeverity.ADVISORY,
+                    severity=RemediationClosureSeverity.BLOCKING,
                     reason_codes=(RemediationClosureReasonCode.MISSING_EVIDENCE.value,),
                     title="Missing evidence coverage",
                     description=f"Closure {decl.closure_id} lacks accepted evidence coverage.",
@@ -753,7 +753,7 @@ def _detect_issues(
             issues.append(
                 _make_issue(
                     issue_type=RemediationClosureIssueType.BLOCKED_BACKLOG_ITEM,
-                    severity=RemediationClosureSeverity.ADVISORY,
+                    severity=RemediationClosureSeverity.BLOCKING,
                     reason_codes=(RemediationClosureReasonCode.BLOCKED_BACKLOG_ITEM.value,),
                     title="Blocked backlog item",
                     description=f"Backlog item {ref.backlog_item_id} is blocked and has a closure declaration.",
@@ -766,7 +766,7 @@ def _detect_issues(
             issues.append(
                 _make_issue(
                     issue_type=RemediationClosureIssueType.OPEN_BACKLOG_ITEM,
-                    severity=RemediationClosureSeverity.ADVISORY,
+                    severity=RemediationClosureSeverity.BLOCKING,
                     reason_codes=(RemediationClosureReasonCode.OPEN_BACKLOG_ITEM.value,),
                     title="Open backlog item",
                     description=f"Backlog item {ref.backlog_item_id} is open and has a closure declaration.",
@@ -779,7 +779,7 @@ def _detect_issues(
             issues.append(
                 _make_issue(
                     issue_type=RemediationClosureIssueType.CONFLICTING_BACKLOG_ITEM,
-                    severity=RemediationClosureSeverity.ADVISORY,
+                    severity=RemediationClosureSeverity.BLOCKING,
                     reason_codes=(RemediationClosureReasonCode.CONFLICTING_BACKLOG_ITEM.value,),
                     title="Conflicting backlog item",
                     description=f"Backlog item {ref.backlog_item_id} is conflicting and has a closure declaration.",

@@ -415,7 +415,10 @@ def test_missing_evidence_when_required() -> None:
         generated_at=NOW,
     )
     report = build_remediation_closure_report(inp)
-    assert any(issue.issue_type is RemediationClosureIssueType.MISSING_EVIDENCE for issue in report.issues)
+    missing = [issue for issue in report.issues if issue.issue_type is RemediationClosureIssueType.MISSING_EVIDENCE]
+    assert missing
+    assert all(issue.severity is RemediationClosureSeverity.BLOCKING for issue in missing)
+    assert report.state is RemediationClosureState.BLOCKED
     assert report.closure_results[0].record_state is RemediationClosureRecordState.BLOCKED
 
 
@@ -527,7 +530,7 @@ def test_disputed_review_detected() -> None:
 # ---------------------------------------------------------------------------
 
 
-def test_blocked_backlog_item_with_closure_emits_advisory() -> None:
+def test_blocked_backlog_item_with_closure_emits_blocking() -> None:
     ref = _backlog_item("b1", "blocked")
     es = _evidence_summary("es1", "b1", "covered")
     closure = _closure("c1", "b1", "es1")
@@ -540,11 +543,13 @@ def test_blocked_backlog_item_with_closure_emits_advisory() -> None:
         generated_at=NOW,
     )
     report = build_remediation_closure_report(inp)
-    assert any(issue.issue_type is RemediationClosureIssueType.BLOCKED_BACKLOG_ITEM for issue in report.issues)
-    assert report.state is RemediationClosureState.DEGRADED
+    blocking = [issue for issue in report.issues if issue.issue_type is RemediationClosureIssueType.BLOCKED_BACKLOG_ITEM]
+    assert blocking
+    assert all(issue.severity is RemediationClosureSeverity.BLOCKING for issue in blocking)
+    assert report.state is RemediationClosureState.BLOCKED
 
 
-def test_open_backlog_item_with_closure_emits_advisory() -> None:
+def test_open_backlog_item_with_closure_emits_blocking() -> None:
     ref = _backlog_item("b1", "open")
     es = _evidence_summary("es1", "b1", "covered")
     closure = _closure("c1", "b1", "es1")
@@ -557,11 +562,13 @@ def test_open_backlog_item_with_closure_emits_advisory() -> None:
         generated_at=NOW,
     )
     report = build_remediation_closure_report(inp)
-    assert any(issue.issue_type is RemediationClosureIssueType.OPEN_BACKLOG_ITEM for issue in report.issues)
-    assert report.state is RemediationClosureState.DEGRADED
+    blocking = [issue for issue in report.issues if issue.issue_type is RemediationClosureIssueType.OPEN_BACKLOG_ITEM]
+    assert blocking
+    assert all(issue.severity is RemediationClosureSeverity.BLOCKING for issue in blocking)
+    assert report.state is RemediationClosureState.BLOCKED
 
 
-def test_conflicting_backlog_item_with_closure_emits_advisory() -> None:
+def test_conflicting_backlog_item_with_closure_emits_blocking() -> None:
     ref = _backlog_item("b1", "conflicting")
     es = _evidence_summary("es1", "b1", "covered")
     closure = _closure("c1", "b1", "es1")
@@ -574,8 +581,10 @@ def test_conflicting_backlog_item_with_closure_emits_advisory() -> None:
         generated_at=NOW,
     )
     report = build_remediation_closure_report(inp)
-    assert any(issue.issue_type is RemediationClosureIssueType.CONFLICTING_BACKLOG_ITEM for issue in report.issues)
-    assert report.state is RemediationClosureState.DEGRADED
+    blocking = [issue for issue in report.issues if issue.issue_type is RemediationClosureIssueType.CONFLICTING_BACKLOG_ITEM]
+    assert blocking
+    assert all(issue.severity is RemediationClosureSeverity.BLOCKING for issue in blocking)
+    assert report.state is RemediationClosureState.BLOCKED
 
 
 def test_acknowledged_backlog_item_with_closure_emits_info() -> None:
@@ -892,21 +901,28 @@ def test_forbidden_term_helper_matches_multi_word_phrases() -> None:
 
 
 def test_strict_promotes_degraded_to_blocked() -> None:
-    ref = _backlog_item("b1", "open")
+    ref = _backlog_item("b1", "acknowledged")
     es = _evidence_summary("es1", "b1", "covered")
     closure = _closure("c1", "b1", "es1")
-    review = _review("r1", "c1", "accepted")
-    inp = RemediationClosureInput(
+    base = RemediationClosureInput(
         backlog_item_refs=(ref,),
         evidence_summaries=(es,),
         closure_declarations=(closure,),
-        review_records=(review,),
-        config=RemediationClosureConfig(strict=True),
+        config=RemediationClosureConfig(require_closure_metadata=True),
         generated_at=NOW,
     )
-    report = build_remediation_closure_report(inp)
-    assert report.state is RemediationClosureState.BLOCKED
-    assert RemediationClosureReasonCode.SAFETY_BLOCKED in report.reason_codes
+    strict = RemediationClosureInput(
+        backlog_item_refs=(ref,),
+        evidence_summaries=(es,),
+        closure_declarations=(closure,),
+        config=RemediationClosureConfig(strict=True, require_closure_metadata=True),
+        generated_at=NOW,
+    )
+    non_strict_report = build_remediation_closure_report(base)
+    strict_report = build_remediation_closure_report(strict)
+    assert non_strict_report.state is RemediationClosureState.DEGRADED
+    assert strict_report.state is RemediationClosureState.BLOCKED
+    assert RemediationClosureReasonCode.SAFETY_BLOCKED in strict_report.reason_codes
 
 
 def test_not_applicable_and_info_do_not_block() -> None:
