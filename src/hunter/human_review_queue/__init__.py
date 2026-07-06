@@ -43,6 +43,17 @@ from hunter.human_review_queue.models import (
     HumanReviewSourceRecord,
     has_unsafe_human_review_queue_content,
 )
+from hunter.human_review_queue.writer import (
+    DEFAULT_CSV_PATH,
+    DEFAULT_JSON_PATH,
+    DEFAULT_MD_PATH,
+    _DEFAULT_PATH,
+    human_review_queue_report_to_csv_text,
+    human_review_queue_report_to_dict,
+    human_review_queue_report_to_json_text,
+    human_review_queue_report_to_markdown_text,
+    write_human_review_queue_report,
+)
 
 __all__ = [
     "build_human_review_queue_report",
@@ -84,4 +95,13 @@ __all__ = [
     "HumanReviewQueueState",
     "HumanReviewSourceRecord",
     "has_unsafe_human_review_queue_content",
+    "DEFAULT_CSV_PATH",
+    "DEFAULT_JSON_PATH",
+    "DEFAULT_MD_PATH",
+    "_DEFAULT_PATH",
+    "human_review_queue_report_to_csv_text",
+    "human_review_queue_report_to_dict",
+    "human_review_queue_report_to_json_text",
+    "human_review_queue_report_to_markdown_text",
+    "write_human_review_queue_report",
 ]
