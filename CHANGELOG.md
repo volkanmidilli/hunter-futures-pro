@@ -2,6 +2,44 @@
 
 All important project changes will be recorded in this file.
 
+## MVP-40 — Local Research Human Review Queue (Complete)
+
+**Version:** 0.39.0-dev → 0.40.0-dev.
+
+**SPEC-041:** `specs/SPEC-041-Local-Research-Human-Review-Queue.md` — implemented across models, engine, writer, and integration tests.
+
+**Commit:** `TBD` — chore: finalize MVP-40 human review queue.
+
+- **MVP-40 Step 1 — Models and Engine (Complete)**
+  - `src/hunter/human_review_queue/__init__.py` — public API exports for models, engine, writer, reason codes, safety constants, and default artifact paths.
+  - `src/hunter/human_review_queue/models.py` — frozen dataclasses: `HumanReviewSourceRecord`, `HumanReviewQueueEntry`, `HumanReviewQueueIssue`, `HumanReviewQueueConfig`, `HumanReviewQueueDataQuality`, `HumanReviewQueueInput`, `HumanReviewQueueReport`; enums `HumanReviewQueueState`, `HumanReviewQueueReasonCode`, `HumanReviewQueueSeverity`, `HumanReviewQueueEntryState`, `HumanReviewQueuePriority`, `HumanReviewQueueSourceKind`, `HumanReviewQueueDecisionHint`, `HumanReviewQueueIssueType`; reason-code constants and forbidden-term guard.
+  - `src/hunter/human_review_queue/engine.py` — pure local human review queue engine: caller-provided in-memory source records, deterministic `report_id`, `queue_entry_id`, and `issue_id` generation, duplicate source ID detection (fail-closed), duplicate queue entry detection, orphan related-record detection against both `source_id` and `record_id` sets, stale source record detection using `staleness_threshold_seconds`, source kind mapping, queue entry state mapping, priority first-match-wins, non-executable decision hints, unsafe-content and forbidden-term fail-closed handling, and report aggregation with strict/non-strict modes.
+  - `tests/test_human_review_queue/test_models.py` — model validation, safety flags, reason codes, enums, frozen data quality assertions.
+  - `tests/test_human_review_queue/test_engine.py` — duplicate/unsafe blocking, orphan detection, staleness, source kind mapping, entry state mapping, priority first-match-wins, decision hints, forbidden-term false positives, aggregation, determinism, no input mutation.
+
+- **MVP-40 Step 2 — Writer (Complete)**
+  - `src/hunter/human_review_queue/writer.py` — deterministic JSON/CSV/Markdown serialization and atomic writes for `HumanReviewQueueReport`.
+  - Includes `human_review_queue_report_to_dict`, `human_review_queue_report_to_json_text`, `human_review_queue_report_to_csv_text`, `human_review_queue_report_to_markdown_text`, `write_human_review_queue_report`, and atomic write helpers.
+  - Default local artifact paths: `data/human_review_queue/human_review_queue.json`, `data/human_review_queue/human_review_queue.csv`, `reports/human_review_queue/human_review_queue.md`.
+  - Markdown includes H1 title, immediate research-only/audit-only safety notice, explicit statement that queued-for-review is not an approval/certification/production readiness/trading readiness/recommendation/suitability assessment/signal/task assignment/executable remediation plan, and sections for summary, queue entries, source records, issues, data quality, safety flags, opaque reference notice, no automated remediation notice, reason codes, and notes.
+  - `tests/test_human_review_queue/test_writer.py` — dict/JSON/CSV/Markdown serialization, atomic writes, determinism, blocked/degraded/ok/not_applicable reports, queue entry state mapping, no mutation, public exports, nested dataclass/mapping serialization, opaque file references, default/explicit/None path handling.
+
+- **MVP-40 Step 3 — Integration Tests (Complete)**
+  - `tests/test_human_review_queue/test_integration.py` — end-to-end human review queue flows with caller-provided source records; built-in checks (duplicate source IDs, duplicate queue entries, orphan related records by source_id and record_id, stale records); advisory-only and strict aggregation; unsafe-content and forbidden-term fail-closed behavior; false-positive-safe examples; writer end-to-end tests; determinism; no input mutation; public exports; safety boundary assertions; opaque reference assertions.
+
+- **Safety and Boundaries**
+  - The human review queue is local, call-triggered, deterministic, and audit-only.
+  - `queued-for-review` means human-audit tracking only; it is not an approval, certification, production readiness assessment, trading readiness assessment, recommendation, suitability assessment, signal, or task assignment, and is not an executable remediation plan.
+  - No automated remediation execution; no shell commands, patches, file edits, deployment actions, infrastructure changes, or executable steps as output.
+  - No scheduler, daemon, background job runner, server, REST API, database, Web UI, or dashboard introduced.
+  - No Binance, exchange, API, live data, network, real trading, order, leverage, shorting, or Freqtrade strategy/runtime semantics introduced.
+  - All outputs are human-audit / research-only artifacts; no action commands or feedback into execution paths.
+  - Artifact, report, path, and metadata references remain opaque local strings; they are never opened, traversed, validated, fetched, or executed by the engine or writer.
+
+- **Test Results**
+  - `pytest tests/test_human_review_queue -q --import-mode=importlib`: 132 passed.
+  - `pytest -q --import-mode=importlib`: 6782 passed, 1 skipped.
+
 ## MVP-39 — Local Research Remediation Closure Register (Complete)
 
 **Version:** 0.38.0-dev → 0.39.0-dev.
