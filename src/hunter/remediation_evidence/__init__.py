@@ -27,8 +27,24 @@ from hunter.remediation_evidence.models import (
     RemediationEvidenceState,
     has_unsafe_remediation_evidence_content,
 )
+from hunter.remediation_evidence.writer import (
+    DEFAULT_CSV_PATH,
+    DEFAULT_JSON_PATH,
+    DEFAULT_MD_PATH,
+    atomic_write_csv_remediation_evidence_report,
+    atomic_write_json_remediation_evidence_report,
+    atomic_write_markdown_remediation_evidence_report,
+    remediation_evidence_report_to_csv_text,
+    remediation_evidence_report_to_dict,
+    remediation_evidence_report_to_json_text,
+    remediation_evidence_report_to_markdown_text,
+    write_remediation_evidence_report,
+)
 
 __all__ = [
+    "DEFAULT_CSV_PATH",
+    "DEFAULT_JSON_PATH",
+    "DEFAULT_MD_PATH",
     "FORBIDDEN_REMEDIATION_EVIDENCE_TERMS",
     "REMEDIATION_EVIDENCE_VERSION",
     "RemediationBacklogItemRef",
@@ -50,6 +66,14 @@ __all__ = [
     "RemediationEvidenceSafetyFlags",
     "RemediationEvidenceSeverity",
     "RemediationEvidenceState",
+    "atomic_write_csv_remediation_evidence_report",
+    "atomic_write_json_remediation_evidence_report",
+    "atomic_write_markdown_remediation_evidence_report",
     "build_remediation_evidence_report",
     "has_unsafe_remediation_evidence_content",
+    "remediation_evidence_report_to_csv_text",
+    "remediation_evidence_report_to_dict",
+    "remediation_evidence_report_to_json_text",
+    "remediation_evidence_report_to_markdown_text",
+    "write_remediation_evidence_report",
 ]
