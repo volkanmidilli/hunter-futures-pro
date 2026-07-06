@@ -2,6 +2,50 @@
 
 All important project changes will be recorded in this file.
 
+## MVP-39 — Local Research Remediation Closure Register (Complete)
+
+**Version:** 0.38.0-dev → 0.39.0-dev.
+
+**SPEC-040:** `specs/SPEC-040-Local-Research-Remediation-Closure-Register.md` — implemented across models, engine, writer, and integration tests.
+
+**Commit:** `TBD` — feat: complete MVP-39 local research remediation closure register.
+
+- **MVP-39 Step 1 — Models and Engine (Complete)**
+  - `src/hunter/remediation_closure/__init__.py` — public API exports for models, engine, writer, reason codes, safety constants, and default artifact paths.
+  - `src/hunter/remediation_closure/models.py` — frozen dataclasses: `RemediationClosureBacklogItemRef`, `RemediationClosureEvidenceSummary`, `RemediationClosureDeclaration`, `RemediationClosureReviewRecord`, `RemediationClosureLink`, `RemediationClosureIssue`, `RemediationClosureResult`, `RemediationClosureConfig`, `RemediationClosureDataQuality`, `RemediationClosureSafetyFlags`, `RemediationClosureInput`, `RemediationClosureReport`; enums `RemediationClosureState`, `RemediationClosureReasonCode`, `RemediationClosureSeverity`, `RemediationClosureRecordState`, `RemediationClosureEligibilityState`, `RemediationClosureReviewOutcome`, `RemediationClosureIssueType`; reason-code constants and forbidden-term guard.
+  - `src/hunter/remediation_closure/engine.py` — pure local remediation closure engine: caller-provided in-memory declarations, deterministic `report_id`, `issue_id`, and `closure_result_id` generation, duplicate ID detection across backlog items/evidence summaries/closure declarations/review records/links (fail-closed), semantic duplicate closure detection by content hash, orphan evidence/closure/review/link detection, conflicting closure declaration and conflicting review outcome detection, stale evidence/closure/review detection using `staleness_threshold_seconds`, missing evidence detection controlled by `require_evidence_for_closure`, missing closure metadata detection (owner/reviewer/closed_at/rationale/evidence link), rejected/pending/disputed review handling, backlog-item state mismatch handling for `BLOCKED`/`OPEN`/`CONFLICTING`/`ACKNOWLEDGED`/`DEFERRED`/`NOT_APPLICABLE`, closure-record classification with first-match-wins precedence (`NOT_APPLICABLE`, `ORPHANED`, `BLOCKED`, `DISPUTED`, `DUPLICATE`, `REJECTED`, `STALE`, `PENDING_REVIEW`, `PARTIAL`, `CLOSED_RECORDED`), eligibility derivation (`ELIGIBLE`, `PARTIAL`, `INELIGIBLE`, `PENDING_REVIEW`, `DISPUTED`, `STALE`, `NOT_APPLICABLE`), unsafe-content and forbidden-term fail-closed handling, and report aggregation with strict/non-strict modes.
+  - `tests/test_remediation_closure/test_models.py` — model validation, safety flags, reason codes, enums, frozen data quality assertions.
+  - `tests/test_remediation_closure/test_engine.py` — duplicate/unsafe blocking, orphan detection, conflicting closures/reviews, staleness, missing evidence/review/metadata, review outcomes, backlog item state mismatches, closure precedence, aggregation, determinism, no input mutation.
+
+- **MVP-39 Step 2 — Writer (Complete)**
+  - `src/hunter/remediation_closure/writer.py` — deterministic JSON/CSV closure record/Markdown serialization and atomic writes for `RemediationClosureReport`.
+  - Includes `remediation_closure_report_to_dict`, `remediation_closure_report_to_json_text`, `remediation_closure_report_to_csv_text`, `remediation_closure_report_to_markdown_text`, `write_remediation_closure_report`, and atomic write helpers.
+  - Default local artifact paths: `data/remediation_closure/remediation_closure.json`, `data/remediation_closure/remediation_closure_records.csv`, `reports/remediation_closure/remediation_closure.md`.
+  - Markdown includes H1 title, immediate research-only/audit-only safety notice, explicit statement that closure recorded is not an approval/certification/production readiness/deployment readiness/trading readiness/recommendation/suitability assessment/signal/executable remediation plan, and sections for summary, closure results, evidence summaries, closure declarations, review records, links, issues, data quality, safety flags, manual review notes, reason codes, and notes.
+  - `tests/test_remediation_closure/test_writer.py` — dict/JSON/CSV/Markdown serialization, atomic writes, determinism, blocked/degraded/not_applicable reports, closed-recorded/partial/blocked/pending/rejected/disputed/stale/duplicate/orphaned results, no mutation, public exports, nested dataclass/mapping serialization, opaque file references, default/explicit/None path handling.
+
+- **MVP-39 Step 3 — Integration Tests (Complete)**
+  - `tests/test_remediation_closure/test_integration.py` — end-to-end remediation closure flows with caller-provided backlog item refs, evidence summaries, closure declarations, review records, and links; built-in checks (duplicate IDs, semantic duplicates, orphan evidence/closure/review/link, conflicting closures, conflicting reviews, stale records, missing evidence, missing metadata, pending/rejected/disputed reviews, backlog-item state mismatches); closure state precedence; strict/non-strict aggregation; unsafe-content and forbidden-term fail-closed behavior; false-positive-safe examples; writer end-to-end tests; determinism; no input mutation; public exports; safety boundary assertions; opaque reference assertions.
+
+- **MVP-39 Step 4 — SPEC Alignment Patch (Complete)**
+  - Aligned `MISSING_EVIDENCE`, `OPEN_BACKLOG_ITEM`, `BLOCKED_BACKLOG_ITEM`, and `CONFLICTING_BACKLOG_ITEM` issue severity to `BLOCKING` when closure safety is in question.
+  - Moved corresponding reason codes into the engine's `_BLOCKING_REASON_CODES` set so non-strict aggregation produces `BLOCKED`.
+  - Updated focused engine tests and integration tests to assert `BLOCKING` severity and `BLOCKED` aggregate state.
+  - Updated `tests/test_remediation_closure/test_writer.py::test_degraded_report_serialization` to use an orphan-evidence scenario, because `OPEN`/`BLOCKED`/`CONFLICTING` backlog items with closure declarations now produce `BLOCKED` reports.
+
+- **Safety and Boundaries**
+  - The remediation closure register is local, call-triggered, deterministic, and audit-only.
+  - `closure-recorded` means human-audit tracking only; it is not an approval, certification, production readiness assessment, deployment readiness assessment, trading readiness assessment, recommendation, suitability assessment, or signal, and is not an executable remediation plan.
+  - No automated remediation execution; no shell commands, patches, file edits, deployment actions, infrastructure changes, or executable steps as output.
+  - No scheduler, daemon, background job runner, server, REST API, database, Web UI, or dashboard introduced.
+  - No Binance, exchange, API, live data, network, real trading, order, leverage, shorting, or Freqtrade strategy/runtime semantics introduced.
+  - All outputs are human-audit / research-only artifacts; no action commands or feedback into execution paths.
+  - Artifact, report, path, evidence, backlog, closure, review, and metadata references remain opaque local strings; they are never opened, traversed, validated, fetched, or executed by the engine or writer.
+
+- **Test Results**
+  - `pytest tests/test_remediation_closure -q --import-mode=importlib`: 177 passed.
+  - `pytest -q --import-mode=importlib`: 6650 passed, 1 skipped.
+
 ## MVP-38 — Local Research Remediation Evidence Tracker (Complete)
 
 **Version:** 0.37.0-dev → 0.38.0-dev.
