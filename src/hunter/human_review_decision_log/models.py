@@ -19,6 +19,8 @@ from collections.abc import Iterable, Mapping
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
 from enum import Enum
+from hashlib import sha256
+from json import dumps
 from types import MappingProxyType
 from typing import Any
 
@@ -696,6 +698,38 @@ SAFETY_NOTICE = (
 )
 
 
+def _blocked_report_id(
+    input: "HumanReviewDecisionLogInput",
+    generated_at: datetime,
+    reason_code: HumanReviewDecisionReasonCode,
+    notes: str,
+) -> str:
+    """Return a deterministic, non-empty report_id for blocked reports."""
+    queue_entry_ids = sorted(
+        {str(ref.queue_entry_id).strip() for ref in input.queue_entry_refs if ref.queue_entry_id}
+    )
+    decision_ids = sorted(
+        {str(rec.decision_id).strip() for rec in input.decision_records if rec.decision_id}
+    )
+    link_ids = sorted(
+        {str(lnk.link_id).strip() for lnk in input.links if lnk.link_id}
+    )
+    payload = {
+        "state": HumanReviewDecisionLogState.BLOCKED.value,
+        "project_version": input.project_version,
+        "generated_at": generated_at.isoformat(),
+        "reason_code": reason_code.value,
+        "notes": notes,
+        "queue_entry_ids": queue_entry_ids,
+        "decision_ids": decision_ids,
+        "link_ids": link_ids,
+    }
+    digest = sha256(
+        dumps(payload, sort_keys=True, separators=(",", ":"), default=str).encode("utf-8")
+    ).hexdigest()
+    return f"blocked-human-review-decision-log-{digest[:16]}"
+
+
 @dataclass(frozen=True, slots=True)
 class HumanReviewDecisionLogReport:
     """A local, audit-only human review decision log report."""
@@ -766,7 +800,7 @@ class HumanReviewDecisionLogReport:
             has_forbidden_terms=reason_code == HumanReviewDecisionReasonCode.FORBIDDEN_TERM_PRESENT,
         )
         return cls(
-            report_id="",
+            report_id=_blocked_report_id(input, generated_at, reason_code, notes),
             generated_at=generated_at,
             state=HumanReviewDecisionLogState.BLOCKED,
             project_version=input.project_version,

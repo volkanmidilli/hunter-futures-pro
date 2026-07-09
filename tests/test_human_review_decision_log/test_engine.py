@@ -14,7 +14,9 @@ from hunter.human_review_decision_log import (
     HumanReviewDecisionOutcome,
     HumanReviewDecisionReasonCode,
     HumanReviewDecisionRecord,
+    HumanReviewDecisionSeverity,
     HumanReviewDecisionState,
+    HumanReviewDecisionValidity,
     HumanReviewQueueEntryRef,
     build_human_review_decision_log_report,
 )
@@ -970,3 +972,90 @@ def test_report_includes_metadata() -> None:
     )
     report = build_human_review_decision_log_report(inp)
     assert report.metadata["caller"] == "test"
+
+
+# ---------------------------------------------------------------------------
+# Orphaned decision results (SPEC-042 alignment)
+# ---------------------------------------------------------------------------
+
+
+def test_orphan_decision_produces_orphaned_result_state() -> None:
+    inp = HumanReviewDecisionLogInput(
+        queue_entry_refs=(_ref("q1"),),
+        decision_records=(_decision("d1", queue_entry_id="q-unknown"),),
+        generated_at=NOW,
+    )
+    report = build_human_review_decision_log_report(inp)
+    orphan = [r for r in report.decision_results if r.queue_entry_id == "q-unknown"][0]
+    assert orphan.decision_state == HumanReviewDecisionState.ORPHANED.value
+    assert orphan.decision_validity == HumanReviewDecisionValidity.INVALID_FOR_AUDIT_LOG.value
+    assert orphan.severity == HumanReviewDecisionSeverity.ADVISORY.value
+
+
+def test_orphaned_result_has_deterministic_id_and_reason_code() -> None:
+    inp = HumanReviewDecisionLogInput(
+        queue_entry_refs=(_ref("q1"),),
+        decision_records=(_decision("d1", queue_entry_id="q-unknown"),),
+        generated_at=NOW,
+    )
+    report1 = build_human_review_decision_log_report(inp)
+    report2 = build_human_review_decision_log_report(inp)
+    orphan1 = [r for r in report1.decision_results if r.queue_entry_id == "q-unknown"][0]
+    orphan2 = [r for r in report2.decision_results if r.queue_entry_id == "q-unknown"][0]
+    assert orphan1.decision_result_id == orphan2.decision_result_id
+    assert HumanReviewDecisionReasonCode.ORPHAN_DECISION.value in orphan1.reason_codes
+
+
+def test_data_quality_orphaned_count_matches_orphan_results() -> None:
+    inp = HumanReviewDecisionLogInput(
+        queue_entry_refs=(_ref("q1"),),
+        decision_records=(
+            _decision("d1", queue_entry_id="q-orphan-1"),
+            _decision("d2", queue_entry_id="q-orphan-2"),
+        ),
+        generated_at=NOW,
+    )
+    report = build_human_review_decision_log_report(inp)
+    assert report.data_quality.orphaned_count == 2
+    orphan_states = {r.decision_state for r in report.decision_results}
+    assert HumanReviewDecisionState.ORPHANED.value in orphan_states
+
+
+# ---------------------------------------------------------------------------
+# Blocked report_id (SPEC-042 alignment)
+# ---------------------------------------------------------------------------
+
+
+def test_blocked_report_id_is_non_empty_and_prefixed() -> None:
+    inp = HumanReviewDecisionLogInput(
+        decision_records=(_decision("d1", queue_entry_id="q1", rationale="decision approved"),),
+        generated_at=NOW,
+    )
+    report = build_human_review_decision_log_report(inp)
+    assert report.state == HumanReviewDecisionLogState.BLOCKED
+    assert report.report_id.startswith("blocked-human-review-decision-log-")
+    assert len(report.report_id) < 70
+
+
+def test_blocked_report_id_is_deterministic() -> None:
+    inp = HumanReviewDecisionLogInput(
+        decision_records=(_decision("d1", queue_entry_id="q1", rationale="decision approved"),),
+        generated_at=NOW,
+    )
+    report1 = build_human_review_decision_log_report(inp)
+    report2 = build_human_review_decision_log_report(inp)
+    assert report1.report_id == report2.report_id
+
+
+def test_blocked_report_id_varies_with_input() -> None:
+    a = HumanReviewDecisionLogInput(
+        decision_records=(_decision("d1", queue_entry_id="q1", rationale="decision approved"),),
+        generated_at=NOW,
+    )
+    b = HumanReviewDecisionLogInput(
+        decision_records=(_decision("d2", queue_entry_id="q2", rationale="decision approved"),),
+        generated_at=NOW,
+    )
+    report_a = build_human_review_decision_log_report(a)
+    report_b = build_human_review_decision_log_report(b)
+    assert report_a.report_id != report_b.report_id

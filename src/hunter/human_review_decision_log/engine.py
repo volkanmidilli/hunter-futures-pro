@@ -1174,6 +1174,51 @@ def build_human_review_decision_log_report(
         )
         results.append(result)
 
+    # Build ORPHANED results for decision records referencing unknown queue entries.
+    # Links are opaque; we only create results from decision records because only
+    # decisions explicitly carry a queue_entry_id field.
+    orphan_queue_entry_ids = {
+        qid for qid in decisions_by_queue_entry if qid not in queue_entry_ids and qid
+    }
+    for qid in sorted(orphan_queue_entry_ids):
+        orphan_decisions = decisions_by_queue_entry[qid]
+        decision_ids = tuple(sorted(d.decision_id for d in orphan_decisions))
+        primary_decision = orphan_decisions[0] if orphan_decisions else None
+        decision_outcome = (
+            primary_decision.outcome.strip().lower()
+            if primary_decision and primary_decision.outcome.strip()
+            else HumanReviewDecisionOutcome.UNKNOWN.value
+        )
+        rationale = (
+            primary_decision.rationale
+            if primary_decision and primary_decision.rationale.strip()
+            else "Decision record(s) reference an unknown queue entry."
+        )
+        orphan_result = HumanReviewDecisionResult(
+            decision_result_id="",
+            queue_entry_id=qid,
+            decision_ids=decision_ids,
+            decision_state=HumanReviewDecisionState.ORPHANED.value,
+            decision_outcome=decision_outcome,
+            decision_validity=HumanReviewDecisionValidity.INVALID_FOR_AUDIT_LOG.value,
+            severity=HumanReviewDecisionSeverity.ADVISORY.value,
+            reason_codes=(HumanReviewDecisionReasonCode.ORPHAN_DECISION.value,),
+            reviewer=primary_decision.reviewer if primary_decision else "",
+            decided_at=primary_decision.decided_at if primary_decision else None,
+            rationale=rationale,
+            generated_at=generated_at,
+        )
+        result_id = _build_decision_result_id(
+            queue_entry_id=qid,
+            decision_ids=decision_ids,
+            decision_state=HumanReviewDecisionState.ORPHANED.value,
+            decision_outcome=decision_outcome,
+            decision_validity=HumanReviewDecisionValidity.INVALID_FOR_AUDIT_LOG.value,
+            generated_at=generated_at,
+        )
+        orphan_result = replace(orphan_result, decision_result_id=result_id)
+        results.append(orphan_result)
+
     # Sort deterministically.
     sorted_refs = tuple(sorted(input.queue_entry_refs, key=lambda r: r.queue_entry_id))
     sorted_records = tuple(sorted(input.decision_records, key=lambda r: r.decision_id))

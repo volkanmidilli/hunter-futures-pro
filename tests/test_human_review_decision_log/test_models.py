@@ -438,6 +438,27 @@ def test_report_blocked_with_forbidden_terms() -> None:
     assert report.state == HumanReviewDecisionLogState.BLOCKED
     assert report.safety_flags.has_forbidden_terms is True
 
+
+def test_report_blocked_has_non_empty_deterministic_report_id() -> None:
+    inp = HumanReviewDecisionLogInput(generated_at=NOW)
+    report1 = HumanReviewDecisionLogReport.blocked(input=inp)
+    report2 = HumanReviewDecisionLogReport.blocked(input=inp)
+    assert report1.report_id
+    assert report1.report_id.startswith("blocked-human-review-decision-log-")
+    assert report1.report_id == report2.report_id
+    assert len(report1.report_id) < 70
+
+
+def test_report_blocked_id_varies_with_input() -> None:
+    a = HumanReviewDecisionLogInput(generated_at=NOW)
+    b = HumanReviewDecisionLogInput(
+        queue_entry_refs=(HumanReviewQueueEntryRef(queue_entry_id="q1"),),
+        generated_at=NOW,
+    )
+    report_a = HumanReviewDecisionLogReport.blocked(input=a)
+    report_b = HumanReviewDecisionLogReport.blocked(input=b)
+    assert report_a.report_id != report_b.report_id
+
 def test_report_validates_state_enum() -> None:
     with pytest.raises(ValueError):
         HumanReviewDecisionLogReport(state="invalid")  # type: ignore[arg-type]
