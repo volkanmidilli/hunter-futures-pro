@@ -3,6 +3,17 @@
 from __future__ import annotations
 
 from hunter.human_review_decision_log.engine import build_human_review_decision_log_report
+from hunter.human_review_decision_log.writer import (
+    DEFAULT_CSV_PATH,
+    DEFAULT_JSON_PATH,
+    DEFAULT_MD_PATH,
+    _DEFAULT_PATH,
+    human_review_decision_log_report_to_csv_text,
+    human_review_decision_log_report_to_dict,
+    human_review_decision_log_report_to_json_text,
+    human_review_decision_log_report_to_markdown_text,
+    write_human_review_decision_log_report,
+)
 from hunter.human_review_decision_log.models import (
     FORBIDDEN_HUMAN_REVIEW_DECISION_TERMS,
     HUMAN_REVIEW_DECISION_LOG_VERSION,
@@ -57,6 +68,15 @@ from hunter.human_review_decision_log.models import (
 
 __all__ = [
     "build_human_review_decision_log_report",
+    "DEFAULT_CSV_PATH",
+    "DEFAULT_JSON_PATH",
+    "DEFAULT_MD_PATH",
+    "_DEFAULT_PATH",
+    "human_review_decision_log_report_to_csv_text",
+    "human_review_decision_log_report_to_dict",
+    "human_review_decision_log_report_to_json_text",
+    "human_review_decision_log_report_to_markdown_text",
+    "write_human_review_decision_log_report",
     "FORBIDDEN_HUMAN_REVIEW_DECISION_TERMS",
     "HUMAN_REVIEW_DECISION_LOG_VERSION",
     "OK",
