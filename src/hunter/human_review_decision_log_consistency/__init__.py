@@ -40,6 +40,11 @@ from hunter.human_review_decision_log_consistency.models import (
     CONSISTENCY_DEGRADED,
     has_unsafe_human_review_decision_log_consistency_content,
 )
+from hunter.human_review_decision_log_consistency.writer import (
+    human_review_decision_log_consistency_report_to_dict,
+    human_review_decision_log_consistency_report_to_json_text,
+    human_review_decision_log_consistency_report_to_markdown_text,
+)
 
 __all__ = [
     "build_human_review_decision_log_consistency_report",
@@ -76,4 +81,7 @@ __all__ = [
     "INPUT_BLOCKED",
     "CONSISTENCY_DEGRADED",
     "has_unsafe_human_review_decision_log_consistency_content",
+    "human_review_decision_log_consistency_report_to_dict",
+    "human_review_decision_log_consistency_report_to_json_text",
+    "human_review_decision_log_consistency_report_to_markdown_text",
 ]
