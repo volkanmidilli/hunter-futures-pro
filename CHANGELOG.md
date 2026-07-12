@@ -2,13 +2,17 @@
 
 All important project changes will be recorded in this file.
 
-## MVP-47 — Cross-Artifact Consistency Engine (Complete / Finalization Pending)
+## Unreleased
+
+- MVP-48 candidate selection and planning is pending. Candidate direction: Research Audit Aggregate Health Report. No `SPEC-049` exists yet.
+
+## MVP-47 — Cross-Artifact Consistency Engine (Complete, Tagged)
 
 **Version:** 0.46.0-dev → 0.47.0-dev.
 
 **SPEC-048:** `specs/SPEC-048-Cross-Artifact-Consistency-Engine.md` — implemented across models, engine, writer, and integration tests.
 
-**Tag:** none yet (pending explicit human tag command).
+**Tag:** `v0.47.0-dev` at `6103b95`.
 
 - `src/hunter/cross_artifact_consistency/__init__.py` — public API exports for models, engine, writer, reason codes, safety constants, and default artifact paths.
 - `src/hunter/cross_artifact_consistency/models.py` — frozen dataclasses (`CrossArtifactConsistencyInput`, `ConsistencyCheck`, `ConsistencyCheckResult`, `ArtifactRef`, `ConsistencyRule`, `ConsistencyReport`, `ConsistencyReportConfig`, `CrossArtifactConsistency`), enums (`ConsistencyCheckState`, `ConsistencySeverity`, `ConsistencyReasonCode`), reason codes, check kinds, and forbidden-content guard.
@@ -21,14 +25,13 @@ All important project changes will be recorded in this file.
 - 86 cross_artifact_consistency tests total.
 - Full suite: 7541 tests passing, 1 skipped using `pytest --import-mode=importlib`.
 - Safety: local, call-triggered, audit-only consistency engine over caller-provided in-memory artifact refs, rule definitions, and check results; not a production release approval system, not a certification of trading readiness, not a trading signal, not a recommendation, not a strategy selector, and not an execution/portfolio/universe approval gate; artifact refs are opaque strings and are not opened, traversed, validated, fetched, or executed; no Freqtrade input, no Binance/exchange/API/live data, no order/execution/action commands, no leverage/shorting, no feedback into execution/strategy/portfolio paths; no scheduler, daemon, background job runner, server, REST API, database, Web UI, or dashboard introduced.
-- Remaining: finalization review PASS and explicit human `git tag v0.47.0-dev` command before the tag is applied.
 
 **Key commits:**
 - SPEC: `4961d55` Add MVP-47 cross-artifact consistency spec
 - Step 1: `8eb368b` Implement MVP-47 cross-artifact consistency engine
 - Step 2: `139738e` Implement MVP-47 cross-artifact consistency writer
 - Step 3: `c88e229` Add MVP-47 cross-artifact consistency integration tests
-- Step 4 (memory/status): this update
+- Step 4 (memory/status): `6103b95` Finalize MVP-47 project memory state
 
 ## MVP-46 — Project Memory Realignment (Complete)
 

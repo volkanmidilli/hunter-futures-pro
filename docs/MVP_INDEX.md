@@ -28,9 +28,10 @@ Excluded from evidence:
 - MVP-46 is a documentation-only realignment step; its status is `tagged` at `v0.46.0-dev`.
 - The original master plan is MVP-0 through MVP-4.
 - The expanded chain is MVP-5 through MVP-47.
-- MVP-47 is complete and awaiting finalization review and explicit human tag command for `v0.47.0-dev`.
+- MVP-47 is complete and tagged at `v0.47.0-dev`.
 - `src/hunter/cross_artifact_consistency/` is now tracked and mapped to MVP-47.
 - `src/hunter/backtesting`, `src/hunter/engines`, `src/hunter/fitness`, `src/hunter/portfolio`, and `src/hunter/reporting` are listed as legacy or utility packages with no clear spec mapping.
+- No `SPEC-049` exists yet. MVP-48 selection and planning is pending; candidate direction is Research Audit Aggregate Health Report.
 
 ## MVP Index Table
 
@@ -83,7 +84,7 @@ Excluded from evidence:
 | MVP-44 | Human Review Audit Bundle Export Artifact | `SPEC-045` | `v0.44.0-dev` | `human_review_audit_bundle_export` | `test_human_review_audit_bundle_export` | tagged | — |
 | MVP-45 | Human Review Audit Bundle Export Verification / Replay | `SPEC-046` | `v0.45.0-dev` | `human_review_audit_bundle_export_verification` | `test_human_review_audit_bundle_export_verification` | tagged | HEAD / current |
 | MVP-46 | Project Memory Realignment | `SPEC-047` | `v0.46.0-dev` | `specs/`, docs only | none | tagged | Documentation-only realignment; tag at `b3ea2a4` |
-| MVP-47 | Cross-Artifact Consistency Engine | `SPEC-048` | `none` | `cross_artifact_consistency` | `test_cross_artifact_consistency` | committed; finalization pending | Complete; awaiting `v0.47.0-dev` tag after finalization review PASS |
+| MVP-47 | Cross-Artifact Consistency Engine | `SPEC-048` | `v0.47.0-dev` | `cross_artifact_consistency` | `test_cross_artifact_consistency` | tagged | Tagged at `6103b95` |
 
 ## Package Mapping
 
@@ -110,7 +111,7 @@ These packages exist in the tree but are not mapped to a specific MVP in the spe
 | Anomaly | Evidence | Status |
 |---------|----------|--------|
 | `v0.32.0-dev` missing | `git tag --list "v0.*-dev"` jumps from `v0.31.0-dev` to `v0.33.0-dev`; MVP-32 finalization commit exists | Recorded; no automatic action |
-| `v0.47.0-dev` not yet applied | MVP-47 implementation committed; tag requires finalization review PASS and explicit human tag command | Pending |
+| `v0.47.0-dev` now applied | MVP-47 complete; tag at `6103b95` | Resolved |
 | MVP-0 and MVP-1 have no `-dev` tag | `git tag --list "v0.*-dev"` starts at `v0.8.0-dev` | Expected; pre-tag history |
 | `v0.23.0-dev` shared by MVP-22 and MVP-23 | Same tag appears on both closure and snapshot commits | Documented; not an error |
 

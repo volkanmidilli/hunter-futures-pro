@@ -3,7 +3,7 @@
 ## Current Task
 
 MVP-47 — Cross-Artifact Consistency Engine is complete and tagged v0.47.0-dev.
-MVP-48 selection and planning is the active task. No MVP-48 SPEC exists yet.
+MVP-48 selection and planning is the active task. Candidate direction: Research Audit Aggregate Health Report. No MVP-48 SPEC exists yet.
 
 Latest tagged functional milestone: MVP-47 / v0.47.0-dev at commit `6103b95`.
 
@@ -33,7 +33,7 @@ MVP-47 — Cross-Artifact Consistency Engine is complete and tagged v0.47.0-dev.
 
 The original master plan (MVP-0 through MVP-4) is complete. The repository has expanded to MVP-47 / v0.47.0-dev.
 
-Next: MVP-48 selection and planning. No SPEC exists yet.
+Next: MVP-48 selection and planning. Candidate direction: Research Audit Aggregate Health Report. No SPEC exists yet.
 
 Known anomalies:
 - `v0.32.0-dev` tag missing from tag list (recorded as anomaly; no automatic action).

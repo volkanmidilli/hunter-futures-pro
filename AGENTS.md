@@ -147,6 +147,6 @@ When continuing work on an MVP:
 - Step 3 integration tests: `c88e229` Add MVP-47 cross-artifact consistency integration tests
 - Step 4 memory/status: `6103b95` Finalize MVP-47 project memory state
 - Autonomous workflow docs: `c081f44` Document autonomous MVP workflow
-- Next: MVP-48 selection and planning. No SPEC exists yet. Stop until human provides direction.
+- Next: MVP-48 selection and planning. Candidate direction: Research Audit Aggregate Health Report. No SPEC exists yet. Stop until human provides direction.
 - Tag policy: never tag automatically; the human must provide the exact tag or commit command.
 - Safety: autonomous workflow only touches docs/version/task memory; no runtime code, no tests, no data/reports inspection, no trading/API/Freqtrade/server/database/scheduler changes, no production-readiness, trading-readiness, approval, certification, recommendation, or suitability claims.

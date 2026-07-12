@@ -2,13 +2,13 @@
 
 ## Current Position
 
-- **Current MVP:** MVP-47 — Cross-Artifact Consistency Engine
-- **Current tag:** none yet (`v0.46.0-dev` is the latest tag; `v0.47.0-dev` pending finalization review and explicit human tag command)
+- **Current MVP:** MVP-47 — Cross-Artifact Consistency Engine (complete, tagged)
+- **Current tag:** `v0.47.0-dev` at commit `6103b95`
 - **Current branch:** `master`
 - **Current SPEC:** `specs/SPEC-048-Cross-Artifact-Consistency-Engine.md`
-- **Current commit:** `c88e229` (MVP-47 Step 3 integration tests; MVP-47 implementation complete)
-- **Latest tagged commit:** `b3ea2a4` (`v0.46.0-dev`)
-- **Next active work:** MVP-47 Step 4 finalization review and explicit human tag command for `v0.47.0-dev`; no new functional MVP without a new SPEC
+- **Current HEAD:** `9925a2b` — post-tag context sync (1 commit ahead of `v0.47.0-dev`)
+- **Latest tagged commit:** `6103b95` (`v0.47.0-dev`)
+- **Next active work:** MVP-48 selection and planning — candidate direction is Research Audit Aggregate Health Report; no `SPEC-049` exists yet
 
 The original master plan (MVP-0 through MVP-4) is complete. The repository has expanded well beyond that original plan into a long local research audit / governance / human-review chain that now ends at MVP-47. The project memory files have been realigned to reflect the actual MVP-47 state. No new runtime work should proceed without a new SPEC.
 
@@ -55,19 +55,18 @@ The expanded chain grew beyond the original plan. It is documented here as a his
 | MVP-40 – MVP-42 | Human review chain | SPEC-041 – SPEC-043 | Human review queue, decision log, cross-artifact consistency |
 | MVP-43 – MVP-45 | Audit bundle / export / verification | SPEC-044 – SPEC-046 | Audit bundle export, export artifact, verification/replay |
 | MVP-46 | Project memory realignment | SPEC-047 | Documentation-only step to realign stale project memory; tagged `v0.46.0-dev` |
-| MVP-47 | Cross-artifact consistency engine | SPEC-048 | Pure local audit-only consistency engine over caller-provided artifact refs and rules; finalization pending |
+| MVP-47 | Cross-artifact consistency engine | SPEC-048 | Pure local audit-only consistency engine over caller-provided artifact refs and rules; tagged `v0.47.0-dev` |
 
 For the full MVP-by-MVP mapping, see `docs/MVP_INDEX.md`.
 
 ## MVP Timeline
 
-The repository is tagged from `v0.8.0-dev` through `v0.46.0-dev`, with the following notable gaps and pending tag:
+The repository is tagged from `v0.8.0-dev` through `v0.47.0-dev`, with the following notable gaps:
 
 - `v0.32.0-dev` appears to be missing from the tag list even though the MVP-32 finalization commit exists. This is recorded as an anomaly.
 - `v0.23.0-dev` covers both MVP-22 (Audit Closure Report) and MVP-23 (Audit Snapshot).
-- `v0.47.0-dev` is not yet applied; MVP-47 implementation is complete and the tag requires finalization review PASS and an explicit human tag command.
 
-Current HEAD is the MVP-47 Step 3 integration test commit (`c88e229`). The next tag will be `v0.47.0-dev` only after finalization review PASS and explicit human approval.
+Current HEAD is `9925a2b` (post-tag context sync), one commit ahead of `v0.47.0-dev` at `6103b95`. The next step is MVP-48 selection and planning; no `SPEC-049` exists yet.
 
 ## Drift / Anomalies
 
@@ -84,24 +83,20 @@ Before MVP-46, the project memory files had drifted significantly from the actua
 | `docs/operations/*.md` | "MVP-0" | MVP-47 | operations docs "Current Phase" sections |
 | `tasks/backlog.md` | only MVP-0–4 | should reference expanded chain | `tasks/backlog.md` content |
 | `v0.32.0-dev` tag | missing | should exist after MVP-32 | `git tag --list "v0.*-dev"` |
-| `v0.47.0-dev` tag | not yet applied | pending finalization review and explicit human tag command | `git tag --list "v0.*-dev"` |
+| `v0.47.0-dev` tag | was previously missing | tagged at `6103b95` | `git tag --list "v0.*-dev"` |
 
 ## Next Step
 
-**Active work:** MVP-47 — Cross-Artifact Consistency Engine (`specs/SPEC-048-Cross-Artifact-Consistency-Engine.md`).
+**Active work:** MVP-48 selection and planning.
 
-MVP-47 implementation is complete. The remaining Step 4 is memory/status update and finalization preparation, followed by finalization review and the explicit human tag command for `v0.47.0-dev`.
+MVP-47 is complete and tagged `v0.47.0-dev` at `6103b95`. Current HEAD is `9925a2b`, one commit ahead of `v0.47.0-dev` due to the post-tag context sync.
 
-Deliverables for Step 4 (in progress):
-- `docs/handoff/CURRENT_STATE.md` — update to reflect MVP-47 as current and v0.47.0-dev as pending.
-- `tasks/active.md` — update to reflect MVP-47 as current active task.
-- `CHANGELOG.md` — add MVP-47 entry and mark MVP-46 as complete/tagged.
-- `VERSION` — align to `0.47.0-dev`.
-- `pyproject.toml` — align version to `0.47.0-dev`.
-- `docs/MVP_INDEX.md` — add MVP-47 row and update MVP-46 status.
-- `ROADMAP.md` (this file) — update current position and next step.
+No `SPEC-049` exists yet. Candidate direction for MVP-48 is **Research Audit Aggregate Health Report**. A new SPEC must be drafted and approved before any implementation starts.
 
-No new functional MVP should be selected until the finalization review passes and `v0.47.0-dev` is tagged, because the project memory files must remain stable for the next agent.
+Deliverables for MVP-48 planning:
+- Select and approve MVP-48 direction and SPEC-049 title.
+- Update memory docs when planning begins.
+- No source code or tests until a SPEC is approved.
 
 ## Safety Boundaries
 
@@ -111,4 +106,4 @@ No new functional MVP should be selected until the finalization review passes an
 - It preserves the original master plan as historical context and does not overwrite it.
 - `data/` and `reports/` are excluded local artifact areas; they remain opaque and untouched.
 - `src/hunter/cross_artifact_consistency/` is a tracked source package mapped to MVP-47; it is not excluded.
-- The missing `v0.32.0-dev` tag and the pending `v0.47.0-dev` tag are recorded as anomalies only; no automatic tag creation is performed.
+- The missing `v0.32.0-dev` tag is recorded as an anomaly only; no automatic tag creation is performed. The `v0.47.0-dev` tag is applied at `6103b95`.
