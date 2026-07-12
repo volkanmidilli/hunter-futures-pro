@@ -97,14 +97,17 @@ When continuing work on an MVP:
 
 ## Current MVP Context
 
-- Current MVP: MVP-47 Cross-Artifact Consistency Engine
-- SPEC: specs/SPEC-048-Cross-Artifact-Consistency-Engine.md
-- SPEC commit: 4961d55 Add MVP-47 cross-artifact consistency spec
-- Step 1 models/engine commit: 8eb368b Implement MVP-47 cross-artifact consistency engine
-- Step 2 writer commit: 139738e Implement MVP-47 cross-artifact consistency writer
-- Step 3 integration tests commit: c88e229 Add MVP-47 cross-artifact consistency integration tests
-- Next: Step 4 memory/status update and finalization review
-- Tag policy: v0.47.0-dev only after finalization review PASS and explicit human tag command
+- Completed MVP: MVP-47 Cross-Artifact Consistency Engine
+- Tag: `v0.47.0-dev` at commit `6103b95` — Finalize MVP-47 project memory state
+- SPEC: `specs/SPEC-048-Cross-Artifact-Consistency-Engine.md` (committed at `4961d55`)
+- Step 1 models/engine: `8eb368b` Implement MVP-47 cross-artifact consistency engine
+- Step 2 writer: `139738e` Implement MVP-47 cross-artifact consistency writer
+- Step 3 integration tests: `c88e229` Add MVP-47 cross-artifact consistency integration tests
+- Step 4 memory/status: `6103b95` Finalize MVP-47 project memory state
+- Autonomous workflow docs: `c081f44` Document autonomous MVP workflow
+- Next: MVP-48 selection and planning. No SPEC exists yet. Stop until human provides direction.
+- Tag policy: never tag automatically; the human must provide the exact tag or commit command.
+- Safety: autonomous workflow only touches docs/version/task memory; no runtime code, no tests, no data/reports inspection, no trading/API/Freqtrade/server/database/scheduler changes, no production-readiness, trading-readiness, approval, certification, recommendation, or suitability claims.
 
 ## Blocker protocol
 

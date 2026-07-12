@@ -8,7 +8,7 @@ Hunter Futures Pro
 
 ## Current Phase
 
-The original master plan (MVP-0 through MVP-4 and the 12 main modules in PROJECT.md) is complete. The repository has expanded well beyond that original plan. The functional MVP chain now runs through **MVP-46 / v0.46.0-dev**, with the latest tagged commit at `b3ea2a4`. The current active work is **MVP-47 — Cross-Artifact Consistency Engine**, which is complete and awaiting finalization review and the explicit human tag command for `v0.47.0-dev`.
+The original master plan (MVP-0 through MVP-4 and the 12 main modules in PROJECT.md) is complete. The repository has expanded well beyond that original plan. The functional MVP chain now runs through **MVP-47 / v0.47.0-dev**, with the latest tagged commit at `6103b95`. **MVP-47 — Cross-Artifact Consistency Engine** is complete and tagged. The next required action is **MVP-48 selection and planning**; no MVP-48 SPEC exists yet.
 
 ## Background
 
@@ -26,7 +26,7 @@ The original plan captured in `PROJECT.md`, `README.md`, and `tasks/backlog.md` 
 
 ### Expanded MVP Chain
 
-The repository now contains 46 specs (SPEC-001 through SPEC-046) and MVPs beyond the original plan:
+The repository now contains 48 specs (SPEC-001 through SPEC-048). MVPs beyond the original plan:
 
 - MVP-5 through MVP-9: Freqtrade execution contract chain
 - MVP-10 through MVP-23: Local research audit / review chain
@@ -36,24 +36,24 @@ The repository now contains 46 specs (SPEC-001 through SPEC-046) and MVPs beyond
 - MVP-40 through MVP-42: Human review chain
 - MVP-43 through MVP-45: Audit bundle / export / verification
 - MVP-46: Project Memory Realignment (documentation-only, complete)
-- MVP-47: Cross-Artifact Consistency Engine (complete, finalization pending)
+- MVP-47: Cross-Artifact Consistency Engine (complete, tagged v0.47.0-dev)
 
 For the full MVP-by-MVP mapping, see `ROADMAP.md` and `docs/MVP_INDEX.md`.
 
 ## Current Status
 
-MVP-46 — Project Memory Realignment is complete and tagged v0.46.0-dev at commit `b3ea2a4`.
+MVP-47 — Cross-Artifact Consistency Engine is complete and tagged v0.47.0-dev at commit `6103b95`.
 
-MVP-47 — Cross-Artifact Consistency Engine is complete and awaiting finalization review.
+MVP-48 — next MVP candidate. No SPEC exists yet. Requires human selection and planning.
 
-Latest tagged commit: `b3ea2a4` (tag: v0.46.0-dev).
+Latest tagged commit: `6103b95` (tag: v0.47.0-dev).
 Latest MVP-47 commits:
 - `4961d55` Add MVP-47 cross-artifact consistency spec
 - `8eb368b` Implement MVP-47 cross-artifact consistency engine
 - `139738e` Implement MVP-47 cross-artifact consistency writer
 - `c88e229` Add MVP-47 cross-artifact consistency integration tests
 
-MVP-47 — Cross-Artifact Consistency Engine is the active work. Step 4 (current-state/task/changelog/version alignment and finalization preparation) is the active step.
+MVP-47 — Cross-Artifact Consistency Engine is complete. All steps finished. Next phase: MVP-48 selection and planning; no SPEC exists yet.
 - SPEC-048: `specs/SPEC-048-Cross-Artifact-Consistency-Engine.md` — implemented.
 - `src/hunter/cross_artifact_consistency/__init__.py` — public API exports for models, engine, writer, reason codes, safety constants, and default artifact paths.
 - `src/hunter/cross_artifact_consistency/models.py` — frozen dataclasses (`CrossArtifactConsistencyInput`, `ConsistencyCheck`, `ConsistencyCheckResult`, `ArtifactRef`, `ConsistencyRule`, `ConsistencyReport`, `ConsistencyReportConfig`, `CrossArtifactConsistency`), enums (`ConsistencyCheckState`, `ConsistencySeverity`, `ConsistencyReasonCode`), reason codes, check kinds, and forbidden-content guard.
@@ -67,7 +67,7 @@ MVP-47 — Cross-Artifact Consistency Engine is the active work. Step 4 (current
 - Full suite: 7541 tests passing, 1 skipped using `pytest --import-mode=importlib`.
 - Safety: local, call-triggered, audit-only consistency engine over caller-provided in-memory artifact refs, rule definitions, and check results; not a production release approval system, not a certification of trading readiness, not a trading signal, not a recommendation, not a strategy selector, and not an execution/portfolio/universe approval gate; artifact refs are opaque strings and are not opened, traversed, validated, fetched, or executed; no Freqtrade input, no Binance/exchange/API/live data, no order/execution/action commands, no leverage/shorting, no feedback into execution/strategy/portfolio paths; no scheduler, daemon, background job runner, server, REST API, database, Web UI, or dashboard introduced.
 - Current supported entry: `build_cross_artifact_consistency_report(input, config)` public API; callable only from local code/tests, no standalone runner added.
-- Next phase: finalization review PASS and explicit human `git tag v0.47.0-dev` command.
+- Next phase: MVP-48 selection and planning. No SPEC exists yet.
 
 MVP-31 — Local Research Experiment Ledger is complete.
 - SPEC-032: `specs/SPEC-032-Local-Research-Experiment-Ledger.md` — implemented.
@@ -497,11 +497,11 @@ MVP-22 — Local Research Audit Closure Report is complete and committed.
 
 ## Next Step
 
-MVP-47 — Cross-Artifact Consistency Engine is complete. The remaining step is finalization review and the explicit human tag command.
+MVP-47 — Cross-Artifact Consistency Engine is complete and tagged v0.47.0-dev. The next step is **MVP-48 selection and planning**.
 
-1. Review the Step 4 memory/status changes (docs/handoff/CURRENT_STATE.md, tasks/active.md, CHANGELOG.md, VERSION, pyproject.toml, docs/MVP_INDEX.md, ROADMAP.md).
-2. Run the full test suite to confirm the unchanged code still passes: `pytest -q --import-mode=importlib`.
-3. If the review passes, the human provides the exact tag command: `git tag -a v0.47.0-dev -m "MVP-47 Cross-Artifact Consistency Engine"` (or equivalent).
+1. Select the MVP-48 candidate from the backlog or human direction.
+2. Draft SPEC-049 for MVP-48 and obtain human approval before implementation.
+3. Do not implement MVP-48 until a SPEC is approved and committed.
 4. Do not commit or tag automatically.
 
 ### Backlog (Non-Blocking)
