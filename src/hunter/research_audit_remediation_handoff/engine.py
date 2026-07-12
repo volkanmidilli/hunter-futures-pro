@@ -111,7 +111,7 @@ def _extract_items(
 def _extract_source_report_id(report_or_items: RemediationBridgeReport | tuple[RemediationBacklogItem, ...]) -> str:
     """Extract the source report ID or a fallback."""
     if isinstance(report_or_items, RemediationBridgeReport):
-        return report_or_items.report_id
+        return report_or_items.source_report_id
     return "unknown_source"
 
 

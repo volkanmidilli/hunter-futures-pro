@@ -17,6 +17,13 @@ from hunter.research_audit_remediation_handoff.models import (
     HandoffPacketGroup,
     HandoffPacketSafetyFlags,
 )
+from hunter.research_audit_remediation_handoff.writer import (
+    atomic_write_json_handoff_packet,
+    atomic_write_markdown_handoff_packet,
+    handoff_packet_to_dict,
+    handoff_packet_to_json,
+    handoff_packet_to_markdown,
+)
 
 __all__ = [
     "HandoffPacket",
@@ -25,5 +32,10 @@ __all__ = [
     "HandoffPacketError",
     "HandoffPacketGroup",
     "HandoffPacketSafetyFlags",
+    "atomic_write_json_handoff_packet",
+    "atomic_write_markdown_handoff_packet",
     "build_research_audit_remediation_handoff_packet",
+    "handoff_packet_to_dict",
+    "handoff_packet_to_json",
+    "handoff_packet_to_markdown",
 ]
