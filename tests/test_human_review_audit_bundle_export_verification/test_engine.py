@@ -444,10 +444,13 @@ class TestNoFsOrNetwork:
         assert report.safety_flags.no_network is True
 
 
-class TestNoWriter:
-    def test_no_writer_module_imported(self) -> None:
+class TestWriterExists:
+    def test_writer_module_imported(self) -> None:
         from hunter import human_review_audit_bundle_export_verification
-        assert not hasattr(human_review_audit_bundle_export_verification, "writer")
+        assert hasattr(human_review_audit_bundle_export_verification, "writer")
+        assert hasattr(human_review_audit_bundle_export_verification, "verification_report_to_dict")
+        assert hasattr(human_review_audit_bundle_export_verification, "verification_report_to_json")
+        assert hasattr(human_review_audit_bundle_export_verification, "verification_report_to_markdown")
 
     def test_report_does_not_serialize_bytes(self) -> None:
         artifact_bytes = _build_artifact_bytes()
