@@ -4,7 +4,33 @@ All important project changes will be recorded in this file.
 
 ## Unreleased
 
-- (Nothing yet — MVP-48 metadata updated and tagged.)
+- (Nothing yet — MVP-49 metadata updated and pending tag.)
+
+## MVP-49 — Research Audit Health Remediation Bridge (Implementation Complete, Pending Tag)
+
+**Version:** 0.48.0-dev → 0.49.0-dev.
+
+**SPEC-050:** `specs/SPEC-050-Research-Audit-Health-Remediation-Bridge.md` — implemented across models, mapping, engine, writer, and integration tests.
+
+**Tag:** pending human approval.
+
+- `src/hunter/research_audit_health_remediation/__init__.py` — public API exports for models (`RemediationBridgeConfig`, `RemediationBridgeDataQuality`, `RemediationBridgeReport`), engine (`build_health_remediation_bridge_report`), writer (`bridge_report_to_dict`, `bridge_report_to_json`, `bridge_report_to_csv`, `bridge_report_to_markdown`, `BridgeWriterError`), default mapping tables, and default paths.
+- `src/hunter/research_audit_health_remediation/models.py` — frozen dataclasses, reason codes, data-quality counters, and validation.
+- `src/hunter/research_audit_health_remediation/mapping.py` — default severity, priority, item-type, and reason-code mapping tables.
+- `src/hunter/research_audit_health_remediation/engine.py` — pure local deterministic bridge engine with finding-to-item mapping, stable item IDs, deduplication, forbidden-term scanning, and data-quality counters.
+- `src/hunter/research_audit_health_remediation/writer.py` — deterministic dict/JSON/CSV/Markdown serialization with optional atomic file writes.
+- `tests/test_research_audit_health_remediation/test_models.py` — model tests.
+- `tests/test_research_audit_health_remediation/test_engine.py` — engine tests.
+- `tests/test_research_audit_health_remediation/test_writer.py` — writer tests.
+- `tests/test_research_audit_health_remediation/test_integration.py` — integration tests.
+- 60 research_audit_health_remediation tests total.
+- Full suite: 7680 tests passing, 1 skipped using `pytest --import-mode=importlib`.
+- Safety: local, call-triggered, audit-only bridge engine over caller-provided in-memory `HealthReport` findings; not a production release approval system, not a certification of trading readiness, not a trading signal, not a recommendation, not a strategy selector, and not an execution/portfolio/universe approval gate; artifact refs and paths are opaque strings and are never opened, traversed, validated, fetched, or executed; no `data/` or `reports/` inspection; no Freqtrade input, no Binance/exchange/API/live data, no order/execution/action commands, no leverage/shorting, no feedback into execution/strategy/portfolio paths; no scheduler, daemon, background job runner, server, REST API, database, Web UI, or dashboard introduced.
+
+**Key commits:**
+- SPEC: `6806aa9` Add MVP-49 research audit health remediation bridge spec
+- Implementation (Steps 1-3): `1a4c7b2` Implement MVP-49 health remediation bridge
+- Step 4 (memory/version docs): uncommitted pending human approval
 
 ## MVP-48 — Research Audit Aggregate Health Report (Complete, Tagged)
 

@@ -2,22 +2,30 @@
 
 ## Current Task
 
-MVP-48 — Research Audit Aggregate Health Report is complete and tagged v0.48.0-dev at `779692f`.
-MVP-49 selection and planning is the active task. No candidate has been selected yet.
+MVP-49 — Research Audit Health Remediation Bridge is complete.
+SPEC-050 has been implemented and reviewed.
+Version bumped to 0.49.0-dev.
+Stopped before commit/tag pending human approval.
 
 Latest tagged functional milestone: MVP-48 / v0.48.0-dev at commit `779692f`.
 
-Completed under MVP-48:
-- SPEC-049 (Research Audit Aggregate Health Report spec) implemented.
+Completed under MVP-49:
+- SPEC-050 (Research Audit Health Remediation Bridge spec) committed at `6806aa9`.
 - Step 1 (models/engine) completed.
 - Step 2 (writer) completed.
 - Step 3 (integration tests) completed.
 - Step 4 (metadata/docs finalization) completed.
-- 79 research_audit_health tests added.
-- Full suite: 7620 tests passing, 1 skipped using `pytest --import-mode=importlib`.
+- 60 research_audit_health_remediation tests added.
+- Full suite: 7680 tests passing, 1 skipped using `pytest -q` (default import mode).
 
-Remaining MVP-48 steps:
+Remaining MVP-49 steps:
 - None.
+
+Boundaries:
+- Documentation and version metadata only in Step 4.
+- No runtime code changes in Step 4.
+- No `data/`, `reports/`, or local artifact access.
+- No production-readiness, trading-readiness, approval, certification, recommendation, or suitability claims.
 
 Completed under MVP-47:
 - SPEC-048 (Cross-Artifact Consistency Engine spec) committed at `4961d55`.
@@ -43,9 +51,9 @@ Boundaries:
 
 MVP-48 — Research Audit Aggregate Health Report is complete and tagged v0.48.0-dev at `779692f`. All steps complete.
 
-The original master plan (MVP-0 through MVP-4) is complete. The repository has expanded to MVP-48 / v0.48.0-dev.
+The original master plan (MVP-0 through MVP-4) is complete. The repository has expanded to MVP-49 / v0.49.0-dev.
 
-Next: MVP-49 selection and planning. No candidate has been selected yet.
+Next: MVP-50 selection and planning. No candidate has been selected yet.
 
 Known anomalies:
 - `v0.32.0-dev` tag missing from tag list (recorded as anomaly; no automatic action).
@@ -324,7 +332,16 @@ MVP-23 Step 4 — Final validation and version bump (Complete).
 - [x] Full suite 6650 tests pass, 1 skipped.
 - [x] MVP-39 Step 4 complete: SPEC alignment and final validation passed, version bumped to 0.39.0-dev.
 - [x] MVP-39 complete.
-- [x] Full suite 6650 tests pass, 1 skipped. No regressions.
+- [x] MVP-49 Step 1 complete: research audit health remediation bridge models and engine implemented.
+- [x] 25 remediation bridge engine tests pass.
+- [x] MVP-49 Step 2 complete: research audit health remediation bridge writer implemented.
+- [x] 9 remediation bridge writer tests pass.
+- [x] MVP-49 Step 3 complete: research audit health remediation bridge integration tests implemented.
+- [x] 15 remediation bridge integration tests pass.
+- [x] Full suite 7680 tests pass, 1 skipped.
+- [x] MVP-49 Step 4 complete: SPEC alignment and final validation passed, version bumped to 0.49.0-dev.
+- [x] MVP-49 complete.
+- [x] Full suite 7680 tests pass, 1 skipped. No regressions.
 - [ ] Next MVP: not started. No SPEC drafted yet. Requires human approval before any implementation.
 
 ## Backlog (Non-Blocking)
@@ -335,4 +352,4 @@ MVP-23 Step 4 — Final validation and version bump (Complete).
 
 Next MVP: not started. No SPEC drafted yet. Requires human approval before any implementation.
 
-Future research bundle search engine, operator workflow UI, cross-reference validation, or handoff packet consumers may be considered only in a future SPEC, but is not implemented yet.
+Future research audit health remediation bridge consumers, operator workflow UI, cross-reference validation, or handoff packet consumers may be considered only in a future SPEC, but is not implemented yet.

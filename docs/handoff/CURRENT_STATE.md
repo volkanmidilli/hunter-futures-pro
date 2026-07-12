@@ -4,11 +4,11 @@ Hunter Futures Pro
 
 ## Version
 
-0.48.0-dev
+0.49.0-dev
 
 ## Current Phase
 
-The original master plan (MVP-0 through MVP-4 and the 12 main modules in PROJECT.md) is complete. The repository has expanded well beyond that original plan. The functional MVP chain now runs through **MVP-48 / v0.48.0-dev**, with the latest tagged commit at `779692f` (tag: v0.48.0-dev). **MVP-48 — Research Audit Aggregate Health Report** is complete and tagged. The next required action is **MVP-49 selection and planning**; no MVP-49 candidate has been selected yet.
+The original master plan (MVP-0 through MVP-4 and the 12 main modules in PROJECT.md) is complete. The repository has expanded well beyond that original plan. The functional MVP chain now runs through **MVP-49 / v0.49.0-dev**. SPEC-050 was committed at `6806aa9`; implementation (models, mapping, engine, writer, integration tests) was committed at `1a4c7b2`. **MVP-49 — Research Audit Health Remediation Bridge** is complete; only Step 4 finalization docs/version metadata are uncommitted. The latest tag remains `v0.48.0-dev` at `779692f`. The next required action is **human approval of the MVP-49 finalization commit and explicit `v0.49.0-dev` tag** before MVP-50 selection and planning begins.
 
 ## Background
 
@@ -38,10 +38,30 @@ The repository now contains 48 specs (SPEC-001 through SPEC-048). MVPs beyond th
 - MVP-46: Project Memory Realignment (documentation-only, complete)
 - MVP-47: Cross-Artifact Consistency Engine (complete, tagged v0.47.0-dev)
 - MVP-48: Research Audit Aggregate Health Report (complete, tagged v0.48.0-dev)
+- MVP-49: Research Audit Health Remediation Bridge (implementation complete and reviewed, pending human commit/tag; v0.49.0-dev)
 
 For the full MVP-by-MVP mapping, see `ROADMAP.md` and `docs/MVP_INDEX.md`.
 
 ## Current Status
+
+MVP-49 — Research Audit Health Remediation Bridge is complete and reviewed. Finalization is complete (version, memory, changelog, MVP index). Pending human commit/tag.
+
+- SPEC-050: `specs/SPEC-050-Research-Audit-Health-Remediation-Bridge.md` — committed at `6806aa9`.
+- `src/hunter/research_audit_health_remediation/__init__.py` — public API exports for models, engine, writer, and default paths.
+- `src/hunter/research_audit_health_remediation/models.py` — frozen dataclasses (`RemediationBridgeConfig`, `RemediationBridgeDataQuality`, `RemediationBridgeReport`), reason codes, and validation.
+- `src/hunter/research_audit_health_remediation/mapping.py` — default severity, priority, item-type, and reason-code mapping tables.
+- `src/hunter/research_audit_health_remediation/engine.py` — pure local deterministic bridge engine with finding-to-item mapping, stable item IDs, deduplication, forbidden-term scanning, and data-quality counters.
+- `src/hunter/research_audit_health_remediation/writer.py` — deterministic dict/JSON/CSV/Markdown serialization and atomic writes.
+- `tests/test_research_audit_health_remediation/test_models.py` — model tests.
+- `tests/test_research_audit_health_remediation/test_engine.py` — engine tests.
+- `tests/test_research_audit_health_remediation/test_writer.py` — writer tests.
+- `tests/test_research_audit_health_remediation/test_integration.py` — integration tests.
+- 60 research_audit_health_remediation tests total.
+- Full suite: 7680 tests passing, 1 skipped using `pytest -q` (default import mode).
+- Safety: local, call-triggered, audit-only bridge engine over caller-provided in-memory `HealthReport` findings; not a production release approval system, not a certification of trading readiness, not a trading signal, not a recommendation, not a strategy selector, and not an execution/portfolio/universe approval gate; artifact refs and paths are opaque strings and are never opened, traversed, validated, fetched, or executed; no `data/` or `reports/` inspection; no Freqtrade input, no Binance/exchange/API/live data, no order/execution/action commands, no leverage/shorting, no feedback into execution/strategy/portfolio paths; no scheduler, daemon, background job runner, server, REST API, database, Web UI, or dashboard introduced.
+- Current supported entry: `build_health_remediation_bridge_report(report, config)` public API; writer helpers available for dict/JSON/CSV/Markdown strings and optional atomic file writes.
+- Latest implementation commit: `1a4c7b2`; SPEC commit: `6806aa9`. Only Step 4 finalization docs/version metadata are uncommitted.
+- Next phase: human review/approval of MVP-49 commit/tag; then MVP-50 selection and planning.
 
 MVP-48 — Research Audit Aggregate Health Report is complete and tagged v0.48.0-dev at commit `779692f`.
 
@@ -58,7 +78,7 @@ MVP-48 — Research Audit Aggregate Health Report is complete and tagged v0.48.0
 - Full suite: 7620 tests passing, 1 skipped using `pytest --import-mode=importlib`.
 - Safety: local, call-triggered, audit-only aggregate health engine over caller-provided in-memory artifact summaries, metadata, and opaque refs; not a production release approval system, not a certification of trading readiness, not a trading signal, not a recommendation, not a strategy selector, and not an execution/portfolio/universe approval gate; refs and paths are opaque strings and are never opened, traversed, validated, fetched, or executed; no `data/` or `reports/` inspection; no Freqtrade input, no Binance/exchange/API/live data, no order/execution/action commands, no leverage/shorting, no feedback into execution/strategy/portfolio paths; no scheduler, daemon, background job runner, server, REST API, database, Web UI, or dashboard introduced.
 - Current supported entry: `evaluate_research_audit_health(input, config)` public API; callable only from local code/tests, no standalone runner added.
-- Next phase: MVP-49 selection and planning. No SPEC exists yet.
+- [SUPERSEDED — MVP-49 is complete; see above.]
 
 MVP-47 — Cross-Artifact Consistency Engine is complete and tagged v0.47.0-dev at commit `6103b95`.
 
@@ -509,10 +529,11 @@ MVP-22 — Local Research Audit Closure Report is complete and committed.
 
 ## Next Step
 
-MVP-48 — Research Audit Aggregate Health Report is complete and tagged v0.48.0-dev at commit `779692f`. The next step is **MVP-49 selection and planning**; no candidate has been selected yet.
+MVP-49 — Research Audit Health Remediation Bridge is complete. Implementation committed at `1a4c7b2`; Step 4 finalization docs/version metadata are uncommitted. The latest tag remains `v0.48.0-dev` at `779692f`.
 
-1. Select the MVP-49 candidate from the backlog or human direction.
-2. Draft SPEC-050 for MVP-49 and obtain human approval before implementation.
+1. Human reviews and approves the MVP-49 finalization commit.
+2. Human applies the explicit `v0.49.0-dev` tag.
+3. Begin MVP-50 selection and planning. No SPEC-051 exists yet.
 
 ### Backlog (Non-Blocking)
 - Review `research_audit_snapshot` `data_quality.sections_present` / `sections_missing` reporting so successful snapshots correctly reflect the number of sections present (8) versus missing (0). Current behavior is fail-closed (0 / 8) and SPEC-compliant because `build_audit_snapshot_data_quality` does not receive the section list in its SPEC-024 signature.
