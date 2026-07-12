@@ -1,5 +1,29 @@
 ---
 
+### MVP-49 Post-Tag Context Sync
+
+Date: 2026-07-12
+
+Agent: WrongStack
+
+Task: Sync project memory files to reflect the applied `v0.49.0-dev` tag at `eff7c93`.
+
+Files modified:
+
+- `AGENTS.md` — latest commit and tag updated to `v0.49.0-dev` at `eff7c93`; Step 4 marked committed; next phase MVP-50.
+- `docs/handoff/CURRENT_STATE.md` — current phase, expanded MVP chain, current status, and next step updated to tagged state.
+- `tasks/active.md` — current task, latest tagged milestone, checklist, and next step updated to tagged state.
+- `tasks/agent-log.md` — this entry.
+- `CHANGELOG.md` — MVP-49 section updated from "Pending Tag" to "Complete, Tagged" with tag at `eff7c93`.
+- `docs/MVP_INDEX.md` — MVP-49 row status updated to `tagged` and notes updated to `Tagged at eff7c93`.
+
+Summary:
+
+MVP-49 Research Audit Health Remediation Bridge is complete and tagged `v0.49.0-dev` at `eff7c93`. SPEC-050 at `6806aa9`; implementation at `1a4c7b2`; finalization at `eff7c93`. Project memory now reflects the tagged state. Next phase is MVP-50 selection and planning.
+
+No source code, tests, or runtime behavior changed in this sync.
+
+
 ### MVP-49 Step 4 — Finalization
 
 Date: 2026-07-12

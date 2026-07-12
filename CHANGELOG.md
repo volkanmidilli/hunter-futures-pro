@@ -4,15 +4,15 @@ All important project changes will be recorded in this file.
 
 ## Unreleased
 
-- (Nothing yet — MVP-49 metadata updated and pending tag.)
+- (Nothing yet — MVP-49 tagged `v0.49.0-dev` at `eff7c93`.)
 
-## MVP-49 — Research Audit Health Remediation Bridge (Implementation Complete, Pending Tag)
+## MVP-49 — Research Audit Health Remediation Bridge (Complete, Tagged)
 
 **Version:** 0.48.0-dev → 0.49.0-dev.
 
 **SPEC-050:** `specs/SPEC-050-Research-Audit-Health-Remediation-Bridge.md` — implemented across models, mapping, engine, writer, and integration tests.
 
-**Tag:** pending human approval.
+**Tag:** `v0.49.0-dev` at `eff7c93`.
 
 - `src/hunter/research_audit_health_remediation/__init__.py` — public API exports for models (`RemediationBridgeConfig`, `RemediationBridgeDataQuality`, `RemediationBridgeReport`), engine (`build_health_remediation_bridge_report`), writer (`bridge_report_to_dict`, `bridge_report_to_json`, `bridge_report_to_csv`, `bridge_report_to_markdown`, `BridgeWriterError`), default mapping tables, and default paths.
 - `src/hunter/research_audit_health_remediation/models.py` — frozen dataclasses, reason codes, data-quality counters, and validation.
@@ -30,7 +30,7 @@ All important project changes will be recorded in this file.
 **Key commits:**
 - SPEC: `6806aa9` Add MVP-49 research audit health remediation bridge spec
 - Implementation (Steps 1-3): `1a4c7b2` Implement MVP-49 health remediation bridge
-- Step 4 (memory/version docs): uncommitted pending human approval
+- Step 4 (memory/version docs): `eff7c93` Finalize MVP-49 project memory state
 
 ## MVP-48 — Research Audit Aggregate Health Report (Complete, Tagged)
 

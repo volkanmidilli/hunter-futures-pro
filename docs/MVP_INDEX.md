@@ -30,12 +30,12 @@ Excluded from evidence:
 - The expanded chain is MVP-5 through MVP-49.
 - MVP-47 is complete and tagged at `v0.47.0-dev`.
 - MVP-48 is complete and tagged at `v0.48.0-dev` (commit `779692f`).
-- MVP-49 implementation is complete and pending tag at `v0.49.0-dev`.
+- MVP-49 is complete and tagged `v0.49.0-dev` at `eff7c93`.
 - `src/hunter/cross_artifact_consistency/` is tracked and mapped to MVP-47.
 - `src/hunter/research_audit_health/` is tracked and mapped to MVP-48.
 - `src/hunter/research_audit_health_remediation/` is tracked and mapped to MVP-49.
 - `src/hunter/backtesting`, `src/hunter/engines`, `src/hunter/fitness`, `src/hunter/portfolio`, and `src/hunter/reporting` are listed as legacy or utility packages with no clear spec mapping.
-- `SPEC-050` exists for MVP-49 Research Audit Health Remediation Bridge. Implementation is complete and pending human tag.
+- `SPEC-050` exists for MVP-49 Research Audit Health Remediation Bridge. Tagged `v0.49.0-dev` at `eff7c93`.
 
 ## MVP Index Table
 
@@ -90,7 +90,7 @@ Excluded from evidence:
 | MVP-46 | Project Memory Realignment | `SPEC-047` | `v0.46.0-dev` | `specs/`, docs only | none | tagged | Documentation-only realignment; tag at `b3ea2a4` |
 | MVP-47 | Cross-Artifact Consistency Engine | `SPEC-048` | `v0.47.0-dev` | `cross_artifact_consistency` | `test_cross_artifact_consistency` | tagged | Tagged at `6103b95` |
 | MVP-48 | Research Audit Aggregate Health Report | `SPEC-049` | `v0.48.0-dev` | `research_audit_health` | `test_research_audit_health` | tagged | Tagged at `779692f` |
-| MVP-49 | Research Audit Health Remediation Bridge | `SPEC-050` | `v0.49.0-dev` (pending tag) | `research_audit_health_remediation` | `test_research_audit_health_remediation` | implementation complete | Implementation reviewed; tag pending human approval |
+| MVP-49 | Research Audit Health Remediation Bridge | `SPEC-050` | `v0.49.0-dev` | `research_audit_health_remediation` | `test_research_audit_health_remediation` | tagged | Tagged at `eff7c93` |
 
 ## Package Mapping
 

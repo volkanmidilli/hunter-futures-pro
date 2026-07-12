@@ -2,12 +2,11 @@
 
 ## Current Task
 
-MVP-49 — Research Audit Health Remediation Bridge is complete.
+MVP-49 — Research Audit Health Remediation Bridge is complete and tagged `v0.49.0-dev` at `eff7c93`.
 SPEC-050 has been implemented and reviewed.
 Version bumped to 0.49.0-dev.
-Stopped before commit/tag pending human approval.
 
-Latest tagged functional milestone: MVP-48 / v0.48.0-dev at commit `779692f`.
+Latest tagged functional milestone: MVP-49 / v0.49.0-dev at commit `eff7c93`.
 
 Completed under MVP-49:
 - SPEC-050 (Research Audit Health Remediation Bridge spec) committed at `6806aa9`.
@@ -352,4 +351,4 @@ MVP-23 Step 4 — Final validation and version bump (Complete).
 
 Next MVP: not started. No SPEC drafted yet. Requires human approval before any implementation.
 
-Future research audit health remediation bridge consumers, operator workflow UI, cross-reference validation, or handoff packet consumers may be considered only in a future SPEC, but is not implemented yet.
+MVP-50 selection and planning. No candidate or SPEC-051 exists yet; requires human approval before any implementation.

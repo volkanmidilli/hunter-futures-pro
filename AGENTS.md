@@ -142,9 +142,9 @@ When continuing work on an MVP:
 - Completed MVP: MVP-49 Research Audit Health Remediation Bridge
 - SPEC: `specs/SPEC-050-Research-Audit-Health-Remediation-Bridge.md` — committed at `6806aa9`
 - Implementation (Steps 1–3: models/mapping/engine/writer/integration tests): committed at `1a4c7b2`
-- Step 4 (docs/version metadata): uncommitted — version bumped to `0.49.0-dev`, project memory and changelog updated; tag pending explicit human command
-- Latest commit: `1a4c7b2` Implement MVP-49 health remediation bridge
-- Latest tag: `v0.48.0-dev` at `779692f`
+- Step 4 (docs/version metadata): committed at `eff7c93` Finalize MVP-49 project memory state
+- Latest commit: `eff7c93` Finalize MVP-49 project memory state
+- Latest tag: `v0.49.0-dev` at `eff7c93`
 - Next: MVP-50 selection and planning. No SPEC exists yet. Stop until human provides direction.
 - Tag policy: never tag automatically; the human must provide the exact tag or commit command.
 - Safety: autonomous workflow only touches docs/version/task memory in Step 4; no runtime code changes, no tests changed, no data/reports inspection, no trading/API/Freqtrade/server/database/scheduler changes, no production-readiness, trading-readiness, approval, certification, recommendation, or suitability claims.
