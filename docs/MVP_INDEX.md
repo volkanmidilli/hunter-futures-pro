@@ -27,11 +27,13 @@ Excluded from evidence:
 - MVP-0 and MVP-1 have no `-dev` tag in the current tag list; this is recorded as expected for pre-`v0.8.0-dev` history.
 - MVP-46 is a documentation-only realignment step; its status is `tagged` at `v0.46.0-dev`.
 - The original master plan is MVP-0 through MVP-4.
-- The expanded chain is MVP-5 through MVP-47.
+- The expanded chain is MVP-5 through MVP-48.
 - MVP-47 is complete and tagged at `v0.47.0-dev`.
-- `src/hunter/cross_artifact_consistency/` is now tracked and mapped to MVP-47.
+- MVP-48 is complete and awaiting tag at `v0.48.0-dev`.
+- `src/hunter/cross_artifact_consistency/` is tracked and mapped to MVP-47.
+- `src/hunter/research_audit_health/` is tracked and mapped to MVP-48.
 - `src/hunter/backtesting`, `src/hunter/engines`, `src/hunter/fitness`, `src/hunter/portfolio`, and `src/hunter/reporting` are listed as legacy or utility packages with no clear spec mapping.
-- No `SPEC-049` exists yet. MVP-48 selection and planning is pending; candidate direction is Research Audit Aggregate Health Report.
+- No `SPEC-050` exists yet. MVP-49 selection and planning is pending; no candidate has been selected.
 
 ## MVP Index Table
 
@@ -85,6 +87,7 @@ Excluded from evidence:
 | MVP-45 | Human Review Audit Bundle Export Verification / Replay | `SPEC-046` | `v0.45.0-dev` | `human_review_audit_bundle_export_verification` | `test_human_review_audit_bundle_export_verification` | tagged | HEAD / current |
 | MVP-46 | Project Memory Realignment | `SPEC-047` | `v0.46.0-dev` | `specs/`, docs only | none | tagged | Documentation-only realignment; tag at `b3ea2a4` |
 | MVP-47 | Cross-Artifact Consistency Engine | `SPEC-048` | `v0.47.0-dev` | `cross_artifact_consistency` | `test_cross_artifact_consistency` | tagged | Tagged at `6103b95` |
+| MVP-48 | Research Audit Aggregate Health Report | `SPEC-049` | `pending` | `research_audit_health` | `test_research_audit_health` | committed | Awaiting tag; no `SPEC-050` yet |
 
 ## Package Mapping
 

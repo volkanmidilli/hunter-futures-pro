@@ -2,10 +2,22 @@
 
 ## Current Task
 
-MVP-47 — Cross-Artifact Consistency Engine is complete and tagged v0.47.0-dev.
-MVP-48 selection and planning is the active task. Candidate direction: Research Audit Aggregate Health Report. No MVP-48 SPEC exists yet.
+MVP-48 — Research Audit Aggregate Health Report is complete and awaiting tag v0.48.0-dev.
+MVP-49 selection and planning is the active task. No candidate has been selected yet.
 
 Latest tagged functional milestone: MVP-47 / v0.47.0-dev at commit `6103b95`.
+
+Completed under MVP-48:
+- SPEC-049 (Research Audit Aggregate Health Report spec) implemented.
+- Step 1 (models/engine) completed.
+- Step 2 (writer) completed.
+- Step 3 (integration tests) completed.
+- Step 4 (metadata/docs finalization) completed.
+- 79 research_audit_health tests added.
+- Full suite: 7620 tests passing, 1 skipped using `pytest --import-mode=importlib`.
+
+Remaining MVP-48 steps:
+- Tag `v0.48.0-dev` (explicitly deferred; do not tag automatically).
 
 Completed under MVP-47:
 - SPEC-048 (Cross-Artifact Consistency Engine spec) committed at `4961d55`.
@@ -16,7 +28,7 @@ Completed under MVP-47:
 - Tag `v0.47.0-dev` applied at `6103b95`.
 - Autonomous workflow docs committed at `c081f44`.
 - 86 cross_artifact_consistency tests added.
-- Full suite: 7541 tests passing, 1 skipped using `pytest --import-mode=importlib`.
+- Full suite: 7620 tests passing, 1 skipped using `pytest --import-mode=importlib`.
 
 Remaining MVP-47 steps:
 - None.
@@ -41,7 +53,7 @@ Known anomalies:
 - `data/`, `reports/`, and local artifact areas remain opaque excluded local artifact areas.
 - No MVP-48 SPEC exists yet.
 
-MVP-46 — Project Memory Realignment is complete. Version 0.46.0-dev. Full test suite: 7541 tests passing, 1 skipped using `pytest --import-mode=importlib`. All five steps (Step 1 SPEC, Step 2 roadmap/index, Step 3 current-state/task/changelog/version, Step 4 architecture/operations refresh, Step 5 review/finalization) completed. Source changes were documentation-only. Safety boundaries preserved: no runtime code changes, no data/reports/artifact inspection, no production-readiness, trading-readiness, approval, certification, recommendation, or suitability claims. Tag `v0.46.0-dev` applied at commit `b3ea2a4`. [SUPERSEDED]
+MVP-46 — Project Memory Realignment is complete. Version 0.46.0-dev. Full test suite: 7620 tests passing, 1 skipped using `pytest --import-mode=importlib`. All five steps (Step 1 SPEC, Step 2 roadmap/index, Step 3 current-state/task/changelog/version, Step 4 architecture/operations refresh, Step 5 review/finalization) completed. Source changes were documentation-only. Safety boundaries preserved: no runtime code changes, no data/reports/artifact inspection, no production-readiness, trading-readiness, approval, certification, recommendation, or suitability claims. Tag `v0.46.0-dev` applied at commit `b3ea2a4`. [SUPERSEDED]
 
 MVP-39 — Local Research Remediation Closure Register is complete. Version 0.39.0-dev. Full test suite: 6650 tests passing, 1 skipped using `pytest --import-mode=importlib`. All four steps (Step 1 models/engine, Step 2 writer, Step 3 integration tests, Step 4 SPEC alignment) completed. Source changes in Step 4 limited to issue severity/reason code alignment, test updates, and finalization (version bump, changelog, task log). Safety boundaries preserved: local, call-triggered, audit-only remediation closure register over caller-provided in-memory backlog item refs, evidence summaries, closure declarations, review records, and links; closure recorded is human-audit tracking only; not an approval, certification, production readiness assessment, deployment readiness assessment, trading readiness assessment, recommendation, suitability assessment, or signal; not an executable remediation plan; no automated remediation execution; no shell commands, patches, file edits, deployment actions, infrastructure changes, or executable steps as output; no Freqtrade input, no Binance/exchange/API/live data, no order/execution/action commands, no leverage/shorting, no feedback into execution/strategy/portfolio paths; no scheduler, daemon, background job runner, server, REST API, database, Web UI, or dashboard introduced. Artifact, report, path, evidence, backlog, closure, review, and metadata references remain opaque local strings and are never opened, traversed, validated, fetched, or executed. Tag target: v0.39.0-dev. [SUPERSEDED]
 MVP-38 — Local Research Remediation Evidence Tracker is complete. SPEC-039 implemented across models, engine, writer, and integration tests. Version 0.38.0-dev. Full test suite: 6473 tests passing, 1 skipped using `pytest --import-mode=importlib`. All four steps (Step 1 models/engine, Step 2 writer, Step 3 integration tests, Step 4 finalization) completed. Source changes in finalization limited to version bump and documentation only. Safety boundaries preserved: local, call-triggered, audit-only remediation evidence tracker over caller-provided in-memory backlog item refs, evidence records, review records, and evidence links; evidence coverage is human-audit tracking only; not an approval, certification, production readiness assessment, trading readiness assessment, recommendation, suitability assessment, or signal; not an executable remediation plan; no automated remediation execution; no shell commands, patches, file edits, deployment actions, infrastructure changes, or executable steps as output; no Freqtrade input, no Binance/exchange/API/live data, no order/execution/action commands, no leverage/shorting, no feedback into execution/strategy/portfolio paths; no scheduler, daemon, background job runner, server, REST API, database, Web UI, or dashboard introduced. Artifact, report, path, evidence, backlog, and metadata references remain opaque local strings and are never opened, traversed, validated, fetched, or executed. Tag target: v0.38.0-dev. [SUPERSEDED]

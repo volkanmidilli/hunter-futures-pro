@@ -4,9 +4,30 @@ All important project changes will be recorded in this file.
 
 ## Unreleased
 
-- MVP-48 candidate selection and planning is pending. Candidate direction: Research Audit Aggregate Health Report. No `SPEC-049` exists yet.
+- (Nothing yet — MVP-48 metadata updated; tag pending.)
 
-## MVP-47 — Cross-Artifact Consistency Engine (Complete, Tagged)
+## MVP-48 — Research Audit Aggregate Health Report (Complete, Awaiting Tag)
+
+**Version:** 0.47.0-dev → 0.48.0-dev.
+
+**SPEC-049:** `specs/SPEC-049-Research-Audit-Aggregate-Health-Report.md` — implemented across models, engine, writer, and integration tests.
+
+**Tag:** pending (stop before tag per task).
+
+- `src/hunter/research_audit_health/__init__.py` — public API exports for models (`HealthArtifactSummary`, `HealthConfig`, `HealthInput`, `HealthFamilyRollup`, `HealthFinding`, `HealthDataQuality`, `HealthSafetyFlags`, `HealthReport`, `HealthScore`, `HealthSeverity`, `HealthReasonCode`, `HealthState`), engine (`evaluate_research_audit_health`), writer (`health_report_to_dict`, `health_report_to_json`, `health_report_to_markdown`, `HealthWriterError`, `WriterForbiddenPhraseLeakageError`), default allowed families, required family groups, and default severity weight map.
+- `src/hunter/research_audit_health/models.py` — frozen dataclasses, enums (`HealthState`, `HealthSeverity`, `HealthReasonCode`), reason codes, safety flags, data-quality counters, and forbidden-term guard.
+- `src/hunter/research_audit_health/engine.py` — pure local aggregate health engine with input validation, family rollup scoring, aggregate severity-weighted score, reason-code assignment, findings, and safety flags.
+- `src/hunter/research_audit_health/writer.py` — deterministic dict/JSON/Markdown serialization with forbidden-phrase output guard.
+- `tests/test_research_audit_health/test_models.py` — model tests.
+- `tests/test_research_audit_health/test_engine.py` — engine tests.
+- `tests/test_research_audit_health/test_writer.py` — writer tests.
+- `tests/test_research_audit_health/test_integration.py` — integration tests.
+- 79 research_audit_health tests total.
+- Full suite: 7620 tests passing, 1 skipped using `pytest --import-mode=importlib`.
+- Safety: local, call-triggered, audit-only aggregate health engine over caller-provided in-memory artifact summaries, metadata, and opaque refs; not a production release approval system, not a certification of trading readiness, not a trading signal, not a recommendation, not a strategy selector, and not an execution/portfolio/universe approval gate; refs and paths are opaque strings and are never opened, traversed, validated, fetched, or executed; no `data/` or `reports/` inspection; no Freqtrade input, no Binance/exchange/API/live data, no order/execution/action commands, no leverage/shorting, no feedback into execution/strategy/portfolio paths; no scheduler, daemon, background job runner, server, REST API, database, Web UI, or dashboard introduced.
+
+**Key commits:**
+- (Tag pending; commits to be finalized during tagging step.)
 
 **Version:** 0.46.0-dev → 0.47.0-dev.
 
@@ -23,7 +44,7 @@ All important project changes will be recorded in this file.
 - `tests/test_cross_artifact_consistency/test_writer.py` — writer tests.
 - `tests/test_cross_artifact_consistency/test_integration.py` — integration tests.
 - 86 cross_artifact_consistency tests total.
-- Full suite: 7541 tests passing, 1 skipped using `pytest --import-mode=importlib`.
+- Full suite: 7620 tests passing, 1 skipped using `pytest --import-mode=importlib`.
 - Safety: local, call-triggered, audit-only consistency engine over caller-provided in-memory artifact refs, rule definitions, and check results; not a production release approval system, not a certification of trading readiness, not a trading signal, not a recommendation, not a strategy selector, and not an execution/portfolio/universe approval gate; artifact refs are opaque strings and are not opened, traversed, validated, fetched, or executed; no Freqtrade input, no Binance/exchange/API/live data, no order/execution/action commands, no leverage/shorting, no feedback into execution/strategy/portfolio paths; no scheduler, daemon, background job runner, server, REST API, database, Web UI, or dashboard introduced.
 
 **Key commits:**

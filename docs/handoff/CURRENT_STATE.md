@@ -4,11 +4,11 @@ Hunter Futures Pro
 
 ## Version
 
-0.47.0-dev
+0.48.0-dev
 
 ## Current Phase
 
-The original master plan (MVP-0 through MVP-4 and the 12 main modules in PROJECT.md) is complete. The repository has expanded well beyond that original plan. The functional MVP chain now runs through **MVP-47 / v0.47.0-dev**, with the latest tagged commit at `6103b95`. **MVP-47 — Cross-Artifact Consistency Engine** is complete and tagged. The next required action is **MVP-48 selection and planning**; candidate direction: Research Audit Aggregate Health Report; no MVP-48 SPEC exists yet.
+The original master plan (MVP-0 through MVP-4 and the 12 main modules in PROJECT.md) is complete. The repository has expanded well beyond that original plan. The functional MVP chain now runs through **MVP-48 / v0.48.0-dev**, with the latest tagged commit at `6103b95` (MVP-47 tag). **MVP-48 — Research Audit Aggregate Health Report** is complete and awaiting tag. The next required action is **MVP-49 selection and planning**; no MVP-49 candidate has been selected yet.
 
 ## Background
 
@@ -37,23 +37,34 @@ The repository now contains 48 specs (SPEC-001 through SPEC-048). MVPs beyond th
 - MVP-43 through MVP-45: Audit bundle / export / verification
 - MVP-46: Project Memory Realignment (documentation-only, complete)
 - MVP-47: Cross-Artifact Consistency Engine (complete, tagged v0.47.0-dev)
+- MVP-48: Research Audit Aggregate Health Report (complete, tag pending)
 
 For the full MVP-by-MVP mapping, see `ROADMAP.md` and `docs/MVP_INDEX.md`.
 
 ## Current Status
 
+MVP-48 — Research Audit Aggregate Health Report is complete and awaiting tag at v0.48.0-dev.
+
+- SPEC-049: `specs/SPEC-049-Research-Audit-Aggregate-Health-Report.md` — implemented.
+- `src/hunter/research_audit_health/__init__.py` — public API exports for models, engine, writer, reason codes, safety constants, and default allowed families.
+- `src/hunter/research_audit_health/models.py` — frozen dataclasses, enums, reason codes, data-quality counters, and forbidden-term guard.
+- `src/hunter/research_audit_health/engine.py` — pure local aggregate health engine with deterministic scoring, findings, and safety flags.
+- `src/hunter/research_audit_health/writer.py` — deterministic dict/JSON/Markdown serialization and forbidden-phrase output guard.
+- `tests/test_research_audit_health/test_models.py` — model tests.
+- `tests/test_research_audit_health/test_engine.py` — engine tests.
+- `tests/test_research_audit_health/test_writer.py` — writer tests.
+- `tests/test_research_audit_health/test_integration.py` — integration tests.
+- 79 research_audit_health tests total.
+- Full suite: 7620 tests passing, 1 skipped using `pytest --import-mode=importlib`.
+- Safety: local, call-triggered, audit-only aggregate health engine over caller-provided in-memory artifact summaries, metadata, and opaque refs; not a production release approval system, not a certification of trading readiness, not a trading signal, not a recommendation, not a strategy selector, and not an execution/portfolio/universe approval gate; refs and paths are opaque strings and are never opened, traversed, validated, fetched, or executed; no `data/` or `reports/` inspection; no Freqtrade input, no Binance/exchange/API/live data, no order/execution/action commands, no leverage/shorting, no feedback into execution/strategy/portfolio paths; no scheduler, daemon, background job runner, server, REST API, database, Web UI, or dashboard introduced.
+- Current supported entry: `evaluate_research_audit_health(input, config)` public API; callable only from local code/tests, no standalone runner added.
+- Next phase: MVP-49 selection and planning. No SPEC exists yet.
+
 MVP-47 — Cross-Artifact Consistency Engine is complete and tagged v0.47.0-dev at commit `6103b95`.
 
-MVP-48 — next MVP candidate. Candidate direction: Research Audit Aggregate Health Report. No SPEC exists yet. Requires human selection and planning.
-
 Latest tagged commit: `6103b95` (tag: v0.47.0-dev).
-Latest MVP-47 commits:
-- `4961d55` Add MVP-47 cross-artifact consistency spec
-- `8eb368b` Implement MVP-47 cross-artifact consistency engine
-- `139738e` Implement MVP-47 cross-artifact consistency writer
-- `c88e229` Add MVP-47 cross-artifact consistency integration tests
-
-MVP-47 — Cross-Artifact Consistency Engine is complete. All steps finished. Next phase: MVP-48 selection and planning; candidate direction: Research Audit Aggregate Health Report; no SPEC exists yet.
+Latest MVP-48 commits:
+- (Tag pending; commits to be finalized during tagging step.)
 - SPEC-048: `specs/SPEC-048-Cross-Artifact-Consistency-Engine.md` — implemented.
 - `src/hunter/cross_artifact_consistency/__init__.py` — public API exports for models, engine, writer, reason codes, safety constants, and default artifact paths.
 - `src/hunter/cross_artifact_consistency/models.py` — frozen dataclasses (`CrossArtifactConsistencyInput`, `ConsistencyCheck`, `ConsistencyCheckResult`, `ArtifactRef`, `ConsistencyRule`, `ConsistencyReport`, `ConsistencyReportConfig`, `CrossArtifactConsistency`), enums (`ConsistencyCheckState`, `ConsistencySeverity`, `ConsistencyReasonCode`), reason codes, check kinds, and forbidden-content guard.
@@ -64,7 +75,7 @@ MVP-47 — Cross-Artifact Consistency Engine is complete. All steps finished. Ne
 - `tests/test_cross_artifact_consistency/test_writer.py` — writer tests.
 - `tests/test_cross_artifact_consistency/test_integration.py` — integration tests.
 - 86 cross_artifact_consistency tests total.
-- Full suite: 7541 tests passing, 1 skipped using `pytest --import-mode=importlib`.
+- Full suite: 7620 tests passing, 1 skipped using `pytest --import-mode=importlib`.
 - Safety: local, call-triggered, audit-only consistency engine over caller-provided in-memory artifact refs, rule definitions, and check results; not a production release approval system, not a certification of trading readiness, not a trading signal, not a recommendation, not a strategy selector, and not an execution/portfolio/universe approval gate; artifact refs are opaque strings and are not opened, traversed, validated, fetched, or executed; no Freqtrade input, no Binance/exchange/API/live data, no order/execution/action commands, no leverage/shorting, no feedback into execution/strategy/portfolio paths; no scheduler, daemon, background job runner, server, REST API, database, Web UI, or dashboard introduced.
 - Current supported entry: `build_cross_artifact_consistency_report(input, config)` public API; callable only from local code/tests, no standalone runner added.
 - Next phase: MVP-48 selection and planning. No SPEC exists yet.
@@ -497,10 +508,10 @@ MVP-22 — Local Research Audit Closure Report is complete and committed.
 
 ## Next Step
 
-MVP-47 — Cross-Artifact Consistency Engine is complete and tagged v0.47.0-dev. The next step is **MVP-48 selection and planning**; candidate direction: Research Audit Aggregate Health Report.
+MVP-48 — Research Audit Aggregate Health Report is complete and awaiting tag at v0.48.0-dev. The next step is **MVP-49 selection and planning**; no candidate has been selected yet.
 
-1. Select the MVP-48 candidate from the backlog or human direction; current candidate direction is Research Audit Aggregate Health Report.
-2. Draft SPEC-049 for MVP-48 and obtain human approval before implementation.
+1. Select the MVP-49 candidate from the backlog or human direction.
+2. Draft SPEC-050 for MVP-49 and obtain human approval before implementation.
 3. Do not implement MVP-48 until a SPEC is approved and committed.
 4. Do not commit or tag automatically.
 
