@@ -10,138 +10,140 @@ This file defines known failure modes and the expected safe behavior.
 
 ## Current Phase
 
-MVP-0 — Project foundation
-
-At this phase, there is no trading logic, no data collector and no Freqtrade integration.
+The original master plan (MVP-0 through MVP-4) is complete. The expanded MVP chain has reached MVP-45 / v0.45.0-dev. Current active work is MVP-46 — Project Memory Realignment (documentation-only).
 
 ## General Rule
 
-The system must fail closed.
+The system must fail closed. If something is missing, stale, invalid or unknown, execution must be blocked.
 
-If something is missing, stale, invalid or unknown, execution must be blocked.
+## Stale Memory Failure Modes
 
-## Current MVP-0 Failure Modes
+### Stale current-state documentation
 
-### Missing README.md
+If `docs/handoff/CURRENT_STATE.md` still describes an older MVP (e.g., MVP-32 or MVP-40) instead of the current state (MVP-45 / v0.45.0-dev):
 
-Expected behavior:
+- Detection: Compare `CURRENT_STATE.md` with `git tag --list "v0.*-dev"` and `ROADMAP.md`.
+- Prevention: After every functional MVP, update `CURRENT_STATE.md` before committing the tag.
+- Expected behavior: An agent reading `CURRENT_STATE.md` should see the correct current state. If the file is stale, the agent should stop and request a documentation update before proceeding with functional work.
 
-Stop and report that README.md is missing.
+### Stale version metadata
 
-### Missing PROJECT.md
+If `VERSION` or `pyproject.toml` version does not match the latest `v0.*-dev` tag:
 
-Expected behavior:
+- Detection: Compare `VERSION` and `pyproject.toml` version field with the latest tag.
+- Prevention: Include version alignment in the finalization step of every MVP.
+- Expected behavior: Correct the version metadata. No runtime behavior depends on these values.
 
-Stop and report that PROJECT.md is missing.
+### Stale active task
 
-### Missing AGENTS.md
+If `tasks/active.md` describes a completed MVP (e.g., MVP-40) rather than the current active work:
 
-Expected behavior:
+- Detection: Read `tasks/active.md` and compare with the latest commits and tags.
+- Prevention: Update `tasks/active.md` after each MVP step.
+- Expected behavior: The agent should update the active task description before starting new work.
 
-Stop and report that AGENTS.md is missing.
+### Missing v0.32.0-dev tag
 
-### Missing .wrongstack/AGENTS.md
+The tag `v0.32.0-dev` is absent from the tag list. The finalization commit exists but was not tagged.
 
-Expected behavior:
+- Detection: `git tag --list "v0.*-dev"` shows a gap between `v0.31.0-dev` and `v0.33.0-dev`.
+- Prevention: Include tag creation in future MVP finalization steps.
+- Expected behavior: Record the anomaly; do not create the tag automatically. A separate human decision is required.
 
-WrongStack should stop and report that its project instruction file is missing.
+### Overall stale project memory drift
 
-### Missing CURRENT_STATE.md
+If multiple memory files simultaneously point to different states:
 
-Expected behavior:
+- Detection: An agent reads `CURRENT_STATE.md` (MVP-X), `tasks/active.md` (MVP-Y), `VERSION` (Z), and git tags (latest). If three sources disagree, drift is active.
+- Prevention: MVP-46 Project Memory Realignment corrects all files in one coordinated step.
+- Expected behavior: Align all memory files to the same state before proceeding with functional work.
 
-Stop and ask for the current project state to be recreated.
+## Excluded Artifact Area Failure Modes
 
-### Missing task files
+### Accidental inspection of excluded local artifact areas
 
-Expected behavior:
+If an agent attempts to read, traverse, or modify `data/`, `reports/`, or untracked `src/hunter/cross_artifact_consistency/`:
 
-Stop and ask for task tracking files to be recreated.
+- Detection: The agent's tool calls or code changes attempt to access these paths.
+- Prevention: The SPEC-047 excluded-artifact policy explicitly forbids this. `ROADMAP.md`, `docs/MVP_INDEX.md`, and `CURRENT_STATE.md` all reference these areas as opaque and excluded.
+- Expected behavior: Stop. Do not access these directories. If a report or artifact inside them is referenced, treat the reference as an opaque string. Do not follow, open, validate, or execute it.
 
-Required task files:
+### Readiness claim leakage
 
-- tasks/backlog.md
-- tasks/active.md
-- tasks/agent-log.md
+If generated documentation or comments claim production readiness, trading readiness, approval, certification, recommendation, or suitability:
 
-## Future Trading Failure Modes
+- Detection: Review generated text for prohibited claims.
+- Prevention: All SPECs and generated documentation explicitly forbid these claims.
+- Expected behavior: Remove the claim before committing. Do not assert any form of system readiness that has not been explicitly approved by a human.
 
-These rules apply when trading-related modules are added later.
+### Runtime scope creep
+
+If an agent adds runtime features (trading logic, exchange connections, API calls, Freqtrade runtime code, servers, schedulers, daemons, databases, Web UI) without explicit human approval:
+
+- Detection: Review diffs for any code changes outside documented documentation-only boundaries.
+- Prevention: All MVPs include a "no runtime changes" boundary section.
+- Expected behavior: Stop. Do not merge or commit runtime changes that are not explicitly requested and approved.
+
+## Trading-Related Failure Modes
+
+These rules apply when trading-related modules exist or are added in the future.
 
 ### Missing market data
 
-Expected behavior:
-
-Block execution.
+Expected behavior: Block execution.
 
 ### Stale market data
 
-Expected behavior:
-
-Block execution.
+Expected behavior: Block execution.
 
 ### Invalid JSON output
 
-Expected behavior:
-
-Block execution.
+Expected behavior: Block execution.
 
 ### Missing regime file
 
-Expected behavior:
-
-Block execution.
+Expected behavior: Block execution.
 
 ### Unknown market regime
 
-Expected behavior:
-
-Block execution.
+Expected behavior: Block execution.
 
 ### Missing portfolio file
 
-Expected behavior:
-
-Block execution.
+Expected behavior: Block execution.
 
 ### Pair not approved
 
-Expected behavior:
-
-Block execution.
+Expected behavior: Block execution.
 
 ### Binance API failure
 
-Expected behavior:
-
-Do not trade.
-
-Log the failure.
-
-Use last known data only for reporting, not for new execution approval.
+Expected behavior: Do not trade. Log the failure. Use last known data only for reporting, not for new execution approval.
 
 ### Freqtrade cannot read Hunter output
 
-Expected behavior:
-
-Block new entries.
+Expected behavior: Block new entries.
 
 ### WrongStack proposes unsafe live trading change
 
-Expected behavior:
+Expected behavior: Stop. Ask for human confirmation. Do not apply the change automatically.
 
-Stop.
+## Foundation Failure Modes (Historical)
 
-Ask for human confirmation.
+Original foundation-level failure modes preserved for reference:
 
-Do not apply the change automatically.
+- Missing README.md — stop and report.
+- Missing PROJECT.md — stop and report.
+- Missing AGENTS.md — stop and report.
+- Missing .wrongstack/AGENTS.md — stop and report.
+- Missing CURRENT_STATE.md — stop and ask for recreation.
+- Missing task files — stop and ask for recreation.
 
 ## Safety Summary
 
-When unsure, block execution.
-
-When data is missing, block execution.
-
-When project state is unclear, stop and ask for review.
-
-When live trading is involved, require explicit human approval.
+- When unsure, block execution.
+- When data is missing, block execution.
+- When project memory is stale, correct it before working.
+- When live trading is involved, require explicit human approval.
+- When excluded artifact areas are referenced, treat references as opaque strings.
+- When runtime scope creep is detected, stop and ask for human confirmation.

@@ -10,63 +10,53 @@ This runbook explains how a human or AI agent should operate the project safely.
 
 ## Current Phase
 
-MVP-0 — Project foundation
+The original master plan (MVP-0 through MVP-4) is complete. The functional MVP chain has expanded to MVP-45 / v0.45.0-dev. The current active work is MVP-46 — Project Memory Realignment (documentation-only).
 
-At this phase, the project only contains documentation and project memory files.
-
-No trading logic exists yet.
+No live trading is enabled. No exchange connections are active.
 
 ## Safe Startup Checklist
 
-Before doing any work, read:
+Before doing any work, read these files in this order:
 
-1. README.md
-2. PROJECT.md
-3. AGENTS.md
-4. .wrongstack/AGENTS.md
-5. docs/handoff/CURRENT_STATE.md
-6. docs/architecture/SYSTEM_OVERVIEW.md
-7. tasks/active.md
-8. tasks/agent-log.md
-
-## WrongStack Startup
-
-Open the project folder.
-
-Start WrongStack from the project root.
-
-WrongStack must first review the project files.
-
-WrongStack must not write trading logic during MVP-0.
+1. `README.md` — project summary
+2. `PROJECT.md` — canonical project specification
+3. `AGENTS.md` — agent work rules
+4. `.wrongstack/AGENTS.md` — WrongStack instructions
+5. `ROADMAP.md` — complete project timeline
+6. `docs/MVP_INDEX.md` — deterministic MVP-to-package mapping
+7. `docs/handoff/CURRENT_STATE.md` — current documented state
+8. `docs/architecture/SYSTEM_OVERVIEW.md` — current layered architecture
+9. `tasks/active.md` — current active task
+10. `tasks/agent-log.md` — recent agent activity
 
 ## Working Rules
 
 For every task:
 
-1. Read the current project state.
-2. Confirm the current phase.
-3. Make only the requested change.
-4. Update documentation if needed.
-5. Update tasks/agent-log.md.
-6. Summarize what changed.
-7. Suggest the next small step.
+1. Read the current project state from the files above.
+2. Confirm the active task matches what you are about to do.
+3. Make only the requested change. Do not expand scope.
+4. Do not modify `data/`, `reports/`, or untracked `src/hunter/cross_artifact_consistency/`.
+5. Do not write trading logic, exchange connections, API calls, or Freqtrade runtime code unless explicitly approved by the master plan.
+6. Update documentation if needed after the change.
+7. Summarize what changed and suggest the next small step.
+8. Use the review-before-commit workflow: read the diff, check for scope creep, then commit.
 
 ## Safety Rules
 
 Never:
 
 - enable live trading
-- store API keys
-- store exchange secrets
-- connect to Binance during MVP-0
-- connect to Freqtrade during MVP-0
-- create production trading rules during MVP-0
+- store API keys or exchange secrets in the repository
+- connect to Binance or any exchange
+- connect to Freqtrade runtime
+- create production trading rules
+- inspect `data/`, `reports/`, or untracked `src/hunter/cross_artifact_consistency/`
+- claim production readiness, trading readiness, approval, certification, recommendation, or suitability
 
 ## Future Runtime Safety
 
-When trading-related modules exist, the system must fail closed.
-
-This means:
+When trading-related modules exist or are added, the system must fail closed. This means:
 
 - missing data blocks execution
 - stale data blocks execution
