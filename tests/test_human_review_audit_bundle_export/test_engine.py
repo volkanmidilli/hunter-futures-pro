@@ -211,7 +211,8 @@ def test_output_dir_containment(tmp_path: Path) -> None:
     output_dir = tmp_path / "output"
     output_dir.mkdir()
     filename = "hra-bundle-export-abc123.json"
-    path_str, issue = _resolve_output_path(output_dir, filename)
+    now = datetime(2026, 7, 11, 12, 0, 0, tzinfo=timezone.utc)
+    path_str, issue = _resolve_output_path(output_dir, filename, now)
     assert path_str is not None
     assert issue is None
     assert Path(path_str).parent == output_dir.resolve()
@@ -221,10 +222,13 @@ def test_output_dir_traversal(tmp_path: Path) -> None:
     output_dir = tmp_path / "output"
     output_dir.mkdir()
     filename = "../other.json"
-    path_str, issue = _resolve_output_path(output_dir, filename)
+    now = datetime(2026, 7, 11, 12, 0, 0, tzinfo=timezone.utc)
+    path_str, issue = _resolve_output_path(output_dir, filename, now)
     assert path_str is None
     assert issue is not None
     assert issue.issue_type == "path_traversal_attempt"
+    assert issue.issue_id.startswith("export-issue-")
+    assert issue.generated_at == now
 
 
 def test_output_dir_missing_blocked(tmp_path: Path, make_input: Any) -> None:

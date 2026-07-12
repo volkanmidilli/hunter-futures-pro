@@ -298,20 +298,26 @@ def _validate_filename(filename: str) -> tuple[bool, str]:
 def _resolve_output_path(
     output_dir: Path,
     filename: str,
+    generated_at: datetime,
 ) -> tuple[str | None, HumanReviewAuditBundleExportIssue | None]:
     """Resolve and validate the output path."""
     output_dir_resolved = output_dir.resolve()
     output_path = (output_dir_resolved / filename).resolve()
     if output_path.parent != output_dir_resolved:
         return None, HumanReviewAuditBundleExportIssue(
-            issue_id="",
+            issue_id=_build_issue_id(
+                "path_traversal_attempt",
+                "path_safety",
+                "Output path escapes caller-supplied directory",
+                1,
+            ),
             issue_type="path_traversal_attempt",
             severity=HumanReviewAuditBundleExportSeverity.BLOCKING.value,
             reason_codes=(HumanReviewAuditBundleExportReasonCode.PATH_TRAVERSAL_ATTEMPT.value,),
             source="path_safety",
             title="Output path escapes caller-supplied directory",
             description=f"Resolved output path {str(output_path)!r} is not under {str(output_dir_resolved)!r}.",
-            generated_at=None,
+            generated_at=generated_at,
         )
     return str(output_path), None
 
@@ -319,6 +325,7 @@ def _resolve_output_path(
 def _resolve_tmp_path(
     tmp_path_dir: Path,
     filename: str,
+    generated_at: datetime,
 ) -> tuple[str | None, HumanReviewAuditBundleExportIssue | None]:
     """Resolve and validate the temporary path."""
     tmp_path_dir_resolved = tmp_path_dir.resolve()
@@ -326,14 +333,19 @@ def _resolve_tmp_path(
     tmp_path = (tmp_path_dir_resolved / tmp_filename).resolve()
     if tmp_path.parent != tmp_path_dir_resolved:
         return None, HumanReviewAuditBundleExportIssue(
-            issue_id="",
+            issue_id=_build_issue_id(
+                "path_traversal_attempt",
+                "path_safety",
+                "Temporary path escapes caller-supplied directory",
+                2,
+            ),
             issue_type="path_traversal_attempt",
             severity=HumanReviewAuditBundleExportSeverity.BLOCKING.value,
             reason_codes=(HumanReviewAuditBundleExportReasonCode.PATH_TRAVERSAL_ATTEMPT.value,),
             source="path_safety",
             title="Temporary path escapes caller-supplied directory",
             description=f"Resolved temporary path {str(tmp_path)!r} is not under {str(tmp_path_dir_resolved)!r}.",
-            generated_at=None,
+            generated_at=generated_at,
         )
     return str(tmp_path), None
 
@@ -589,11 +601,11 @@ def plan_human_review_audit_bundle_export(
     output_path_str: str | None = None
     tmp_path_str: str | None = None
     if filename_ok:
-        output_path_str, output_issue = _resolve_output_path(output_dir, filename)
+        output_path_str, output_issue = _resolve_output_path(output_dir, filename, generated_at)
         if output_issue is not None:
             path_safe = False
             issues.append(output_issue)
-        tmp_path_str, tmp_issue = _resolve_tmp_path(tmp_path_dir, filename)
+        tmp_path_str, tmp_issue = _resolve_tmp_path(tmp_path_dir, filename, generated_at)
         if tmp_issue is not None:
             path_safe = False
             issues.append(tmp_issue)
@@ -786,8 +798,8 @@ def _build_blocked_plan(
         content_hash,
     )
     plan_id = report_id
-    output_path_str, _ = _resolve_output_path(input.output_dir, filename)
-    tmp_path_str, _ = _resolve_tmp_path(input.tmp_path, filename)
+    output_path_str, _ = _resolve_output_path(input.output_dir, filename, generated_at)
+    tmp_path_str, _ = _resolve_tmp_path(input.tmp_path, filename, generated_at)
     return HumanReviewAuditBundleExportPlan(
         plan_id=plan_id,
         report_id=report_id,

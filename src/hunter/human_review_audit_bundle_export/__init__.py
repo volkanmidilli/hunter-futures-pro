@@ -30,6 +30,11 @@ from .models import (
     HumanReviewAuditBundleExportSeverity,
     HumanReviewAuditBundleExportState,
 )
+from .writer import (
+    export_human_review_audit_bundle_artifact,
+    manifest_to_dict,
+    manifest_to_json,
+)
 
 __all__ = [
     "EXPORT_KIND",
@@ -37,6 +42,9 @@ __all__ = [
     "MANIFEST_KIND",
     "SAFETY_NOTICE",
     "build_export_manifest_from_plan",
+    "export_human_review_audit_bundle_artifact",
+    "manifest_to_dict",
+    "manifest_to_json",
     "plan_human_review_audit_bundle_export",
     "HumanReviewAuditBundleExportConfig",
     "HumanReviewAuditBundleExportInput",
