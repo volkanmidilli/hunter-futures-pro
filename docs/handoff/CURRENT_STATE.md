@@ -8,7 +8,7 @@ Hunter Futures Pro
 
 ## Current Phase
 
-The original master plan (MVP-0 through MVP-4 and the 12 main modules in PROJECT.md) is complete. The repository has expanded well beyond that original plan. The functional MVP chain now runs through **MVP-48 / v0.48.0-dev**, with the latest tagged commit at `6103b95` (MVP-47 tag). **MVP-48 — Research Audit Aggregate Health Report** is complete and awaiting tag. The next required action is **MVP-49 selection and planning**; no MVP-49 candidate has been selected yet.
+The original master plan (MVP-0 through MVP-4 and the 12 main modules in PROJECT.md) is complete. The repository has expanded well beyond that original plan. The functional MVP chain now runs through **MVP-48 / v0.48.0-dev**, with the latest tagged commit at `779692f` (tag: v0.48.0-dev). **MVP-48 — Research Audit Aggregate Health Report** is complete and tagged. The next required action is **MVP-49 selection and planning**; no MVP-49 candidate has been selected yet.
 
 ## Background
 
@@ -37,13 +37,13 @@ The repository now contains 48 specs (SPEC-001 through SPEC-048). MVPs beyond th
 - MVP-43 through MVP-45: Audit bundle / export / verification
 - MVP-46: Project Memory Realignment (documentation-only, complete)
 - MVP-47: Cross-Artifact Consistency Engine (complete, tagged v0.47.0-dev)
-- MVP-48: Research Audit Aggregate Health Report (complete, tag pending)
+- MVP-48: Research Audit Aggregate Health Report (complete, tagged v0.48.0-dev)
 
 For the full MVP-by-MVP mapping, see `ROADMAP.md` and `docs/MVP_INDEX.md`.
 
 ## Current Status
 
-MVP-48 — Research Audit Aggregate Health Report is complete and awaiting tag at v0.48.0-dev.
+MVP-48 — Research Audit Aggregate Health Report is complete and tagged v0.48.0-dev at commit `779692f`.
 
 - SPEC-049: `specs/SPEC-049-Research-Audit-Aggregate-Health-Report.md` — implemented.
 - `src/hunter/research_audit_health/__init__.py` — public API exports for models, engine, writer, reason codes, safety constants, and default allowed families.
@@ -62,9 +62,10 @@ MVP-48 — Research Audit Aggregate Health Report is complete and awaiting tag a
 
 MVP-47 — Cross-Artifact Consistency Engine is complete and tagged v0.47.0-dev at commit `6103b95`.
 
-Latest tagged commit: `6103b95` (tag: v0.47.0-dev).
+Latest tagged commit: `779692f` (tag: v0.48.0-dev).
 Latest MVP-48 commits:
-- (Tag pending; commits to be finalized during tagging step.)
+- `ec463ff` Add MVP-48 research audit health report spec
+- `779692f` Implement MVP-48 research audit health report
 - SPEC-048: `specs/SPEC-048-Cross-Artifact-Consistency-Engine.md` — implemented.
 - `src/hunter/cross_artifact_consistency/__init__.py` — public API exports for models, engine, writer, reason codes, safety constants, and default artifact paths.
 - `src/hunter/cross_artifact_consistency/models.py` — frozen dataclasses (`CrossArtifactConsistencyInput`, `ConsistencyCheck`, `ConsistencyCheckResult`, `ArtifactRef`, `ConsistencyRule`, `ConsistencyReport`, `ConsistencyReportConfig`, `CrossArtifactConsistency`), enums (`ConsistencyCheckState`, `ConsistencySeverity`, `ConsistencyReasonCode`), reason codes, check kinds, and forbidden-content guard.
@@ -508,12 +509,10 @@ MVP-22 — Local Research Audit Closure Report is complete and committed.
 
 ## Next Step
 
-MVP-48 — Research Audit Aggregate Health Report is complete and awaiting tag at v0.48.0-dev. The next step is **MVP-49 selection and planning**; no candidate has been selected yet.
+MVP-48 — Research Audit Aggregate Health Report is complete and tagged v0.48.0-dev at commit `779692f`. The next step is **MVP-49 selection and planning**; no candidate has been selected yet.
 
 1. Select the MVP-49 candidate from the backlog or human direction.
 2. Draft SPEC-050 for MVP-49 and obtain human approval before implementation.
-3. Do not implement MVP-48 until a SPEC is approved and committed.
-4. Do not commit or tag automatically.
 
 ### Backlog (Non-Blocking)
 - Review `research_audit_snapshot` `data_quality.sections_present` / `sections_missing` reporting so successful snapshots correctly reflect the number of sections present (8) versus missing (0). Current behavior is fail-closed (0 / 8) and SPEC-compliant because `build_audit_snapshot_data_quality` does not receive the section list in its SPEC-024 signature.

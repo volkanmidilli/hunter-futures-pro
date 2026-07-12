@@ -4,15 +4,15 @@ All important project changes will be recorded in this file.
 
 ## Unreleased
 
-- (Nothing yet — MVP-48 metadata updated; tag pending.)
+- (Nothing yet — MVP-48 metadata updated and tagged.)
 
-## MVP-48 — Research Audit Aggregate Health Report (Complete, Awaiting Tag)
+## MVP-48 — Research Audit Aggregate Health Report (Complete, Tagged)
 
 **Version:** 0.47.0-dev → 0.48.0-dev.
 
 **SPEC-049:** `specs/SPEC-049-Research-Audit-Aggregate-Health-Report.md` — implemented across models, engine, writer, and integration tests.
 
-**Tag:** pending (stop before tag per task).
+**Tag:** `v0.48.0-dev` at `779692f`.
 
 - `src/hunter/research_audit_health/__init__.py` — public API exports for models (`HealthArtifactSummary`, `HealthConfig`, `HealthInput`, `HealthFamilyRollup`, `HealthFinding`, `HealthDataQuality`, `HealthSafetyFlags`, `HealthReport`, `HealthScore`, `HealthSeverity`, `HealthReasonCode`, `HealthState`), engine (`evaluate_research_audit_health`), writer (`health_report_to_dict`, `health_report_to_json`, `health_report_to_markdown`, `HealthWriterError`, `WriterForbiddenPhraseLeakageError`), default allowed families, required family groups, and default severity weight map.
 - `src/hunter/research_audit_health/models.py` — frozen dataclasses, enums (`HealthState`, `HealthSeverity`, `HealthReasonCode`), reason codes, safety flags, data-quality counters, and forbidden-term guard.
@@ -27,7 +27,9 @@ All important project changes will be recorded in this file.
 - Safety: local, call-triggered, audit-only aggregate health engine over caller-provided in-memory artifact summaries, metadata, and opaque refs; not a production release approval system, not a certification of trading readiness, not a trading signal, not a recommendation, not a strategy selector, and not an execution/portfolio/universe approval gate; refs and paths are opaque strings and are never opened, traversed, validated, fetched, or executed; no `data/` or `reports/` inspection; no Freqtrade input, no Binance/exchange/API/live data, no order/execution/action commands, no leverage/shorting, no feedback into execution/strategy/portfolio paths; no scheduler, daemon, background job runner, server, REST API, database, Web UI, or dashboard introduced.
 
 **Key commits:**
-- (Tag pending; commits to be finalized during tagging step.)
+- SPEC: `ec463ff` Add MVP-48 research audit health report spec
+- Step 1-4 (models, engine, writer, integration tests): `779692f` Implement MVP-48 research audit health report
+- Tag `v0.48.0-dev` applied at `779692f`.
 
 **Version:** 0.46.0-dev → 0.47.0-dev.
 

@@ -29,7 +29,7 @@ Excluded from evidence:
 - The original master plan is MVP-0 through MVP-4.
 - The expanded chain is MVP-5 through MVP-48.
 - MVP-47 is complete and tagged at `v0.47.0-dev`.
-- MVP-48 is complete and awaiting tag at `v0.48.0-dev`.
+- MVP-48 is complete and tagged at `v0.48.0-dev` (commit `779692f`).
 - `src/hunter/cross_artifact_consistency/` is tracked and mapped to MVP-47.
 - `src/hunter/research_audit_health/` is tracked and mapped to MVP-48.
 - `src/hunter/backtesting`, `src/hunter/engines`, `src/hunter/fitness`, `src/hunter/portfolio`, and `src/hunter/reporting` are listed as legacy or utility packages with no clear spec mapping.
@@ -84,10 +84,10 @@ Excluded from evidence:
 | MVP-42 | Human Review Decision Log Cross-Artifact Consistency | `SPEC-043` | `v0.42.0-dev` | `human_review_decision_log_consistency` | `test_human_review_decision_log_consistency` | tagged | — |
 | MVP-43 | Human Review Audit Bundle Export | `SPEC-044` | `v0.43.0-dev` | `human_review_audit_bundle` | `test_human_review_audit_bundle` | tagged | — |
 | MVP-44 | Human Review Audit Bundle Export Artifact | `SPEC-045` | `v0.44.0-dev` | `human_review_audit_bundle_export` | `test_human_review_audit_bundle_export` | tagged | — |
-| MVP-45 | Human Review Audit Bundle Export Verification / Replay | `SPEC-046` | `v0.45.0-dev` | `human_review_audit_bundle_export_verification` | `test_human_review_audit_bundle_export_verification` | tagged | HEAD / current |
+| MVP-45 | Human Review Audit Bundle Export Verification / Replay | `SPEC-046` | `v0.45.0-dev` | `human_review_audit_bundle_export_verification` | `test_human_review_audit_bundle_export_verification` | tagged | — |
 | MVP-46 | Project Memory Realignment | `SPEC-047` | `v0.46.0-dev` | `specs/`, docs only | none | tagged | Documentation-only realignment; tag at `b3ea2a4` |
 | MVP-47 | Cross-Artifact Consistency Engine | `SPEC-048` | `v0.47.0-dev` | `cross_artifact_consistency` | `test_cross_artifact_consistency` | tagged | Tagged at `6103b95` |
-| MVP-48 | Research Audit Aggregate Health Report | `SPEC-049` | `pending` | `research_audit_health` | `test_research_audit_health` | committed | Awaiting tag; no `SPEC-050` yet |
+| MVP-48 | Research Audit Aggregate Health Report | `SPEC-049` | `v0.48.0-dev` | `research_audit_health` | `test_research_audit_health` | tagged | HEAD / current; tagged at `779692f`; no `SPEC-050` yet |
 
 ## Package Mapping
 
