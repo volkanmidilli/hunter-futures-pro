@@ -20,6 +20,14 @@ from .models import (
     CrossArtifactConsistencyConfig,
     CrossArtifactConsistencyInput,
 )
+from .writer import (
+    ConsistencyWriterError,
+    ForbiddenPhraseLeakageError as WriterForbiddenPhraseLeakageError,
+    consistency_report_to_dict,
+    consistency_report_to_json,
+    consistency_report_to_markdown,
+    validate_no_forbidden_modules as validate_no_forbidden_writer_modules,
+)
 
 __all__ = [
     "ArtifactRef",
@@ -33,9 +41,15 @@ __all__ = [
     "ConsistencySafetyFlags",
     "ConsistencySeverity",
     "ConsistencyState",
+    "ConsistencyWriterError",
     "CrossArtifactConsistencyConfig",
     "CrossArtifactConsistencyInput",
     "ForbiddenPhraseLeakageError",
+    "WriterForbiddenPhraseLeakageError",
+    "consistency_report_to_dict",
+    "consistency_report_to_json",
+    "consistency_report_to_markdown",
     "evaluate_cross_artifact_consistency",
     "validate_no_forbidden_modules",
+    "validate_no_forbidden_writer_modules",
 ]
