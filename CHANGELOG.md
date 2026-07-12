@@ -2,25 +2,57 @@
 
 All important project changes will be recorded in this file.
 
-## MVP-46 — Project Memory Realignment (In Progress)
+## MVP-47 — Cross-Artifact Consistency Engine (Complete / Finalization Pending)
 
-**Version:** 0.45.0-dev → (pending).
+**Version:** 0.46.0-dev → 0.47.0-dev.
+
+**SPEC-048:** `specs/SPEC-048-Cross-Artifact-Consistency-Engine.md` — implemented across models, engine, writer, and integration tests.
+
+**Tag:** none yet (pending explicit human tag command).
+
+- `src/hunter/cross_artifact_consistency/__init__.py` — public API exports for models, engine, writer, reason codes, safety constants, and default artifact paths.
+- `src/hunter/cross_artifact_consistency/models.py` — frozen dataclasses (`CrossArtifactConsistencyInput`, `ConsistencyCheck`, `ConsistencyCheckResult`, `ArtifactRef`, `ConsistencyRule`, `ConsistencyReport`, `ConsistencyReportConfig`, `CrossArtifactConsistency`), enums (`ConsistencyCheckState`, `ConsistencySeverity`, `ConsistencyReasonCode`), reason codes, check kinds, and forbidden-content guard.
+- `src/hunter/cross_artifact_consistency/engine.py` — pure local cross-artifact consistency engine with input validation, rule normalization, per-rule checks, severity aggregation, reason-code assignment, and report building.
+- `src/hunter/cross_artifact_consistency/writer.py` — deterministic JSON/Markdown serialization and atomic writes for `CrossArtifactConsistencyReport`.
+- `tests/test_cross_artifact_consistency/test_models.py` — model tests.
+- `tests/test_cross_artifact_consistency/test_engine.py` — engine tests.
+- `tests/test_cross_artifact_consistency/test_writer.py` — writer tests.
+- `tests/test_cross_artifact_consistency/test_integration.py` — integration tests.
+- 86 cross_artifact_consistency tests total.
+- Full suite: 7541 tests passing, 1 skipped using `pytest --import-mode=importlib`.
+- Safety: local, call-triggered, audit-only consistency engine over caller-provided in-memory artifact refs, rule definitions, and check results; not a production release approval system, not a certification of trading readiness, not a trading signal, not a recommendation, not a strategy selector, and not an execution/portfolio/universe approval gate; artifact refs are opaque strings and are not opened, traversed, validated, fetched, or executed; no Freqtrade input, no Binance/exchange/API/live data, no order/execution/action commands, no leverage/shorting, no feedback into execution/strategy/portfolio paths; no scheduler, daemon, background job runner, server, REST API, database, Web UI, or dashboard introduced.
+- Remaining: finalization review PASS and explicit human `git tag v0.47.0-dev` command before the tag is applied.
+
+**Key commits:**
+- SPEC: `4961d55` Add MVP-47 cross-artifact consistency spec
+- Step 1: `8eb368b` Implement MVP-47 cross-artifact consistency engine
+- Step 2: `139738e` Implement MVP-47 cross-artifact consistency writer
+- Step 3: `c88e229` Add MVP-47 cross-artifact consistency integration tests
+- Step 4 (memory/status): this update
+
+## MVP-46 — Project Memory Realignment (Complete)
+
+**Version:** 0.45.0-dev → 0.46.0-dev.
 
 **SPEC-047:** `specs/SPEC-047-Project-Memory-Realignment.md` — documentation-only step to realign stale project memory files with the actual repository state.
 
-**Tag:** none yet (pending after completion).
+**Tag:** `v0.46.0-dev`.
 
 - **MVP-46 Step 1 — SPEC (Complete)**
   - `specs/SPEC-047-Project-Memory-Realignment.md` — defines the documentation-only memory realignment effort, including background, MoSCoW requirements, method, implementation steps, milestones, and gathering results.
 - **MVP-46 Step 2 — Roadmap and MVP Index (Complete)**
   - `ROADMAP.md` — human-readable roadmap preserving original master plan as historical context, documenting expanded MVP chain through MVP-45, and listing anomalies.
   - `docs/MVP_INDEX.md` — deterministic evidence-based MVP index from MVP-0 through MVP-46 with source packages, test packages, tag anomalies, and excluded artifact areas.
-- **MVP-46 Step 3 — Current-State, Task, Changelog, Version Alignment (In Progress)**
+- **MVP-46 Step 3 — Current-State, Task, Changelog, Version Alignment (Complete)**
   - `docs/handoff/CURRENT_STATE.md` updated to reflect MVP-45 / v0.45.0-dev as current functional milestone and MVP-46 as active work.
   - `tasks/active.md` updated to reflect MVP-46 as current active task.
-  - `CHANGELOG.md` updated with MVP-41 through MVP-45 entries (this section).
-  - `VERSION` aligned to `0.45.0-dev`.
-  - `pyproject.toml` version aligned to `0.45.0-dev`.
+  - `CHANGELOG.md` updated with MVP-41 through MVP-45 entries.
+  - `VERSION` aligned to `0.46.0-dev`.
+  - `pyproject.toml` version aligned to `0.46.0-dev`.
+- **MVP-46 Step 4 — Architecture and Operations Docs Refresh (Complete)**
+  - `docs/architecture/SYSTEM_OVERVIEW.md` and `docs/operations/*.md` refreshed to reflect MVP-45 / v0.45.0-dev current state.
+- **MVP-46 Step 5 — Review and Finalization (Complete)**
+  - Tag `v0.46.0-dev` applied at commit `b3ea2a4`.
 
 **Safety and Boundaries**
 - Documentation and version metadata only.

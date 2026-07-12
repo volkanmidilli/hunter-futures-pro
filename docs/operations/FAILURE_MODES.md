@@ -10,7 +10,7 @@ This file defines known failure modes and the expected safe behavior.
 
 ## Current Phase
 
-The original master plan (MVP-0 through MVP-4) is complete. The expanded MVP chain has reached MVP-45 / v0.45.0-dev. Current active work is MVP-46 — Project Memory Realignment (documentation-only).
+The original master plan (MVP-0 through MVP-4) is complete. The expanded MVP chain has reached MVP-46 / v0.46.0-dev. Current active work is MVP-47 — Cross-Artifact Consistency Engine (complete, finalization pending).
 
 ## General Rule
 
@@ -20,7 +20,7 @@ The system must fail closed. If something is missing, stale, invalid or unknown,
 
 ### Stale current-state documentation
 
-If `docs/handoff/CURRENT_STATE.md` still describes an older MVP (e.g., MVP-32 or MVP-40) instead of the current state (MVP-45 / v0.45.0-dev):
+If `docs/handoff/CURRENT_STATE.md` still describes an older MVP (e.g., MVP-32 or MVP-40) instead of the current state (MVP-47 / v0.47.0-dev pending tag):
 
 - Detection: Compare `CURRENT_STATE.md` with `git tag --list "v0.*-dev"` and `ROADMAP.md`.
 - Prevention: After every functional MVP, update `CURRENT_STATE.md` before committing the tag.
@@ -55,17 +55,17 @@ The tag `v0.32.0-dev` is absent from the tag list. The finalization commit exist
 If multiple memory files simultaneously point to different states:
 
 - Detection: An agent reads `CURRENT_STATE.md` (MVP-X), `tasks/active.md` (MVP-Y), `VERSION` (Z), and git tags (latest). If three sources disagree, drift is active.
-- Prevention: MVP-46 Project Memory Realignment corrects all files in one coordinated step.
+- Prevention: Periodic project memory realignment (e.g., MVP-46) corrects all files in one coordinated step.
 - Expected behavior: Align all memory files to the same state before proceeding with functional work.
 
 ## Excluded Artifact Area Failure Modes
 
 ### Accidental inspection of excluded local artifact areas
 
-If an agent attempts to read, traverse, or modify `data/`, `reports/`, or untracked `src/hunter/cross_artifact_consistency/`:
+If an agent attempts to read, traverse, or modify `data/` or `reports/`:
 
 - Detection: The agent's tool calls or code changes attempt to access these paths.
-- Prevention: The SPEC-047 excluded-artifact policy explicitly forbids this. `ROADMAP.md`, `docs/MVP_INDEX.md`, and `CURRENT_STATE.md` all reference these areas as opaque and excluded.
+- Prevention: The active workflow safety rules explicitly forbid this. `ROADMAP.md`, `docs/MVP_INDEX.md`, and `CURRENT_STATE.md` all reference these areas as opaque and excluded.
 - Expected behavior: Stop. Do not access these directories. If a report or artifact inside them is referenced, treat the reference as an opaque string. Do not follow, open, validate, or execute it.
 
 ### Readiness claim leakage

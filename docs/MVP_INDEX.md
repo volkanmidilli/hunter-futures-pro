@@ -19,17 +19,17 @@ Excluded from evidence:
 
 - `data/` — opaque local artifact area
 - `reports/` — opaque local artifact area
-- `src/hunter/cross_artifact_consistency/` — untracked local area
 
 ## Index Rules
 
 - If a value is not known from tracked evidence, it is marked `unknown`.
 - If a tag is absent but the MVP is committed, it is marked `missing` or `none`.
 - MVP-0 and MVP-1 have no `-dev` tag in the current tag list; this is recorded as expected for pre-`v0.8.0-dev` history.
-- MVP-46 is a documentation-only realignment step; its status is `SPEC committed; implementation in progress`.
+- MVP-46 is a documentation-only realignment step; its status is `tagged` at `v0.46.0-dev`.
 - The original master plan is MVP-0 through MVP-4.
-- The expanded chain is MVP-5 through MVP-45.
-- `src/hunter/cross_artifact_consistency/` is not mapped because it is untracked and excluded.
+- The expanded chain is MVP-5 through MVP-47.
+- MVP-47 is complete and awaiting finalization review and explicit human tag command for `v0.47.0-dev`.
+- `src/hunter/cross_artifact_consistency/` is now tracked and mapped to MVP-47.
 - `src/hunter/backtesting`, `src/hunter/engines`, `src/hunter/fitness`, `src/hunter/portfolio`, and `src/hunter/reporting` are listed as legacy or utility packages with no clear spec mapping.
 
 ## MVP Index Table
@@ -82,7 +82,8 @@ Excluded from evidence:
 | MVP-43 | Human Review Audit Bundle Export | `SPEC-044` | `v0.43.0-dev` | `human_review_audit_bundle` | `test_human_review_audit_bundle` | tagged | — |
 | MVP-44 | Human Review Audit Bundle Export Artifact | `SPEC-045` | `v0.44.0-dev` | `human_review_audit_bundle_export` | `test_human_review_audit_bundle_export` | tagged | — |
 | MVP-45 | Human Review Audit Bundle Export Verification / Replay | `SPEC-046` | `v0.45.0-dev` | `human_review_audit_bundle_export_verification` | `test_human_review_audit_bundle_export_verification` | tagged | HEAD / current |
-| MVP-46 | Project Memory Realignment | `SPEC-047` | none | `specs/` only | none | SPEC committed; implementation in progress | Documentation-only; no runtime package or tag yet |
+| MVP-46 | Project Memory Realignment | `SPEC-047` | `v0.46.0-dev` | `specs/`, docs only | none | tagged | Documentation-only realignment; tag at `b3ea2a4` |
+| MVP-47 | Cross-Artifact Consistency Engine | `SPEC-048` | `none` | `cross_artifact_consistency` | `test_cross_artifact_consistency` | committed; finalization pending | Complete; awaiting `v0.47.0-dev` tag after finalization review PASS |
 
 ## Package Mapping
 
@@ -102,24 +103,24 @@ These packages exist in the tree but are not mapped to a specific MVP in the spe
 
 | Package | Notes |
 |---------|-------|
-| `src/hunter/cross_artifact_consistency` | Untracked; excluded from audit. No mapping is attempted. |
+| (none) | All known tracked packages are mapped. |
 
 ## Tag / Version Anomalies
 
 | Anomaly | Evidence | Status |
 |---------|----------|--------|
 | `v0.32.0-dev` missing | `git tag --list "v0.*-dev"` jumps from `v0.31.0-dev` to `v0.33.0-dev`; MVP-32 finalization commit exists | Recorded; no automatic action |
-| `VERSION` file is `0.1.0` | `VERSION` file | To be corrected in MVP-46 Step 3 |
-| `pyproject.toml` version is `0.32.0-dev` | `pyproject.toml` line 3 | To be corrected in MVP-46 Step 3 |
+| `v0.47.0-dev` not yet applied | MVP-47 implementation committed; tag requires finalization review PASS and explicit human tag command | Pending |
 | MVP-0 and MVP-1 have no `-dev` tag | `git tag --list "v0.*-dev"` starts at `v0.8.0-dev` | Expected; pre-tag history |
 | `v0.23.0-dev` shared by MVP-22 and MVP-23 | Same tag appears on both closure and snapshot commits | Documented; not an error |
 
 ## Excluded Local Artifact Areas
 
-The following areas are pre-existing local artifact directories. They are not inspected, traversed, or modified by this project memory realignment effort. All artifact, report, and path references inside them remain opaque strings.
+The following areas are pre-existing local artifact directories. They are not inspected, traversed, or modified by autonomous workflow steps. All artifact, report, and path references inside them remain opaque strings.
 
 - `data/`
 - `reports/`
-- `src/hunter/cross_artifact_consistency/` (untracked)
 
-These exclusions are enforced by `specs/SPEC-047-Project-Memory-Realignment.md`.
+`src/hunter/cross_artifact_consistency/` is no longer excluded; it is a tracked source package mapped to MVP-47.
+
+These exclusions are enforced by the active workflow safety rules.

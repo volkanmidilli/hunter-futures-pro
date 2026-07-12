@@ -10,7 +10,7 @@ This runbook explains how a human or AI agent should operate the project safely.
 
 ## Current Phase
 
-The original master plan (MVP-0 through MVP-4) is complete. The functional MVP chain has expanded to MVP-45 / v0.45.0-dev. The current active work is MVP-46 — Project Memory Realignment (documentation-only).
+The original master plan (MVP-0 through MVP-4) is complete. The functional MVP chain has expanded to MVP-46 / v0.46.0-dev. The current active work is MVP-47 — Cross-Artifact Consistency Engine (complete, finalization pending).
 
 No live trading is enabled. No exchange connections are active.
 
@@ -36,7 +36,7 @@ For every task:
 1. Read the current project state from the files above.
 2. Confirm the active task matches what you are about to do.
 3. Make only the requested change. Do not expand scope.
-4. Do not modify `data/`, `reports/`, or untracked `src/hunter/cross_artifact_consistency/`.
+4. Do not modify `data/` or `reports/`.
 5. Do not write trading logic, exchange connections, API calls, or Freqtrade runtime code unless explicitly approved by the master plan.
 6. Update documentation if needed after the change.
 7. Summarize what changed and suggest the next small step.
@@ -51,7 +51,7 @@ Never:
 - connect to Binance or any exchange
 - connect to Freqtrade runtime
 - create production trading rules
-- inspect `data/`, `reports/`, or untracked `src/hunter/cross_artifact_consistency/`
+- inspect `data/` or `reports/`
 - claim production readiness, trading readiness, approval, certification, recommendation, or suitability
 
 ## Future Runtime Safety

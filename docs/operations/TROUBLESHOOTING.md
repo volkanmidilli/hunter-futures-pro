@@ -10,7 +10,7 @@ This file lists common problems and what to check first.
 
 ## Current Phase
 
-The original master plan (MVP-0 through MVP-4) is complete. The expanded MVP chain has reached MVP-45 / v0.45.0-dev. Current active work is MVP-46 — Project Memory Realignment.
+The original master plan (MVP-0 through MVP-4) is complete. The expanded MVP chain has reached MVP-46 / v0.46.0-dev. Current active work is MVP-47 — Cross-Artifact Consistency Engine (complete, finalization pending).
 
 ## Problem: AI agent cannot understand the project
 
@@ -30,7 +30,7 @@ Check that these files exist and are up to date:
 - `CHANGELOG.md`
 - `VERSION`
 
-If files are missing or clearly out of date (e.g., VERSION says 0.1.0 but HEAD is at v0.45.0-dev), align them before proceeding.
+If files are missing or clearly out of date (e.g., VERSION says 0.1.0 but HEAD is at v0.47.0-dev (pending tag)), align them before proceeding.
 
 ## Problem: Stale project memory
 
@@ -67,7 +67,7 @@ If an agent starts work that does not match the current active task in `tasks/ac
 
 ## Problem: Mismatch between original master plan and expanded MVP chain
 
-The original plan (MVP-0 through MVP-4) is documented in `PROJECT.md`, `README.md`, and `tasks/backlog.md`. The actual repository has expanded well beyond that plan to MVP-45.
+The original plan (MVP-0 through MVP-4) is documented in `PROJECT.md`, `README.md`, and `tasks/backlog.md`. The actual repository has expanded well beyond that plan to MVP-47.
 
 - Do not try to force the expanded chain back into the original plan.
 - Document both: the original plan as historical context, and the expanded chain as what was actually built.
@@ -75,7 +75,7 @@ The original plan (MVP-0 through MVP-4) is documented in `PROJECT.md`, `README.m
 
 ## Problem: Excluded local artifact areas
 
-The directories `data/`, `reports/`, and untracked `src/hunter/cross_artifact_consistency/` are pre-existing local artifact areas. They are excluded from all audit actions and documentation updates.
+The directories `data/` and `reports/` are pre-existing local artifact areas. They are excluded from all audit actions and documentation updates.
 
 - Do not inspect, traverse, read, summarize, validate, or modify these directories.
 - References to paths inside them are opaque strings only.
@@ -131,7 +131,7 @@ Agents must not:
 - create API keys or secrets
 - write execution logic
 - enable live trading
-- inspect `data/`, `reports/`, or untracked `src/hunter/cross_artifact_consistency/`
+- inspect `data/` or `reports/`
 
 The only approved work is documented in the active task file.
 

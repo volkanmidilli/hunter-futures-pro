@@ -12,8 +12,8 @@ The system is designed to analyze crypto futures markets and decide whether trad
 
 ## Documented State
 
-- **Latest tagged functional milestone:** MVP-45 / v0.45.0-dev
-- **Current active work:** MVP-46 — Project Memory Realignment (documentation-only)
+- **Latest tagged functional milestone:** MVP-46 / v0.46.0-dev
+- **Current active work:** MVP-47 — Cross-Artifact Consistency Engine (complete, finalization pending)
 - **Architecture description:** This document describes the current layered architecture based on the expanded MVP chain, with the original 3-layer model preserved as foundation.
 
 ## High-Level Architecture (Original Foundation)
@@ -93,7 +93,7 @@ The Freqtrade integration chain is implemented across MVP-5 through MVP-9 (Freqt
 
 ## Expanded Architecture Layers
 
-The original 3-layer architecture has been expanded to include layered audit and governance subsystems built during the MVP-10 through MVP-45 chain.
+The original 3-layer architecture has been expanded to include layered audit and governance subsystems built during the MVP-10 through MVP-47 chain.
 
 ### Data / Config Foundation (MVP-0, MVP-1)
 
@@ -148,7 +148,12 @@ The original 3-layer architecture has been expanded to include layered audit and
 ### Project Memory / Docs Layer (MVP-46)
 
 - `ROADMAP.md`, `docs/MVP_INDEX.md`, `docs/handoff/CURRENT_STATE.md`, `tasks/active.md`, `CHANGELOG.md`, `VERSION`, `pyproject.toml`, `docs/architecture/SYSTEM_OVERVIEW.md`, `docs/operations/*.md`
-- Documentation and version metadata realignment. No runtime changes.
+- Documentation and version metadata realignment. No runtime changes. Tagged `v0.46.0-dev`.
+
+### Cross-Artifact Consistency Engine (MVP-47)
+
+- `src/hunter/cross_artifact_consistency/`
+- Pure local audit-only consistency engine over caller-provided in-memory artifact refs, rule definitions, and check results. Determines severity, reason codes, and per-rule/pass/fail status for cross-artifact consistency checks. Not a production release approval system, not a trading signal, not a recommendation, not an execution/portfolio/universe approval gate. Artifact refs are opaque strings and are not opened, traversed, validated, fetched, or executed. No runtime network/exchange/Freqtrade/server behavior. Complete; awaiting finalization review and explicit human `v0.47.0-dev` tag command.
 
 ## Safety Behavior
 
@@ -164,4 +169,4 @@ This means:
 
 ## Current Status Summary
 
-The original master plan (MVP-0 through MVP-4) is complete. The repository has expanded to MVP-45 / v0.45.0-dev. MVP-46 Project Memory Realignment is the current active work. All functional code is local, deterministic, and audit-only. Live trading, exchange connections, and Freqtrade runtime execution remain blocked by design.
+The original master plan (MVP-0 through MVP-4) is complete. The repository has expanded to MVP-46 / v0.46.0-dev. MVP-47 Cross-Artifact Consistency Engine is the current active work. All functional code is local, deterministic, and audit-only. Live trading, exchange connections, and Freqtrade runtime execution remain blocked by design.
