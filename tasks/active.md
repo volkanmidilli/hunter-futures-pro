@@ -2,11 +2,35 @@
 
 ## Current Task
 
-MVP-40 — Local Research Human Review Queue is complete. Version 0.40.0-dev. Full test suite: 6782 tests passing, 1 skipped using `pytest --import-mode=importlib`. All four steps (Step 1 models/engine, Step 2 writer, Step 3 integration tests, Step 4 finalization) completed. Source changes in finalization limited to version bump, changelog, and task log only. Safety boundaries preserved: local, call-triggered, audit-only human review queue over caller-provided in-memory source records, queue entries, and issues; queued-for-review is human-audit tracking only; not an approval, certification, production readiness assessment, trading readiness assessment, recommendation, suitability assessment, or signal; not an executable remediation plan; no automated remediation execution; no shell commands, patches, file edits, deployment actions, infrastructure changes, or executable steps as output; no Freqtrade input, no Binance/exchange/API/live data, no order/execution/action commands, no leverage/shorting, no feedback into execution/strategy/portfolio paths; no scheduler, daemon, background job runner, server, REST API, database, Web UI, or dashboard introduced. Artifact, report, path, and metadata references remain opaque local strings and are never opened, traversed, validated, fetched, or executed. Tag target: v0.40.0-dev.
+MVP-46 — Project Memory Realignment is in progress. Step 3 (current-state, task, changelog, and version alignment) is the active step.
+
+Latest tagged functional milestone: MVP-45 / v0.45.0-dev at commit `1047ede`.
+
+Completed under MVP-46:
+- SPEC-047 (Project Memory Realignment spec) committed at `366dca4`.
+- ROADMAP.md and docs/MVP_INDEX.md committed at `3d350ec`.
+
+Remaining MVP-46 steps:
+- Step 4: Architecture and operations docs refresh.
+- Step 5: Review and finalization.
+
+Boundaries:
+- Documentation and version metadata only.
+- No runtime code changes.
+- No `data/`, `reports/`, or untracked `src/hunter/cross_artifact_consistency/` access.
+- No production-readiness, trading-readiness, approval, certification, recommendation, or suitability claims.
 
 ## Status
 
-MVP-40 — Local Research Human Review Queue is complete. SPEC-041 implemented across models, engine, writer, and integration tests. Version 0.40.0-dev. Full test suite: 6782 tests passing, 1 skipped using `pytest --import-mode=importlib`. All four steps (Step 1 models/engine, Step 2 writer, Step 3 integration tests, Step 4 finalization) completed. Source changes in finalization limited to version bump, changelog, and task log only. Safety boundaries preserved: local, call-triggered, audit-only human review queue over caller-provided in-memory source records, queue entries, and issues; queued-for-review is human-audit tracking only; not an approval, certification, production readiness assessment, trading readiness assessment, recommendation, suitability assessment, or signal; not an executable remediation plan; no automated remediation execution; no shell commands, patches, file edits, deployment actions, infrastructure changes, or executable steps as output; no Freqtrade input, no Binance/exchange/API/live data, no order/execution/action commands, no leverage/shorting, no feedback into execution/strategy/portfolio paths; no scheduler, daemon, background job runner, server, REST API, database, Web UI, or dashboard introduced. Artifact, report, path, and metadata references remain opaque local strings and are never opened, traversed, validated, fetched, or executed. Tag target: v0.40.0-dev.
+MVP-46 — Project Memory Realignment is in progress. SPEC-047 committed. Step 2 (roadmap/index) complete. Step 3 (current-state/task/changelog/version alignment) in progress.
+Steps 4 (architecture/operations refresh) and 5 (review/finalization) remain.
+
+The original master plan (MVP-0 through MVP-4) is complete. The repository has expanded to MVP-45 / v0.45.0-dev.
+
+Known anomalies:
+- `v0.32.0-dev` tag missing from tag list (recorded as anomaly; no automatic action).
+- Stale architecture/operations docs pending refresh in MVP-46 Step 4.
+- `data/`, `reports/`, and untracked `src/hunter/cross_artifact_consistency/` remain opaque excluded local artifact areas.
 
 MVP-39 — Local Research Remediation Closure Register is complete. Version 0.39.0-dev. Full test suite: 6650 tests passing, 1 skipped using `pytest --import-mode=importlib`. All four steps (Step 1 models/engine, Step 2 writer, Step 3 integration tests, Step 4 SPEC alignment) completed. Source changes in Step 4 limited to issue severity/reason code alignment, test updates, and finalization (version bump, changelog, task log). Safety boundaries preserved: local, call-triggered, audit-only remediation closure register over caller-provided in-memory backlog item refs, evidence summaries, closure declarations, review records, and links; closure recorded is human-audit tracking only; not an approval, certification, production readiness assessment, deployment readiness assessment, trading readiness assessment, recommendation, suitability assessment, or signal; not an executable remediation plan; no automated remediation execution; no shell commands, patches, file edits, deployment actions, infrastructure changes, or executable steps as output; no Freqtrade input, no Binance/exchange/API/live data, no order/execution/action commands, no leverage/shorting, no feedback into execution/strategy/portfolio paths; no scheduler, daemon, background job runner, server, REST API, database, Web UI, or dashboard introduced. Artifact, report, path, evidence, backlog, closure, review, and metadata references remain opaque local strings and are never opened, traversed, validated, fetched, or executed. Tag target: v0.39.0-dev. [SUPERSEDED]
 MVP-38 — Local Research Remediation Evidence Tracker is complete. SPEC-039 implemented across models, engine, writer, and integration tests. Version 0.38.0-dev. Full test suite: 6473 tests passing, 1 skipped using `pytest --import-mode=importlib`. All four steps (Step 1 models/engine, Step 2 writer, Step 3 integration tests, Step 4 finalization) completed. Source changes in finalization limited to version bump and documentation only. Safety boundaries preserved: local, call-triggered, audit-only remediation evidence tracker over caller-provided in-memory backlog item refs, evidence records, review records, and evidence links; evidence coverage is human-audit tracking only; not an approval, certification, production readiness assessment, trading readiness assessment, recommendation, suitability assessment, or signal; not an executable remediation plan; no automated remediation execution; no shell commands, patches, file edits, deployment actions, infrastructure changes, or executable steps as output; no Freqtrade input, no Binance/exchange/API/live data, no order/execution/action commands, no leverage/shorting, no feedback into execution/strategy/portfolio paths; no scheduler, daemon, background job runner, server, REST API, database, Web UI, or dashboard introduced. Artifact, report, path, evidence, backlog, and metadata references remain opaque local strings and are never opened, traversed, validated, fetched, or executed. Tag target: v0.38.0-dev. [SUPERSEDED]

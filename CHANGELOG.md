@@ -2,6 +2,102 @@
 
 All important project changes will be recorded in this file.
 
+## MVP-46 — Project Memory Realignment (In Progress)
+
+**Version:** 0.45.0-dev → (pending).
+
+**SPEC-047:** `specs/SPEC-047-Project-Memory-Realignment.md` — documentation-only step to realign stale project memory files with the actual repository state.
+
+**Tag:** none yet (pending after completion).
+
+- **MVP-46 Step 1 — SPEC (Complete)**
+  - `specs/SPEC-047-Project-Memory-Realignment.md` — defines the documentation-only memory realignment effort, including background, MoSCoW requirements, method, implementation steps, milestones, and gathering results.
+- **MVP-46 Step 2 — Roadmap and MVP Index (Complete)**
+  - `ROADMAP.md` — human-readable roadmap preserving original master plan as historical context, documenting expanded MVP chain through MVP-45, and listing anomalies.
+  - `docs/MVP_INDEX.md` — deterministic evidence-based MVP index from MVP-0 through MVP-46 with source packages, test packages, tag anomalies, and excluded artifact areas.
+- **MVP-46 Step 3 — Current-State, Task, Changelog, Version Alignment (In Progress)**
+  - `docs/handoff/CURRENT_STATE.md` updated to reflect MVP-45 / v0.45.0-dev as current functional milestone and MVP-46 as active work.
+  - `tasks/active.md` updated to reflect MVP-46 as current active task.
+  - `CHANGELOG.md` updated with MVP-41 through MVP-45 entries (this section).
+  - `VERSION` aligned to `0.45.0-dev`.
+  - `pyproject.toml` version aligned to `0.45.0-dev`.
+
+**Safety and Boundaries**
+- Documentation and version metadata only.
+- No runtime code changes.
+- No data, reports, or untracked cross_artifact_consistency access.
+- No production-readiness, trading-readiness, approval, certification, recommendation, or suitability claims.
+- Original master plan preserved as historical context.
+
+## MVP-45 — Human Review Audit Bundle Export Verification / Replay (Complete)
+
+**Version:** 0.44.0-dev → 0.45.0-dev.
+
+**SPEC-046:** `specs/SPEC-046-Human-Review-Audit-Bundle-Export-Verification-Replay.md` — implemented across models, engine, writer, and integration tests.
+
+**Tag:** `v0.45.0-dev` (HEAD).
+
+- `src/hunter/human_review_audit_bundle_export_verification/` — models, engine, writer for deterministic local verification of audit bundle export outputs.
+- `tests/test_human_review_audit_bundle_export_verification/` — model tests, engine tests, writer tests, integration tests.
+- Verification is local, call-triggered, deterministic, and audit-only.
+- No trading, exchange, API, network, or Freqtrade runtime semantics.
+- All outputs are human-audit / research-only artifacts.
+
+## MVP-44 — Human Review Audit Bundle Export Artifact (Complete)
+
+**Version:** 0.43.0-dev → 0.44.0-dev.
+
+**SPEC-045:** `specs/SPEC-045-Human-Review-Audit-Bundle-Export-Artifact.md` — implemented across models, engine, writer, and integration tests.
+
+**Tag:** `v0.44.0-dev`.
+
+- `src/hunter/human_review_audit_bundle_export/` — models, engine, writer for deterministic local audit bundle export with artifact references.
+- `tests/test_human_review_audit_bundle_export/` — model tests, engine tests, writer tests, integration tests.
+- Export is local, call-triggered, deterministic, and audit-only.
+- No trading, exchange, API, network, or Freqtrade runtime semantics.
+
+## MVP-43 — Human Review Audit Bundle Export (Complete)
+
+**Version:** 0.42.0-dev → 0.43.0-dev.
+
+**SPEC-044:** `specs/SPEC-044-Human-Review-Audit-Bundle-Export.md` — implemented across models, engine, writer, and integration tests.
+
+**Tag:** `v0.43.0-dev`.
+
+- `src/hunter/human_review_audit_bundle/` — models, engine, writer for deterministic local audit bundle export.
+- `tests/test_human_review_audit_bundle/` — model tests, engine tests, writer tests, integration tests.
+- Audit bundle export is local, call-triggered, deterministic, and audit-only.
+- No trading, exchange, API, network, or Freqtrade runtime semantics.
+
+## MVP-42 — Human Review Decision Log Cross-Artifact Consistency (Complete)
+
+**Version:** 0.41.0-dev → 0.42.0-dev.
+
+**SPEC-043:** `specs/SPEC-043-Human-Review-Decision-Log-Cross-Artifact-Consistency.md` — implemented across models, engine, writer, and integration tests.
+
+**Tag:** `v0.42.0-dev`.
+
+- `src/hunter/human_review_decision_log_consistency/` — models, engine, writer for deterministic local cross-artifact consistency checks of decision log entries.
+- `tests/test_human_review_decision_log_consistency/` — model tests, engine tests, writer tests, integration tests.
+- Consistency checks are local, call-triggered, deterministic, and audit-only.
+- All artifact, report, and metadata references remain opaque local strings.
+
+## MVP-41 — Local Research Human Review Decision Log (Complete)
+
+**Version:** 0.40.0-dev → 0.41.0-dev.
+
+**SPEC-042:** `specs/SPEC-042-Local-Research-Human-Review-Decision-Log.md` — implemented across models, engine, writer, and integration tests.
+
+**Tag:** `v0.41.0-dev`.
+
+- `src/hunter/human_review_decision_log/` — models, engine, writer for deterministic local human review decision log with queue entry refs, decision records, and decision links.
+- `tests/test_human_review_decision_log/` — model tests, engine tests, writer tests, integration tests.
+- Decision log is local, call-triggered, deterministic, and audit-only.
+- No automated remediation execution; no shell commands, patches, file edits, deployment actions, or infrastructure changes.
+- No scheduler, daemon, background job runner, server, REST API, database, Web UI, or dashboard introduced.
+- No Binance, exchange, API, live data, network, real trading, order, leverage, shorting, or Freqtrade strategy/runtime semantics.
+- All outputs are human-audit / research-only artifacts.
+
 ## MVP-40 — Local Research Human Review Queue (Complete)
 
 **Version:** 0.39.0-dev → 0.40.0-dev.

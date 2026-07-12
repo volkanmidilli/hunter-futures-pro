@@ -4,15 +4,51 @@ Hunter Futures Pro
 
 ## Version
 
-0.32.0-dev
+0.45.0-dev
 
 ## Current Phase
 
-MVP-32 is complete. SPEC-033 for MVP-32 Local Research Final Audit Pack Export is implemented across models, engine, writer, and integration tests. Version 0.32.0-dev. Full test suite: 5750 tests passing, 1 skipped using `pytest --import-mode=importlib`. Next phase: not started; requires human direction. The final audit pack is a local, call-triggered, deterministic, audit-only final export/manifest layer over caller-provided in-memory research reports and opaque artifact references. It assembles backtest, run-orchestrator, experiment-ledger, portfolio-construction, discovery, and reporting-cli sections into a single human-audit pack. It is not a production release approval system, not a certification of trading readiness, not a strategy selector, not a signal generator, and not a performance attribution tool. It must not be consumed by execution, strategy, Freqtrade shell, order, exchange, or any MVP execution path. No scheduler, daemon, background job runner, server, REST API, database, Web UI, or dashboard introduced. No Binance, exchange, API, live data, network, real trading, order, leverage, shorting, or Freqtrade strategy/runtime semantics introduced. Metadata and file-reference strings remain opaque local strings; they are never opened, traversed, validated, fetched, or executed. All outputs are human-audit / research-only artifacts. Remaining future work is not started.
+The original master plan (MVP-0 through MVP-4 and the 12 main modules in PROJECT.md) is complete. The repository has expanded well beyond that original plan. The functional MVP chain now runs through **MVP-45 / v0.45.0-dev**, with the latest tagged commit at `1047ede`. The current active work is **MVP-46 — Project Memory Realignment**, which is aligning stale project memory files with the actual repository state.
+
+## Background
+
+### Original Master Plan (Historical)
+
+The original plan captured in `PROJECT.md`, `README.md`, and `tasks/backlog.md` defined a focused progression:
+
+- MVP-0 — Project Foundation
+- MVP-1 — Data Foundation
+- MVP-2 — Market State (Regime Engine, Market Breadth Engine)
+- MVP-3 — Strength and Futures Positioning (Relative Strength, Open Interest)
+- MVP-4 — Execution Control (Portfolio Engine, Decision Gate Engine, Freqtrade integration)
+
+`PROJECT.md` listed 12 intended main modules: Data Foundation, Regime Engine, Market Breadth Engine, Relative Strength Engine, Open Interest Engine, Discovery Engine, Portfolio Engine, Decision Gate Engine, Backtest Validation Engine, Reporting Layer, Freqtrade Execution Layer, and Agent Memory Layer. All 12 modules are implemented across the expanded MVP chain.
+
+### Expanded MVP Chain
+
+The repository now contains 46 specs (SPEC-001 through SPEC-046) and MVPs beyond the original plan:
+
+- MVP-5 through MVP-9: Freqtrade execution contract chain
+- MVP-10 through MVP-23: Local research audit / review chain
+- MVP-24 through MVP-28: Quantitative research engines
+- MVP-29 through MVP-32: Reporting / orchestration / ledger
+- MVP-33 through MVP-39: Remediation / release-hardening chain
+- MVP-40 through MVP-42: Human review chain
+- MVP-43 through MVP-45: Audit bundle / export / verification
+- MVP-46: Project Memory Realignment (documentation-only, in progress)
+
+For the full MVP-by-MVP mapping, see `ROADMAP.md` and `docs/MVP_INDEX.md`.
 
 ## Current Status
 
-MVP-32 — Local Research Final Audit Pack Export is complete.
+MVP-45 — Human Review Audit Bundle Export Verification / Replay is complete and tagged v0.45.0-dev.
+
+Latest tagged commit: `1047ede` (tag: v0.45.0-dev).
+Latest memory-realignment commits:
+- `366dca4` Add MVP-46 project memory realignment spec
+- `3d350ec` Add MVP-46 roadmap and MVP index
+
+MVP-46 — Project Memory Realignment is in progress. Step 3 (current-state/task/changelog/version alignment) is the active step.
 - SPEC-033: `specs/SPEC-033-Local-Research-Final-Audit-Pack-Export.md` — implemented.
 - `src/hunter/final_audit_pack/__init__.py` — public API exports for models, engine, writer, reason codes, safety constants, and default artifact paths.
 - `src/hunter/final_audit_pack/models.py` — frozen dataclasses (`FinalAuditPackInput`, `FinalAuditPackSection`, `FinalAuditPackArtifact`, `FinalAuditPackConfig`, `FinalAuditPackCompleteness`, `FinalAuditPackDataQuality`, `FinalAuditPackSafetyFlags`, `FinalAuditPackReport`), enums (`FinalAuditPackState`, `FinalAuditPackReasonCode`), reason codes, section kinds, and forbidden-term guard.
