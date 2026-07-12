@@ -12,6 +12,9 @@ from hashlib import sha256
 from json import dumps, loads
 from typing import Any
 
+from hunter.human_review_audit_bundle.models import (
+    SAFETY_NOTICE as BUNDLE_SAFETY_NOTICE,
+)
 from hunter.human_review_audit_bundle_export.models import (
     SAFETY_NOTICE as EXPORT_SAFETY_NOTICE,
     HumanReviewAuditBundleExportManifest,
@@ -443,7 +446,11 @@ def _check_safety_notice(
     generated_at: datetime,
     counter: int,
 ) -> tuple[list[HumanReviewAuditBundleExportVerificationIssue], int, bool]:
-    """Check that the MVP-44 export safety notice is present in the body."""
+    """Check that the expected safety notice is present in the body.
+
+    The exported artifact body may contain either the bundle-level safety notice
+    (for bundle report bodies) or the export-level safety notice.
+    """
     issues: list[HumanReviewAuditBundleExportVerificationIssue] = []
     try:
         text = artifact_bytes.decode("utf-8")
@@ -461,7 +468,7 @@ def _check_safety_notice(
             )
         )
         return issues, counter + 1, False
-    if EXPORT_SAFETY_NOTICE in text:
+    if BUNDLE_SAFETY_NOTICE in text or EXPORT_SAFETY_NOTICE in text:
         return issues, counter, True
     issues.append(
         _build_issue(
@@ -470,7 +477,7 @@ def _check_safety_notice(
             reason_code=HumanReviewAuditBundleExportVerificationReasonCode.SAFETY_NOTICE_MISSING,
             source="safety_notice",
             title="Safety notice missing from artifact body",
-            description="The expected MVP-44 safety notice phrase was not found in the artifact body.",
+            description="The expected safety notice phrase was not found in the artifact body.",
             generated_at=generated_at,
             counter=counter,
         )
