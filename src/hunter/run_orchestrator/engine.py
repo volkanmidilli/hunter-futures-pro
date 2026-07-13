@@ -41,6 +41,11 @@ from hunter.portfolio_construction import (
     build_portfolio_construction_report,
     write_portfolio_construction_report,
 )
+from hunter.controlled_universe import (
+    ControlledUniverseConfig,
+    build_controlled_universe_report,
+    write_controlled_universe_report,
+)
 from hunter.reporting_cli import CLIInvocation, run_render_sample_command
 from hunter.research_audit_catalog import (
     CatalogConfig,
@@ -61,8 +66,11 @@ from hunter.run_orchestrator.models import (
     CONTRADICTORY_INPUT,
     EMPTY_RUN_ID,
     EMPTY_RUN_PLAN,
+    EXECUTION_BLOCKED,
     FORBIDDEN_RUN_ORCHESTRATOR_TERMS,
+    INVALID_CONTROLLED_UNIVERSE_INPUT,
     INVALID_OUTPUT_DIR,
+    INVALID_PORTFOLIO_SUMMARY,
     INVALID_RUN_CONFIG,
     INVALID_RUN_PLAN,
     INVALID_STEP_INPUTS,
@@ -83,6 +91,7 @@ from hunter.run_orchestrator.models import (
     PATH_TRAVERSAL_DETECTED,
     RESEARCH_ONLY,
     RUN_BLOCKED,
+    RUN_ORCHESTRATOR_BLOCKING_REASON_CODES,
     RUN_ORCHESTRATOR_VERSION,
     STALE_INPUT,
     STEP_BLOCKED,
@@ -104,6 +113,7 @@ from hunter.run_orchestrator.models import (
     ResearchRunStepKind,
     ResearchRunStepResult,
     ResearchRunStepState,
+    RunInputResolution,
     _coerce_mapping_any,
     _coerce_mapping_strs,
     _coerce_tuple_strs,
@@ -172,8 +182,8 @@ def _has_forbidden_terms(obj: Any) -> bool:
                     return True
             return False
         if isinstance(value, Mapping):
-            for k, v in value.items():
-                if _scan(k) or _scan(v):
+            for v in value.values():
+                if _scan(v):
                     return True
             return False
         if isinstance(value, Sequence) and not isinstance(value, (str, bytes)):
@@ -189,6 +199,216 @@ def _has_forbidden_terms(obj: Any) -> bool:
         return False
 
     return _scan(obj)
+
+
+# ---------------------------------------------------------------------------
+# Controlled Universe input resolution
+# ---------------------------------------------------------------------------
+
+
+def _is_stale_input(value: Any) -> bool:
+    """Return True if a report/context carries a stale data-quality flag.
+
+    A value of None is treated as missing (not stale) so callers can emit the
+    appropriate missing-input reason code. A non-None value without freshness
+    metadata is treated as stale per SPEC-053.
+    """
+    if value is None:
+        return False
+    data_quality = getattr(value, "data_quality", None)
+    if data_quality is None:
+        return True
+    return getattr(data_quality, "stale", False) or not getattr(
+        data_quality, "is_valid", lambda: True
+    )()
+
+
+def _resolve_controlled_universe_inputs(
+    step: ResearchRunStep,
+    step_index: int,
+    prior_results: Sequence[ResearchRunStepResult],
+) -> RunInputResolution:
+    """Resolve PortfolioConstructionReport and ExecutionContext for a CU step.
+
+    Resolution priority:
+    1. In-line objects in step.inputs.
+    2. Upstream step referenced by step_id.
+    3. Upstream step referenced by step_index.
+    4. Most recent preceding successful PORTFOLIO_CONSTRUCTION step (portfolio only).
+    """
+    inputs = dict(step.inputs)
+    portfolio_report: Any = inputs.get("portfolio_report")
+    execution_context: Any = inputs.get("execution_context")
+
+    # Build lookup tables by step_id and step_index for prior results.
+    step_index_by_id: dict[str, int] = {}
+    for idx, result in enumerate(prior_results):
+        if result.step_id:
+            step_index_by_id[result.step_id] = idx
+
+    if portfolio_report is None:
+        step_id_ref = inputs.get("portfolio_construction_step_id")
+        step_index_ref = inputs.get("portfolio_construction_step_index")
+
+        if step_id_ref is not None and step_index_ref is not None:
+            resolved_by_id = step_index_by_id.get(step_id_ref)
+            if resolved_by_id is not None and resolved_by_id == step_index_ref:
+                portfolio_report = _extract_portfolio_report(prior_results[resolved_by_id])
+        elif step_id_ref is not None:
+            resolved = step_index_by_id.get(step_id_ref)
+            if resolved is not None:
+                portfolio_report = _extract_portfolio_report(prior_results[resolved])
+        elif step_index_ref is not None:
+            if isinstance(step_index_ref, int) and 0 <= step_index_ref < step_index:
+                portfolio_report = _extract_portfolio_report(prior_results[step_index_ref])
+        else:
+            # Default upstream: nearest preceding successful PORTFOLIO_CONSTRUCTION.
+            for idx in range(step_index - 1, -1, -1):
+                result = prior_results[idx]
+                if (
+                    result.kind == ResearchRunStepKind.PORTFOLIO_CONSTRUCTION
+                    and result.state == ResearchRunStepState.SUCCESS
+                ):
+                    portfolio_report = _extract_portfolio_report(result)
+                    break
+
+    if execution_context is None:
+        ec_step_id = inputs.get("execution_context_step_id")
+        if ec_step_id is not None:
+            resolved = step_index_by_id.get(ec_step_id)
+            if resolved is not None:
+                execution_context = _extract_execution_context(prior_results[resolved])
+
+    return RunInputResolution(
+        portfolio_report=portfolio_report,
+        execution_context=execution_context,
+    )
+
+
+def _extract_portfolio_report(result: ResearchRunStepResult) -> Any:
+    """Return a PortfolioConstructionReport from a step result, or None."""
+    return result.data.get("report")
+
+
+def _extract_execution_context(result: ResearchRunStepResult) -> Any:
+    """Return an ExecutionContext from a step result, or None."""
+    return result.data.get("execution_context")
+
+
+def _map_controlled_universe_reason_code(report: Any) -> str:
+    """Map a fail-closed controlled universe report to an orchestrator reason code."""
+    for code in report.reason_codes:
+        if code in RUN_ORCHESTRATOR_BLOCKING_REASON_CODES:
+            return code
+    # Fallbacks based on safety flags when reason code is not in orchestrator set.
+    flags = report.safety_flags
+    if flags.has_missing_execution_context:
+        return MISSING_EXECUTION_CONTEXT
+    if flags.has_missing_portfolio_context:
+        return MISSING_PORTFOLIO_CONTEXT
+    if flags.has_blocked_execution:
+        return EXECUTION_BLOCKED
+    if flags.has_invalid_portfolio_summary:
+        return INVALID_PORTFOLIO_SUMMARY
+    if flags.has_stale_or_invalid_data:
+        return STALE_INPUT
+    return INVALID_CONTROLLED_UNIVERSE_INPUT
+
+
+def _dispatch_controlled_universe_step(
+    step: ResearchRunStep,
+    step_index: int,
+    config: ResearchRunConfig,
+    prior_results: Sequence[ResearchRunStepResult],
+    generated_at: datetime,
+    step_output_dir: str,
+) -> ResearchRunStepResult:
+    """Dispatch a CONTROLLED_UNIVERSE step through the controlled universe bridge."""
+    inputs = dict(step.inputs)
+    resolution = _resolve_controlled_universe_inputs(step, step_index, prior_results)
+    portfolio_report = resolution.portfolio_report
+    execution_context = resolution.execution_context
+    step_config = inputs.get("config") or ControlledUniverseConfig()
+
+    if portfolio_report is None:
+        return _step_blocked(
+            step_index,
+            step,
+            MISSING_PORTFOLIO_CONTEXT,
+            "controlled_universe: portfolio report missing",
+        )
+
+    if _is_stale_input(portfolio_report):
+        return _step_blocked(
+            step_index,
+            step,
+            STALE_INPUT,
+            "controlled_universe: portfolio report is stale",
+        )
+
+    if _is_stale_input(execution_context):
+        return _step_blocked(
+            step_index,
+            step,
+            STALE_INPUT,
+            "controlled_universe: execution context is stale",
+        )
+
+    try:
+        report = build_controlled_universe_report(
+            portfolio_report=portfolio_report,
+            execution_context=execution_context,
+            config=step_config,
+        )
+    except Exception as exc:  # noqa: BLE001
+        return _step_failed(
+            step_index,
+            step,
+            f"controlled_universe engine error: {exc}",
+        )
+
+    output_paths: tuple[str, ...] = ()
+    if config.write_artifacts:
+        json_path, csv_path, md_path = write_controlled_universe_report(
+            report,
+            json_path=f"{step_output_dir}/controlled_universe_report.json",
+            csv_path=f"{step_output_dir}/controlled_universe_report.csv",
+            md_path=f"{step_output_dir}/controlled_universe_report.md",
+        )
+        output_paths = tuple(
+            str(p) for p in (json_path, csv_path, md_path) if p is not None
+        )
+
+    data: dict[str, Any] = {
+        "generated_at": report.generated_at,
+        "universe_count": len(report.universe),
+        "watchlist_count": len(report.watchlist),
+        "blocked_count": len(report.blocked),
+        "reason_codes": tuple(report.reason_codes),
+        "report": report,
+    }
+
+    has_blocking_reason = any(
+        code in RUN_ORCHESTRATOR_BLOCKING_REASON_CODES for code in report.reason_codes
+    )
+
+    if report.safety_flags.is_safe and not has_blocking_reason:
+        return _step_success(
+            step_index,
+            step,
+            data,
+            output_paths,
+        )
+
+    reason_code = _map_controlled_universe_reason_code(report)
+    return _step_blocked(
+        step_index,
+        step,
+        reason_code,
+        "controlled_universe: blocked by bridge engine",
+        data=data,
+        output_paths=output_paths,
+    )
 
 
 # ---------------------------------------------------------------------------
@@ -271,16 +491,19 @@ def _dispatch_step(
     step: ResearchRunStep,
     step_index: int,
     config: ResearchRunConfig,
+    prior_results: Sequence[ResearchRunStepResult] | None = None,
 ) -> ResearchRunStepResult:
     """Dispatch a single step to an existing local engine.
 
     Returns a ResearchRunStepResult. No step dispatch reaches network, exchange,
-    database, scheduler, daemon, or Freqtrade.
+    database, scheduler, daemon, or Freqtrade. `prior_results` is used by steps
+    that need to resolve upstream outputs (e.g., CONTROLLED_UNIVERSE).
     """
     kind = step.kind
     inputs = step.inputs
     step_output_dir = _build_step_output_dir(config.output_dir, step_index, kind)
     generated_at = config.generated_at or _utc_now()
+    prior_results = prior_results or ()
 
     try:
         if kind == ResearchRunStepKind.BACKTEST:
@@ -347,7 +570,10 @@ def _dispatch_step(
             return _step_success(
                 step_index,
                 step,
-                {"report_id": report.report_id},
+                {
+                    "report_id": report.report_id,
+                    "report": report,
+                },
                 output_paths,
             )
 
@@ -477,6 +703,16 @@ def _dispatch_step(
                 (),
             )
 
+        if kind == ResearchRunStepKind.CONTROLLED_UNIVERSE:
+            return _dispatch_controlled_universe_step(
+                step,
+                step_index,
+                config,
+                prior_results,
+                generated_at,
+                step_output_dir,
+            )
+
     except Exception as exc:  # noqa: BLE001
         return _step_failed(
             step_index,
@@ -487,7 +723,7 @@ def _dispatch_step(
     return _step_blocked(
         step_index,
         step,
-        UNSUPPORTED_STEP_KIND,
+        UNKNOWN_STEP_KIND,
         f"unsupported step kind: {kind.value}",
     )
 
@@ -515,6 +751,8 @@ def _step_blocked(
     step: ResearchRunStep,
     reason_code: str,
     error_message: str,
+    data: Mapping[str, Any] | None = None,
+    output_paths: tuple[str, ...] | None = None,
 ) -> ResearchRunStepResult:
     return ResearchRunStepResult(
         step_index=step_index,
@@ -522,8 +760,8 @@ def _step_blocked(
         kind=step.kind,
         state=ResearchRunStepState.BLOCKED,
         reason_codes=(reason_code, STEP_BLOCKED),
-        data=_coerce_mapping_any({}),
-        output_paths=(),
+        data=_coerce_mapping_any(data if data is not None else {}),
+        output_paths=output_paths if output_paths is not None else (),
         notes=(),
         error_message=error_message,
     )
@@ -596,6 +834,19 @@ def _build_data_quality(
     failed = sum(1 for r in step_results if r.state == ResearchRunStepState.FAILED)
     blocked = sum(1 for r in step_results if r.state == ResearchRunStepState.BLOCKED)
     skipped = sum(1 for r in step_results if r.state == ResearchRunStepState.SKIPPED)
+    cu_total = sum(1 for r in step_results if r.kind == ResearchRunStepKind.CONTROLLED_UNIVERSE)
+    cu_blocked = sum(
+        1
+        for r in step_results
+        if r.kind == ResearchRunStepKind.CONTROLLED_UNIVERSE
+        and r.state == ResearchRunStepState.BLOCKED
+    )
+    cu_failed = sum(
+        1
+        for r in step_results
+        if r.kind == ResearchRunStepKind.CONTROLLED_UNIVERSE
+        and r.state == ResearchRunStepState.FAILED
+    )
     sections_expected = ["RUN_ID", "STEPS", "DATA_QUALITY", "SAFETY_FLAGS"]
     sections_present = ["RUN_ID", "STEPS", "DATA_QUALITY", "SAFETY_FLAGS"]
     if total > 0:
@@ -607,6 +858,9 @@ def _build_data_quality(
         failed_steps=failed,
         blocked_steps=blocked,
         skipped_steps=skipped,
+        controlled_universe_steps=cu_total,
+        controlled_universe_blocked=cu_blocked,
+        controlled_universe_failed=cu_failed,
         sections_present=tuple(sections_present),
         sections_expected=tuple(sections_expected),
         notes=tuple(notes),
@@ -732,7 +986,7 @@ def build_research_run_result(
             step_results.append(_step_skipped(step_index, step))
             continue
 
-        result = _dispatch_step(step, step_index, config)
+        result = _dispatch_step(step, step_index, config, tuple(step_results))
         step_results.append(result)
 
     step_results_tuple = tuple(step_results)

@@ -1,5 +1,37 @@
 ---
 
+### MVP-52 Step 2 — Engine Dispatch and Input Resolution for Controlled Universe
+
+Date: 2026-07-13
+
+Agent: WrongStack
+
+Task: Review and finalize MVP-52 Step 2 per SPEC-053.
+
+Files modified:
+
+- `src/hunter/run_orchestrator/engine.py` — added `CONTROLLED_UNIVERSE` step dispatch, `_dispatch_step` now accepts `prior_results`, `PORTFOLIO_CONSTRUCTION` returns the full report under `data["report"]`, added `_resolve_controlled_universe_inputs`, `_extract_portfolio_report`, `_extract_execution_context`, `_map_controlled_universe_reason_code`, `_dispatch_controlled_universe_step`, `_is_stale_input`, updated `_build_data_quality` to track controlled-universe counters, and aligned `_has_forbidden_terms` with its docstring by scanning mapping values only.
+- `src/hunter/portfolio_construction/models.py` — added `stale: bool = False` to `PortfolioConstructionDataQuality` so controlled-universe stale-input detection can read it generically.
+- `tests/test_run_orchestrator/test_engine.py` — added `TestControlledUniverseDispatch` (inline/upstream resolution, precedence, ambiguous references, fail-closed behavior), `TestForbiddenContentScanning` (structural keys allowed, nested/list values still blocked), and `TestStaleInputDetection` (None/missing-data-quality/stale-flag/is_valid behavior).
+
+Test results:
+
+- `pytest tests/test_run_orchestrator/ -q` — 132 passed (was 107 before Step 2).
+- `pytest tests/test_portfolio_construction/ -q` — 158 passed.
+- `pytest -q` — 7858 passed, 1 skipped, 1 warning (unrelated deprecation in controlled_universe tests).
+
+Findings:
+
+- Multiple upstream portfolio precedence: explicit `step_id` and `step_index` references are resolved before nearest-preceding fallback; providing both that disagree fails closed deterministically.
+- `PortfolioConstructionDataQuality.stale` is backward-compatible (default False) and belongs in the upstream report contract.
+- `_has_forbidden_terms` value-only scanning preserves existing safety behavior (nested/list values still block) while allowing structural keys like `execution_context`.
+- Controlled-universe dispatch emits deterministic blocking reason codes (`MISSING_PORTFOLIO_CONTEXT`, `MISSING_EXECUTION_CONTEXT`, `STALE_INPUT`, `EXECUTION_BLOCKED`, `MACRO_MODE_NONE`, `INVALID_PORTFOLIO_SUMMARY`) and preserves existing step-kind behavior.
+- Residual deviation: `ResearchRunSafetyFlags` does not currently aggregate controlled-universe `safety_flags` beyond generic `has_blocked_step`/`has_failed_step`. The default `no_universe_approval=True` remains safe, but surfacing the upstream universe safety flags at the run level is left for future hardening if SPEC-053 Step 3 requires it.
+
+Next: Step 3 — writer and end-to-end integration for controlled-universe run artifacts.
+
+---
+
 ### MVP-52 Step 1 — Models and Dependency Validator
 
 Date: 2026-07-13

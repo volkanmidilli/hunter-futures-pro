@@ -19,19 +19,47 @@ from hunter.backtest import (
     BacktestPriceBar,
     BacktestRunConfig,
 )
+from hunter.controlled_universe import (
+    AllowedMode,
+    ControlledUniverseConfig,
+    ControlledUniverseReport,
+    build_controlled_universe_report,
+)
+from hunter.decision.models import DecisionAction, DecisionState
 from hunter.discovery import DiscoveryInput, DiscoveryInputKind
+from hunter.execution.models import (
+    DataQuality,
+    ExecutionContext,
+    ExecutionMode,
+    ExecutionSafetyFlags,
+    ExecutionState,
+    OutputStatus,
+)
+from hunter.market_state.models import AllowedMode as MarketAllowedMode
 from hunter.portfolio_construction import (
+    PortfolioConstructionClassification,
+    PortfolioConstructionConfig,
+    PortfolioConstructionDataQuality,
+    PortfolioConstructionReport,
+    PortfolioConstructionSafetyFlags,
+    PortfolioConstructionScore,
+    PortfolioConstructionState,
+    PortfolioConstructionUniverseSummary,
     PortfolioConstructionInput,
     PortfolioConstructionInputKind,
 )
+from hunter.run_orchestrator.engine import _dispatch_step, _is_stale_input
 from hunter.reporting_cli import CLIExitCode
 from hunter.research_audit_catalog import CatalogArtifactKind, CatalogEntry, CatalogState
 from hunter.run_orchestrator import (
     CONTRADICTORY_INPUT,
     EMPTY_RUN_ID,
     EMPTY_RUN_PLAN,
+    EXECUTION_BLOCKED,
     INVALID_OUTPUT_DIR,
+    INVALID_PORTFOLIO_SUMMARY,
     INVALID_RUN_PLAN,
+    MACRO_MODE_NONE,
     MISSING_EXECUTION_CONTEXT,
     MISSING_PORTFOLIO_CONTEXT,
     NO_NETWORK_CONNECTION,
@@ -39,16 +67,20 @@ from hunter.run_orchestrator import (
     OK,
     RESEARCH_ONLY,
     RUN_BLOCKED,
+    STALE_INPUT,
     STEP_BLOCKED,
     STEP_FAILED,
     STEP_SKIPPED,
     UNKNOWN_STEP_KIND,
     UNSAFE_RUN_CONTENT,
     UNSUPPORTED_STEP_KIND,
+    UPSTREAM_STEP_BLOCKED,
+    UPSTREAM_STEP_FAILED,
     build_coin_discovery_run_plan,
     build_research_run_result,
     validate_run_plan_dependencies,
     ResearchRunConfig,
+    ResearchRunDataQuality,
     ResearchRunPlan,
     ResearchRunSafetyFlags,
     ResearchRunState,
@@ -334,6 +366,57 @@ class TestFailClosed:
         assert UNSAFE_RUN_CONTENT in result.reason_codes
         assert result.safety_flags.has_unsafe_content is True
         assert result.safety_flags.is_safe is False
+
+    def test_structural_input_keys_are_allowed(self, fixed_generated_at: datetime) -> None:
+        # Keys are part of the step schema and must not be treated as user content.
+        portfolio = _portfolio_report(
+            _pc_score("BTC/USDT", PortfolioConstructionState.INCLUDED, allocation_score=85.0),
+        )
+        step = ResearchRunStep(
+            kind=ResearchRunStepKind.CONTROLLED_UNIVERSE,
+            inputs={
+                "portfolio_report": portfolio,
+                "execution_context": _execution_context(),
+            },
+        )
+        plan = ResearchRunPlan(run_id="r1", steps=(step,))
+        config = ResearchRunConfig(generated_at=fixed_generated_at)
+        result = build_research_run_result(plan, config)
+        assert result.state == ResearchRunState.COMPLETED
+        assert UNSAFE_RUN_CONTENT not in result.reason_codes
+
+    def test_forbidden_content_in_nested_values_still_blocks(self, fixed_generated_at: datetime) -> None:
+        # Values (including nested ones) are still scanned for forbidden terms.
+        step = ResearchRunStep(
+            kind=ResearchRunStepKind.BACKTEST,
+            step_id="s1",
+            inputs={
+                "pair": "BTC/USDT",
+                "nested": {"note": "place buy order"},
+            },
+        )
+        plan = ResearchRunPlan(run_id="r1", steps=(step,))
+        config = ResearchRunConfig(generated_at=fixed_generated_at)
+        result = build_research_run_result(plan, config)
+        assert result.state == ResearchRunState.BLOCKED
+        assert UNSAFE_RUN_CONTENT in result.reason_codes
+        assert result.safety_flags.has_unsafe_content is True
+
+    def test_forbidden_content_in_list_values_still_blocks(self, fixed_generated_at: datetime) -> None:
+        step = ResearchRunStep(
+            kind=ResearchRunStepKind.BACKTEST,
+            step_id="s1",
+            inputs={
+                "pair": "BTC/USDT",
+                "items": ["place buy order"],
+            },
+        )
+        plan = ResearchRunPlan(run_id="r1", steps=(step,))
+        config = ResearchRunConfig(generated_at=fixed_generated_at)
+        result = build_research_run_result(plan, config)
+        assert result.state == ResearchRunState.BLOCKED
+        assert UNSAFE_RUN_CONTENT in result.reason_codes
+        assert result.safety_flags.has_unsafe_content is True
 
     def test_invalid_output_dir_blocks_run(self, fixed_generated_at: datetime) -> None:
         step = ResearchRunStep(kind=ResearchRunStepKind.BACKTEST, step_id="s1", inputs={})
@@ -699,3 +782,635 @@ class TestValidateRunPlanDependencies:
         valid, reasons = validate_run_plan_dependencies(plan)
         assert valid is True
         assert reasons == (OK,)
+
+
+
+def _dt() -> datetime:
+    return datetime.now(timezone.utc)
+
+
+def _minimal_pc_safety_flags() -> PortfolioConstructionSafetyFlags:
+    return PortfolioConstructionSafetyFlags()
+
+
+def _minimal_pc_data_quality(
+    total_inputs: int = 0,
+    included_count: int = 0,
+    capped_count: int = 0,
+    watchlist_count: int = 0,
+    excluded_count: int = 0,
+    insufficient_data_count: int = 0,
+    blocked_count: int = 0,
+) -> PortfolioConstructionDataQuality:
+    return PortfolioConstructionDataQuality(
+        total_inputs=total_inputs,
+        included_count=included_count,
+        capped_count=capped_count,
+        watchlist_count=watchlist_count,
+        excluded_count=excluded_count,
+        insufficient_data_count=insufficient_data_count,
+        blocked_count=blocked_count,
+        ready_context_count=0,
+        missing_context_count=0,
+        blocked_context_count=0,
+        total_final_weight_pct=0.0,
+        total_research_weight_pct=0.0,
+        data_quality_score=0.0,
+        sections_present=0,
+        all_sections_present=True,
+        all_counts_consistent=True,
+        total_weight_within_tolerance=True,
+        has_unsafe_content=False,
+        safety_flags_ok=True,
+    )
+
+
+def _pc_universe_summary(
+    total_candidates: int,
+    included_count: int = 0,
+    capped_count: int = 0,
+    watchlist_count: int = 0,
+    excluded_count: int = 0,
+    insufficient_data_count: int = 0,
+    blocked_count: int = 0,
+) -> PortfolioConstructionUniverseSummary:
+    return PortfolioConstructionUniverseSummary(
+        total_candidates=total_candidates,
+        included_count=included_count,
+        capped_count=capped_count,
+        watchlist_count=watchlist_count,
+        excluded_count=excluded_count,
+        insufficient_data_count=insufficient_data_count,
+        blocked_count=blocked_count,
+        core_allocation_count=0,
+        satellite_allocation_count=0,
+        watchlist_allocation_count=0,
+        total_final_weight_pct=0.0,
+        top_pair=None,
+        notes=(),
+    )
+
+
+def _pc_score(
+    pair: str,
+    state: PortfolioConstructionState = PortfolioConstructionState.INCLUDED,
+    classification: PortfolioConstructionClassification = PortfolioConstructionClassification.CORE_RESEARCH_ALLOCATION,
+    allocation_score: float = 80.0,
+) -> PortfolioConstructionScore:
+    return PortfolioConstructionScore(
+        pair=pair,
+        state=state,
+        classification=classification,
+        allocation_score=allocation_score,
+        discovery_score_component=0.0,
+        data_quality_score=0.0,
+        diversification_component=0.0,
+        cap_readiness_score=0.0,
+        filter_bonus_score=0.0,
+        initial_research_weight_pct=0.0,
+        capped_weight_pct=0.0,
+        final_weight_pct=0.0,
+        reason_codes=(),
+        tags=(),
+        metadata={},
+        notes=(),
+        rank=None,
+    )
+
+
+def _portfolio_report(*scores: PortfolioConstructionScore) -> PortfolioConstructionReport:
+    counts = {
+        PortfolioConstructionState.INCLUDED: 0,
+        PortfolioConstructionState.CAPPED: 0,
+        PortfolioConstructionState.WATCHLIST: 0,
+        PortfolioConstructionState.EXCLUDED: 0,
+        PortfolioConstructionState.INSUFFICIENT_DATA: 0,
+        PortfolioConstructionState.BLOCKED: 0,
+    }
+    for score in scores:
+        counts[score.state] += 1
+    total = len(scores)
+    return PortfolioConstructionReport(
+        version="0.27.0-dev",
+        report_id="portfolio-report-1",
+        generated_at=_dt(),
+        inputs=(),
+        config=PortfolioConstructionConfig(),
+        safety_flags=_minimal_pc_safety_flags(),
+        scores=scores,
+        universe_summary=_pc_universe_summary(
+            total_candidates=total,
+            included_count=counts[PortfolioConstructionState.INCLUDED],
+            capped_count=counts[PortfolioConstructionState.CAPPED],
+            watchlist_count=counts[PortfolioConstructionState.WATCHLIST],
+            excluded_count=counts[PortfolioConstructionState.EXCLUDED],
+            insufficient_data_count=counts[PortfolioConstructionState.INSUFFICIENT_DATA],
+            blocked_count=counts[PortfolioConstructionState.BLOCKED],
+        ),
+        data_quality=_minimal_pc_data_quality(
+            total_inputs=total,
+            included_count=counts[PortfolioConstructionState.INCLUDED],
+            capped_count=counts[PortfolioConstructionState.CAPPED],
+            watchlist_count=counts[PortfolioConstructionState.WATCHLIST],
+            excluded_count=counts[PortfolioConstructionState.EXCLUDED],
+            insufficient_data_count=counts[PortfolioConstructionState.INSUFFICIENT_DATA],
+            blocked_count=counts[PortfolioConstructionState.BLOCKED],
+        ),
+        reason_codes=(),
+        metadata={},
+        notes=(),
+    )
+
+
+def _execution_context(
+    execution_state: ExecutionState = ExecutionState.DRY_RUN_ONLY,
+    execution_mode: ExecutionMode = ExecutionMode.DRY_RUN_ONLY,
+    allowed_mode: MarketAllowedMode = MarketAllowedMode.LONG_ONLY,
+    status: OutputStatus = OutputStatus.VALID,
+    data_quality: DataQuality | None = None,
+) -> ExecutionContext:
+    return ExecutionContext(
+        timestamp=_dt(),
+        status=status,
+        execution_state=execution_state,
+        execution_mode=execution_mode,
+        decision_state=DecisionState.ALLOW,
+        decision_action=DecisionAction.ENABLE_LONG_ONLY_RESEARCH,
+        allowed_mode=allowed_mode,
+        dry_run=True,
+        live_trading_enabled=False,
+        exchange_connection_enabled=False,
+        freqtrade_enabled=False,
+        reason_codes=[],
+        data_quality=data_quality or DataQuality(),
+        safety_flags=ExecutionSafetyFlags(),
+        version="1.0",
+    )
+
+
+class TestControlledUniverseDispatch:
+    def test_inline_portfolio_and_execution_context_succeeds(self) -> None:
+        portfolio = _portfolio_report(
+            _pc_score("BTC/USDT", PortfolioConstructionState.INCLUDED, allocation_score=85.0),
+        )
+        execution = _execution_context()
+        plan = ResearchRunPlan(
+            run_id="run-cu",
+            steps=(
+                ResearchRunStep(
+                    kind=ResearchRunStepKind.CONTROLLED_UNIVERSE,
+                    inputs={
+                        "portfolio_report": portfolio,
+                        "execution_context": execution,
+                        "config": ControlledUniverseConfig(max_universe_pairs=5),
+                    },
+                ),
+            ),
+        )
+        result = build_research_run_result(plan)
+        assert result.state == ResearchRunState.COMPLETED
+        assert len(result.steps) == 1
+        step_result = result.steps[0]
+        assert step_result.state == ResearchRunStepState.SUCCESS
+        assert step_result.kind == ResearchRunStepKind.CONTROLLED_UNIVERSE
+        assert "BTC/USDT" in step_result.data["report"].universe
+        assert result.data_quality.controlled_universe_steps == 1
+        assert result.data_quality.controlled_universe_blocked == 0
+
+    def test_inline_portfolio_missing_execution_context_blocks(self) -> None:
+        portfolio = _portfolio_report(
+            _pc_score("BTC/USDT", PortfolioConstructionState.INCLUDED, allocation_score=85.0),
+        )
+        plan = ResearchRunPlan(
+            run_id="run-cu",
+            steps=(
+                ResearchRunStep(
+                    kind=ResearchRunStepKind.CONTROLLED_UNIVERSE,
+                    inputs={"portfolio_report": portfolio},
+                ),
+            ),
+        )
+        result = build_research_run_result(plan)
+        step_result = result.steps[0]
+        assert step_result.state == ResearchRunStepState.BLOCKED
+        assert MISSING_EXECUTION_CONTEXT in step_result.reason_codes
+        assert result.data_quality.controlled_universe_blocked == 1
+
+    def test_missing_portfolio_report_blocks(self) -> None:
+        plan = ResearchRunPlan(
+            run_id="run-cu",
+            steps=(
+                ResearchRunStep(
+                    kind=ResearchRunStepKind.CONTROLLED_UNIVERSE,
+                    inputs={},
+                ),
+            ),
+        )
+        result = build_research_run_result(plan)
+        step_result = result.steps[0]
+        assert step_result.state == ResearchRunStepState.BLOCKED
+        assert MISSING_PORTFOLIO_CONTEXT in step_result.reason_codes
+
+    def test_stale_portfolio_report_blocks(self) -> None:
+        portfolio = _portfolio_report(
+            _pc_score("BTC/USDT", PortfolioConstructionState.INCLUDED, allocation_score=85.0),
+        )
+        stale_portfolio = PortfolioConstructionReport(
+            version=portfolio.version,
+            report_id=portfolio.report_id,
+            generated_at=portfolio.generated_at,
+            inputs=portfolio.inputs,
+            config=portfolio.config,
+            safety_flags=portfolio.safety_flags,
+            scores=portfolio.scores,
+            universe_summary=portfolio.universe_summary,
+            data_quality=PortfolioConstructionDataQuality(
+                total_inputs=portfolio.data_quality.total_inputs,
+                included_count=portfolio.data_quality.included_count,
+                capped_count=portfolio.data_quality.capped_count,
+                watchlist_count=portfolio.data_quality.watchlist_count,
+                excluded_count=portfolio.data_quality.excluded_count,
+                insufficient_data_count=portfolio.data_quality.insufficient_data_count,
+                blocked_count=portfolio.data_quality.blocked_count,
+                ready_context_count=0,
+                missing_context_count=0,
+                blocked_context_count=0,
+                total_final_weight_pct=0.0,
+                total_research_weight_pct=0.0,
+                data_quality_score=0.0,
+                sections_present=0,
+                all_sections_present=True,
+                all_counts_consistent=True,
+                total_weight_within_tolerance=True,
+                has_unsafe_content=False,
+                safety_flags_ok=True,
+                stale=True,
+            ),
+            reason_codes=portfolio.reason_codes,
+            metadata=portfolio.metadata,
+            notes=portfolio.notes,
+        )
+        plan = ResearchRunPlan(
+            run_id="run-cu",
+            steps=(
+                ResearchRunStep(
+                    kind=ResearchRunStepKind.CONTROLLED_UNIVERSE,
+                    inputs={"portfolio_report": stale_portfolio},
+                ),
+            ),
+        )
+        result = build_research_run_result(plan)
+        step_result = result.steps[0]
+        assert step_result.state == ResearchRunStepState.BLOCKED
+        assert STALE_INPUT in step_result.reason_codes
+
+    def test_stale_execution_context_blocks(self) -> None:
+        portfolio = _portfolio_report(
+            _pc_score("BTC/USDT", PortfolioConstructionState.INCLUDED, allocation_score=85.0),
+        )
+        execution = _execution_context(data_quality=DataQuality(stale=True))
+        plan = ResearchRunPlan(
+            run_id="run-cu",
+            steps=(
+                ResearchRunStep(
+                    kind=ResearchRunStepKind.CONTROLLED_UNIVERSE,
+                    inputs={
+                        "portfolio_report": portfolio,
+                        "execution_context": execution,
+                    },
+                ),
+            ),
+        )
+        result = build_research_run_result(plan)
+        step_result = result.steps[0]
+        assert step_result.state == ResearchRunStepState.BLOCKED
+        assert STALE_INPUT in step_result.reason_codes
+
+    def test_resolves_upstream_portfolio_by_step_id(self) -> None:
+        portfolio = _portfolio_report(
+            _pc_score("BTC/USDT", PortfolioConstructionState.INCLUDED, allocation_score=85.0),
+        )
+        execution = _execution_context()
+        prior = ResearchRunStepResult(
+            step_index=0,
+            step_id="pc-1",
+            kind=ResearchRunStepKind.PORTFOLIO_CONSTRUCTION,
+            state=ResearchRunStepState.SUCCESS,
+            reason_codes=(OK,),
+            data={"report": portfolio, "report_id": portfolio.report_id},
+            output_paths=(),
+            notes=(),
+        )
+        step = ResearchRunStep(
+            kind=ResearchRunStepKind.CONTROLLED_UNIVERSE,
+            inputs={
+                "portfolio_construction_step_id": "pc-1",
+                "execution_context": execution,
+            },
+        )
+        result = _dispatch_step(step, 1, ResearchRunConfig(), (prior,))
+        assert result.state == ResearchRunStepState.SUCCESS
+        assert "BTC/USDT" in result.data["report"].universe
+
+    def test_resolves_upstream_portfolio_by_step_index(self) -> None:
+        portfolio = _portfolio_report(
+            _pc_score("BTC/USDT", PortfolioConstructionState.INCLUDED, allocation_score=85.0),
+        )
+        execution = _execution_context()
+        prior = ResearchRunStepResult(
+            step_index=0,
+            step_id="pc-1",
+            kind=ResearchRunStepKind.PORTFOLIO_CONSTRUCTION,
+            state=ResearchRunStepState.SUCCESS,
+            reason_codes=(OK,),
+            data={"report": portfolio, "report_id": portfolio.report_id},
+            output_paths=(),
+            notes=(),
+        )
+        step = ResearchRunStep(
+            kind=ResearchRunStepKind.CONTROLLED_UNIVERSE,
+            inputs={
+                "portfolio_construction_step_index": 0,
+                "execution_context": execution,
+            },
+        )
+        result = _dispatch_step(step, 1, ResearchRunConfig(), (prior,))
+        assert result.state == ResearchRunStepState.SUCCESS
+
+    def test_resolves_nearest_preceding_portfolio(self) -> None:
+        portfolio = _portfolio_report(
+            _pc_score("BTC/USDT", PortfolioConstructionState.INCLUDED, allocation_score=85.0),
+        )
+        execution = _execution_context()
+        prior = ResearchRunStepResult(
+            step_index=0,
+            step_id="pc-1",
+            kind=ResearchRunStepKind.PORTFOLIO_CONSTRUCTION,
+            state=ResearchRunStepState.SUCCESS,
+            reason_codes=(OK,),
+            data={"report": portfolio, "report_id": portfolio.report_id},
+            output_paths=(),
+            notes=(),
+        )
+        step = ResearchRunStep(
+            kind=ResearchRunStepKind.CONTROLLED_UNIVERSE,
+            inputs={"execution_context": execution},
+        )
+        result = _dispatch_step(step, 1, ResearchRunConfig(), (prior,))
+        assert result.state == ResearchRunStepState.SUCCESS
+
+    def test_explicit_step_id_takes_precedence_over_nearest_preceding(self) -> None:
+        older_portfolio = _portfolio_report(
+            _pc_score("ETH/USDT", PortfolioConstructionState.INCLUDED, allocation_score=85.0),
+        )
+        newer_portfolio = _portfolio_report(
+            _pc_score("BTC/USDT", PortfolioConstructionState.INCLUDED, allocation_score=85.0),
+        )
+        execution = _execution_context()
+        priors = (
+            ResearchRunStepResult(
+                step_index=0,
+                step_id="pc-older",
+                kind=ResearchRunStepKind.PORTFOLIO_CONSTRUCTION,
+                state=ResearchRunStepState.SUCCESS,
+                reason_codes=(OK,),
+                data={"report": older_portfolio, "report_id": older_portfolio.report_id},
+                output_paths=(),
+                notes=(),
+            ),
+            ResearchRunStepResult(
+                step_index=1,
+                step_id="pc-newer",
+                kind=ResearchRunStepKind.PORTFOLIO_CONSTRUCTION,
+                state=ResearchRunStepState.SUCCESS,
+                reason_codes=(OK,),
+                data={"report": newer_portfolio, "report_id": newer_portfolio.report_id},
+                output_paths=(),
+                notes=(),
+            ),
+        )
+        step = ResearchRunStep(
+            kind=ResearchRunStepKind.CONTROLLED_UNIVERSE,
+            inputs={
+                "portfolio_construction_step_id": "pc-older",
+                "execution_context": execution,
+            },
+        )
+        result = _dispatch_step(step, 2, ResearchRunConfig(), priors)
+        assert result.state == ResearchRunStepState.SUCCESS
+        assert "ETH/USDT" in result.data["report"].universe
+        assert "BTC/USDT" not in result.data["report"].universe
+
+    def test_explicit_step_index_takes_precedence_over_nearest_preceding(self) -> None:
+        older_portfolio = _portfolio_report(
+            _pc_score("ETH/USDT", PortfolioConstructionState.INCLUDED, allocation_score=85.0),
+        )
+        newer_portfolio = _portfolio_report(
+            _pc_score("BTC/USDT", PortfolioConstructionState.INCLUDED, allocation_score=85.0),
+        )
+        execution = _execution_context()
+        priors = (
+            ResearchRunStepResult(
+                step_index=0,
+                step_id="pc-older",
+                kind=ResearchRunStepKind.PORTFOLIO_CONSTRUCTION,
+                state=ResearchRunStepState.SUCCESS,
+                reason_codes=(OK,),
+                data={"report": older_portfolio, "report_id": older_portfolio.report_id},
+                output_paths=(),
+                notes=(),
+            ),
+            ResearchRunStepResult(
+                step_index=1,
+                step_id="pc-newer",
+                kind=ResearchRunStepKind.PORTFOLIO_CONSTRUCTION,
+                state=ResearchRunStepState.SUCCESS,
+                reason_codes=(OK,),
+                data={"report": newer_portfolio, "report_id": newer_portfolio.report_id},
+                output_paths=(),
+                notes=(),
+            ),
+        )
+        step = ResearchRunStep(
+            kind=ResearchRunStepKind.CONTROLLED_UNIVERSE,
+            inputs={
+                "portfolio_construction_step_index": 0,
+                "execution_context": execution,
+            },
+        )
+        result = _dispatch_step(step, 2, ResearchRunConfig(), priors)
+        assert result.state == ResearchRunStepState.SUCCESS
+        assert "ETH/USDT" in result.data["report"].universe
+        assert "BTC/USDT" not in result.data["report"].universe
+
+    def test_ambiguous_references_fail_closed(self) -> None:
+        # Both step_id and step_index provided and they disagree -> fail closed.
+        portfolio = _portfolio_report(
+            _pc_score("BTC/USDT", PortfolioConstructionState.INCLUDED, allocation_score=85.0),
+        )
+        execution = _execution_context()
+        prior = ResearchRunStepResult(
+            step_index=0,
+            step_id="pc-1",
+            kind=ResearchRunStepKind.PORTFOLIO_CONSTRUCTION,
+            state=ResearchRunStepState.SUCCESS,
+            reason_codes=(OK,),
+            data={"report": portfolio, "report_id": portfolio.report_id},
+            output_paths=(),
+            notes=(),
+        )
+        step = ResearchRunStep(
+            kind=ResearchRunStepKind.CONTROLLED_UNIVERSE,
+            inputs={
+                "portfolio_construction_step_id": "pc-1",
+                "portfolio_construction_step_index": 99,
+                "execution_context": execution,
+            },
+        )
+        result = _dispatch_step(step, 1, ResearchRunConfig(), (prior,))
+        assert result.state == ResearchRunStepState.BLOCKED
+        assert MISSING_PORTFOLIO_CONTEXT in result.reason_codes
+
+    def test_invalid_step_id_reference_fails_closed(self) -> None:
+        portfolio = _portfolio_report(
+            _pc_score("BTC/USDT", PortfolioConstructionState.INCLUDED, allocation_score=85.0),
+        )
+        execution = _execution_context()
+        prior = ResearchRunStepResult(
+            step_index=0,
+            step_id="pc-1",
+            kind=ResearchRunStepKind.PORTFOLIO_CONSTRUCTION,
+            state=ResearchRunStepState.SUCCESS,
+            reason_codes=(OK,),
+            data={"report": portfolio, "report_id": portfolio.report_id},
+            output_paths=(),
+            notes=(),
+        )
+        step = ResearchRunStep(
+            kind=ResearchRunStepKind.CONTROLLED_UNIVERSE,
+            inputs={
+                "portfolio_construction_step_id": "pc-missing",
+                "execution_context": execution,
+            },
+        )
+        result = _dispatch_step(step, 1, ResearchRunConfig(), (prior,))
+        assert result.state == ResearchRunStepState.BLOCKED
+        assert MISSING_PORTFOLIO_CONTEXT in result.reason_codes
+
+    def test_blocked_execution_state_returns_execution_blocked(self) -> None:
+        portfolio = _portfolio_report(
+            _pc_score("BTC/USDT", PortfolioConstructionState.INCLUDED, allocation_score=85.0),
+        )
+        execution = _execution_context(execution_state=ExecutionState.BLOCKED)
+        plan = ResearchRunPlan(
+            run_id="run-cu",
+            steps=(
+                ResearchRunStep(
+                    kind=ResearchRunStepKind.CONTROLLED_UNIVERSE,
+                    inputs={
+                        "portfolio_report": portfolio,
+                        "execution_context": execution,
+                    },
+                ),
+            ),
+        )
+        result = build_research_run_result(plan)
+        step_result = result.steps[0]
+        assert step_result.state == ResearchRunStepState.BLOCKED
+        assert EXECUTION_BLOCKED in step_result.reason_codes
+
+    def test_macro_mode_none_returns_macro_mode_none(self) -> None:
+        portfolio = _portfolio_report(
+            _pc_score("BTC/USDT", PortfolioConstructionState.INCLUDED, allocation_score=85.0),
+        )
+        execution = _execution_context(allowed_mode=MarketAllowedMode.NONE)
+        plan = ResearchRunPlan(
+            run_id="run-cu",
+            steps=(
+                ResearchRunStep(
+                    kind=ResearchRunStepKind.CONTROLLED_UNIVERSE,
+                    inputs={
+                        "portfolio_report": portfolio,
+                        "execution_context": execution,
+                    },
+                ),
+            ),
+        )
+        result = build_research_run_result(plan)
+        step_result = result.steps[0]
+        assert step_result.state == ResearchRunStepState.BLOCKED
+        assert MACRO_MODE_NONE in step_result.reason_codes
+
+    def test_fail_fast_preserves_existing_behavior(self) -> None:
+        plan = ResearchRunPlan(
+            run_id="run-cu",
+            steps=(
+                ResearchRunStep(
+                    kind=ResearchRunStepKind.CONTROLLED_UNIVERSE,
+                    inputs={},
+                ),
+                ResearchRunStep(
+                    kind=ResearchRunStepKind.DISCOVERY,
+                ),
+            ),
+        )
+        config = ResearchRunConfig(fail_fast=True)
+        result = build_research_run_result(plan, config)
+        assert result.steps[0].state == ResearchRunStepState.BLOCKED
+        assert result.steps[1].state == ResearchRunStepState.SKIPPED
+
+    def test_controlled_universe_is_registered_step_kind(self) -> None:
+        assert ResearchRunStepKind.CONTROLLED_UNIVERSE in tuple(ResearchRunStepKind)
+
+
+class TestStaleInputDetection:
+    def test_none_is_not_stale(self) -> None:
+        # None is treated as missing, letting callers emit MISSING_* reason codes.
+        assert _is_stale_input(None) is False
+
+    def test_missing_data_quality_is_stale(self) -> None:
+        class NoDataQuality:
+            pass
+
+        assert _is_stale_input(NoDataQuality()) is True
+
+    def test_stale_flag_is_stale(self) -> None:
+        class StaleReport:
+            data_quality = PortfolioConstructionDataQuality(
+                total_inputs=0,
+                included_count=0,
+                capped_count=0,
+                watchlist_count=0,
+                excluded_count=0,
+                insufficient_data_count=0,
+                blocked_count=0,
+                ready_context_count=0,
+                missing_context_count=0,
+                blocked_context_count=0,
+                total_final_weight_pct=0.0,
+                total_research_weight_pct=0.0,
+                data_quality_score=0.0,
+                sections_present=0,
+                all_sections_present=True,
+                all_counts_consistent=True,
+                total_weight_within_tolerance=True,
+                has_unsafe_content=False,
+                safety_flags_ok=True,
+                stale=True,
+            )
+
+        assert _is_stale_input(StaleReport()) is True
+
+    def test_valid_data_quality_is_not_stale(self) -> None:
+        portfolio = _portfolio_report(
+            _pc_score("BTC/USDT", PortfolioConstructionState.INCLUDED, allocation_score=85.0),
+        )
+        assert _is_stale_input(portfolio) is False
+
+    def test_data_quality_is_valid_method_not_stale(self) -> None:
+        execution = _execution_context()
+        assert _is_stale_input(execution) is False
+
+    def test_data_quality_is_invalid_method_is_stale(self) -> None:
+        execution = _execution_context(data_quality=DataQuality(stale=True))
+        assert _is_stale_input(execution) is True

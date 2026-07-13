@@ -36,9 +36,13 @@ Completed under MVP-52:
 - New `ResearchRunStepKind.CONTROLLED_UNIVERSE`, reason codes, `ControlledUniverseRunInput`, `RunInputResolution`, extended `ResearchRunDataQuality`, and `validate_run_plan_dependencies`.
 - 21 new run_orchestrator tests (107 total, was 86).
 - Full suite: 7833 tests passing, 1 skipped.
+- Step 2 (engine dispatch/input resolution) completed.
+- Added `CONTROLLED_UNIVERSE` step dispatch, `_dispatch_step` now accepts `prior_results`, `PORTFOLIO_CONSTRUCTION` returns full report under `data["report"]`, added controlled-universe input resolution, stale-input detection, deterministic blocking reason codes, and updated `PortfolioConstructionDataQuality` with `stale` flag.
+- 25 new run_orchestrator tests (132 total, was 107).
+- Full suite: 7858 tests passing, 1 skipped, 1 warning.
 
 Remaining MVP-52 steps:
-- Step 2 (engine dispatch/input resolution): not started.
+- Step 2 (engine dispatch/input resolution): completed.
 - Step 3 (writer/plan builder): not started.
 - Step 4 (metadata/docs/version finalization + version bump to 0.52.0-dev): not started.
 
@@ -78,8 +82,8 @@ MVP-48 — Research Audit Aggregate Health Report is complete and tagged v0.48.0
 The original master plan (MVP-0 through MVP-4) is complete. The repository has expanded to MVP-51 / v0.51.0-dev.
 
 MVP-52 — End-to-End Research Run Orchestrator v2 is in progress.
-SPEC-053 approved; Step 1 (models/dependency validator) completed.
-Step 2 (engine dispatch/input resolution) not yet started. Version remains 0.51.0-dev until Step 4.
+SPEC-053 approved; Step 1 (models/dependency validator) completed; Step 2 (engine dispatch/input resolution) completed.
+Step 3 (writer/plan builder) not yet started. Version remains 0.51.0-dev until Step 4.
 
 Known anomalies:
 - `v0.32.0-dev` tag missing from tag list (recorded as anomaly; no automatic action).
@@ -166,9 +170,8 @@ MVP-14 Step 4 — Final Review and Version Bump (Complete).
 ## Scope
 
 Next MVP: MVP-52 — End-to-End Research Run Orchestrator v2.
-- SPEC-053 approved. Step 1 (models/dependency validator) completed.
-- Step 2 (engine dispatch/input resolution) not yet started.
-- Version remains 0.51.0-dev until Step 4 finalization.
+- SPEC-053 approved. Step 1 (models/dependency validator) completed. Step 2 (engine dispatch/input resolution) completed.
+- Step 3 (writer/plan builder) not yet started. Version remains 0.51.0-dev until Step 4 finalization.
 
 ### Allowed
 - Planning documents, discussion, SPEC drafting (outside repo or in docs/ if needed).
@@ -377,6 +380,4 @@ MVP-23 Step 4 — Final validation and version bump (Complete).
 
 ## Next Step
 
-Next MVP: MVP-52 — End-to-End Research Run Orchestrator v2. SPEC-053 approved. Step 1 (models/dependency validator) completed. Step 2 (engine dispatch/input resolution) not yet started.
-
-MVP-51 — Controlled Universe Bridge Engine. SPEC-052 approved. Implementation authorized.
+Next MVP: MVP-52 — End-to-End Research Run Orchestrator v2. SPEC-053 approved. Step 1 (models/dependency validator) completed. Step 2 (engine dispatch/input resolution) completed. Step 3 (writer/plan builder) not yet started.

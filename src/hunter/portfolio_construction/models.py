@@ -461,6 +461,7 @@ class PortfolioConstructionDataQuality:
     total_weight_within_tolerance: bool
     has_unsafe_content: bool
     safety_flags_ok: bool
+    stale: bool = False
 
     def __post_init__(self) -> None:
         for name, value in (
