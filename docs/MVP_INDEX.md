@@ -39,7 +39,7 @@ Excluded from evidence:
 - `SPEC-050` exists for MVP-49 Research Audit Health Remediation Bridge. Tagged `v0.49.0-dev` at `eff7c93`.
 - `SPEC-051` exists for MVP-50 Research Audit Remediation Handoff Packet. Tagged `v0.50.0-dev` at `64004c3`.
 - `SPEC-052` exists for MVP-51 Controlled Universe Bridge Engine. Tagged `v0.51.0-dev` at `a75de79`.
-- `SPEC-053` exists for MVP-52 End-to-End Research Run Orchestrator v2. Approved; Steps 1–4 (models, dependency validator, engine dispatch, plan builder, writer, integration tests, finalization) completed; version bumped to `0.52.0-dev`; tag target `v0.52.0-dev`.
+- `SPEC-053` exists for MVP-52 End-to-End Research Run Orchestrator v2. Complete; tagged `v0.52.0-dev` at `0c65e20`.
 
 ## MVP Index Table
 
@@ -97,7 +97,7 @@ Excluded from evidence:
 | MVP-49 | Research Audit Health Remediation Bridge | `SPEC-050` | `v0.49.0-dev` | `research_audit_health_remediation` | `test_research_audit_health_remediation` | tagged | Tagged at `eff7c93` |
 | MVP-50 | Research Audit Remediation Handoff Packet | `SPEC-051` | `v0.50.0-dev` | `research_audit_remediation_handoff` | `test_research_audit_remediation_handoff` | tagged | Tagged at `64004c3` |
 | MVP-51 | Controlled Universe Bridge Engine | `SPEC-052` | `v0.51.0-dev` | `controlled_universe` | `test_controlled_universe` | tagged | Tagged at `a75de79` |
-| MVP-52 | End-to-End Research Run Orchestrator v2 | `SPEC-053` | `v0.52.0-dev` (target) | `run_orchestrator` | `test_run_orchestrator` | committed | Steps 1–4 completed; version bumped to `0.52.0-dev`; tag pending human approval |
+| MVP-52 | End-to-End Research Run Orchestrator v2 | `SPEC-053` | `v0.52.0-dev` | `run_orchestrator` | `test_run_orchestrator` | tagged | Tagged at `0c65e20`; no push; MVP-53 unselected |
 
 ## Package Mapping
 

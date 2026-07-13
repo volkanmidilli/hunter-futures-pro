@@ -19,7 +19,7 @@ No unreleased changes.
   - `tests/test_run_orchestrator/` — new model, engine, writer, plan-builder, and integration tests covering controlled-universe dispatch, input resolution, serialization, and end-to-end flows.
   - 142 run_orchestrator tests in `tests/test_run_orchestrator/`; full suite: 7868 tests passing, 1 skipped.
   - Version bumped to `0.52.0-dev` in `VERSION`, `pyproject.toml`, and `src/hunter/__init__.py`.
-  - Tag target: `v0.52.0-dev`.
+  - Tagged `v0.52.0-dev` at `0c65e20` (local-only; no push; MVP-53 not started).
 
 ## MVP-51 — Controlled Universe Bridge Engine (Complete, Tagged)
 

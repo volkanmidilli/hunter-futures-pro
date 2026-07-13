@@ -53,7 +53,7 @@ Completed under MVP-52:
   - Full suite: 7868 tests passing, 1 skipped.
 
 Remaining MVP-52 steps:
-- None. MVP-52 is complete and ready for tagging `v0.52.0-dev`. Tag application requires human approval.
+- None. MVP-52 is complete and tagged `v0.52.0-dev` at `0c65e20`. No push has occurred. Tag application was local-only; human approval required before push.
 
 Remaining MVP-50 steps:
 - None. MVP-50 is tagged.
@@ -90,7 +90,7 @@ MVP-48 — Research Audit Aggregate Health Report is complete and tagged v0.48.0
 
 The original master plan (MVP-0 through MVP-4) is complete. The repository has expanded to MVP-51 / v0.51.0-dev.
 
-MVP-52 — End-to-End Research Run Orchestrator v2 is complete. SPEC-053 approved; Steps 1–4 (models/dependency validator, engine dispatch/input resolution, writer/plan builder, integration tests, and documentation/version finalization) completed. Version bumped to `0.52.0-dev` in `VERSION`, `pyproject.toml`, and `src/hunter/__init__.py`. `RUN_ORCHESTRATOR_VERSION` aligned to `0.52.0-dev`. Full suite: 7868 tests passing, 1 skipped. `v0.52.0-dev` tag is pending human approval. No next MVP selected; MVP-53 not started.
+MVP-52 — End-to-End Research Run Orchestrator v2 is complete and tagged `v0.52.0-dev` at `0c65e20`. SPEC-053 approved; Steps 1–4 (models/dependency validator, engine dispatch/input resolution, writer/plan builder, integration tests, and documentation/version finalization) completed. Version `0.52.0-dev`. Full suite: 7868 tests passing, 1 skipped. No push has occurred. No next MVP selected; MVP-53 not started.
 - `v0.48.0-dev` tag applied at `779692f`.
 - `data/`, `reports/`, and local artifact areas remain opaque excluded local artifact areas.
 - No MVP-49 candidate has been selected yet.
