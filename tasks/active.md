@@ -2,24 +2,19 @@
 
 ## Current Task
 
+MVP-56 — Strategy Contract Consumption Adapter. SPEC-057 approved. Steps 1–6 (models, loader, validator, engine, writer, integration tests, and documentation/version finalization) complete. Version bumped to `0.56.0-dev`; tag `v0.56.0-dev` pending. No push yet.
+
 MVP-55 — Freqtrade Universe Consumption Adapter. SPEC-056 approved. Steps 1–5 (models, engine, writer, integration tests, and documentation/version finalization) complete. Version bumped to `0.55.0-dev`; tagged `v0.55.0-dev` at `8f9730a2`. No push yet.
 
-MVP-54 — Operational One-Call Coin-Discovery Pipeline Runner. SPEC-055 approved. Steps 1–5 (models, engine, writer, integration tests, and documentation/version finalization) complete. Version bumped to `0.54.0-dev`; tagged `v0.54.0-dev` at `c7ef130`. No push yet.
+Latest tagged functional milestone: MVP-55 / v0.55.0-dev at 8f9730a2. MVP-56 tag `v0.56.0-dev` pending.
 
-MVP-53 — Controlled Universe Export Adapter. SPEC-054 approved. Steps 1–4 (models, engine, writer, integration tests, documentation/version finalization) complete. Full suite: 7917 tests passing, 1 skipped. No push yet.
-
-MVP-52 — End-to-End Research Run Orchestrator v2 is complete and tagged `v0.52.0-dev` at `0c65e20`. SPEC-053 approved; Steps 1–4 (models/dependency validator, engine dispatch/input resolution, writer/plan builder, integration tests, documentation/version finalization) completed. Version bumped to `0.52.0-dev`.
-
-Latest tagged functional milestone: MVP-55 / v0.55.0-dev at 8f9730a2.
-
-Completed under MVP-55 (Step 5):
-- Version bumped to `0.55.0-dev` in `VERSION`, `pyproject.toml`, `src/hunter/__init__.py`.
-- `FREQTRADE_UNIVERSE_ADAPTER_VERSION` was already `0.55.0-dev` (set in Step 1).
+Completed under MVP-56 (Finalization):
+- Version bumped to `0.56.0-dev` in `VERSION`, `pyproject.toml`, `src/hunter/__init__.py`.
+- `STRATEGY_CONTRACT_CONSUMER_VERSION` was already `0.56.0-dev` (set in Step 1).
 - Updated `CHANGELOG.md`, `docs/MVP_INDEX.md`, `docs/handoff/CURRENT_STATE.md`, `tasks/active.md`, `tasks/agent-log.md`, `AGENTS.md`.
-- Focused tests: `pytest tests/test_freqtrade_universe_adapter/ -q` — 148 passed.
-- Full suite: `pytest -q` — 8166 passed, 1 skipped.
-- No lint changes required (source files untouched in finalization step).
-- Tagged `v0.55.0-dev` at `8f9730a2`; no push yet.
+- Focused tests: `pytest tests/test_strategy_contract_consumer/ -q` — 158 passed.
+- Full suite: `pytest -q` — 8324 passed, 1 skipped.
+- Tag `v0.56.0-dev` pending; no push yet.
 
 Boundaries preserved:
 - No Freqtrade runtime integration, strategy changes, automatic config mutation, exchange/API/server/database/scheduler/live trading behavior.

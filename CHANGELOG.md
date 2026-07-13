@@ -4,7 +4,26 @@ All important project changes will be recorded in this file.
 
 ## Unreleased
 
-No unreleased changes.
+## MVP-56 — Strategy Contract Consumption Adapter (Complete)
+
+- SPEC-057 — Strategy Contract Consumption Adapter approved.
+  - `specs/SPEC-057-Strategy-Contract-Consumption-Adapter.md` — approved for MVP-56 implementation.
+  - Consumes the `strategy_contract_input.json` produced by the Freqtrade Universe Consumption Adapter (MVP-55) and validates it into a deterministic, research-only, human-approval-required `ValidatedStrategyContext`.
+  - Fail-closed behavior: every blocking result forces `accepted=False`, `mode="BLOCK_ALL"`, `whitelist=()`.
+  - No Freqtrade runtime integration, strategy changes, automatic config mutation, exchange/API/server/database/scheduler/live trading behavior, or actionable trading signals.
+- Steps 1–6 — Strategy Contract Consumption Adapter models, loader, validator, engine, writer, integration tests, and finalization.
+  - `src/hunter/strategy_contract_consumer/models.py` — frozen dataclasses (`StrategyContractConsumerConfig`, `ValidatedStrategyContext`), `STRATEGY_CONTRACT_CONSUMER_VERSION = "0.56.0-dev"`, reason codes, and validation.
+  - `src/hunter/strategy_contract_consumer/loader.py` — `load_strategy_contract_input` for file-path and in-memory mapping inputs.
+  - `src/hunter/strategy_contract_consumer/validator.py` — `validate_strategy_contract_input` with schema, safety flags, pair normalization, staleness, and contradiction handling.
+  - `src/hunter/strategy_contract_consumer/engine.py` — `build_validated_strategy_context` with deterministic SHA-256 fingerprint, loader-exception-to-context conversion, and fail-closed enforcement.
+  - `src/hunter/strategy_contract_consumer/writer.py` — deterministic JSON/Markdown serialization with safety notice, artifact paths, atomic writers, and `generated_at` propagation.
+  - `src/hunter/strategy_contract_consumer/__init__.py` — public API exports.
+  - `tests/test_strategy_contract_consumer/test_models.py`, `test_loader.py`, `test_validator.py`, `test_engine.py`, `test_writer.py`, `test_integration.py` — comprehensive unit and integration tests.
+  - 158 strategy_contract_consumer tests in `tests/test_strategy_contract_consumer/`; full suite: 8324 tests passing, 1 skipped.
+  - SPEC-057 corrected to align mode values with implementation (`LONG`, `SHORT`, `BLOCK_ALL`).
+  - Version bumped to `0.56.0-dev` in `VERSION`, `pyproject.toml`, `src/hunter/__init__.py`.
+  - `STRATEGY_CONTRACT_CONSUMER_VERSION` was already `0.56.0-dev` (set in Step 1).
+  - Tag `v0.56.0-dev` pending (local-only; no push).
 
 ## MVP-55 — Freqtrade Universe Consumption Adapter (Complete)
 

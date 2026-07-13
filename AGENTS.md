@@ -139,11 +139,11 @@ When continuing work on an MVP:
 
 ## Current MVP Context
 
-- Completed MVP: MVP-55 Freqtrade Universe Consumption Adapter
+- Completed MVP: MVP-56 Strategy Contract Consumption Adapter
 - Active MVP: None; next MVP not selected
-- SPEC: `specs/SPEC-056-Freqtrade-Universe-Consumption-Adapter.md` — approved during MVP-55 cycle
-- Implementation (Steps 1–5: models, engine, writer, integration tests, docs/version finalization): committed during MVP-55 cycle
-- Tagged `v0.55.0-dev` at `8f9730a2` (local-only; no push)
-- Latest tag: `v0.55.0-dev` (MVP-55 tagged); no push occurred
+- SPEC: `specs/SPEC-057-Strategy-Contract-Consumption-Adapter.md` — approved during MVP-56 cycle
+- Implementation (Steps 1–6: models, loader, validator, engine, writer, integration tests, docs/version finalization): committed during MVP-56 cycle
+- Tag `v0.56.0-dev` pending (local-only; no push)
+- Latest tag: `v0.55.0-dev` (MVP-55 tagged); MVP-56 tag pending
 - Tag policy: never tag automatically; the human must provide the exact tag or commit command.
 - Safety: autonomous workflow only touches docs/version/task memory in finalization steps; no runtime code changes, no tests changed, no data/reports inspection, no trading/API/Freqtrade/server/database/scheduler changes, no production-readiness, trading-readiness, approval, certification, recommendation, or suitability claims.
