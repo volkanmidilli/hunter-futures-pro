@@ -279,9 +279,8 @@ class TestPublicApi:
             )
         )
 
-    def test_engine_stub_raises(self) -> None:
-        with pytest.raises(NotImplementedError, match="Step 2"):
-            build_freqtrade_universe_adapter_result(None, None)
+    def test_engine_is_importable(self) -> None:
+        assert callable(build_freqtrade_universe_adapter_result)
 
     def test_writer_stubs_raise(self) -> None:
         result = FreqtradeUniverseAdapterResult(
