@@ -282,7 +282,7 @@ class TestPublicApi:
     def test_engine_is_importable(self) -> None:
         assert callable(build_freqtrade_universe_adapter_result)
 
-    def test_writer_stubs_raise(self) -> None:
+    def test_writer_exports_are_callable(self) -> None:
         result = FreqtradeUniverseAdapterResult(
             report_id="fua-test",
             generated_at=datetime.now(timezone.utc),
@@ -294,15 +294,6 @@ class TestPublicApi:
             reason_codes=(MISSING_EXPORT_INPUT,),
             safety_flags={"research_only": True, "human_approval_required": True},
         )
-        with pytest.raises(NotImplementedError, match="Step 3"):
-            freqtrade_universe_adapter_result_to_dict(result)
-        with pytest.raises(NotImplementedError, match="Step 3"):
-            freqtrade_universe_adapter_result_to_json_text(result)
-        with pytest.raises(NotImplementedError, match="Step 3"):
-            freqtrade_universe_adapter_result_to_markdown_text(result)
-        with pytest.raises(NotImplementedError, match="Step 3"):
-            atomic_write_json_freqtrade_universe_adapter_result(result, "path")
-        with pytest.raises(NotImplementedError, match="Step 3"):
-            atomic_write_markdown_freqtrade_universe_adapter_result(result, "path")
-        with pytest.raises(NotImplementedError, match="Step 3"):
-            write_freqtrade_universe_adapter_result(result, None, FreqtradeUniverseAdapterConfig.default())
+        assert isinstance(freqtrade_universe_adapter_result_to_dict(result), dict)
+        assert isinstance(freqtrade_universe_adapter_result_to_json_text(result), str)
+        assert isinstance(freqtrade_universe_adapter_result_to_markdown_text(result), str)
