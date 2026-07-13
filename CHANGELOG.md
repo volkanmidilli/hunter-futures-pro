@@ -21,7 +21,7 @@ No unreleased changes.
   - `tests/test_freqtrade_universe_adapter/test_models.py`, `test_engine.py`, `test_writer.py`, `test_integration.py` — comprehensive unit and integration tests.
   - 148 freqtrade_universe_adapter tests in `tests/test_freqtrade_universe_adapter/`; full suite: 8166 tests passing, 1 skipped.
   - Version bumped to `0.55.0-dev` in `VERSION`, `pyproject.toml`, `src/hunter/__init__.py`, and `FREQTRADE_UNIVERSE_ADAPTER_VERSION`.
-  - Tagged `v0.55.0-dev` pending (local-only; no push).
+  - Tagged `v0.55.0-dev` at `8f9730a2` (local-only; no push).
 
 ## MVP-54 — Operational One-Call Coin-Discovery Pipeline Runner (Complete)
 

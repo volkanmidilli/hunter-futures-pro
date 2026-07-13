@@ -42,7 +42,7 @@ Excluded from evidence:
 - `SPEC-053` exists for MVP-52 End-to-End Research Run Orchestrator v2. Complete; tagged `v0.52.0-dev` at `0c65e20`.
 - `SPEC-054` exists for MVP-53 Controlled Universe Export Adapter. Complete; tagged `v0.53.0-dev` (local-only; no push).
 - `SPEC-055` exists for MVP-54 Operational One-Call Coin-Discovery Pipeline Runner. Complete; tagged `v0.54.0-dev` at `c7ef130` (local-only; no push).
-- `SPEC-056` exists for MVP-55 Freqtrade Universe Consumption Adapter. Implemented; tag `v0.55.0-dev` pending (local-only; no push).
+- `SPEC-056` exists for MVP-55 Freqtrade Universe Consumption Adapter. Complete; tagged `v0.55.0-dev` at `8f9730a2` (local-only; no push).
 
 ## MVP Index Table
 
@@ -102,7 +102,7 @@ Excluded from evidence:
 | MVP-51 | Controlled Universe Bridge Engine | `SPEC-052` | `v0.51.0-dev` | `controlled_universe` | `test_controlled_universe` | tagged | Tagged at `a75de79` |
 | MVP-52 | End-to-End Research Run Orchestrator v2 | `SPEC-053` | `v0.52.0-dev` | `run_orchestrator` | `test_run_orchestrator` | tagged | Tagged at `0c65e20`; no push |
 | MVP-53 | Controlled Universe Export Adapter | `SPEC-054` | `v0.53.0-dev` | `controlled_universe_export_adapter` | `test_controlled_universe_export_adapter` | tagged | Tagged `v0.53.0-dev` (local-only; no push) |
-| MVP-55 | Freqtrade Universe Consumption Adapter | `SPEC-056` | `v0.55.0-dev` | `freqtrade_universe_adapter` | `test_freqtrade_universe_adapter` | implemented | Tag `v0.55.0-dev` pending (local-only; no push) |
+| MVP-55 | Freqtrade Universe Consumption Adapter | `SPEC-056` | `v0.55.0-dev` | `freqtrade_universe_adapter` | `test_freqtrade_universe_adapter` | tagged | Tagged `v0.55.0-dev` at `8f9730a2` (local-only; no push) |
 | MVP-54 | Operational One-Call Coin-Discovery Pipeline Runner | `SPEC-055` | `v0.54.0-dev` | `coin_discovery_pipeline` | `test_coin_discovery_pipeline` | tagged | Tagged `v0.54.0-dev` at `c7ef130` (local-only; no push) |
 
 ## Package Mapping

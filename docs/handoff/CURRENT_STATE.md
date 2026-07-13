@@ -4,11 +4,11 @@ Hunter Futures Pro
 
 ## Version
 
-0.55.0-dev (MVP-55 finalization in progress; version bumped to 0.55.0-dev; tag `v0.55.0-dev` pending)
+0.55.0-dev (MVP-55 finalization complete; version bumped to 0.55.0-dev; tagged `v0.55.0-dev` at `8f9730a2`)
 
 ## Current Phase
 
-The functional MVP chain now runs through **MVP-55 / v0.55.0-dev**, which is in Step 5 finalization. **MVP-55 — Freqtrade Universe Consumption Adapter** is implemented: `SPEC-056` has been approved and Steps 1–4 (models, engine, writer, integration tests) are committed. Source code changes in `src/hunter/freqtrade_universe_adapter/models.py`, `src/hunter/freqtrade_universe_adapter/engine.py`, `src/hunter/freqtrade_universe_adapter/writer.py`, `src/hunter/freqtrade_universe_adapter/__init__.py`, and `tests/test_freqtrade_universe_adapter/`. Tag `v0.55.0-dev` is pending (local-only; no push).
+The functional MVP chain now runs through **MVP-55 / v0.55.0-dev**, which is complete and tagged `v0.55.0-dev` at `8f9730a2`. **MVP-55 — Freqtrade Universe Consumption Adapter** is finalized: `SPEC-056` has been approved and Steps 1–5 (models, engine, writer, integration tests, and documentation/version finalization) are all committed. Source code changes in `src/hunter/freqtrade_universe_adapter/models.py`, `src/hunter/freqtrade_universe_adapter/engine.py`, `src/hunter/freqtrade_universe_adapter/writer.py`, `src/hunter/freqtrade_universe_adapter/__init__.py`, and `tests/test_freqtrade_universe_adapter/`. Tagged `v0.55.0-dev` at `8f9730a2` (local-only; no push).
 
 ## Background
 
@@ -45,11 +45,11 @@ The repository now contains 48 specs (SPEC-001 through SPEC-048). MVPs beyond th
 
 ## Next
 
-MVP-55 — Freqtrade Universe Consumption Adapter will be complete once Step 5 documentation/version finalization is committed and tagged. No next MVP selected; the next phase requires human direction.
+MVP-55 — Freqtrade Universe Consumption Adapter is complete and tagged `v0.55.0-dev` at `8f9730a2` (local-only; no push). No next MVP selected; the next phase requires human direction.
 
 ## Current Status
 
-MVP-55 — Freqtrade Universe Consumption Adapter is implemented and awaiting Step 5 commit/tag. SPEC-056 approved; Steps 1–4 (models, engine, writer, integration tests) completed. Package `src/hunter/freqtrade_universe_adapter/` with `models.py`, `engine.py`, `writer.py`, `__init__.py`. 148 freqtrade_universe_adapter tests in `tests/test_freqtrade_universe_adapter/`. Version bumped to `0.55.0-dev`. Full suite: 8166 tests passing, 1 skipped. No push has occurred.
+MVP-55 — Freqtrade Universe Consumption Adapter is complete and tagged `v0.55.0-dev` at `8f9730a2`. SPEC-056 approved; Steps 1–5 (models, engine, writer, integration tests, docs/version finalization) completed. Package `src/hunter/freqtrade_universe_adapter/` with `models.py`, `engine.py`, `writer.py`, `__init__.py`. 148 freqtrade_universe_adapter tests in `tests/test_freqtrade_universe_adapter/`. Version bumped to `0.55.0-dev`. Full suite: 8166 tests passing, 1 skipped. Tag `v0.55.0-dev` applied at `8f9730a2` (local-only; no push).
 
 MVP-54 — Operational One-Call Coin-Discovery Pipeline Runner is complete and tagged `v0.54.0-dev` at `c7ef130`. SPEC-055 approved; Steps 1–5 (models, engine, writer, integration tests, and documentation/version finalization) are all committed. Version bumped to `0.54.0-dev`. Full suite: 8018 tests passing, 1 skipped. No push has occurred.
 
