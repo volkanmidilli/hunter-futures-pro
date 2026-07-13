@@ -26,7 +26,19 @@ from hunter.controlled_universe import (
     build_controlled_universe_report,
 )
 from hunter.decision.models import DecisionAction, DecisionState
-from hunter.discovery import DiscoveryInput, DiscoveryInputKind
+from hunter.discovery import (
+    DiscoveryCandidate,
+    DiscoveryClassification,
+    DiscoveryConfig,
+    DiscoveryInput,
+    DiscoveryInputKind,
+    DiscoveryOpenInterestSummary,
+    DiscoveryRelativeStrengthSummary,
+    DiscoveryScore,
+    DiscoveryState,
+    DiscoveryUniverseSummary,
+    build_discovery_report,
+)
 from hunter.execution.models import (
     DataQuality,
     ExecutionContext,
@@ -59,6 +71,7 @@ from hunter.run_orchestrator import (
     INVALID_OUTPUT_DIR,
     INVALID_PORTFOLIO_SUMMARY,
     INVALID_RUN_PLAN,
+    INVALID_STEP_INPUTS,
     MACRO_MODE_NONE,
     MISSING_EXECUTION_CONTEXT,
     MISSING_PORTFOLIO_CONTEXT,
@@ -760,9 +773,14 @@ class TestValidateRunPlanDependencies:
         assert valid is False
         assert MISSING_EXECUTION_CONTEXT in reasons
 
-    def test_build_coin_discovery_run_plan_is_stub(self) -> None:
-        with pytest.raises(NotImplementedError):
+    def test_build_coin_discovery_run_plan_requires_inputs(self) -> None:
+        with pytest.raises(ValueError, match="discovery_inputs"):
             build_coin_discovery_run_plan(run_id="run-1")
+        with pytest.raises(ValueError, match="execution_context"):
+            build_coin_discovery_run_plan(
+                run_id="run-1",
+                discovery_inputs=[DiscoveryInput(pair="BTC/USDT")],
+            )
 
     def test_controlled_universe_with_inline_execution_context_ignores_bad_step_id(self) -> None:
         plan = ResearchRunPlan(
@@ -945,6 +963,32 @@ def _execution_context(
         data_quality=data_quality or DataQuality(),
         safety_flags=ExecutionSafetyFlags(),
         version="1.0",
+    )
+
+
+def _discovery_input(
+    pair: str = "BTC/USDT",
+    rs_total_score: float = 80.0,
+    oi_total_score: float = 80.0,
+) -> DiscoveryInput:
+    """Return a DiscoveryInput that scores as a strong research candidate."""
+    return DiscoveryInput(
+        pair=pair,
+        input_kind=DiscoveryInputKind.SUMMARY,
+        relative_strength=DiscoveryRelativeStrengthSummary(
+            pair=pair,
+            state="ready",
+            decision="outperformer",
+            total_score=rs_total_score,
+        ),
+        open_interest=DiscoveryOpenInterestSummary(
+            pair=pair,
+            state="ready",
+            positioning="supportive",
+            trend="up",
+            funding_context="neutral",
+            total_score=oi_total_score,
+        ),
     )
 
 
@@ -1414,3 +1458,220 @@ class TestStaleInputDetection:
     def test_data_quality_is_invalid_method_is_stale(self) -> None:
         execution = _execution_context(data_quality=DataQuality(stale=True))
         assert _is_stale_input(execution) is True
+
+
+class TestEndToEndCoinDiscovery:
+    def test_successful_full_run(self, tmp_path: Path, monkeypatch_cwd: Path) -> None:
+        output_dir = "run_out"
+        config = ResearchRunConfig(
+            output_dir=str(output_dir),
+            write_artifacts=True,
+        )
+        plan = build_coin_discovery_run_plan(
+            run_id="coin-discovery-1",
+            discovery_inputs=[_discovery_input()],
+            execution_context=_execution_context(),
+        )
+        result = build_research_run_result(plan, config)
+
+        assert result.run_id == "coin-discovery-1"
+        assert result.state == ResearchRunState.COMPLETED
+        assert len(result.steps) == 3
+        assert all(s.state == ResearchRunStepState.SUCCESS for s in result.steps)
+        assert result.data_quality.controlled_universe_steps == 1
+        assert result.data_quality.controlled_universe_universe_count == 1
+        assert result.safety_flags.is_safe
+        assert result.metadata["run_state"] == ResearchRunState.COMPLETED.value
+        assert "controlled_universe_universe_count" in result.metadata
+        assert len(result.artifacts) > 0
+        assert all(Path(a.path).exists() for a in result.artifacts)
+
+    def test_blocked_execution_context(self, tmp_path: Path, monkeypatch_cwd: Path) -> None:
+        output_dir = "run_out"
+        config = ResearchRunConfig(
+            output_dir=str(output_dir),
+            write_artifacts=True,
+        )
+        execution = _execution_context(
+            status=OutputStatus.INVALID,
+            execution_state=ExecutionState.BLOCKED,
+        )
+        plan = build_coin_discovery_run_plan(
+            run_id="coin-discovery-blocked",
+            discovery_inputs=[_discovery_input()],
+            execution_context=execution,
+        )
+        result = build_research_run_result(plan, config)
+
+        assert result.state == ResearchRunState.PARTIAL
+        assert result.steps[0].state == ResearchRunStepState.SUCCESS
+        assert result.steps[1].state == ResearchRunStepState.SUCCESS
+        assert result.steps[2].state == ResearchRunStepState.BLOCKED
+        assert result.steps[2].kind == ResearchRunStepKind.CONTROLLED_UNIVERSE
+        assert EXECUTION_BLOCKED in result.steps[2].reason_codes
+        assert not result.safety_flags.is_safe
+        assert result.data_quality.controlled_universe_blocked == 1
+
+    def test_stale_portfolio_input(self, tmp_path: Path, monkeypatch_cwd: Path) -> None:
+        output_dir = "run_out"
+        config = ResearchRunConfig(
+            output_dir=str(output_dir),
+            write_artifacts=True,
+        )
+        stale_portfolio = _portfolio_report(
+            _pc_score("BTC/USDT", PortfolioConstructionState.INCLUDED, allocation_score=85.0),
+        )
+        stale_portfolio = PortfolioConstructionReport(
+            version=stale_portfolio.version,
+            report_id=stale_portfolio.report_id,
+            generated_at=stale_portfolio.generated_at,
+            inputs=stale_portfolio.inputs,
+            config=stale_portfolio.config,
+            safety_flags=stale_portfolio.safety_flags,
+            scores=stale_portfolio.scores,
+            universe_summary=stale_portfolio.universe_summary,
+            data_quality=PortfolioConstructionDataQuality(
+                stale=True,
+                **{
+                    field.name: getattr(stale_portfolio.data_quality, field.name)
+                    for field in stale_portfolio.data_quality.__dataclass_fields__.values()
+                    if field.name != "stale"
+                },
+            ),
+            reason_codes=stale_portfolio.reason_codes,
+            metadata=stale_portfolio.metadata,
+            notes=stale_portfolio.notes,
+        )
+        plan = build_coin_discovery_run_plan(
+            run_id="coin-discovery-stale",
+            discovery_inputs=[_discovery_input()],
+            execution_context=_execution_context(),
+        )
+        # Inject a stale inline portfolio report into the controlled universe step.
+        cu_step = ResearchRunStep(
+            step_id="controlled-universe-override",
+            kind=ResearchRunStepKind.CONTROLLED_UNIVERSE,
+            inputs={
+                "execution_context": _execution_context(),
+                "portfolio_report": stale_portfolio,
+            },
+        )
+        plan = ResearchRunPlan(
+            run_id=plan.run_id,
+            steps=plan.steps[:2] + (cu_step,),
+            metadata=plan.metadata,
+        )
+        result = build_research_run_result(plan, config)
+
+        assert result.state == ResearchRunState.PARTIAL
+        assert result.steps[2].state == ResearchRunStepState.BLOCKED
+        assert STALE_INPUT in result.steps[2].reason_codes
+        assert not result.safety_flags.is_safe
+        assert result.safety_flags.has_blocked_step
+
+    def test_missing_upstream_dependency(self, tmp_path: Path, monkeypatch_cwd: Path) -> None:
+        output_dir = "run_out"
+        config = ResearchRunConfig(
+            output_dir=str(output_dir),
+            write_artifacts=True,
+        )
+        plan = ResearchRunPlan(
+            run_id="coin-discovery-missing-upstream",
+            steps=(
+                ResearchRunStep(
+                    step_id="portfolio-construction-1",
+                    kind=ResearchRunStepKind.PORTFOLIO_CONSTRUCTION,
+                    inputs={"discovery_step_index": 0},
+                ),
+                ResearchRunStep(
+                    step_id="controlled-universe-1",
+                    kind=ResearchRunStepKind.CONTROLLED_UNIVERSE,
+                    inputs={
+                        "execution_context": _execution_context(),
+                        "portfolio_construction_step_index": 0,
+                    },
+                ),
+            ),
+        )
+        result = build_research_run_result(plan, config)
+
+        assert result.state == ResearchRunState.BLOCKED
+        assert result.steps[0].state == ResearchRunStepState.BLOCKED
+        assert INVALID_STEP_INPUTS in result.steps[0].reason_codes
+        assert result.steps[1].state == ResearchRunStepState.SKIPPED
+        assert not result.safety_flags.is_safe
+
+    def test_deterministic_run_identity_and_ordering(self, tmp_path: Path, monkeypatch_cwd: Path) -> None:
+        output_dir = "run_out"
+        config = ResearchRunConfig(
+            output_dir=str(output_dir),
+            write_artifacts=True,
+            generated_at=datetime(2024, 1, 1, 12, 0, 0, tzinfo=timezone.utc),
+        )
+        plan = build_coin_discovery_run_plan(
+            run_id="coin-discovery-deterministic",
+            discovery_inputs=[_discovery_input(), _discovery_input("ETH/USDT")],
+            execution_context=_execution_context(),
+        )
+        result_a = build_research_run_result(plan, config)
+        result_b = build_research_run_result(plan, config)
+
+        assert result_a.run_id == result_b.run_id
+        assert len(result_a.steps) == len(result_b.steps) == 3
+        for a, b in zip(result_a.steps, result_b.steps, strict=False):
+            assert a.kind == b.kind
+            assert a.state == b.state
+        assert result_a.state == result_b.state
+        assert len(result_a.artifacts) == len(result_b.artifacts)
+        step_kinds = [s.kind for s in result_a.steps]
+        assert step_kinds == [
+            ResearchRunStepKind.DISCOVERY,
+            ResearchRunStepKind.PORTFOLIO_CONSTRUCTION,
+            ResearchRunStepKind.CONTROLLED_UNIVERSE,
+        ]
+
+    def test_artifact_output_paths_and_serialization(self, tmp_path: Path, monkeypatch_cwd: Path) -> None:
+        output_dir = "run_out"
+        config = ResearchRunConfig(
+            output_dir=str(output_dir),
+            write_artifacts=True,
+        )
+        plan = build_coin_discovery_run_plan(
+            run_id="coin-discovery-artifacts",
+            discovery_inputs=[_discovery_input()],
+            execution_context=_execution_context(),
+        )
+        result = build_research_run_result(plan, config)
+
+        cu_artifacts = [a for a in result.artifacts if a.kind == "controlled_universe"]
+        assert len(cu_artifacts) >= 1
+        cu_json = [a for a in cu_artifacts if a.path.endswith(".json")]
+        assert len(cu_json) == 1
+        json_path = Path(cu_json[0].path)
+        assert json_path.exists()
+        text = json_path.read_text()
+        assert "BTC/USDT" in text
+        assert "controlled_universe" in text.lower()
+
+    def test_no_partial_approval_when_downstream_blocked(self, tmp_path: Path, monkeypatch_cwd: Path) -> None:
+        output_dir = "run_out"
+        config = ResearchRunConfig(
+            output_dir=str(output_dir),
+            write_artifacts=True,
+        )
+        execution = _execution_context(
+            status=OutputStatus.INVALID,
+            execution_state=ExecutionState.BLOCKED,
+        )
+        plan = build_coin_discovery_run_plan(
+            run_id="coin-discovery-partial",
+            discovery_inputs=[_discovery_input()],
+            execution_context=execution,
+        )
+        result = build_research_run_result(plan, config)
+
+        assert result.state == ResearchRunState.PARTIAL
+        assert not result.safety_flags.is_safe
+        assert result.safety_flags.has_blocked_step
+        assert result.safety_flags.no_universe_approval is True
+        assert result.data_quality.controlled_universe_universe_count == 0

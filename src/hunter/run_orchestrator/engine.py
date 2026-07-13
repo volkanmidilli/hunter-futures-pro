@@ -38,6 +38,8 @@ from hunter.discovery import (
 from hunter.portfolio_construction import (
     PortfolioConstructionConfig,
     PortfolioConstructionInput,
+    PortfolioConstructionInputKind,
+    PortfolioDiscoverySummary,
     build_portfolio_construction_report,
     write_portfolio_construction_report,
 )
@@ -46,6 +48,7 @@ from hunter.controlled_universe import (
     build_controlled_universe_report,
     write_controlled_universe_report,
 )
+from hunter.execution.models import ExecutionContext
 from hunter.reporting_cli import CLIInvocation, run_render_sample_command
 from hunter.research_audit_catalog import (
     CatalogConfig,
@@ -412,6 +415,97 @@ def _dispatch_controlled_universe_step(
 
 
 # ---------------------------------------------------------------------------
+# Portfolio construction input resolution
+# ---------------------------------------------------------------------------
+
+
+def _extract_discovery_report(result: ResearchRunStepResult) -> Any:
+    """Return a DiscoveryReport from a step result, or None."""
+    return result.data.get("report")
+
+
+def _convert_discovery_candidate_to_portfolio_input(
+    candidate: Any,
+) -> PortfolioConstructionInput:
+    """Convert a DiscoveryCandidate to a PortfolioConstructionInput."""
+    discovery = PortfolioDiscoverySummary(
+        pair=candidate.pair,
+        state=candidate.state.value,
+        classification=candidate.classification.value,
+        discovery_score=candidate.score.total_score,
+        reason_codes=candidate.reason_codes,
+        tags=candidate.tags,
+        metadata=candidate.metadata,
+    )
+    return PortfolioConstructionInput(
+        pair=candidate.pair,
+        discovery=discovery,
+        input_kind=PortfolioConstructionInputKind.SUMMARY,
+        tags=candidate.tags,
+        metadata=candidate.metadata,
+    )
+
+
+def _resolve_portfolio_construction_inputs(
+    step: ResearchRunStep,
+    step_index: int,
+    prior_results: Sequence[ResearchRunStepResult],
+) -> Sequence[PortfolioConstructionInput]:
+    """Resolve PortfolioConstructionInput for a portfolio construction step.
+
+    Resolution priority:
+    1. In-line inputs in step.inputs["inputs"].
+    2. Upstream step referenced by discovery_step_id.
+    3. Upstream step referenced by discovery_step_index.
+    4. Most recent preceding successful DISCOVERY step.
+    """
+    inputs = dict(step.inputs)
+    inline_inputs = inputs.get("inputs")
+    if inline_inputs is not None:
+        return tuple(inline_inputs)
+
+    step_index_by_id: dict[str, int] = {}
+    for idx, result in enumerate(prior_results):
+        if result.step_id:
+            step_index_by_id[result.step_id] = idx
+
+    discovery_report: Any = None
+    step_id_ref = inputs.get("discovery_step_id")
+    step_index_ref = inputs.get("discovery_step_index")
+
+    if step_id_ref is not None and step_index_ref is not None:
+        resolved_by_id = step_index_by_id.get(step_id_ref)
+        if resolved_by_id is not None and resolved_by_id == step_index_ref:
+            discovery_report = _extract_discovery_report(prior_results[resolved_by_id])
+    elif step_id_ref is not None:
+        resolved = step_index_by_id.get(step_id_ref)
+        if resolved is not None:
+            discovery_report = _extract_discovery_report(prior_results[resolved])
+    elif step_index_ref is not None:
+        if isinstance(step_index_ref, int) and 0 <= step_index_ref < step_index:
+            discovery_report = _extract_discovery_report(prior_results[step_index_ref])
+    else:
+        # Default upstream: nearest preceding successful DISCOVERY.
+        for idx in range(step_index - 1, -1, -1):
+            result = prior_results[idx]
+            if (
+                result.kind == ResearchRunStepKind.DISCOVERY
+                and result.state == ResearchRunStepState.SUCCESS
+            ):
+                discovery_report = _extract_discovery_report(result)
+                break
+
+    if discovery_report is None:
+        return ()
+
+    candidates = getattr(discovery_report, "candidates", ())
+    return tuple(
+        _convert_discovery_candidate_to_portfolio_input(candidate)
+        for candidate in candidates
+    )
+
+
+# ---------------------------------------------------------------------------
 # Plan validation
 # ---------------------------------------------------------------------------
 
@@ -536,12 +630,17 @@ def _dispatch_step(
             return _step_success(
                 step_index,
                 step,
-                {"report_id": report.report_id},
+                {
+                    "report_id": report.report_id,
+                    "report": report,
+                },
                 output_paths,
             )
 
         if kind == ResearchRunStepKind.PORTFOLIO_CONSTRUCTION:
-            step_inputs = tuple(inputs.get("inputs", ()))
+            step_inputs = _resolve_portfolio_construction_inputs(
+                step, step_index, prior_results
+            )
             step_config = inputs.get("config") or PortfolioConstructionConfig()
             if not step_inputs:
                 return _step_blocked(
@@ -607,7 +706,7 @@ def _dispatch_step(
             return _step_success(
                 step_index,
                 step,
-                {"report_id": report.report_id},
+                {"report_id": report.report_id, "report": report},
                 output_paths,
             )
 
@@ -847,6 +946,14 @@ def _build_data_quality(
         if r.kind == ResearchRunStepKind.CONTROLLED_UNIVERSE
         and r.state == ResearchRunStepState.FAILED
     )
+    cu_universe_count = 0
+    cu_watchlist_count = 0
+    cu_blocked_count = 0
+    for r in step_results:
+        if r.kind == ResearchRunStepKind.CONTROLLED_UNIVERSE and r.state == ResearchRunStepState.SUCCESS:
+            cu_universe_count += r.data.get("universe_count", 0)
+            cu_watchlist_count += r.data.get("watchlist_count", 0)
+            cu_blocked_count += r.data.get("blocked_count", 0)
     sections_expected = ["RUN_ID", "STEPS", "DATA_QUALITY", "SAFETY_FLAGS"]
     sections_present = ["RUN_ID", "STEPS", "DATA_QUALITY", "SAFETY_FLAGS"]
     if total > 0:
@@ -861,10 +968,36 @@ def _build_data_quality(
         controlled_universe_steps=cu_total,
         controlled_universe_blocked=cu_blocked,
         controlled_universe_failed=cu_failed,
+        controlled_universe_universe_count=cu_universe_count,
+        controlled_universe_watchlist_count=cu_watchlist_count,
+        controlled_universe_blocked_count=cu_blocked_count,
         sections_present=tuple(sections_present),
         sections_expected=tuple(sections_expected),
         notes=tuple(notes),
     )
+
+
+def _build_run_metadata(
+    plan_metadata: Mapping[str, str],
+    step_results: Sequence[ResearchRunStepResult],
+    state: ResearchRunState,
+) -> Mapping[str, str]:
+    """Merge plan metadata with deterministic controlled-universe run metadata."""
+    merged: dict[str, str] = dict(plan_metadata)
+    merged["run_state"] = state.value
+    cu_universe_count = 0
+    cu_watchlist_count = 0
+    cu_blocked_count = 0
+    for r in step_results:
+        if r.kind == ResearchRunStepKind.CONTROLLED_UNIVERSE and r.state == ResearchRunStepState.SUCCESS:
+            cu_universe_count += r.data.get("universe_count", 0)
+            cu_watchlist_count += r.data.get("watchlist_count", 0)
+            cu_blocked_count += r.data.get("blocked_count", 0)
+    if cu_universe_count or cu_watchlist_count or cu_blocked_count:
+        merged["controlled_universe_universe_count"] = str(cu_universe_count)
+        merged["controlled_universe_watchlist_count"] = str(cu_watchlist_count)
+        merged["controlled_universe_blocked_count"] = str(cu_blocked_count)
+    return MappingProxyType(merged)
 
 
 def _build_safety_flags(
@@ -878,6 +1011,19 @@ def _build_safety_flags(
     has_failed = any(r.state == ResearchRunStepState.FAILED for r in step_results)
     has_blocked = any(r.state == ResearchRunStepState.BLOCKED for r in step_results)
     has_invalid = plan_blocked or has_blocked
+    # Aggregate controlled-universe specific safety flags from successful CU steps.
+    for r in step_results:
+        if r.kind != ResearchRunStepKind.CONTROLLED_UNIVERSE:
+            continue
+        report = r.data.get("report")
+        if report is None:
+            continue
+        flags = report.safety_flags
+        if getattr(flags, "has_unsafe_content", False):
+            unsafe_content = True
+        # A CU step that is not safe indicates an invalid state at the run level.
+        if not flags.is_safe and r.state == ResearchRunStepState.SUCCESS:
+            has_invalid = True
     return ResearchRunSafetyFlags(
         has_failed_step=has_failed,
         has_blocked_step=has_blocked,
@@ -971,7 +1117,7 @@ def build_research_run_result(
             reason_codes=reason_codes,
             generated_at=generated_at,
             state=ResearchRunState.BLOCKED,
-            metadata=_coerce_mapping_strs(plan.metadata),
+            metadata=_build_run_metadata(plan.metadata, (), ResearchRunState.BLOCKED),
             notes=(f"Run blocked: {message}",),
         )
 
@@ -1002,6 +1148,7 @@ def build_research_run_result(
     reason_codes = _build_reason_codes(step_results_tuple, base_reason_codes)
     state = _build_run_state(step_results_tuple, plan_blocked=False)
     notes = (data_quality.notes[0] if data_quality.notes else "",)
+    run_metadata = _build_run_metadata(plan.metadata, step_results_tuple, state)
 
     return ResearchRunResult(
         run_id=plan.run_id,
@@ -1014,7 +1161,7 @@ def build_research_run_result(
         reason_codes=reason_codes,
         generated_at=generated_at,
         state=state,
-        metadata=_coerce_mapping_strs(plan.metadata),
+        metadata=run_metadata,
         notes=notes,
     )
 
@@ -1097,16 +1244,84 @@ def validate_run_plan_dependencies(
 
 def build_coin_discovery_run_plan(
     run_id: str,
-    discovery_inputs: Sequence[Any] | None = None,
-    portfolio_construction_inputs: Sequence[Any] | None = None,
-    execution_context: Any | None = None,
-    controlled_universe_config: Any | None = None,
+    discovery_inputs: Sequence[DiscoveryInput] | None = None,
+    portfolio_construction_inputs: Sequence[PortfolioConstructionInput] | None = None,
+    execution_context: ExecutionContext | None = None,
+    controlled_universe_config: ControlledUniverseConfig | None = None,
+    discovery_config: DiscoveryConfig | None = None,
+    portfolio_construction_config: PortfolioConstructionConfig | None = None,
     metadata: Mapping[str, str] | None = None,
 ) -> ResearchRunPlan:
     """Convenience builder for the canonical coin-discovery pipeline.
 
-    This is a stub for Step 1; full implementation is deferred to Step 3.
+    Creates a deterministic research run plan with the dependency order:
+    relative strength / open interest → discovery → portfolio construction →
+    controlled universe.
+
+    The discovery step consumes the provided DiscoveryInput sequence (which may
+    carry relative-strength and open-interest summaries). The portfolio
+    construction step resolves its inputs from the nearest preceding successful
+    DISCOVERY step. The controlled universe step resolves its portfolio report
+    from the nearest preceding successful PORTFOLIO_CONSTRUCTION step and the
+    provided execution context.
+
+    All inputs are caller-provided in-memory objects. No runtime, network,
+    exchange, database, scheduler, or Freqtrade behavior is invoked.
     """
-    raise NotImplementedError(
-        "build_coin_discovery_run_plan is implemented in MVP-52 Step 3"
+    if not isinstance(run_id, str) or not run_id.strip():
+        raise ValueError("run_id must be a non-empty string")
+    if not discovery_inputs:
+        raise ValueError("discovery_inputs must contain at least one DiscoveryInput")
+    if execution_context is None:
+        raise ValueError("execution_context is required for controlled universe")
+
+    metadata = _coerce_mapping_strs(metadata)
+
+    discovery_inputs = tuple(discovery_inputs)
+    portfolio_inline = portfolio_construction_inputs
+    if portfolio_inline is not None:
+        portfolio_inline = tuple(portfolio_inline)
+
+    discovery_inputs_map: dict[str, Any] = {
+        "inputs": discovery_inputs,
+    }
+    if discovery_config is not None:
+        discovery_inputs_map["config"] = discovery_config
+
+    portfolio_inputs_map: dict[str, Any] = {}
+    if portfolio_inline is not None:
+        portfolio_inputs_map["inputs"] = portfolio_inline
+    portfolio_inputs_map["discovery_step_index"] = 0
+    if portfolio_construction_config is not None:
+        portfolio_inputs_map["config"] = portfolio_construction_config
+
+    cu_inputs_map: dict[str, Any] = {
+        "execution_context": execution_context,
+        "portfolio_construction_step_index": 1,
+    }
+    if controlled_universe_config is not None:
+        cu_inputs_map["config"] = controlled_universe_config
+
+    steps = (
+        ResearchRunStep(
+            step_id="discovery-1",
+            kind=ResearchRunStepKind.DISCOVERY,
+            inputs=discovery_inputs_map,
+        ),
+        ResearchRunStep(
+            step_id="portfolio-construction-1",
+            kind=ResearchRunStepKind.PORTFOLIO_CONSTRUCTION,
+            inputs=portfolio_inputs_map,
+        ),
+        ResearchRunStep(
+            step_id="controlled-universe-1",
+            kind=ResearchRunStepKind.CONTROLLED_UNIVERSE,
+            inputs=cu_inputs_map,
+        ),
+    )
+
+    return ResearchRunPlan(
+        run_id=run_id,
+        steps=steps,
+        metadata=metadata,
     )

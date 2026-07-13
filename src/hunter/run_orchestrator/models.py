@@ -391,6 +391,9 @@ class ResearchRunDataQuality:
     controlled_universe_steps: int = 0
     controlled_universe_blocked: int = 0
     controlled_universe_failed: int = 0
+    controlled_universe_universe_count: int = 0
+    controlled_universe_watchlist_count: int = 0
+    controlled_universe_blocked_count: int = 0
     sections_present: tuple[str, ...] = ()
     sections_expected: tuple[str, ...] = ()
     notes: tuple[str, ...] = ()
