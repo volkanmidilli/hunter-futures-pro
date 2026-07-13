@@ -140,9 +140,10 @@ When continuing work on an MVP:
 ## Current MVP Context
 
 - Completed MVP: MVP-54 Operational One-Call Coin-Discovery Pipeline Runner
-- SPEC: `specs/SPEC-055-Operational-One-Call-Coin-Discovery-Pipeline-Runner.md` — approved during MVP-54 cycle
-- Implementation (Steps 1–5: models, engine, writer, integration tests, docs/version finalization): committed during MVP-54 cycle
+- Active MVP: MVP-55 Freqtrade Universe Consumption Adapter — Step 5 finalization in progress
+- SPEC: `specs/SPEC-056-Freqtrade-Universe-Consumption-Adapter.md` — approved during MVP-55 cycle
+- Implementation (Steps 1–4: models, engine, writer, integration tests): committed during MVP-55 cycle
+- Step 5: documentation/version finalization in progress; version bumped to `0.55.0-dev`; tag `v0.55.0-dev` pending
 - Latest tag: `v0.54.0-dev` (MVP-54 tagged); no push occurred
-- Active MVP: None; next MVP not selected. Version is `0.54.0-dev`.
 - Tag policy: never tag automatically; the human must provide the exact tag or commit command.
 - Safety: autonomous workflow only touches docs/version/task memory in Step 5; no runtime code changes, no tests changed, no data/reports inspection, no trading/API/Freqtrade/server/database/scheduler changes, no production-readiness, trading-readiness, approval, certification, recommendation, or suitability claims.

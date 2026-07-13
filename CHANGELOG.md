@@ -6,6 +6,23 @@ All important project changes will be recorded in this file.
 
 No unreleased changes.
 
+## MVP-55 — Freqtrade Universe Consumption Adapter (Complete)
+
+- SPEC-056 — Freqtrade Universe Consumption Adapter approved.
+  - `specs/SPEC-056-Freqtrade-Universe-Consumption-Adapter.md` — approved for MVP-55 implementation.
+  - Consumes `ControlledUniverseExportResult` (MVP-53) and produces deterministic, research-only, human-approval-required Freqtrade-compatible artifacts.
+  - Fail-closed behavior: missing, blocked, unsafe, stale, invalid, or empty export input produces an empty whitelist with explicit reason codes.
+  - No Freqtrade runtime integration, strategy changes, automatic config mutation, exchange/API/server/database/scheduler/live trading behavior, or actionable trading signals.
+- Steps 1–4 — Freqtrade Universe Consumption Adapter models, engine, writer, integration tests, and finalization.
+  - `src/hunter/freqtrade_universe_adapter/models.py` — frozen dataclasses (`FreqtradeUniverseAdapterConfig`, `FreqtradeUniverseAdapterResult`), `FREQTRADE_UNIVERSE_ADAPTER_VERSION = "0.55.0-dev"`, reason codes, and validation.
+  - `src/hunter/freqtrade_universe_adapter/engine.py` — deterministic `build_freqtrade_universe_adapter_result` with validation, staleness, pair normalization, deduplication, contradiction handling, and mode derivation.
+  - `src/hunter/freqtrade_universe_adapter/writer.py` — deterministic JSON/Markdown serialization and atomic writers for the JSON packet, Markdown summary, pairlist fragment, and strategy-contract input.
+  - `src/hunter/freqtrade_universe_adapter/__init__.py` — public API exports.
+  - `tests/test_freqtrade_universe_adapter/test_models.py`, `test_engine.py`, `test_writer.py`, `test_integration.py` — comprehensive unit and integration tests.
+  - 148 freqtrade_universe_adapter tests in `tests/test_freqtrade_universe_adapter/`; full suite: 8166 tests passing, 1 skipped.
+  - Version bumped to `0.55.0-dev` in `VERSION`, `pyproject.toml`, `src/hunter/__init__.py`, and `FREQTRADE_UNIVERSE_ADAPTER_VERSION`.
+  - Tagged `v0.55.0-dev` pending (local-only; no push).
+
 ## MVP-54 — Operational One-Call Coin-Discovery Pipeline Runner (Complete)
 
 - SPEC-055 — Operational One-Call Coin-Discovery Pipeline Runner approved.
