@@ -369,10 +369,11 @@ class TestCoinDiscoveryPipelineError:
 
 class TestEngineStubs:
     def test_run_coin_discovery_pipeline_rejects_invalid_config(self) -> None:
-        with pytest.raises(CoinDiscoveryPipelineError, match="config must be a CoinDiscoveryPipelineConfig"):
-            run_coin_discovery_pipeline("not-a-config")  # type: ignore[arg-type]
+        result = run_coin_discovery_pipeline(None)  # type: ignore[arg-type]
+        assert result.state == PipelineState.BLOCKED
+        assert INVALID_PIPELINE_CONFIG in result.reason_codes
 
-    def test_run_coin_discovery_pipeline_not_implemented(
+    def test_run_coin_discovery_pipeline_runs_with_valid_config(
         self, discovery_input: DiscoveryInput, execution_context: ExecutionContext
     ) -> None:
         config = CoinDiscoveryPipelineConfig(
@@ -380,8 +381,10 @@ class TestEngineStubs:
             discovery_inputs=(discovery_input,),
             execution_context=execution_context,
         )
-        with pytest.raises(NotImplementedError, match="MVP-54 Step 2"):
-            run_coin_discovery_pipeline(config)
+        result = run_coin_discovery_pipeline(config)
+        assert isinstance(result, CoinDiscoveryPipelineResult)
+        assert result.run_id == "test"
+        assert result.state in {state for state in PipelineState}
 
 
 class TestCoerceHelpers:

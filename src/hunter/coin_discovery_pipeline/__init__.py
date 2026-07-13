@@ -65,33 +65,11 @@ __all__ = [
 ]
 
 
-# ---------------------------------------------------------------------------
-# Engine stubs (implemented in Step 2)
-# ---------------------------------------------------------------------------
+from hunter.coin_discovery_pipeline.engine import (
+    run_coin_discovery_pipeline,
+)
 
-
-def run_coin_discovery_pipeline(
-    config: CoinDiscoveryPipelineConfig,
-) -> CoinDiscoveryPipelineResult:
-    """Execute a deterministic one-call coin-discovery pipeline run.
-
-    This is a validation stub for Step 1. The full implementation is deferred to
-    Step 2 of MVP-54.
-    """
-    if not isinstance(config, CoinDiscoveryPipelineConfig):
-        raise CoinDiscoveryPipelineError(
-            f"config must be a CoinDiscoveryPipelineConfig, got {config!r}"
-        )
-    raise NotImplementedError(
-        "run_coin_discovery_pipeline is implemented in MVP-54 Step 2"
-    )
-
-
-# ---------------------------------------------------------------------------
 # Writer stubs (implemented in Step 3)
-# ---------------------------------------------------------------------------
-
-
 def coin_discovery_pipeline_result_to_dict(
     result: CoinDiscoveryPipelineResult,
 ) -> dict[str, Any]:
