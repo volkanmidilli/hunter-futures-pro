@@ -27,15 +27,17 @@ Excluded from evidence:
 - MVP-0 and MVP-1 have no `-dev` tag in the current tag list; this is recorded as expected for pre-`v0.8.0-dev` history.
 - MVP-46 is a documentation-only realignment step; its status is `tagged` at `v0.46.0-dev`.
 - The original master plan is MVP-0 through MVP-4.
-- The expanded chain is MVP-5 through MVP-49.
+- The expanded chain is MVP-5 through MVP-50.
 - MVP-47 is complete and tagged at `v0.47.0-dev`.
 - MVP-48 is complete and tagged at `v0.48.0-dev` (commit `779692f`).
 - MVP-49 is complete and tagged `v0.49.0-dev` at `eff7c93`.
 - `src/hunter/cross_artifact_consistency/` is tracked and mapped to MVP-47.
 - `src/hunter/research_audit_health/` is tracked and mapped to MVP-48.
 - `src/hunter/research_audit_health_remediation/` is tracked and mapped to MVP-49.
+- `src/hunter/research_audit_remediation_handoff/` is tracked and mapped to MVP-50.
 - `src/hunter/backtesting`, `src/hunter/engines`, `src/hunter/fitness`, `src/hunter/portfolio`, and `src/hunter/reporting` are listed as legacy or utility packages with no clear spec mapping.
 - `SPEC-050` exists for MVP-49 Research Audit Health Remediation Bridge. Tagged `v0.49.0-dev` at `eff7c93`.
+- `SPEC-051` exists for MVP-50 Research Audit Remediation Handoff Packet. Tag `v0.50.0-dev` pending.
 
 ## MVP Index Table
 
@@ -91,6 +93,7 @@ Excluded from evidence:
 | MVP-47 | Cross-Artifact Consistency Engine | `SPEC-048` | `v0.47.0-dev` | `cross_artifact_consistency` | `test_cross_artifact_consistency` | tagged | Tagged at `6103b95` |
 | MVP-48 | Research Audit Aggregate Health Report | `SPEC-049` | `v0.48.0-dev` | `research_audit_health` | `test_research_audit_health` | tagged | Tagged at `779692f` |
 | MVP-49 | Research Audit Health Remediation Bridge | `SPEC-050` | `v0.49.0-dev` | `research_audit_health_remediation` | `test_research_audit_health_remediation` | tagged | Tagged at `eff7c93` |
+| MVP-50 | Research Audit Remediation Handoff Packet | `SPEC-051` | pending | `research_audit_remediation_handoff` | `test_research_audit_remediation_handoff` | complete | Tag `v0.50.0-dev` pending human or later task |
 
 ## Package Mapping
 

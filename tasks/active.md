@@ -2,23 +2,23 @@
 
 ## Current Task
 
-MVP-49 — Research Audit Health Remediation Bridge is complete and tagged `v0.49.0-dev` at `eff7c93`.
-SPEC-050 has been implemented and reviewed.
-Version bumped to 0.49.0-dev.
+MVP-50 — Research Audit Remediation Handoff Packet is complete and pending tag `v0.50.0-dev`.
+SPEC-051 has been implemented and reviewed.
+Version bumped to 0.50.0-dev.
 
 Latest tagged functional milestone: MVP-49 / v0.49.0-dev at commit `eff7c93`.
 
-Completed under MVP-49:
-- SPEC-050 (Research Audit Health Remediation Bridge spec) committed at `6806aa9`.
+Completed under MVP-50:
+- SPEC-051 (Research Audit Remediation Handoff Packet spec) committed.
 - Step 1 (models/engine) completed.
 - Step 2 (writer) completed.
 - Step 3 (integration tests) completed.
 - Step 4 (metadata/docs finalization) completed.
-- 60 research_audit_health_remediation tests added.
-- Full suite: 7680 tests passing, 1 skipped using `pytest -q` (default import mode).
+- 61 research_audit_remediation_handoff tests added.
+- Full suite: 7741 tests passing, 1 skipped using `pytest -q` (default import mode).
 
-Remaining MVP-49 steps:
-- None.
+Remaining MVP-50 steps:
+- None. Tag `v0.50.0-dev` to be applied by human or later task.
 
 Boundaries:
 - Documentation and version metadata only in Step 4.
@@ -50,9 +50,9 @@ Boundaries:
 
 MVP-48 — Research Audit Aggregate Health Report is complete and tagged v0.48.0-dev at `779692f`. All steps complete.
 
-The original master plan (MVP-0 through MVP-4) is complete. The repository has expanded to MVP-49 / v0.49.0-dev.
+The original master plan (MVP-0 through MVP-4) is complete. The repository has expanded to MVP-50 / v0.50.0-dev.
 
-Next: MVP-50 selection and planning. No candidate has been selected yet.
+Next: MVP-51 selection and planning. No candidate has been selected yet.
 
 Known anomalies:
 - `v0.32.0-dev` tag missing from tag list (recorded as anomaly; no automatic action).
@@ -351,4 +351,4 @@ MVP-23 Step 4 — Final validation and version bump (Complete).
 
 Next MVP: not started. No SPEC drafted yet. Requires human approval before any implementation.
 
-MVP-50 selection and planning. No candidate or SPEC-051 exists yet; requires human approval before any implementation.
+MVP-51 selection and planning. No candidate or SPEC-052 exists yet; requires human approval before any implementation.

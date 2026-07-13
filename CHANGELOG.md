@@ -4,7 +4,22 @@ All important project changes will be recorded in this file.
 
 ## Unreleased
 
-- (Nothing yet — MVP-49 tagged `v0.49.0-dev` at `eff7c93`.)
+- (Nothing yet — MVP-50 tagged `v0.50.0-dev` will be applied at next commit.)
+
+## MVP-50 — Research Audit Remediation Handoff Packet (Complete, Pending Tag)
+
+**Version:** 0.49.0-dev → 0.50.0-dev.
+
+**SPEC-051:** `specs/SPEC-051-Research-Audit-Remediation-Handoff-Packet.md` — implemented across models, engine, writer, and integration tests.
+
+**Tag:** `v0.50.0-dev` pending at next commit/tag step.
+
+- `src/hunter/research_audit_remediation_handoff/__init__.py` — public API exports for models (`HandoffPacket`, `HandoffPacketConfig`, `HandoffPacketDataQuality`, `HandoffPacketError`, `HandoffPacketGroup`, `HandoffPacketSafetyFlags`), engine (`build_research_audit_remediation_handoff_packet`), writer (`handoff_packet_to_dict`, `handoff_packet_to_json`, `handoff_packet_to_markdown`, `atomic_write_json_handoff_packet`, `atomic_write_markdown_handoff_packet`).
+- `src/hunter/research_audit_remediation_handoff/models.py` — frozen dataclass models for the handoff packet, packet groups, data quality, config, safety flags, and errors.
+- `src/hunter/research_audit_remediation_handoff/engine.py` — deterministic engine that consumes a caller-provided MVP-49 `RemediationBridgeReport` or a tuple of `RemediationBacklogItem` summaries, groups items by `(reason_code, family)`, derives packet state, counts, and safety flags.
+- `src/hunter/research_audit_remediation_handoff/writer.py` — deterministic JSON and Markdown serialization plus optional atomic file writers that never read from `data/` or `reports/`.
+- `tests/test_research_audit_remediation_handoff/` — model, engine, writer, and integration tests (61 tests total). Integration tests build in-memory `HealthReport` → `RemediationBridgeReport` → `HandoffPacket` → JSON/Markdown flows.
+- Boundaries preserved: no data/ or reports/ inspection; no runtime/trading/API/Freqtrade/server/database/scheduler behavior; no production/trading readiness, approval, certification, recommendation, or suitability claims.
 
 ## MVP-49 — Research Audit Health Remediation Bridge (Complete, Tagged)
 

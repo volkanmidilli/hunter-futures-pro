@@ -4,11 +4,11 @@ Hunter Futures Pro
 
 ## Version
 
-0.49.0-dev
+0.50.0-dev
 
 ## Current Phase
 
-The original master plan (MVP-0 through MVP-4 and the 12 main modules in PROJECT.md) is complete. The repository has expanded well beyond that original plan. The functional MVP chain now runs through **MVP-49 / v0.49.0-dev**, which is complete and tagged at `eff7c93`. SPEC-050 was committed at `6806aa9`; implementation was committed at `1a4c7b2`; Step 4 finalization was committed at `eff7c93`. The latest tag is `v0.49.0-dev` at `eff7c93`. The next required action is **MVP-50 selection and planning**; no SPEC-051 exists yet.
+The functional MVP chain now runs through **MVP-50 / v0.50.0-dev**, which is complete and pending tag. SPEC-051 was committed at the end of the MVP-50 implementation cycle. The latest tag is `v0.49.0-dev` at `eff7c93`; the next tag `v0.50.0-dev` is pending at the next commit/tag step. The next required action is **MVP-51 selection and planning**; no SPEC-052 exists yet.
 
 ## Background
 

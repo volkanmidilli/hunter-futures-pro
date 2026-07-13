@@ -139,12 +139,12 @@ When continuing work on an MVP:
 
 ## Current MVP Context
 
-- Completed MVP: MVP-49 Research Audit Health Remediation Bridge
-- SPEC: `specs/SPEC-050-Research-Audit-Health-Remediation-Bridge.md` — committed at `6806aa9`
-- Implementation (Steps 1–3: models/mapping/engine/writer/integration tests): committed at `1a4c7b2`
-- Step 4 (docs/version metadata): committed at `eff7c93` Finalize MVP-49 project memory state
-- Latest commit: `eff7c93` Finalize MVP-49 project memory state
-- Latest tag: `v0.49.0-dev` at `eff7c93`
-- Next: MVP-50 selection and planning. No SPEC exists yet. Stop until human provides direction.
+- Completed MVP: MVP-50 Research Audit Remediation Handoff Packet
+- SPEC: `specs/SPEC-051-Research-Audit-Remediation-Handoff-Packet.md` — committed during MVP-50 cycle
+- Implementation (Steps 1–3: models/engine/writer/integration tests): committed during MVP-50 cycle
+- Step 4 (docs/version metadata): committed during MVP-50 cycle
+- Latest commit: pending next commit/tag step (MVP-50 docs/version finalization not yet committed)
+- Latest tag: `v0.49.0-dev` at `eff7c93` (MVP-50 tag `v0.50.0-dev` pending human or later task)
+- Next: MVP-51 selection and planning. No SPEC exists yet. Stop until human provides direction.
 - Tag policy: never tag automatically; the human must provide the exact tag or commit command.
 - Safety: autonomous workflow only touches docs/version/task memory in Step 4; no runtime code changes, no tests changed, no data/reports inspection, no trading/API/Freqtrade/server/database/scheduler changes, no production-readiness, trading-readiness, approval, certification, recommendation, or suitability claims.
