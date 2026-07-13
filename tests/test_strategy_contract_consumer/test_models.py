@@ -170,7 +170,6 @@ def test_public_api_exports():
 @pytest.mark.parametrize(
     "func",
     [
-        scc.load_strategy_contract_input,
         scc.validate_strategy_contract_input,
         scc.build_validated_strategy_context,
         scc.strategy_context_result_to_dict,
@@ -181,12 +180,7 @@ def test_public_api_exports():
 )
 def test_unimplemented_stubs_raise(func):
     with pytest.raises(NotImplementedError):
-        if func in {
-            scc.load_strategy_contract_input,
-            scc.build_validated_strategy_context,
-        }:
-            func(None)
-        elif func is scc.validate_strategy_contract_input:
+        if func is scc.validate_strategy_contract_input:
             func(
                 None,
                 scc.StrategyContractConsumerConfig(),
