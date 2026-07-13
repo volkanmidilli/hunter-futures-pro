@@ -93,7 +93,7 @@ def base_config(
 ) -> CoinDiscoveryPipelineConfig:
     return CoinDiscoveryPipelineConfig(
         run_id="run-001",
-        output_dir="data/coin_discovery_pipeline/run-001",
+        output_dir="data/coin_discovery_pipeline",
         write_artifacts=False,
         discovery_inputs=discovery_inputs,
         execution_context=execution_context_enabled,
@@ -424,5 +424,5 @@ class TestDefaultExportConfig:
         assert result.state == PipelineState.COMPLETED
         assert captured["config"] is not None
         assert captured["config"].output_dir == "data/coin_discovery_pipeline/run-001/controlled_universe_export"
-        assert captured["config"].markdown_output_dir == "data/coin_discovery_pipeline/run-001/reports/controlled_universe_export"
+        assert captured["config"].markdown_output_dir == "reports/coin_discovery_pipeline/run-001/controlled_universe_export"
         monkeypatch.setattr(pipeline_engine, "build_controlled_universe_export_from_run_result", original_fn)

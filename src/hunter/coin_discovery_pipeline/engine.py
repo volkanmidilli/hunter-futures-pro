@@ -66,13 +66,13 @@ def _build_run_config(
     """Return the ResearchRunConfig to use for the orchestrator.
 
     If the caller supplied a run_config, it is used. Otherwise, a default is
-    created with the pipeline output_dir so orchestrator artifacts are grouped
-    under the pipeline directory.
+    created under ``<pipeline.output_dir>/<run_id>`` so orchestrator artifacts
+    are grouped by run ID per SPEC-055.
     """
     if config.run_config is not None:
         return config.run_config
     return ResearchRunConfig(
-        output_dir=config.output_dir,
+        output_dir=str(Path(config.output_dir) / config.run_id),
         fail_fast=config.fail_fast,
         write_artifacts=config.write_artifacts,
     )
@@ -83,15 +83,18 @@ def _build_export_config(
 ) -> ControlledUniverseExportConfig:
     """Return the ControlledUniverseExportConfig to use for export.
 
-    If the caller supplied an export_config, it is used. Otherwise, a default is
-    created with output_dir and markdown_output_dir under the pipeline output_dir.
+    If the caller supplied an export_config, it is used. Otherwise, default
+    output_dir and markdown_output_dir are derived from the pipeline output_dir
+    and run_id per SPEC-055.
     """
     if config.export_config is not None:
         return config.export_config
     base = Path(config.output_dir)
+    run_base = base / config.run_id
+    pkg_name = base.name or "coin_discovery_pipeline"
     return ControlledUniverseExportConfig(
-        output_dir=str(base / "controlled_universe_export"),
-        markdown_output_dir=str(base / "reports" / "controlled_universe_export"),
+        output_dir=str(run_base / "controlled_universe_export"),
+        markdown_output_dir=str(Path("reports") / pkg_name / config.run_id / "controlled_universe_export"),
     )
 
 
