@@ -1,5 +1,40 @@
 ---
 
+### MVP-54 Step 1 — Models and Public API
+
+Date: 2026-07-13
+
+Agent: WrongStack
+
+Task: Implement Step 1 of MVP-54 — Operational One-Call Coin-Discovery Pipeline Runner (SPEC-055). Create the `hunter.coin_discovery_pipeline` package with models, enums, reason codes, version constant, and public API stubs.
+
+Files modified:
+
+- `src/hunter/coin_discovery_pipeline/models.py` — frozen dataclasses (`CoinDiscoveryPipelineConfig`, `CoinDiscoveryPipelineResult`, `CoinDiscoveryPipelineSafetyFlags`, `CoinDiscoveryPipelineError`), `PipelineState` enum, reason codes, `COIN_DISCOVERY_PIPELINE_VERSION = "0.54.0-dev"`, and runtime validation.
+- `src/hunter/coin_discovery_pipeline/__init__.py` — public API exports and validation stubs for `run_coin_discovery_pipeline` and writer functions (deferred to Steps 2–3).
+- `tests/test_coin_discovery_pipeline/__init__.py` — test package marker.
+- `tests/test_coin_discovery_pipeline/test_models.py` — 38 model and public API tests.
+- `tasks/active.md` — updated current task and MVP-54 Step 1 status.
+
+Checks performed:
+
+- `pytest tests/test_coin_discovery_pipeline/test_models.py -v` — 38 passed, 0 warnings after fix.
+- `pytest -v` — 7955 passed, 1 skipped, 1 warning (existing deprecation in `tests/test_controlled_universe/test_models.py`).
+- `biome check` on changed files — passed.
+
+Boundaries preserved:
+
+- No Freqtrade runtime integration, strategy changes, automatic config mutation, exchange/API/server/database/scheduler/live trading behavior.
+- No data/ or reports/ inspection.
+- No commit, tag, or push.
+
+Residual notes:
+
+- `export_config` field is `ControlledUniverseExportConfig | None` with a default of `None`. This corrects an inconsistency in SPEC-055 where the code block showed a non-None default but the validation rules described optional behavior. The runner (Step 2) will resolve default export paths from the pipeline `output_dir` when `export_config` is omitted.
+- Version bump, CHANGELOG, and handoff docs are deferred to MVP-54 Step 5.
+
+---
+
 ### MVP-53 Implementation and Finalization
 
 Date: 2026-07-13
