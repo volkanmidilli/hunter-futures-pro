@@ -1,0 +1,86 @@
+"""Public API for the Controlled Universe Bridge Engine (MVP-51).
+
+The bridge consumes a macro `ExecutionContext` (MVP-4) and a
+`PortfolioConstructionReport` (MVP-27) and produces a deterministic, fail-closed
+`ControlledUniverseReport`. It is pure, local, deterministic, and audit-only.
+"""
+
+from __future__ import annotations
+
+from hunter.controlled_universe.engine import (
+    build_controlled_universe_data_quality,
+    build_controlled_universe_report,
+    build_controlled_universe_safety_flags,
+    classify_controlled_universe_item,
+)
+from hunter.controlled_universe.models import (
+    CONTROLLED_UNIVERSE_REASON_CODES,
+    CONTROLLED_UNIVERSE_VERSION,
+    DUPLICATE_PAIR_DETECTED,
+    EXECUTION_BLOCKED,
+    EXECUTION_UNKNOWN,
+    HUMAN_RESEARCH_ONLY,
+    INVALID_PAIR,
+    INVALID_PORTFOLIO_SUMMARY,
+    LOW_PORTFOLIO_SCORE,
+    MACRO_MODE_MISMATCH,
+    MACRO_MODE_NONE,
+    MAX_UNIVERSE_PAIRS_EXCEEDED,
+    MISSING_EXECUTION_CONTEXT,
+    MISSING_PORTFOLIO_CONTEXT,
+    NO_ACTION_COMMANDS_EMITTED,
+    NO_FILE_READ_IN_ENGINE,
+    NO_NETWORK_CONNECTION,
+    PASSED_UNIVERSE_FILTER,
+    PORTFOLIO_STATE_BLOCKED,
+    PORTFOLIO_STATE_EXCLUDED,
+    PORTFOLIO_STATE_INSUFFICIENT_DATA,
+    PORTFOLIO_STATE_WATCHLIST,
+    TRANSITION_STATE,
+    AllowedMode,
+    ControlledUniverseClassification,
+    ControlledUniverseConfig,
+    ControlledUniverseDataQuality,
+    ControlledUniverseItem,
+    ControlledUniverseReport,
+    ControlledUniverseSafetyFlags,
+    ControlledUniverseState,
+)
+
+__all__ = [
+    "CONTROLLED_UNIVERSE_REASON_CODES",
+    "CONTROLLED_UNIVERSE_VERSION",
+    "DUPLICATE_PAIR_DETECTED",
+    "EXECUTION_BLOCKED",
+    "EXECUTION_UNKNOWN",
+    "HUMAN_RESEARCH_ONLY",
+    "INVALID_PAIR",
+    "INVALID_PORTFOLIO_SUMMARY",
+    "LOW_PORTFOLIO_SCORE",
+    "MACRO_MODE_MISMATCH",
+    "MACRO_MODE_NONE",
+    "MAX_UNIVERSE_PAIRS_EXCEEDED",
+    "MISSING_EXECUTION_CONTEXT",
+    "MISSING_PORTFOLIO_CONTEXT",
+    "NO_ACTION_COMMANDS_EMITTED",
+    "NO_FILE_READ_IN_ENGINE",
+    "NO_NETWORK_CONNECTION",
+    "PASSED_UNIVERSE_FILTER",
+    "PORTFOLIO_STATE_BLOCKED",
+    "PORTFOLIO_STATE_EXCLUDED",
+    "PORTFOLIO_STATE_INSUFFICIENT_DATA",
+    "PORTFOLIO_STATE_WATCHLIST",
+    "TRANSITION_STATE",
+    "AllowedMode",
+    "ControlledUniverseClassification",
+    "ControlledUniverseConfig",
+    "ControlledUniverseDataQuality",
+    "ControlledUniverseItem",
+    "ControlledUniverseReport",
+    "ControlledUniverseSafetyFlags",
+    "ControlledUniverseState",
+    "build_controlled_universe_data_quality",
+    "build_controlled_universe_report",
+    "build_controlled_universe_safety_flags",
+    "classify_controlled_universe_item",
+]

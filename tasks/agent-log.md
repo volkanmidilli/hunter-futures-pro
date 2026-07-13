@@ -1,5 +1,33 @@
 ---
 
+### MVP-51 Step 1 — Controlled Universe Bridge Engine Models and Engine
+
+Date: 2026-07-13
+
+Agent: WrongStack
+
+Task: Implement MVP-51 Step 1 (models and engine) for the Controlled Universe Bridge Engine.
+
+Files added:
+
+- `src/hunter/controlled_universe/__init__.py` — public API exports for models and engine.
+- `src/hunter/controlled_universe/models.py` — frozen dataclasses (`ControlledUniverseConfig`, `ControlledUniverseItem`, `ControlledUniverseReport`, `ControlledUniverseSafetyFlags`, `ControlledUniverseDataQuality`, enums, and reason codes).
+- `src/hunter/controlled_universe/engine.py` — pure deterministic bridge engine (`build_controlled_universe_report`, `build_controlled_universe_safety_flags`, `build_controlled_universe_data_quality`, `classify_controlled_universe_item`).
+- `tests/test_controlled_universe/__init__.py` — test package marker.
+- `tests/test_controlled_universe/test_models.py` — model tests.
+- `tests/test_controlled_universe/test_engine.py` — engine tests.
+
+Files modified:
+
+- `tasks/active.md` — current task, completed steps, and next step updated.
+- `docs/handoff/CURRENT_STATE.md` — current phase and MVP-51 section updated.
+- `CHANGELOG.md` — Unreleased section updated with Step 1 implementation summary.
+- `docs/MVP_INDEX.md` — MVP-51 status and table updated.
+- `AGENTS.md` — current MVP context updated.
+- `tasks/agent-log.md` — this entry.
+
+Summary: Implemented the Controlled Universe Bridge Engine models and engine. The engine consumes a macro `ExecutionContext` and a `PortfolioConstructionReport` and produces a deterministic, fail-closed `ControlledUniverseReport`. Includes gating for missing contexts, execution state, allowed mode, data quality, portfolio summary consistency, and duplicate pairs. All classifications and reason codes are modeled. 39 new tests added; full suite: 7780 tests passing, 1 skipped. No writer or integration tests yet (Step 2 and 3). Version remains 0.50.0-dev until Step 4. No data/ or reports/ were inspected; no Freqtrade, exchange, network, or action command behavior introduced.
+
 ### MVP-51 SPEC-052 Approval
 
 Date: 2026-07-13

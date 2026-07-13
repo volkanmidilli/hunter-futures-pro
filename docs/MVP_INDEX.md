@@ -38,7 +38,7 @@ Excluded from evidence:
 - `src/hunter/backtesting`, `src/hunter/engines`, `src/hunter/fitness`, `src/hunter/portfolio`, and `src/hunter/reporting` are listed as legacy or utility packages with no clear spec mapping.
 - `SPEC-050` exists for MVP-49 Research Audit Health Remediation Bridge. Tagged `v0.49.0-dev` at `eff7c93`.
 - `SPEC-051` exists for MVP-50 Research Audit Remediation Handoff Packet. Tagged `v0.50.0-dev` at `64004c3`.
-- `SPEC-052` exists for MVP-51 Controlled Universe Bridge Engine. Approved; implementation not yet started.
+- `SPEC-052` exists for MVP-51 Controlled Universe Bridge Engine. Step 1 (models/engine) complete; Step 2 (writer) pending.
 
 ## MVP Index Table
 
@@ -95,7 +95,7 @@ Excluded from evidence:
 | MVP-48 | Research Audit Aggregate Health Report | `SPEC-049` | `v0.48.0-dev` | `research_audit_health` | `test_research_audit_health` | tagged | Tagged at `779692f` |
 | MVP-49 | Research Audit Health Remediation Bridge | `SPEC-050` | `v0.49.0-dev` | `research_audit_health_remediation` | `test_research_audit_health_remediation` | tagged | Tagged at `eff7c93` |
 | MVP-50 | Research Audit Remediation Handoff Packet | `SPEC-051` | `v0.50.0-dev` | `research_audit_remediation_handoff` | `test_research_audit_remediation_handoff` | tagged | Tagged at `64004c3` |
-| MVP-51 | Controlled Universe Bridge Engine | `SPEC-052` | pending | `controlled_universe` (planned) | `test_controlled_universe` (planned) | approved | SPEC approved; implementation not started |
+| MVP-51 | Controlled Universe Bridge Engine | `SPEC-052` | `0.50.0-dev` (Step 1) | `controlled_universe` | `test_controlled_universe` | in_progress | Step 1 complete; Step 2 (writer) pending |
 
 ## Package Mapping
 
