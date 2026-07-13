@@ -6,9 +6,9 @@ MVP-50 — Research Audit Remediation Handoff Packet is complete and tagged `v0.
 SPEC-051 has been implemented and reviewed.
 Version bumped to 0.50.0-dev.
 
-MVP-51 — Controlled Universe Bridge Engine is in progress.
-SPEC-052 approved; Step 1 (models/engine) completed.
-Step 2 (writer) not yet started. Version remains at 0.50.0-dev until Step 4.
+MVP-51 — Controlled Universe Bridge Engine is complete.
+SPEC-052 approved; Steps 1–4 (models/engine/writer/integration tests/finalization) completed.
+Version bumped to 0.51.0-dev. Awaiting tag `v0.51.0-dev`.
 
 Latest tagged functional milestone: MVP-50 / v0.50.0-dev at commit `64004c3`.
 
@@ -21,15 +21,14 @@ Completed under MVP-50:
 - 61 research_audit_remediation_handoff tests added.
 - Full suite: 7741 tests passing, 1 skipped using `pytest -q` (default import mode).
 
-Completed under MVP-51 (so far):
-- Step 1 (models/engine) completed.
-- 39 controlled_universe tests added.
-- Full suite: 7780 tests passing, 1 skipped using `pytest -q` (default import mode).
+Completed under MVP-51:
+- Steps 1–4 (models/engine/writer/integration tests/finalization) completed.
+- 81 controlled_universe tests.
+- Version bumped to 0.51.0-dev.
+- Full suite: 7812 tests passing, 1 skipped using `pytest -q` (default import mode).
 
 Remaining MVP-51 steps:
-- Step 2 (writer): JSON/CSV/Markdown writers and atomic file writes.
-- Step 3 (integration tests): end-to-end flows.
-- Step 4 (metadata/docs/version finalization + version bump to 0.51.0-dev).
+- None. MVP-51 is complete and awaiting tag `v0.51.0-dev`.
 
 Remaining MVP-50 steps:
 - None. MVP-50 is tagged.
@@ -66,7 +65,7 @@ MVP-48 — Research Audit Aggregate Health Report is complete and tagged v0.48.0
 
 The original master plan (MVP-0 through MVP-4) is complete. The repository has expanded to MVP-50 / v0.50.0-dev.
 
-Next: MVP-51 Step 2 — Controlled Universe Bridge Engine writer. SPEC-052 approved; Step 1 complete.
+Next: MVP-51 tagged as `v0.51.0-dev`. SPEC-052 approved; Steps 1–4 complete. Version bumped to 0.51.0-dev.
 
 Known anomalies:
 - `v0.32.0-dev` tag missing from tag list (recorded as anomaly; no automatic action).
@@ -153,9 +152,9 @@ MVP-14 Step 4 — Final Review and Version Bump (Complete).
 ## Scope
 
 Next MVP: MVP-51 — Controlled Universe Bridge Engine.
-- SPEC-052 approved. Step 1 (models/engine) completed.
-- Step 2 (writer) not yet started. Source code changes for writer are next.
-- Version remains 0.50.0-dev until Step 4 finalization.
+- SPEC-052 approved. Steps 1–4 (models/engine/writer/integration tests/finalization) completed.
+- Version bumped to 0.51.0-dev. Awaiting tag `v0.51.0-dev`.
+- No remaining source code changes for MVP-51.
 
 ### Allowed
 - Planning documents, discussion, SPEC drafting (outside repo or in docs/ if needed).
@@ -364,6 +363,6 @@ MVP-23 Step 4 — Final validation and version bump (Complete).
 
 ## Next Step
 
-Next MVP: MVP-51 — Controlled Universe Bridge Engine. SPEC-052 approved. Step 1 (models/engine) complete. Step 2 (writer) pending.
+Next MVP: MVP-51 — Controlled Universe Bridge Engine. SPEC-052 approved. Steps 1–4 complete. Version bumped to 0.51.0-dev. Awaiting tag `v0.51.0-dev`.
 
 MVP-51 — Controlled Universe Bridge Engine. SPEC-052 approved. Implementation authorized.

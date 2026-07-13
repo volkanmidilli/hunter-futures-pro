@@ -145,6 +145,6 @@ When continuing work on an MVP:
 - Step 4 (docs/version metadata): committed during MVP-50 cycle
 - Latest commit: `64004c3` Finalize MVP-50 metadata and documentation
 - Latest tag: `v0.50.0-dev` at `64004c3` (MVP-50 tagged)
-- Next: MVP-51 — Controlled Universe Bridge Engine. SPEC-052 approved. Step 1 (models/engine) complete. Step 2 (writer) pending.
+- Next: MVP-51 — Controlled Universe Bridge Engine. SPEC-052 approved. Steps 1–4 complete. Version bumped to 0.51.0-dev. Awaiting tag `v0.51.0-dev`.
 - Tag policy: never tag automatically; the human must provide the exact tag or commit command.
 - Safety: autonomous workflow only touches docs/version/task memory in Step 4; no runtime code changes, no tests changed, no data/reports inspection, no trading/API/Freqtrade/server/database/scheduler changes, no production-readiness, trading-readiness, approval, certification, recommendation, or suitability claims.

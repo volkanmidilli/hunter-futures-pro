@@ -1,3 +1,3 @@
 """Hunter Futures Pro - Agent-first crypto futures research platform."""
 
-__version__ = "0.50.0-dev"
+__version__ = "0.51.0-dev"

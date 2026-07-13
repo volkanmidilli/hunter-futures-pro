@@ -46,10 +46,25 @@ from hunter.controlled_universe.models import (
     ControlledUniverseSafetyFlags,
     ControlledUniverseState,
 )
+from hunter.controlled_universe.writer import (
+    DEFAULT_CSV_PATH,
+    DEFAULT_JSON_PATH,
+    DEFAULT_MD_PATH,
+    atomic_write_csv_controlled_universe_report,
+    atomic_write_json_controlled_universe_report,
+    atomic_write_markdown_controlled_universe_report,
+    controlled_universe_report_to_csv_text,
+    controlled_universe_report_to_json_text,
+    controlled_universe_report_to_markdown,
+    write_controlled_universe_report,
+)
 
 __all__ = [
     "CONTROLLED_UNIVERSE_REASON_CODES",
     "CONTROLLED_UNIVERSE_VERSION",
+    "DEFAULT_CSV_PATH",
+    "DEFAULT_JSON_PATH",
+    "DEFAULT_MD_PATH",
     "DUPLICATE_PAIR_DETECTED",
     "EXECUTION_BLOCKED",
     "EXECUTION_UNKNOWN",
@@ -79,8 +94,15 @@ __all__ = [
     "ControlledUniverseReport",
     "ControlledUniverseSafetyFlags",
     "ControlledUniverseState",
+    "atomic_write_csv_controlled_universe_report",
+    "atomic_write_json_controlled_universe_report",
+    "atomic_write_markdown_controlled_universe_report",
     "build_controlled_universe_data_quality",
     "build_controlled_universe_report",
     "build_controlled_universe_safety_flags",
     "classify_controlled_universe_item",
+    "controlled_universe_report_to_csv_text",
+    "controlled_universe_report_to_json_text",
+    "controlled_universe_report_to_markdown",
+    "write_controlled_universe_report",
 ]

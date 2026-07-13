@@ -1,5 +1,75 @@
 ---
 
+### MVP-51 Step 4 — Controlled Universe Bridge Engine Finalization and Version Bump
+
+Date: 2026-07-13
+
+Agent: WrongStack
+
+Task: Finalize MVP-51 Step 4 (metadata/version bump) for the Controlled Universe Bridge Engine.
+
+Files modified:
+
+- `pyproject.toml` — version bumped from `0.50.0-dev` to `0.51.0-dev`.
+- `src/hunter/__init__.py` — `__version__` bumped from `0.50.0-dev` to `0.51.0-dev`.
+- `src/hunter/controlled_universe/models.py` — `CONTROLLED_UNIVERSE_VERSION` already set to `0.51.0-dev`.
+- `tasks/active.md` — MVP-51 marked complete; version and next steps updated.
+- `docs/handoff/CURRENT_STATE.md` — current phase and MVP-51 section updated to complete.
+- `CHANGELOG.md` — MVP-51 section added; Unreleased cleared.
+- `docs/MVP_INDEX.md` — MVP-51 status and table updated to complete.
+- `AGENTS.md` — current MVP context updated.
+- `tasks/agent-log.md` — this entry.
+
+Summary: Performed final review of the controlled_universe package. All 81 controlled_universe tests pass; full suite: 7812 tests passing, 1 skipped. Version metadata updated to `0.51.0-dev` in `pyproject.toml`, `src/hunter/__init__.py`, and `CONTROLLED_UNIVERSE_VERSION`. MVP-51 is complete and awaiting the `v0.51.0-dev` tag. No data/ or reports/ inspected; no unrelated files touched; no tag created.
+
+### MVP-51 Step 3 — Controlled Universe Bridge Engine Integration Tests
+
+Date: 2026-07-13
+
+Agent: WrongStack
+
+Task: Implement MVP-51 Step 3 (integration tests) for the Controlled Universe Bridge Engine.
+
+Files added:
+
+- `tests/test_controlled_universe/test_integration.py` — 10 end-to-end integration tests covering engine → writer flows, atomic writes, JSON round-trip, fail-closed serialization, invalid portfolio summary handling, and safety notices.
+
+Files modified:
+
+- `tasks/active.md` — current task, completed steps, and next step updated.
+- `docs/handoff/CURRENT_STATE.md` — current phase and MVP-51 section updated.
+- `CHANGELOG.md` — Unreleased section updated with Step 3 integration tests summary.
+- `docs/MVP_INDEX.md` — MVP-51 status and table updated.
+- `AGENTS.md` — current MVP context updated.
+- `tasks/agent-log.md` — this entry.
+
+Summary: Added integration tests that build real `ControlledUniverseReport` instances via `build_controlled_universe_report` and serialize them through the writer. Tests cover engine-generated JSON/CSV/Markdown output, atomic writes of engine reports, JSON round-trip of generated timestamps and safety flags, classification-to-item construction, fail-closed empty-report serialization, invalid portfolio summary flag propagation, and safety notice content. 10 new integration tests pass; full controlled_universe package: 81 tests pass; full suite: 7812 tests passing, 1 skipped. Version remains 0.50.0-dev until Step 4. No data/ or reports/ inspected; no unrelated files touched.
+
+### MVP-51 Step 2 — Controlled Universe Bridge Engine Writer
+
+Date: 2026-07-13
+
+Agent: WrongStack
+
+Task: Implement MVP-51 Step 2 (writer) for the Controlled Universe Bridge Engine.
+
+Files added:
+
+- `src/hunter/controlled_universe/writer.py` — deterministic JSON/CSV/Markdown serializers and atomic file writers.
+- `tests/test_controlled_universe/test_writer.py` — 22 writer tests.
+
+Files modified:
+
+- `src/hunter/controlled_universe/__init__.py` — exported writer functions and default paths.
+- `tasks/active.md` — current task, completed steps, and next step updated.
+- `docs/handoff/CURRENT_STATE.md` — current phase and MVP-51 section updated.
+- `CHANGELOG.md` — Unreleased section updated with Step 2 implementation summary.
+- `docs/MVP_INDEX.md` — MVP-51 status and table updated.
+- `AGENTS.md` — current MVP context updated.
+- `tasks/agent-log.md` — this entry.
+
+Summary: Implemented the Controlled Universe Bridge Engine writer. Adds `controlled_universe_report_to_json_text`, `controlled_universe_report_to_csv_text`, `controlled_universe_report_to_markdown`, plus atomic write functions (`atomic_write_json_controlled_universe_report`, `atomic_write_csv_controlled_universe_report`, `atomic_write_markdown_controlled_universe_report`, and `write_controlled_universe_report`). All output is deterministic, local, and audit-only. Default paths are under `data/controlled_universe/` and `reports/controlled_universe/`. The writer never reads `data/` or `reports/`, follows paths, or executes references. 22 new writer tests pass; full controlled_universe package: 61 tests pass; full suite: 7802 tests passing, 1 skipped. Version remains 0.50.0-dev until Step 4. No unrelated files touched.
+
 ### MVP-51 Step 1 — Controlled Universe Bridge Engine Models and Engine
 
 Date: 2026-07-13

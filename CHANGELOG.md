@@ -4,16 +4,23 @@ All important project changes will be recorded in this file.
 
 ## Unreleased
 
+No unreleased changes.
+
+## MVP-51 — Controlled Universe Bridge Engine (Complete, Version Bumped)
+
 - SPEC-052 — Controlled Universe Bridge Engine approved.
   - `specs/SPEC-052-Controlled-Universe-Bridge-Engine.md` — approved for MVP-51 implementation.
   - Bridges macro execution context (MVP-4) and per-coin portfolio construction report (MVP-27) into a deterministic, fail-closed controlled universe.
   - Research-only output; not a trading signal, execution approval, strategy selector, or position-sizing tool.
-- MVP-51 Step 1 — Controlled Universe Bridge Engine models and engine.
-  - `src/hunter/controlled_universe/` package created with `models.py`, `engine.py`, and `__init__.py`.
+- Steps 1–4 — Controlled Universe Bridge Engine models, engine, writer, integration tests, and finalization.
+  - `src/hunter/controlled_universe/` package created with `models.py`, `engine.py`, `writer.py`, and `__init__.py`.
   - Frozen dataclasses: `ControlledUniverseConfig`, `ControlledUniverseItem`, `ControlledUniverseReport`, `ControlledUniverseSafetyFlags`, `ControlledUniverseDataQuality`.
   - Pure deterministic engine: `build_controlled_universe_report` with fail-closed gating for missing execution/portfolio context, execution state, allowed mode, data quality, portfolio summary, and duplicate pairs.
-  - 39 new tests in `tests/test_controlled_universe/`; full suite: 7780 tests passing, 1 skipped.
-  - No writers yet; Step 2 pending.
+  - Deterministic writers: JSON/CSV/Markdown text serializers plus atomic file writers (`atomic_write_*`, `write_controlled_universe_report`).
+  - Integration tests: end-to-end engine → writer flows, fail-closed serialization, and safety notices.
+  - 81 controlled_universe tests in `tests/test_controlled_universe/`; full suite: 7812 tests passing, 1 skipped.
+  - Version bumped to `0.51.0-dev` in `pyproject.toml`, `src/hunter/__init__.py`, and `CONTROLLED_UNIVERSE_VERSION`.
+  - Awaiting tag `v0.51.0-dev`.
 
 ## MVP-50 — Research Audit Remediation Handoff Packet (Complete, Tagged)
 
