@@ -82,8 +82,14 @@ def test_config_invalid_threshold():
 
 
 def test_config_coerces_metadata():
-    cfg = scc.StrategyContractConsumerConfig(metadata={"a": "1"})
-    assert dict(cfg.metadata) == {"a": "1"}
+    cfg = scc.StrategyContractConsumerConfig(metadata={"a": "1", "b": [1, True, None]})
+    assert dict(cfg.metadata) == {"a": "1", "b": [1, True, None]}
+    assert cfg.metadata["b"] is not [1, True, None]  # deep-copied
+
+
+def test_config_rejects_non_json_metadata():
+    with pytest.raises(TypeError):
+        scc.StrategyContractConsumerConfig(metadata={"a": object()})
 
 
 def _make_valid_result(accepted: bool, mode: str, whitelist: tuple[str, ...]):
@@ -170,7 +176,6 @@ def test_public_api_exports():
 @pytest.mark.parametrize(
     "func",
     [
-        scc.validate_strategy_contract_input,
         scc.build_validated_strategy_context,
         scc.strategy_context_result_to_dict,
         scc.strategy_context_result_to_json_text,
@@ -180,15 +185,7 @@ def test_public_api_exports():
 )
 def test_unimplemented_stubs_raise(func):
     with pytest.raises(NotImplementedError):
-        if func is scc.validate_strategy_contract_input:
-            func(
-                None,
-                scc.StrategyContractConsumerConfig(),
-                validated_at=datetime.now(timezone.utc),
-                source_fingerprint="sha256-test",
-                source_path="<test>",
-            )
-        elif func is scc.write_strategy_context_validation_result:
+        if func is scc.write_strategy_context_validation_result:
             func(
                 _make_valid_result(True, "LONG", ("BTC/USDT",)),
                 "out",

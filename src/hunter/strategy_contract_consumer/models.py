@@ -98,11 +98,30 @@ def _coerce_tuple_strs(value: tuple[str, ...] | list[str] | None) -> tuple[str, 
     return tuple(str(item) for item in value)
 
 
-def _coerce_mapping_strs(value: Mapping[str, str] | dict[str, str] | None) -> Mapping[str, str]:
-    """Coerce a mapping to an immutable string mapping."""
+def _coerce_json_value(value: Any) -> Any:
+    """Recursively copy a JSON-compatible value.
+
+    Allowed scalar types: ``str``, ``bool``, ``int``, ``float``, ``None``.
+    Allowed containers: ``list``, ``tuple``, ``dict`` and other ``Mapping`` values.
+    Other types are rejected with ``TypeError``.
+    """
+    if value is None or isinstance(value, (str, bool, int, float)):
+        return value
+    if isinstance(value, (list, tuple)):
+        return [_coerce_json_value(item) for item in value]
+    if isinstance(value, (dict, Mapping)):
+        return {str(k): _coerce_json_value(v) for k, v in value.items()}
+    raise TypeError(f"value is not JSON-compatible: {value!r}")
+
+
+def _coerce_json_mapping(
+    value: Mapping[str, object] | dict[str, object] | None,
+) -> Mapping[str, object]:
+    """Coerce a mapping to an immutable deep copy with JSON-compatible values."""
     if value is None:
         return MappingProxyType({})
-    return MappingProxyType({str(k): str(v) for k, v in value.items()})
+    coerced = {str(k): _coerce_json_value(v) for k, v in value.items()}
+    return MappingProxyType(coerced)
 
 
 def _coerce_safety_flags(value: dict[str, bool] | None) -> dict[str, bool]:
@@ -125,7 +144,7 @@ class StrategyContractConsumerConfig:
     )
     stale_input_threshold_seconds: int = 300
     future_input_tolerance_seconds: int = 60
-    metadata: Mapping[str, str] = field(default_factory=dict)
+    metadata: Mapping[str, object] = field(default_factory=dict)
 
     def __post_init__(self) -> None:
         for name, value in (
@@ -151,7 +170,7 @@ class StrategyContractConsumerConfig:
         ):
             if not isinstance(value, int) or value < 0:
                 raise ValueError(f"{name} must be a non-negative integer, got {value!r}")
-        object.__setattr__(self, "metadata", _coerce_mapping_strs(self.metadata))
+        object.__setattr__(self, "metadata", _coerce_json_mapping(self.metadata))
 
     @classmethod
     def default(cls) -> "StrategyContractConsumerConfig":
@@ -181,7 +200,7 @@ class ValidatedStrategyContext:
     version: str = STRATEGY_CONTRACT_CONSUMER_VERSION
     research_only: bool = True
     human_approval_required: bool = True
-    metadata: Mapping[str, str] = field(default_factory=dict)
+    metadata: Mapping[str, object] = field(default_factory=dict)
 
     def __post_init__(self) -> None:
         if not isinstance(self.accepted, bool):
@@ -239,4 +258,4 @@ class ValidatedStrategyContext:
                     "a rejected result must have an empty whitelist, got "
                     f"{self.whitelist!r}"
                 )
-        object.__setattr__(self, "metadata", _coerce_mapping_strs(self.metadata))
+        object.__setattr__(self, "metadata", _coerce_json_mapping(self.metadata))
