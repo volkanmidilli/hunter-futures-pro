@@ -10,16 +10,27 @@ tests; it is not a scheduler, daemon, server, or background job runner.
 
 from __future__ import annotations
 
-from hunter.run_orchestrator.engine import build_research_run_result
+from hunter.run_orchestrator.engine import (
+    build_coin_discovery_run_plan,
+    build_research_run_result,
+    validate_run_plan_dependencies,
+)
 from hunter.run_orchestrator.models import (
+    CONTRADICTORY_INPUT,
     EMPTY_RUN_ID,
     EMPTY_RUN_PLAN,
+    EXECUTION_BLOCKED,
     FORBIDDEN_RUN_ORCHESTRATOR_TERMS,
     HUMAN_RESEARCH_ONLY,
+    INVALID_CONTROLLED_UNIVERSE_INPUT,
     INVALID_OUTPUT_DIR,
+    INVALID_PORTFOLIO_SUMMARY,
     INVALID_RUN_CONFIG,
     INVALID_RUN_PLAN,
     INVALID_STEP_INPUTS,
+    MACRO_MODE_NONE,
+    MISSING_EXECUTION_CONTEXT,
+    MISSING_PORTFOLIO_CONTEXT,
     NETWORK_REFERENCE_DETECTED,
     NO_ACTION_COMMANDS_EMITTED,
     NO_DAEMON,
@@ -40,12 +51,16 @@ from hunter.run_orchestrator.models import (
     RUN_ORCHESTRATOR_REASON_CODES,
     RUN_ORCHESTRATOR_STEP_REASON_CODES,
     RUN_ORCHESTRATOR_VERSION,
+    STALE_INPUT,
     STEP_BLOCKED,
     STEP_FAILED,
     STEP_SKIPPED,
     UNSAFE_RUN_CONTENT,
     UNKNOWN_STEP_KIND,
     UNSUPPORTED_STEP_KIND,
+    UPSTREAM_STEP_BLOCKED,
+    UPSTREAM_STEP_FAILED,
+    ControlledUniverseRunInput,
     ResearchRunArtifact,
     ResearchRunConfig,
     ResearchRunDataQuality,
@@ -57,6 +72,7 @@ from hunter.run_orchestrator.models import (
     ResearchRunStepKind,
     ResearchRunStepResult,
     ResearchRunStepState,
+    RunInputResolution,
 )
 from hunter.run_orchestrator.writer import (
     DEFAULT_CSV_PATH,
@@ -74,6 +90,8 @@ from hunter.run_orchestrator.writer import (
 
 __all__ = [
     "build_research_run_result",
+    "build_coin_discovery_run_plan",
+    "validate_run_plan_dependencies",
     "research_run_result_to_dict",
     "research_run_result_to_json_text",
     "research_run_result_to_csv_text",
@@ -97,6 +115,7 @@ __all__ = [
     "ResearchRunDataQuality",
     "ResearchRunSafetyFlags",
     "ResearchRunState",
+    "ControlledUniverseRunInput",
     "FORBIDDEN_RUN_ORCHESTRATOR_TERMS",
     "RUN_ORCHESTRATOR_REASON_CODES",
     "RUN_ORCHESTRATOR_BLOCKING_REASON_CODES",
@@ -130,4 +149,20 @@ __all__ = [
     "NO_DATABASE",
     "NO_ACTION_COMMANDS_EMITTED",
     "HUMAN_RESEARCH_ONLY",
+    "MISSING_PORTFOLIO_CONTEXT",
+    "MISSING_EXECUTION_CONTEXT",
+    "STALE_INPUT",
+    "UPSTREAM_STEP_FAILED",
+    "UPSTREAM_STEP_BLOCKED",
+    "INVALID_PORTFOLIO_SUMMARY",
+    "EXECUTION_BLOCKED",
+    "MACRO_MODE_NONE",
+    "CONTRADICTORY_INPUT",
+    "INVALID_CONTROLLED_UNIVERSE_INPUT",
+    "ControlledUniverseRunInput",
+    "RunInputResolution",
+    "CONTROLLED_UNIVERSE",
 ]
+
+# Expose CONTROLLED_UNIVERSE as a convenience alias for the step-kind value.
+CONTROLLED_UNIVERSE = ResearchRunStepKind.CONTROLLED_UNIVERSE

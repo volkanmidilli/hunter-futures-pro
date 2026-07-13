@@ -19,7 +19,15 @@ from dataclasses import dataclass, field
 from datetime import datetime, timezone
 from enum import Enum
 from types import MappingProxyType
-from typing import Any
+from typing import TYPE_CHECKING, Any
+
+if TYPE_CHECKING:
+    from hunter.controlled_universe.models import (
+        ControlledUniverseConfig,
+        ControlledUniverseReport,
+    )
+    from hunter.execution.models import ExecutionContext
+    from hunter.portfolio_construction.models import PortfolioConstructionReport
 
 RUN_ORCHESTRATOR_VERSION: str = "0.30.0-dev"
 
@@ -44,6 +52,7 @@ class ResearchRunStepKind(Enum):
     AUDIT_SNAPSHOT_SUMMARY = "audit_snapshot_summary"
     AUDIT_CATALOG_SUMMARY = "audit_catalog_summary"
     AUDIT_CLOSURE_SUMMARY = "audit_closure_summary"
+    CONTROLLED_UNIVERSE = "controlled_universe"
 
 
 class ResearchRunStepState(Enum):
@@ -96,6 +105,16 @@ NO_WEB_UI = "NO_WEB_UI"
 NO_DATABASE = "NO_DATABASE"
 NO_ACTION_COMMANDS_EMITTED = "NO_ACTION_COMMANDS_EMITTED"
 HUMAN_RESEARCH_ONLY = "HUMAN_RESEARCH_ONLY"
+MISSING_PORTFOLIO_CONTEXT = "MISSING_PORTFOLIO_CONTEXT"
+MISSING_EXECUTION_CONTEXT = "MISSING_EXECUTION_CONTEXT"
+STALE_INPUT = "STALE_INPUT"
+UPSTREAM_STEP_FAILED = "UPSTREAM_STEP_FAILED"
+UPSTREAM_STEP_BLOCKED = "UPSTREAM_STEP_BLOCKED"
+INVALID_PORTFOLIO_SUMMARY = "INVALID_PORTFOLIO_SUMMARY"
+EXECUTION_BLOCKED = "EXECUTION_BLOCKED"
+MACRO_MODE_NONE = "MACRO_MODE_NONE"
+CONTRADICTORY_INPUT = "CONTRADICTORY_INPUT"
+INVALID_CONTROLLED_UNIVERSE_INPUT = "INVALID_CONTROLLED_UNIVERSE_INPUT"
 
 RUN_ORCHESTRATOR_BLOCKING_REASON_CODES: frozenset[str] = frozenset({
     RUN_BLOCKED,
@@ -110,6 +129,16 @@ RUN_ORCHESTRATOR_BLOCKING_REASON_CODES: frozenset[str] = frozenset({
     UNKNOWN_STEP_KIND,
     UNSUPPORTED_STEP_KIND,
     INVALID_STEP_INPUTS,
+    MISSING_PORTFOLIO_CONTEXT,
+    MISSING_EXECUTION_CONTEXT,
+    STALE_INPUT,
+    UPSTREAM_STEP_FAILED,
+    UPSTREAM_STEP_BLOCKED,
+    INVALID_PORTFOLIO_SUMMARY,
+    EXECUTION_BLOCKED,
+    MACRO_MODE_NONE,
+    CONTRADICTORY_INPUT,
+    INVALID_CONTROLLED_UNIVERSE_INPUT,
 })
 
 RUN_ORCHESTRATOR_STEP_REASON_CODES: frozenset[str] = frozenset({
@@ -120,6 +149,16 @@ RUN_ORCHESTRATOR_STEP_REASON_CODES: frozenset[str] = frozenset({
     UNKNOWN_STEP_KIND,
     UNSUPPORTED_STEP_KIND,
     INVALID_STEP_INPUTS,
+    MISSING_PORTFOLIO_CONTEXT,
+    MISSING_EXECUTION_CONTEXT,
+    STALE_INPUT,
+    UPSTREAM_STEP_FAILED,
+    UPSTREAM_STEP_BLOCKED,
+    INVALID_PORTFOLIO_SUMMARY,
+    EXECUTION_BLOCKED,
+    MACRO_MODE_NONE,
+    CONTRADICTORY_INPUT,
+    INVALID_CONTROLLED_UNIVERSE_INPUT,
 })
 
 RUN_ORCHESTRATOR_ADVISORY_REASON_CODES: frozenset[str] = frozenset({
@@ -349,6 +388,9 @@ class ResearchRunDataQuality:
     failed_steps: int = 0
     blocked_steps: int = 0
     skipped_steps: int = 0
+    controlled_universe_steps: int = 0
+    controlled_universe_blocked: int = 0
+    controlled_universe_failed: int = 0
     sections_present: tuple[str, ...] = ()
     sections_expected: tuple[str, ...] = ()
     notes: tuple[str, ...] = ()
@@ -418,6 +460,52 @@ class ResearchRunPlan:
         if not isinstance(self.steps, tuple):
             object.__setattr__(self, "steps", tuple(self.steps))
         object.__setattr__(self, "metadata", _coerce_mapping_strs(self.metadata))
+
+
+@dataclass(frozen=True)
+class ControlledUniverseRunInput:
+    """Helper bundle for carrying controlled-universe inputs into a run plan.
+
+    This dataclass is used by the plan builder and by callers who prefer a typed
+    object over raw `step.inputs` keys. The orchestrator extracts these values and
+    places them into the step's `inputs` mapping before dispatch.
+    """
+
+    execution_context: "ExecutionContext" | None = None
+    portfolio_report: "PortfolioConstructionReport" | None = None
+    config: "ControlledUniverseConfig" | None = None
+    portfolio_construction_step_id: str | None = None
+    portfolio_construction_step_index: int | None = None
+    execution_context_step_id: str | None = None
+
+    def __post_init__(self) -> None:
+        if self.portfolio_construction_step_index is not None and (
+            not isinstance(self.portfolio_construction_step_index, int)
+            or self.portfolio_construction_step_index < 0
+        ):
+            raise ValueError(
+                "portfolio_construction_step_index must be a non-negative integer"
+            )
+        for field_name in (
+            "portfolio_construction_step_id",
+            "execution_context_step_id",
+        ):
+            value = getattr(self, field_name)
+            if value is not None and (not isinstance(value, str) or not value.strip()):
+                raise ValueError(f"{field_name} must be a non-empty string when provided")
+
+
+@dataclass(frozen=True)
+class RunInputResolution:
+    """Resolved upstream inputs for a CONTROLLED_UNIVERSE step.
+
+    The engine populates this from in-line objects, referenced upstream steps, or
+    both, and passes it to the controlled-universe bridge. In-line objects always
+    take precedence over step references.
+    """
+
+    portfolio_report: "PortfolioConstructionReport" | None = None
+    execution_context: "ExecutionContext" | None = None
 
 
 # ---------------------------------------------------------------------------

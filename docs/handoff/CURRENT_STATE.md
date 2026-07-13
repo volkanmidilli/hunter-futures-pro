@@ -4,11 +4,11 @@ Hunter Futures Pro
 
 ## Version
 
-0.50.0-dev
+0.51.0-dev (MVP-52 Step 1 in progress; version bump to 0.52.0-dev deferred to Step 4)
 
 ## Current Phase
 
-The functional MVP chain now runs through **MVP-51 / v0.51.0-dev**, which is complete and tagged at `a75de79`. SPEC-052 was implemented and committed; the tag `v0.51.0-dev` points to the finalization commit. Next phase is MVP-52 planning.
+The functional MVP chain now runs through **MVP-51 / v0.51.0-dev**, which is complete and tagged at `a75de79`. **MVP-52 — End-to-End Research Run Orchestrator v2** is in progress: `SPEC-053` has been approved and Step 1 (models/dependency validator) is completed. Step 2 (engine dispatch/input resolution) is next. Source code changes in `src/hunter/run_orchestrator/models.py`, `src/hunter/run_orchestrator/engine.py`, and `tests/test_run_orchestrator/`.
 
 ## Background
 
@@ -39,8 +39,9 @@ The repository now contains 48 specs (SPEC-001 through SPEC-048). MVPs beyond th
 - MVP-47: Cross-Artifact Consistency Engine (complete, tagged v0.47.0-dev)
 - MVP-48: Research Audit Aggregate Health Report (complete, tagged v0.48.0-dev)
 - MVP-49: Research Audit Health Remediation Bridge (complete, tagged v0.49.0-dev at eff7c93)
-
-For the full MVP-by-MVP mapping, see `ROADMAP.md` and `docs/MVP_INDEX.md`.
+- MVP-50: Research Audit Remediation Handoff Packet (complete, tagged v0.50.0-dev at 64004c3)
+- MVP-51: Controlled Universe Bridge Engine (complete, tagged v0.51.0-dev at a75de79)
+- MVP-52: End-to-End Research Run Orchestrator v2 (in progress, SPEC-053 approved, Step 1 completed)
 
 ## Current Status
 
@@ -102,6 +103,19 @@ MVP-51 — Controlled Universe Bridge Engine is complete and version-bumped to `
 - Boundaries: no modifications to `decision`, `execution`, `freqtrade_bridge`, `strategy_contract`, `discovery`, `portfolio_construction`, `relative_strength`, `open_interest`, or `market_state` packages; no new non-standard-library dependencies for engine/writer logic; no file reads inside the engine.
 - Version: `v0.51.0-dev` (bumped in `pyproject.toml`, `src/hunter/__init__.py`, and `CONTROLLED_UNIVERSE_VERSION` in `models.py`).
 - Tag: `v0.51.0-dev` at `a75de79`.
+
+MVP-52 — End-to-End Research Run Orchestrator v2 is in progress. Step 1 (models/dependency validator) completed.
+
+- SPEC-053: `specs/SPEC-053-End-to-End-Research-Run-Orchestrator-v2.md` — approved.
+- `src/hunter/run_orchestrator/models.py` — added `ResearchRunStepKind.CONTROLLED_UNIVERSE`, new reason codes, `ControlledUniverseRunInput`, extended `ResearchRunDataQuality` counters, and added `RunInputResolution` helper.
+- `src/hunter/run_orchestrator/engine.py` — added `validate_run_plan_dependencies` and `build_coin_discovery_run_plan` (stub; full implementation deferred to Step 3).
+- `src/hunter/run_orchestrator/__init__.py` — public API exports for all new symbols.
+- `tests/test_run_orchestrator/test_models.py` — new model/reason-code tests.
+- `tests/test_run_orchestrator/test_engine.py` — new dependency validator tests.
+- 107 run_orchestrator tests total (+21).
+- Full suite: 7833 tests passing, 1 skipped.
+- Safety: research-only orchestration; no file/network/database/exchange/Freqtrade/scheduler/live trading introduced; `build_coin_discovery_run_plan` is a stub that raises `NotImplementedError`; version remains `0.51.0-dev` until Step 4 finalization.
+- Next: Step 2 (engine dispatch/input resolution).
 
 MVP-48 — Research Audit Aggregate Health Report is complete and tagged v0.48.0-dev at commit `779692f`.
 
@@ -571,7 +585,16 @@ MVP-22 — Local Research Audit Closure Report is complete and committed.
 
 MVP-50 — Research Audit Remediation Handoff Packet is complete and tagged `v0.50.0-dev` at `64004c3`. SPEC-051 at `f419790`; implementation at `417ada8`; Step 4 finalization at `64004c3`.
 
-1. Plan MVP-52. MVP-51 — Controlled Universe Bridge Engine is complete and tagged `v0.51.0-dev` at `a75de79`.
+MVP-52 — End-to-End Research Run Orchestrator v2 is in progress. SPEC-053 approved; Step 1 (models/dependency validator) completed.
+- `specs/SPEC-053-End-to-End-Research-Run-Orchestrator-v2.md` — approved.
+- `src/hunter/run_orchestrator/models.py` — added `ResearchRunStepKind.CONTROLLED_UNIVERSE`, new reason codes (`MISSING_PORTFOLIO_CONTEXT`, `MISSING_EXECUTION_CONTEXT`, `STALE_INPUT`, `UPSTREAM_STEP_FAILED`, `UPSTREAM_STEP_BLOCKED`, `INVALID_PORTFOLIO_SUMMARY`, `EXECUTION_BLOCKED`, `MACRO_MODE_NONE`, `CONTRADICTORY_INPUT`, `INVALID_CONTROLLED_UNIVERSE_INPUT`), `ControlledUniverseRunInput`, extended `ResearchRunDataQuality` counters, and added `RunInputResolution` helper.
+- `src/hunter/run_orchestrator/engine.py` — added `validate_run_plan_dependencies` and `build_coin_discovery_run_plan` (stub; full implementation deferred to Step 3).
+- `tests/test_run_orchestrator/test_models.py` — new enum/reason-code and `ControlledUniverseRunInput` validation tests.
+- `tests/test_run_orchestrator/test_engine.py` — new dependency validator tests.
+- 107 run_orchestrator tests total (+21).
+- Full suite: 7833 tests passing, 1 skipped.
+
+1. MVP-52 Step 2 — End-to-End Research Run Orchestrator v2 engine dispatch/input resolution for `controlled_universe` steps. SPEC-053 approved; Step 1 completed.
 
 ### Backlog (Non-Blocking)
 - Review `research_audit_snapshot` `data_quality.sections_present` / `sections_missing` reporting so successful snapshots correctly reflect the number of sections present (8) versus missing (0). Current behavior is fail-closed (0 / 8) and SPEC-compliant because `build_audit_snapshot_data_quality` does not receive the section list in its SPEC-024 signature.

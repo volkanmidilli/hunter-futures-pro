@@ -7,7 +7,15 @@ from datetime import datetime, timezone
 import pytest
 
 from hunter.run_orchestrator import (
+    CONTRADICTORY_INPUT,
+    ControlledUniverseRunInput,
+    EXECUTION_BLOCKED,
     FORBIDDEN_RUN_ORCHESTRATOR_TERMS,
+    INVALID_CONTROLLED_UNIVERSE_INPUT,
+    INVALID_PORTFOLIO_SUMMARY,
+    MACRO_MODE_NONE,
+    MISSING_EXECUTION_CONTEXT,
+    MISSING_PORTFOLIO_CONTEXT,
     ResearchRunArtifact,
     ResearchRunConfig,
     ResearchRunDataQuality,
@@ -21,6 +29,10 @@ from hunter.run_orchestrator import (
     ResearchRunStepState,
     RUN_ORCHESTRATOR_REASON_CODES,
     RUN_ORCHESTRATOR_VERSION,
+    RunInputResolution,
+    STALE_INPUT,
+    UPSTREAM_STEP_BLOCKED,
+    UPSTREAM_STEP_FAILED,
 )
 
 
@@ -47,6 +59,19 @@ class TestEnums:
         assert ResearchRunStepKind.AUDIT_SNAPSHOT_SUMMARY.value == "audit_snapshot_summary"
         assert ResearchRunStepKind.AUDIT_CATALOG_SUMMARY.value == "audit_catalog_summary"
         assert ResearchRunStepKind.AUDIT_CLOSURE_SUMMARY.value == "audit_closure_summary"
+        assert ResearchRunStepKind.CONTROLLED_UNIVERSE.value == "controlled_universe"
+
+    def test_new_reason_codes_in_sets(self) -> None:
+        assert MISSING_PORTFOLIO_CONTEXT in RUN_ORCHESTRATOR_REASON_CODES
+        assert MISSING_EXECUTION_CONTEXT in RUN_ORCHESTRATOR_REASON_CODES
+        assert STALE_INPUT in RUN_ORCHESTRATOR_REASON_CODES
+        assert UPSTREAM_STEP_FAILED in RUN_ORCHESTRATOR_REASON_CODES
+        assert UPSTREAM_STEP_BLOCKED in RUN_ORCHESTRATOR_REASON_CODES
+        assert INVALID_PORTFOLIO_SUMMARY in RUN_ORCHESTRATOR_REASON_CODES
+        assert EXECUTION_BLOCKED in RUN_ORCHESTRATOR_REASON_CODES
+        assert MACRO_MODE_NONE in RUN_ORCHESTRATOR_REASON_CODES
+        assert CONTRADICTORY_INPUT in RUN_ORCHESTRATOR_REASON_CODES
+        assert INVALID_CONTROLLED_UNIVERSE_INPUT in RUN_ORCHESTRATOR_REASON_CODES
 
     def test_step_states(self) -> None:
         assert ResearchRunStepState.SUCCESS.value == "SUCCESS"
@@ -173,3 +198,49 @@ class TestDataQuality:
         dq = ResearchRunDataQuality()
         assert dq.total_steps == 0
         assert dq.successful_steps == 0
+
+
+class TestDataQuality:
+    def test_data_quality_includes_controlled_universe_counts(self) -> None:
+        dq = ResearchRunDataQuality(
+            controlled_universe_steps=2,
+            controlled_universe_blocked=1,
+            controlled_universe_failed=0,
+        )
+        assert dq.controlled_universe_steps == 2
+        assert dq.controlled_universe_blocked == 1
+        assert dq.controlled_universe_failed == 0
+
+
+class TestControlledUniverseRunInput:
+    def test_default_construction(self) -> None:
+        inp = ControlledUniverseRunInput()
+        assert inp.execution_context is None
+        assert inp.portfolio_report is None
+        assert inp.config is None
+        assert inp.portfolio_construction_step_id is None
+        assert inp.portfolio_construction_step_index is None
+        assert inp.execution_context_step_id is None
+
+    def test_rejects_negative_step_index(self) -> None:
+        with pytest.raises(ValueError, match='portfolio_construction_step_index'):
+            ControlledUniverseRunInput(portfolio_construction_step_index=-1)
+
+    def test_rejects_non_integer_step_index(self) -> None:
+        with pytest.raises(ValueError, match='portfolio_construction_step_index'):
+            ControlledUniverseRunInput(portfolio_construction_step_index='1')  # type: ignore[arg-type]
+
+    def test_rejects_empty_step_id_strings(self) -> None:
+        with pytest.raises(ValueError, match='portfolio_construction_step_id'):
+            ControlledUniverseRunInput(portfolio_construction_step_id='')
+        with pytest.raises(ValueError, match='execution_context_step_id'):
+            ControlledUniverseRunInput(execution_context_step_id='   ')
+
+    def test_accepts_valid_step_index(self) -> None:
+        inp = ControlledUniverseRunInput(portfolio_construction_step_index=3)
+        assert inp.portfolio_construction_step_index == 3
+
+    def test_run_input_resolution_defaults(self) -> None:
+        res = RunInputResolution()
+        assert res.portfolio_report is None
+        assert res.execution_context is None

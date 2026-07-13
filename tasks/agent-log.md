@@ -1,5 +1,59 @@
 ---
 
+### MVP-52 Step 1 — Models and Dependency Validator
+
+Date: 2026-07-13
+
+Agent: WrongStack
+
+Task: Implement MVP-52 Step 1 (models/dependency validator) per SPEC-053.
+
+Files created:
+
+- None
+
+Files modified:
+
+- `src/hunter/run_orchestrator/models.py` — added `ResearchRunStepKind.CONTROLLED_UNIVERSE`, new reason codes (`MISSING_PORTFOLIO_CONTEXT`, `MISSING_EXECUTION_CONTEXT`, `STALE_INPUT`, `UPSTREAM_STEP_FAILED`, `UPSTREAM_STEP_BLOCKED`, `INVALID_PORTFOLIO_SUMMARY`, `EXECUTION_BLOCKED`, `MACRO_MODE_NONE`, `CONTRADICTORY_INPUT`, `INVALID_CONTROLLED_UNIVERSE_INPUT`), `ControlledUniverseRunInput`, `RunInputResolution`, and extended `ResearchRunDataQuality`.
+- `src/hunter/run_orchestrator/engine.py` — added `validate_run_plan_dependencies` and `build_coin_discovery_run_plan` stub (deferred to Step 3).
+- `src/hunter/run_orchestrator/__init__.py` — exported new symbols and stub builder.
+- `tests/test_run_orchestrator/test_models.py` — added enum/reason-code and `ControlledUniverseRunInput` validation tests.
+- `tests/test_run_orchestrator/test_engine.py` — added dependency validator tests.
+- `tasks/active.md` — recorded Step 1 completion and remaining steps.
+- `docs/handoff/CURRENT_STATE.md` — updated version, current phase, MVP status, and next step.
+- `docs/MVP_INDEX.md` — updated MVP-52 status.
+
+Test results:
+
+- `pytest tests/test_run_orchestrator/ -q` — 107 passed (was 86).
+- `pytest -q` — 7833 passed, 1 skipped.
+
+Next: Step 2 — engine dispatch/input resolution for `controlled_universe` steps.
+
+---
+
+### MVP-52 Planning — SPEC-053 Approved
+
+Date: 2026-07-13
+
+Agent: WrongStack
+
+Task: SDD planning flow for MVP-52 (End-to-End Research Run Orchestrator v2).
+
+Files created:
+
+- `specs/SPEC-053-End-To-End-Research-Run-Orchestrator-V2.md` — approved specification for MVP-52.
+
+Files modified:
+
+- `tasks/active.md` — current task updated to MVP-52 in progress; completed/remaining steps updated.
+- `docs/handoff/CURRENT_STATE.md` — current phase and next step updated.
+- `docs/MVP_INDEX.md` — SPEC-053 and MVP-52 table row added.
+- `AGENTS.md` — latest commit and next MVP context updated.
+- `tasks/agent-log.md` — this entry.
+
+Summary: Analyzed gaps in the end-to-end coin discovery pipeline after MVP-51. Identified three candidate MVP-52 directions (Orchestrator v2, Freqtrade bridge, Unified digest). Recommended and received approval for Candidate A: End-to-End Research Run Orchestrator v2. Drafted, self-reviewed, and revised `SPEC-053`. SPEC-053 is now approved. No implementation yet. No data/ or reports/ inspected. Version remains 0.51.0-dev.
+
 ### MVP-51 Tagging — `v0.51.0-dev`
 
 Date: 2026-07-13

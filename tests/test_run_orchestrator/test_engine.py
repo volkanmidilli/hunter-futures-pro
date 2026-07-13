@@ -27,10 +27,13 @@ from hunter.portfolio_construction import (
 from hunter.reporting_cli import CLIExitCode
 from hunter.research_audit_catalog import CatalogArtifactKind, CatalogEntry, CatalogState
 from hunter.run_orchestrator import (
+    CONTRADICTORY_INPUT,
     EMPTY_RUN_ID,
     EMPTY_RUN_PLAN,
     INVALID_OUTPUT_DIR,
     INVALID_RUN_PLAN,
+    MISSING_EXECUTION_CONTEXT,
+    MISSING_PORTFOLIO_CONTEXT,
     NO_NETWORK_CONNECTION,
     NOT_TRADING_ADVICE,
     OK,
@@ -42,7 +45,9 @@ from hunter.run_orchestrator import (
     UNKNOWN_STEP_KIND,
     UNSAFE_RUN_CONTENT,
     UNSUPPORTED_STEP_KIND,
+    build_coin_discovery_run_plan,
     build_research_run_result,
+    validate_run_plan_dependencies,
     ResearchRunConfig,
     ResearchRunPlan,
     ResearchRunSafetyFlags,
@@ -481,3 +486,216 @@ class TestOrderingAndImmutability:
         config = ResearchRunConfig(generated_at=fixed_generated_at, fail_fast=False)
         build_research_run_result(plan, config)
         assert original_inputs == inputs_copy
+
+
+
+class TestValidateRunPlanDependencies:
+    def test_no_controlled_universe_steps_is_valid(self) -> None:
+        plan = ResearchRunPlan(
+            run_id="run-1",
+            steps=(
+                ResearchRunStep(kind=ResearchRunStepKind.DISCOVERY),
+                ResearchRunStep(kind=ResearchRunStepKind.PORTFOLIO_CONSTRUCTION),
+            ),
+        )
+        valid, reasons = validate_run_plan_dependencies(plan)
+        assert valid is True
+        assert reasons == (OK,)
+
+    def test_controlled_universe_with_inline_portfolio_is_valid(self) -> None:
+        plan = ResearchRunPlan(
+            run_id="run-1",
+            steps=(
+                ResearchRunStep(
+                    kind=ResearchRunStepKind.CONTROLLED_UNIVERSE,
+                    inputs={"portfolio_report": object(), "execution_context": object()},
+                ),
+            ),
+        )
+        valid, reasons = validate_run_plan_dependencies(plan)
+        assert valid is True
+        assert reasons == (OK,)
+
+    def test_controlled_universe_without_source_is_invalid(self) -> None:
+        plan = ResearchRunPlan(
+            run_id="run-1",
+            steps=(
+                ResearchRunStep(kind=ResearchRunStepKind.CONTROLLED_UNIVERSE),
+            ),
+        )
+        valid, reasons = validate_run_plan_dependencies(plan)
+        assert valid is False
+        assert MISSING_PORTFOLIO_CONTEXT in reasons
+
+    def test_controlled_universe_with_default_upstream_portfolio_is_valid(self) -> None:
+        plan = ResearchRunPlan(
+            run_id="run-1",
+            steps=(
+                ResearchRunStep(kind=ResearchRunStepKind.PORTFOLIO_CONSTRUCTION),
+                ResearchRunStep(kind=ResearchRunStepKind.CONTROLLED_UNIVERSE),
+            ),
+        )
+        valid, reasons = validate_run_plan_dependencies(plan)
+        assert valid is True
+        assert reasons == (OK,)
+
+    def test_controlled_universe_with_step_id_reference_is_valid(self) -> None:
+        plan = ResearchRunPlan(
+            run_id="run-1",
+            steps=(
+                ResearchRunStep(
+                    kind=ResearchRunStepKind.PORTFOLIO_CONSTRUCTION,
+                    step_id="pc-1",
+                ),
+                ResearchRunStep(
+                    kind=ResearchRunStepKind.CONTROLLED_UNIVERSE,
+                    inputs={"portfolio_construction_step_id": "pc-1"},
+                ),
+            ),
+        )
+        valid, reasons = validate_run_plan_dependencies(plan)
+        assert valid is True
+        assert reasons == (OK,)
+
+    def test_controlled_universe_with_step_index_reference_is_valid(self) -> None:
+        plan = ResearchRunPlan(
+            run_id="run-1",
+            steps=(
+                ResearchRunStep(kind=ResearchRunStepKind.PORTFOLIO_CONSTRUCTION),
+                ResearchRunStep(
+                    kind=ResearchRunStepKind.CONTROLLED_UNIVERSE,
+                    inputs={"portfolio_construction_step_index": 0},
+                ),
+            ),
+        )
+        valid, reasons = validate_run_plan_dependencies(plan)
+        assert valid is True
+        assert reasons == (OK,)
+
+    def test_controlled_universe_requires_portfolio_step_before_it(self) -> None:
+        plan = ResearchRunPlan(
+            run_id="run-1",
+            steps=(
+                ResearchRunStep(kind=ResearchRunStepKind.CONTROLLED_UNIVERSE),
+                ResearchRunStep(kind=ResearchRunStepKind.PORTFOLIO_CONSTRUCTION),
+            ),
+        )
+        valid, reasons = validate_run_plan_dependencies(plan)
+        assert valid is False
+        assert MISSING_PORTFOLIO_CONTEXT in reasons
+
+    def test_controlled_universe_reference_to_later_step_is_invalid(self) -> None:
+        plan = ResearchRunPlan(
+            run_id="run-1",
+            steps=(
+                ResearchRunStep(
+                    kind=ResearchRunStepKind.CONTROLLED_UNIVERSE,
+                    inputs={"portfolio_construction_step_index": 1},
+                ),
+                ResearchRunStep(kind=ResearchRunStepKind.PORTFOLIO_CONSTRUCTION),
+            ),
+        )
+        valid, reasons = validate_run_plan_dependencies(plan)
+        assert valid is False
+        assert MISSING_PORTFOLIO_CONTEXT in reasons
+
+    def test_controlled_universe_reference_to_wrong_kind_is_invalid(self) -> None:
+        plan = ResearchRunPlan(
+            run_id="run-1",
+            steps=(
+                ResearchRunStep(kind=ResearchRunStepKind.DISCOVERY),
+                ResearchRunStep(
+                    kind=ResearchRunStepKind.CONTROLLED_UNIVERSE,
+                    inputs={"portfolio_construction_step_index": 0},
+                ),
+            ),
+        )
+        valid, reasons = validate_run_plan_dependencies(plan)
+        assert valid is False
+        assert MISSING_PORTFOLIO_CONTEXT in reasons
+
+    def test_contradictory_step_id_and_index_is_invalid(self) -> None:
+        plan = ResearchRunPlan(
+            run_id="run-1",
+            steps=(
+                ResearchRunStep(
+                    kind=ResearchRunStepKind.PORTFOLIO_CONSTRUCTION,
+                    step_id="pc-1",
+                ),
+                ResearchRunStep(
+                    kind=ResearchRunStepKind.PORTFOLIO_CONSTRUCTION,
+                    step_id="pc-2",
+                ),
+                ResearchRunStep(
+                    kind=ResearchRunStepKind.CONTROLLED_UNIVERSE,
+                    inputs={
+                        "portfolio_construction_step_id": "pc-1",
+                        "portfolio_construction_step_index": 1,
+                    },
+                ),
+            ),
+        )
+        valid, reasons = validate_run_plan_dependencies(plan)
+        assert valid is False
+        assert CONTRADICTORY_INPUT in reasons
+
+    def test_inline_portfolio_takes_precedence_over_invalid_reference(self) -> None:
+        plan = ResearchRunPlan(
+            run_id="run-1",
+            steps=(
+                ResearchRunStep(
+                    kind=ResearchRunStepKind.CONTROLLED_UNIVERSE,
+                    inputs={
+                        "portfolio_report": object(),
+                        "portfolio_construction_step_index": 5,
+                    },
+                ),
+            ),
+        )
+        valid, reasons = validate_run_plan_dependencies(plan)
+        assert valid is True
+        assert reasons == (OK,)
+
+    def test_execution_context_step_id_reference_to_prior_step_is_valid(self) -> None:
+        plan = ResearchRunPlan(
+            run_id="run-1",
+            steps=(
+                ResearchRunStep(
+                    kind=ResearchRunStepKind.PORTFOLIO_CONSTRUCTION,
+                    step_id="pc-1",
+                ),
+                ResearchRunStep(
+                    kind=ResearchRunStepKind.CONTROLLED_UNIVERSE,
+                    inputs={
+                        "portfolio_construction_step_id": "pc-1",
+                        "execution_context_step_id": "ec-1",
+                    },
+                ),
+            ),
+        )
+        valid, reasons = validate_run_plan_dependencies(plan)
+        assert valid is False
+        assert MISSING_EXECUTION_CONTEXT in reasons
+
+    def test_build_coin_discovery_run_plan_is_stub(self) -> None:
+        with pytest.raises(NotImplementedError):
+            build_coin_discovery_run_plan(run_id="run-1")
+
+    def test_controlled_universe_with_inline_execution_context_ignores_bad_step_id(self) -> None:
+        plan = ResearchRunPlan(
+            run_id="run-1",
+            steps=(
+                ResearchRunStep(step_id="pc-1", kind=ResearchRunStepKind.PORTFOLIO_CONSTRUCTION),
+                ResearchRunStep(
+                    kind=ResearchRunStepKind.CONTROLLED_UNIVERSE,
+                    inputs={
+                        "portfolio_report": {},
+                        "execution_context": {},
+                        "execution_context_step_id": "missing-step",
+                    },
+                ),
+            ),
+        )
+        valid, reasons = validate_run_plan_dependencies(plan)
+        assert valid is True
+        assert reasons == (OK,)

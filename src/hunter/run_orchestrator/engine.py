@@ -58,6 +58,7 @@ from hunter.research_audit_snapshot import (
 )
 
 from hunter.run_orchestrator.models import (
+    CONTRADICTORY_INPUT,
     EMPTY_RUN_ID,
     EMPTY_RUN_PLAN,
     FORBIDDEN_RUN_ORCHESTRATOR_TERMS,
@@ -65,6 +66,9 @@ from hunter.run_orchestrator.models import (
     INVALID_RUN_CONFIG,
     INVALID_RUN_PLAN,
     INVALID_STEP_INPUTS,
+    MACRO_MODE_NONE,
+    MISSING_EXECUTION_CONTEXT,
+    MISSING_PORTFOLIO_CONTEXT,
     NETWORK_REFERENCE_DETECTED,
     NO_ACTION_COMMANDS_EMITTED,
     NO_DATABASE,
@@ -80,6 +84,15 @@ from hunter.run_orchestrator.models import (
     RESEARCH_ONLY,
     RUN_BLOCKED,
     RUN_ORCHESTRATOR_VERSION,
+    STALE_INPUT,
+    STEP_BLOCKED,
+    STEP_FAILED,
+    STEP_SKIPPED,
+    UNSAFE_RUN_CONTENT,
+    UNKNOWN_STEP_KIND,
+    UNSUPPORTED_STEP_KIND,
+    UPSTREAM_STEP_BLOCKED,
+    UPSTREAM_STEP_FAILED,
     ResearchRunArtifact,
     ResearchRunConfig,
     ResearchRunDataQuality,
@@ -91,12 +104,6 @@ from hunter.run_orchestrator.models import (
     ResearchRunStepKind,
     ResearchRunStepResult,
     ResearchRunStepState,
-    STEP_BLOCKED,
-    STEP_FAILED,
-    STEP_SKIPPED,
-    UNSAFE_RUN_CONTENT,
-    UNKNOWN_STEP_KIND,
-    UNSUPPORTED_STEP_KIND,
     _coerce_mapping_any,
     _coerce_mapping_strs,
     _coerce_tuple_strs,
@@ -755,4 +762,97 @@ def build_research_run_result(
         state=state,
         metadata=_coerce_mapping_strs(plan.metadata),
         notes=notes,
+    )
+
+
+def validate_run_plan_dependencies(
+    plan: ResearchRunPlan,
+) -> tuple[bool, tuple[str, ...]]:
+    """Validate that every CONTROLLED_UNIVERSE step has a resolvable input source.
+
+    Returns (is_valid, reason_codes). Non-controlled-universe steps are ignored.
+    This function does not validate step kind names, path safety, or forbidden
+    terms; those are handled by `_validate_plan` at execution time.
+    """
+    reasons: list[str] = []
+    steps = plan.steps
+    step_index_by_id = {step.step_id: idx for idx, step in enumerate(steps) if step.step_id}
+
+    for cu_idx, step in enumerate(steps):
+        if step.kind != ResearchRunStepKind.CONTROLLED_UNIVERSE:
+            continue
+
+        inputs = dict(step.inputs)
+        has_inline_portfolio = inputs.get("portfolio_report") is not None
+        step_id_ref = inputs.get("portfolio_construction_step_id")
+        step_index_ref = inputs.get("portfolio_construction_step_index")
+
+        if has_inline_portfolio:
+            # In-line object takes precedence; references are ignored for resolution.
+            pass
+        elif step_id_ref is not None and step_index_ref is not None:
+            resolved_by_id = step_index_by_id.get(step_id_ref)
+            if resolved_by_id is None or resolved_by_id >= cu_idx:
+                reasons.append(MISSING_PORTFOLIO_CONTEXT)
+            elif resolved_by_id != step_index_ref:
+                reasons.append(CONTRADICTORY_INPUT)
+            elif steps[resolved_by_id].kind != ResearchRunStepKind.PORTFOLIO_CONSTRUCTION:
+                reasons.append(MISSING_PORTFOLIO_CONTEXT)
+        elif step_id_ref is not None:
+            resolved = step_index_by_id.get(step_id_ref)
+            if resolved is None or resolved >= cu_idx:
+                reasons.append(MISSING_PORTFOLIO_CONTEXT)
+            elif steps[resolved].kind != ResearchRunStepKind.PORTFOLIO_CONSTRUCTION:
+                reasons.append(MISSING_PORTFOLIO_CONTEXT)
+        elif step_index_ref is not None:
+            if (
+                not isinstance(step_index_ref, int)
+                or step_index_ref < 0
+                or step_index_ref >= cu_idx
+                or steps[step_index_ref].kind != ResearchRunStepKind.PORTFOLIO_CONSTRUCTION
+            ):
+                reasons.append(MISSING_PORTFOLIO_CONTEXT)
+        else:
+            # Default upstream: look for the most recent preceding PORTFOLIO_CONSTRUCTION step.
+            preceding = None
+            for idx in range(cu_idx - 1, -1, -1):
+                if steps[idx].kind == ResearchRunStepKind.PORTFOLIO_CONSTRUCTION:
+                    preceding = idx
+                    break
+            if preceding is None:
+                reasons.append(MISSING_PORTFOLIO_CONTEXT)
+
+        if not reasons or reasons[-1] not in (
+            MISSING_PORTFOLIO_CONTEXT,
+            CONTRADICTORY_INPUT,
+        ):
+            # Execution context is optional at plan-validation time; the engine will
+            # fail closed if it is missing at dispatch time. We only validate that
+            # an execution_context_step_id, if provided, points to a prior step.
+            has_inline_execution_context = inputs.get("execution_context") is not None
+            ec_step_id = inputs.get("execution_context_step_id")
+            if not has_inline_execution_context and ec_step_id is not None:
+                resolved = step_index_by_id.get(ec_step_id)
+                if resolved is None or resolved >= cu_idx:
+                    reasons.append(MISSING_EXECUTION_CONTEXT)
+
+    if not reasons:
+        return True, (OK,)
+    return False, tuple(dict.fromkeys(reasons))
+
+
+def build_coin_discovery_run_plan(
+    run_id: str,
+    discovery_inputs: Sequence[Any] | None = None,
+    portfolio_construction_inputs: Sequence[Any] | None = None,
+    execution_context: Any | None = None,
+    controlled_universe_config: Any | None = None,
+    metadata: Mapping[str, str] | None = None,
+) -> ResearchRunPlan:
+    """Convenience builder for the canonical coin-discovery pipeline.
+
+    This is a stub for Step 1; full implementation is deferred to Step 3.
+    """
+    raise NotImplementedError(
+        "build_coin_discovery_run_plan is implemented in MVP-52 Step 3"
     )
