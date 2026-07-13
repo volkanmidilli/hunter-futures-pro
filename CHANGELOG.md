@@ -6,6 +6,23 @@ All important project changes will be recorded in this file.
 
 No unreleased changes.
 
+## MVP-53 — Controlled Universe Export Adapter (Complete)
+
+- SPEC-054 — Controlled Universe Export Adapter approved.
+  - `specs/SPEC-054-Controlled-Universe-Export-Adapter.md` — approved for MVP-53 implementation.
+  - Consumes `ControlledUniverseReport` (MVP-51) and produces deterministic, research-only export artifacts: whitelist, blacklist, and a human-readable per-pair inclusion/exclusion summary.
+  - Research-only output; not a trading signal, execution approval, strategy selector, position-sizing tool, or Freqtrade input.
+- Steps 1–4 — Controlled Universe Export Adapter models, engine, writer, integration tests, and finalization.
+  - `src/hunter/controlled_universe_export_adapter/` package created with `models.py`, `engine.py`, `writer.py`, and `__init__.py`.
+  - Frozen dataclasses: `ControlledUniverseExportConfig`, `ControlledUniverseExportResult`, `ControlledUniversePairExportSummary`, `ControlledUniverseExportError`, `ControlledUniverseExportWriterError`.
+  - Reason codes: `MISSING_REPORT_INPUT`, `BLOCKED_EXPORT`, `NO_INCLUDED_PAIRS`, `EXPORT_RESEARCH_ONLY`, `EXPORT_HUMAN_APPROVAL_REQUIRED`, `NO_FREQTRADE_RUNTIME_CONNECTION`, `NO_AUTOMATIC_CONFIG_MUTATION`.
+  - Pure deterministic engine: `build_controlled_universe_export` and `build_controlled_universe_export_from_run_result` with fail-closed gating for missing, blocked, unsafe, stale, invalid, or empty input; blocked/failed research runs yield an empty whitelist and a blacklist containing all pairs from the report.
+  - Deterministic writers: `controlled_universe_export_to_dict`, `controlled_universe_export_to_json_text`, `controlled_universe_export_to_markdown_text`, plus atomic file writers (`atomic_write_json_controlled_universe_export`, `atomic_write_markdown_controlled_universe_export`, `write_controlled_universe_export`).
+  - Integration tests: end-to-end `ResearchRunResult` → export → written artifact flows, fail-closed serialization, and safety notices.
+  - 49 controlled_universe_export_adapter tests in `tests/test_controlled_universe_export_adapter/`; full suite: 7917 tests passing, 1 skipped.
+  - Version bumped to `0.53.0-dev` in `pyproject.toml`, `src/hunter/__init__.py`, and `CONTROLLED_UNIVERSE_EXPORT_VERSION`.
+  - Tagged `v0.53.0-dev` (local-only; no push).
+
 ## MVP-52 — End-to-End Research Run Orchestrator v2 (Complete)
 
 - SPEC-053 — End-to-End Research Run Orchestrator v2 approved.

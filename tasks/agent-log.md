@@ -1,5 +1,42 @@
 ---
 
+### MVP-53 Implementation and Finalization
+
+Date: 2026-07-13
+
+Agent: WrongStack
+
+Task: Implement and finalize MVP-53 — Controlled Universe Export Adapter (SPEC-054).
+
+Files modified:
+
+- `src/hunter/controlled_universe_export_adapter/models.py` — frozen dataclasses, reason codes, validation, `CONTROLLED_UNIVERSE_EXPORT_VERSION`.
+- `src/hunter/controlled_universe_export_adapter/engine.py` — deterministic `build_controlled_universe_export` and `build_controlled_universe_export_from_run_result` with fail-closed gating for missing, blocked, unsafe, stale, invalid, or empty input; blocked/failed research runs yield empty whitelist and all pairs in blacklist.
+- `src/hunter/controlled_universe_export_adapter/writer.py` — deterministic dict/JSON/Markdown serializers and atomic file writers.
+- `src/hunter/controlled_universe_export_adapter/__init__.py` — public API exports.
+- `tests/test_controlled_universe_export_adapter/test_models.py` — model tests.
+- `tests/test_controlled_universe_export_adapter/test_engine.py` — engine tests.
+- `tests/test_controlled_universe_export_adapter/test_writer.py` — writer tests.
+- `tests/test_controlled_universe_export_adapter/test_integration.py` — end-to-end integration tests.
+- `pyproject.toml` — version bumped to `0.53.0-dev`.
+- `src/hunter/__init__.py` — version bumped to `0.53.0-dev`.
+- `CHANGELOG.md` — added MVP-53 completion section.
+- `docs/handoff/CURRENT_STATE.md` — updated version, current phase, next, and current status for MVP-53.
+- `tasks/active.md` — updated current task, status, completed work, scope, previous task, and definition of done.
+- `tasks/agent-log.md` — this entry.
+
+Project memory update:
+
+- Recorded: MVP-53 — Controlled Universe Export Adapter is complete and tagged `v0.53.0-dev`; latest tagged milestone is MVP-53; no push has occurred.
+
+Checks performed:
+
+- `pytest tests/test_controlled_universe_export_adapter/ -v` — 49 passed.
+- `pytest -q` — 7917 passed, 1 skipped.
+- `git tag` — local tag `v0.53.0-dev` applied.
+
+---
+
 ### MVP-52 Post-Tag Context Sync
 
 Date: 2026-07-13

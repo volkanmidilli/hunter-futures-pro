@@ -4,11 +4,11 @@ Hunter Futures Pro
 
 ## Version
 
-0.52.0-dev (MVP-52 Step 4 finalization complete; version bumped to 0.52.0-dev; tagged `v0.52.0-dev` at `0c65e20`)
+0.53.0-dev (MVP-53 Step 4 finalization complete; version bumped to 0.53.0-dev; tagged `v0.53.0-dev`)
 
 ## Current Phase
 
-The functional MVP chain now runs through **MVP-52 / v0.52.0-dev**, which is complete and tagged `v0.52.0-dev` at `0c65e20`. **MVP-52 — End-to-End Research Run Orchestrator v2** is finalized: `SPEC-053` has been approved and Steps 1–4 (models/dependency validator, engine dispatch/input resolution, writer/plan builder, integration tests, and documentation/version finalization) are all committed. Source code changes in `src/hunter/run_orchestrator/models.py`, `src/hunter/run_orchestrator/engine.py`, `src/hunter/run_orchestrator/writer.py`, and `tests/test_run_orchestrator/`. Tagged `v0.52.0-dev` at `0c65e20`.
+The functional MVP chain now runs through **MVP-53 / v0.53.0-dev**, which is complete and tagged `v0.53.0-dev`. **MVP-53 — Controlled Universe Export Adapter** is finalized: `SPEC-054` has been approved and Steps 1–4 (models, engine, writer, integration tests, and documentation/version finalization) are all committed. Source code changes in `src/hunter/controlled_universe_export_adapter/models.py`, `src/hunter/controlled_universe_export_adapter/engine.py`, `src/hunter/controlled_universe_export_adapter/writer.py`, and `tests/test_controlled_universe_export_adapter/`. Tagged `v0.53.0-dev` (local-only; no push).
 
 ## Background
 
@@ -43,11 +43,21 @@ The repository now contains 48 specs (SPEC-001 through SPEC-048). MVPs beyond th
 - MVP-51: Controlled Universe Bridge Engine (complete, tagged v0.51.0-dev at a75de79)
 - MVP-52: End-to-End Research Run Orchestrator v2 (complete, tagged `v0.52.0-dev` at `0c65e20`)
 
+## Next
+
+MVP-53 — Controlled Universe Export Adapter is complete and tagged `v0.53.0-dev` (local-only; no push). No next MVP has been selected; the next phase requires human direction.
+
 ## Current Status
 
-MVP-49 — Research Audit Health Remediation Bridge is complete and tagged `v0.49.0-dev` at `eff7c93`. Finalization committed at `eff7c93`. SPEC-050 at `6806aa9`; implementation at `1a4c7b2`.
+MVP-53 — Controlled Universe Export Adapter is complete and tagged `v0.53.0-dev` (local-only; no push). SPEC-054 approved; Steps 1–4 (models, engine, writer, integration tests, and documentation/version finalization) completed. Package `src/hunter/controlled_universe_export_adapter/` with `models.py`, `engine.py`, `writer.py`, `__init__.py`. 49 controlled_universe_export_adapter tests in `tests/test_controlled_universe_export_adapter/`. Version bumped to `0.53.0-dev`. Full suite: 7917 tests passing, 1 skipped. No push has occurred.
 
-- SPEC-050: `specs/SPEC-050-Research-Audit-Health-Remediation-Bridge.md` — committed at `6806aa9`.
+MVP-52 — End-to-End Research Run Orchestrator v2 is complete and tagged `v0.52.0-dev` at `0c65e20`. SPEC-053 approved; Steps 1–4 (models/dependency validator, engine dispatch/input resolution, writer/plan builder, integration tests, and documentation/version finalization) are all committed. Version bumped to `0.52.0-dev`. Full suite: 7868 tests passing, 1 skipped. No push has occurred.
+
+MVP-51 — Controlled Universe Bridge Engine is complete and tagged `v0.51.0-dev` at `a75de79`. SPEC-052 approved; Steps 1–4 (models/engine/writer/integration tests/finalization) completed. Produces `ControlledUniverseReport`, which MVP-53 will consume.
+
+MVP-50 — Research Audit Remediation Handoff Packet is complete and tagged `v0.50.0-dev` at `64004c3`. SPEC-051 approved and implemented. Full suite: 7741 tests passing, 1 skipped.
+
+MVP-49 — Research Audit Health Remediation Bridge is complete and tagged `v0.49.0-dev` at `eff7c93`. Finalization committed at `eff7c93`. SPEC-050 at `6806aa9`; implementation at `1a4c7b2`.
 - `src/hunter/research_audit_health_remediation/__init__.py` — public API exports for models, engine, writer, and default paths.
 - `src/hunter/research_audit_health_remediation/models.py` — frozen dataclasses (`RemediationBridgeConfig`, `RemediationBridgeDataQuality`, `RemediationBridgeReport`), reason codes, and validation.
 - `src/hunter/research_audit_health_remediation/mapping.py` — default severity, priority, item-type, and reason-code mapping tables.

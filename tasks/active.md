@@ -2,15 +2,33 @@
 
 ## Current Task
 
-MVP-50 — Research Audit Remediation Handoff Packet is complete and tagged `v0.50.0-dev` at `64004c3`.
-SPEC-051 has been implemented and reviewed.
-Version bumped to 0.50.0-dev.
+MVP-53 — Controlled Universe Export Adapter. SPEC-054 approved. Steps 1–4 (models, engine, writer, integration tests, documentation/version finalization) complete. Full suite: 7917 tests passing, 1 skipped. No push yet.
 
-MVP-51 — Controlled Universe Bridge Engine is complete and tagged `v0.51.0-dev`.
-SPEC-052 approved; Steps 1–4 (models/engine/writer/integration tests/finalization) completed.
-Version bumped to 0.51.0-dev. Latest tag: `v0.51.0-dev` at `a75de79`.
+MVP-52 — End-to-End Research Run Orchestrator v2 is complete and tagged `v0.52.0-dev` at `0c65e20`. SPEC-053 approved; Steps 1–4 (models/dependency validator, engine dispatch/input resolution, writer/plan builder, integration tests, documentation/version finalization) completed. Version bumped to `0.52.0-dev`.
 
-Latest tagged functional milestone: MVP-51 / v0.51.0-dev at commit `a75de79`.
+Latest tagged functional milestone: MVP-53 / v0.53.0-dev.
+
+Completed under MVP-53:
+- SPEC-054 approved.
+- Step 1 (models, engine, tests) completed.
+  - `src/hunter/controlled_universe_export_adapter/models.py` — frozen dataclasses (`ControlledUniverseExportConfig`, `ControlledUniverseExportResult`, `ControlledUniversePairExportSummary`, `ControlledUniverseExportError`), reason codes, validation, and `CONTROLLED_UNIVERSE_EXPORT_VERSION = "0.53.0-dev"`.
+  - `src/hunter/controlled_universe_export_adapter/engine.py` — deterministic `build_controlled_universe_export` and `build_controlled_universe_export_from_run_result` with fail-closed gating for missing, blocked, unsafe, stale, invalid, or empty input; blocked/failed research runs yield empty whitelist and all pairs in blacklist.
+  - `src/hunter/controlled_universe_export_adapter/__init__.py` — public API exports.
+  - 35 model/engine tests added; all passing.
+- Step 2 (writer) completed.
+  - `src/hunter/controlled_universe_export_adapter/writer.py` — deterministic `controlled_universe_export_to_dict`, `controlled_universe_export_to_json_text`, `controlled_universe_export_to_markdown_text`, plus atomic file writers.
+  - Updated `__init__.py` with writer exports.
+  - 14 writer tests added; all passing.
+- Step 3 (integration tests) completed.
+  - `tests/test_controlled_universe_export_adapter/test_integration.py` — end-to-end tests from `ResearchRunResult` through written export artifacts.
+- Step 4 (finalization) completed.
+  - Bumped `pyproject.toml`, `src/hunter/__init__.py`, and `CONTROLLED_UNIVERSE_EXPORT_VERSION` to `0.53.0-dev`.
+  - Updated `CHANGELOG.md`, `docs/handoff/CURRENT_STATE.md`, and `tasks/active.md`.
+  - Full suite: 7917 tests passing, 1 skipped.
+
+Boundaries preserved:
+- No Freqtrade runtime integration, strategy changes, automatic config mutation, exchange/API/server/database/scheduler/live trading behavior.
+- No commit, tag, or push.
 
 Completed under MVP-50:
 - SPEC-051 (Research Audit Remediation Handoff Packet spec) committed.
@@ -86,14 +104,9 @@ Boundaries:
 
 ## Status
 
-MVP-48 — Research Audit Aggregate Health Report is complete and tagged v0.48.0-dev at `779692f`. All steps complete.
-
-The original master plan (MVP-0 through MVP-4) is complete. The repository has expanded to MVP-51 / v0.51.0-dev.
-
-MVP-52 — End-to-End Research Run Orchestrator v2 is complete and tagged `v0.52.0-dev` at `0c65e20`. SPEC-053 approved; Steps 1–4 (models/dependency validator, engine dispatch/input resolution, writer/plan builder, integration tests, and documentation/version finalization) completed. Version `0.52.0-dev`. Full suite: 7868 tests passing, 1 skipped. No push has occurred. No next MVP selected; MVP-53 not started.
-- `v0.48.0-dev` tag applied at `779692f`.
+MVP-53 — Controlled Universe Export Adapter is complete and tagged `v0.53.0-dev`. SPEC-054 approved; Steps 1–4 (models, engine, writer, integration tests, documentation/version finalization) completed. Version `0.53.0-dev`. Full suite: 7917 tests passing, 1 skipped. No push has occurred. No next MVP selected.
 - `data/`, `reports/`, and local artifact areas remain opaque excluded local artifact areas.
-- No MVP-49 candidate has been selected yet.
+- Boundaries preserved: no Freqtrade runtime integration, strategy changes, automatic config mutation, exchange/API/server/database/scheduler/live trading behavior.
 
 MVP-46 — Project Memory Realignment is complete. Version 0.46.0-dev. Full test suite: 7620 tests passing, 1 skipped using `pytest --import-mode=importlib`. All five steps (Step 1 SPEC, Step 2 roadmap/index, Step 3 current-state/task/changelog/version, Step 4 architecture/operations refresh, Step 5 review/finalization) completed. Source changes were documentation-only. Safety boundaries preserved: no runtime code changes, no data/reports/artifact inspection, no production-readiness, trading-readiness, approval, certification, recommendation, or suitability claims. Tag `v0.46.0-dev` applied at commit `b3ea2a4`. [SUPERSEDED]
 
@@ -173,38 +186,47 @@ MVP-14 Step 4 — Final Review and Version Bump (Complete).
 
 ## Scope
 
-Next MVP: MVP-52 — End-to-End Research Run Orchestrator v2.
-- SPEC-053 approved. Step 1 (models/dependency validator) completed. Step 2 (engine dispatch/input resolution) completed.
-- Step 3 (writer/plan builder) not yet started. Version remains 0.51.0-dev until Step 4 finalization.
+Current MVP: MVP-53 — Controlled Universe Export Adapter is complete. SPEC-054 approved; all four SDD steps completed. No further source code changes for this MVP. No next MVP selected; next phase requires human direction.
 
 ### Allowed
-- Planning documents, discussion, SPEC drafting (outside repo or in docs/ if needed).
-- No source code changes until MVP-24 planning approved.
+- Documentation updates only for finalization.
+- No new runtime code changes.
 
 ### Not Allowed
-- No changes to existing source code.
-- No changes to existing tests.
-- No config YAML, no JSON schema, no Freqtrade strategy class, no freqtrade import, no Freqtrade runtime connection, no Binance, no real exchange, no API keys, no live trading, no real orders, no leverage, no shorting, no real entry/exit execution logic, no production data reads/writes, no report feedback into execution paths, no operator feedback into execution paths, no index feedback into execution paths, no search feedback into execution paths, no bundle feedback into execution paths, no chronicle feedback into execution paths, no digest feedback into execution paths, no quality gate feedback into execution paths, no handoff feedback into execution paths, no archive manifest feedback into execution paths, no release-notes feedback into execution paths, no audit-catalog feedback into execution paths, no audit-closure feedback into execution paths, no audit-snapshot feedback into execution paths, no Web UI, no dashboard, no database persistence.
+- No config YAML, no JSON schema, no Freqtrade strategy class, no freqtrade import, no Freqtrade runtime connection, no Binance, no real exchange, no API keys, no live trading, no real orders, no leverage, no shorting, no real entry/exit execution logic, no production data reads/writes, no report feedback into execution paths, no scheduler, daemon, background job runner, server, REST API, database, Web UI, or dashboard.
 - File references and metadata strings remain local strings only and must not be traversed/opened/followed/validated/executed.
+
+## Next Step
+
+No next MVP selected. Awaiting human direction.
 
 ## Previous Task
 
-MVP-23 Step 4 — Final validation and version bump (Complete).
-- Version bumped from 0.22.0-dev to 0.23.0-dev.
+MVP-52 — End-to-End Research Run Orchestrator v2 (Complete).
+- Version bumped from `0.51.0-dev` to `0.52.0-dev`.
 - `pyproject.toml` updated.
 - `src/hunter/__init__.py` updated.
-- `CHANGELOG.md` updated with MVP-23 completion summary.
+- `CHANGELOG.md` updated.
 - `docs/handoff/CURRENT_STATE.md` updated.
 - `tasks/active.md` updated.
 - `tasks/agent-log.md` updated.
-- Step 3 Whole MVP-23 review: APPROVED WITH MINOR NOTES. No critical issues found.
-- research_audit_snapshot tests: 238 passed.
-- Full suite: 4499 tests passing, 1 skipped.
+- Full suite: 7868 tests passing, 1 skipped.
 - All safety invariants verified.
-- MVP-23 complete.
+- MVP-52 complete.
 
 ## Definition of Done
 
+- [x] SPEC-054 approved.
+- [x] MVP-53 Step 1 complete: controlled universe export adapter models and engine implemented.
+- [x] 35 model/engine tests pass.
+- [x] MVP-53 Step 2 complete: writer implemented.
+- [x] 14 writer tests pass.
+- [x] MVP-53 Step 3 complete: integration tests implemented.
+- [x] MVP-53 Step 4 complete: finalization and version bump to `0.53.0-dev`.
+- [x] Full suite 7917 tests passing, 1 skipped.
+- [x] No defects found.
+- [x] All safety invariants verified.
+- [x] MVP-53 complete.
 - [x] SPEC-012 approved with notes and polished.
 - [x] MVP-11 Step 1 complete: review models and engine implemented.
 - [x] MVP-11 Step 2 complete: review writer implemented.
@@ -381,7 +403,3 @@ MVP-23 Step 4 — Final validation and version bump (Complete).
 ## Backlog (Non-Blocking)
 - Review `research_audit_snapshot` `data_quality.sections_present` / `sections_missing` reporting so successful snapshots correctly reflect the number of sections present (8) versus missing (0). Current behavior is fail-closed (0 / 8) and SPEC-compliant because `build_audit_snapshot_data_quality` does not receive the section list in its SPEC-024 signature.
 - Review `EMPTY_CATALOG` reason code reachability in `research_audit_catalog/engine.py` vs SPEC-022 §3.5. Current behavior is fail-closed; `EMPTY_CATALOG` is defined but not emitted.
-
-## Next Step
-
-Next MVP: MVP-52 — End-to-End Research Run Orchestrator v2. SPEC-053 approved. Step 1 (models/dependency validator) completed. Step 2 (engine dispatch/input resolution) completed. Step 3 (writer/plan builder) not yet started.

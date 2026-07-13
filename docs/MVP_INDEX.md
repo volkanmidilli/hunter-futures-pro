@@ -27,7 +27,7 @@ Excluded from evidence:
 - MVP-0 and MVP-1 have no `-dev` tag in the current tag list; this is recorded as expected for pre-`v0.8.0-dev` history.
 - MVP-46 is a documentation-only realignment step; its status is `tagged` at `v0.46.0-dev`.
 - The original master plan is MVP-0 through MVP-4.
-- The expanded chain is MVP-5 through MVP-51.
+- The expanded chain is MVP-5 through MVP-53.
 - MVP-47 is complete and tagged at `v0.47.0-dev`.
 - MVP-48 is complete and tagged at `v0.48.0-dev` (commit `779692f`).
 - MVP-49 is complete and tagged `v0.49.0-dev` at `eff7c93`.
@@ -40,6 +40,7 @@ Excluded from evidence:
 - `SPEC-051` exists for MVP-50 Research Audit Remediation Handoff Packet. Tagged `v0.50.0-dev` at `64004c3`.
 - `SPEC-052` exists for MVP-51 Controlled Universe Bridge Engine. Tagged `v0.51.0-dev` at `a75de79`.
 - `SPEC-053` exists for MVP-52 End-to-End Research Run Orchestrator v2. Complete; tagged `v0.52.0-dev` at `0c65e20`.
+- `SPEC-054` exists for MVP-53 Controlled Universe Export Adapter. Complete; tagged `v0.53.0-dev` (local-only; no push).
 
 ## MVP Index Table
 
@@ -97,7 +98,8 @@ Excluded from evidence:
 | MVP-49 | Research Audit Health Remediation Bridge | `SPEC-050` | `v0.49.0-dev` | `research_audit_health_remediation` | `test_research_audit_health_remediation` | tagged | Tagged at `eff7c93` |
 | MVP-50 | Research Audit Remediation Handoff Packet | `SPEC-051` | `v0.50.0-dev` | `research_audit_remediation_handoff` | `test_research_audit_remediation_handoff` | tagged | Tagged at `64004c3` |
 | MVP-51 | Controlled Universe Bridge Engine | `SPEC-052` | `v0.51.0-dev` | `controlled_universe` | `test_controlled_universe` | tagged | Tagged at `a75de79` |
-| MVP-52 | End-to-End Research Run Orchestrator v2 | `SPEC-053` | `v0.52.0-dev` | `run_orchestrator` | `test_run_orchestrator` | tagged | Tagged at `0c65e20`; no push; MVP-53 unselected |
+| MVP-52 | End-to-End Research Run Orchestrator v2 | `SPEC-053` | `v0.52.0-dev` | `run_orchestrator` | `test_run_orchestrator` | tagged | Tagged at `0c65e20`; no push |
+| MVP-53 | Controlled Universe Export Adapter | `SPEC-054` | `v0.53.0-dev` | `controlled_universe_export_adapter` | `test_controlled_universe_export_adapter` | tagged | Tagged `v0.53.0-dev` (local-only; no push) |
 
 ## Package Mapping
 

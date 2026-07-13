@@ -139,11 +139,10 @@ When continuing work on an MVP:
 
 ## Current MVP Context
 
-- Completed MVP: MVP-52 End-to-End Research Run Orchestrator v2
-- SPEC: `specs/SPEC-053-End-to-End-Research-Run-Orchestrator-v2.md` — approved during MVP-52 cycle
-- Implementation (Steps 1–3: models/dependency validator, engine dispatch/input resolution, writer/plan builder, integration tests): committed during MVP-52 cycle
-- Step 4 (docs/version metadata): committed during MVP-52 cycle
-- Latest tag: `v0.52.0-dev` at `0c65e20` (MVP-52 tagged); no push occurred
-- Active MVP: None; next MVP (MVP-53) not selected. Version is `0.52.0-dev`.
+- Completed MVP: MVP-53 Controlled Universe Export Adapter
+- SPEC: `specs/SPEC-054-Controlled-Universe-Export-Adapter.md` — approved during MVP-53 cycle
+- Implementation (Steps 1–4: models, engine, writer, integration tests, docs/version finalization): committed during MVP-53 cycle
+- Latest tag: `v0.53.0-dev` (MVP-53 tagged); no push occurred
+- Active MVP: None; next MVP not selected. Version is `0.53.0-dev`.
 - Tag policy: never tag automatically; the human must provide the exact tag or commit command.
 - Safety: autonomous workflow only touches docs/version/task memory in Step 4; no runtime code changes, no tests changed, no data/reports inspection, no trading/API/Freqtrade/server/database/scheduler changes, no production-readiness, trading-readiness, approval, certification, recommendation, or suitability claims.
