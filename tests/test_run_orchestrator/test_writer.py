@@ -240,6 +240,72 @@ class TestDictConversion:
         assert data["safety_flags"]["is_safe"] is True
         assert set(data["reason_codes"]) == {OK, RESEARCH_ONLY, NOT_TRADING_ADVICE}
 
+    def test_dict_includes_controlled_universe_data_quality_fields(
+        self, fixed_generated_at: datetime
+    ) -> None:
+        data_quality = ResearchRunDataQuality(
+            total_steps=3,
+            successful_steps=2,
+            failed_steps=0,
+            blocked_steps=1,
+            skipped_steps=0,
+            controlled_universe_steps=1,
+            controlled_universe_blocked=1,
+            controlled_universe_universe_count=2,
+            controlled_universe_watchlist_count=1,
+            controlled_universe_blocked_count=1,
+            sections_present=("RUN_ID", "STEPS", "DATA_QUALITY", "SAFETY_FLAGS"),
+            sections_expected=("RUN_ID", "STEPS", "DATA_QUALITY", "SAFETY_FLAGS"),
+            notes=("Run executed 3 step(s): 2 success, 0 failed, 1 blocked, 0 skipped.",),
+        )
+        result = ResearchRunResult(
+            run_id="r-cu",
+            config=ResearchRunConfig(generated_at=fixed_generated_at),
+            plan=ResearchRunPlan(run_id="r-cu", steps=()),
+            steps=(),
+            artifacts=(),
+            data_quality=data_quality,
+            safety_flags=ResearchRunSafetyFlags(),
+            reason_codes=(RESEARCH_ONLY,),
+            generated_at=fixed_generated_at,
+            state=ResearchRunState.COMPLETED,
+            metadata={},
+            notes=(),
+        )
+        data = research_run_result_to_dict(result)["data_quality"]
+        assert data["controlled_universe_steps"] == 1
+        assert data["controlled_universe_blocked"] == 1
+        assert data["controlled_universe_universe_count"] == 2
+        assert data["controlled_universe_watchlist_count"] == 1
+        assert data["controlled_universe_blocked_count"] == 1
+        # Existing fields remain present.
+        assert data["total_steps"] == 3
+        assert data["blocked_steps"] == 1
+
+    def test_dict_defaults_controlled_universe_data_quality_fields_to_zero(
+        self, fixed_generated_at: datetime
+    ) -> None:
+        result = ResearchRunResult(
+            run_id="r-default",
+            config=ResearchRunConfig(generated_at=fixed_generated_at),
+            plan=ResearchRunPlan(run_id="r-default", steps=()),
+            steps=(),
+            artifacts=(),
+            data_quality=ResearchRunDataQuality(),
+            safety_flags=ResearchRunSafetyFlags(),
+            reason_codes=(RESEARCH_ONLY,),
+            generated_at=fixed_generated_at,
+            state=ResearchRunState.COMPLETED,
+            metadata={},
+            notes=(),
+        )
+        data = research_run_result_to_dict(result)["data_quality"]
+        assert data["controlled_universe_steps"] == 0
+        assert data["controlled_universe_blocked"] == 0
+        assert data["controlled_universe_universe_count"] == 0
+        assert data["controlled_universe_watchlist_count"] == 0
+        assert data["controlled_universe_blocked_count"] == 0
+
     def test_dict_serializes_enums_and_datetimes(self, sample_result: ResearchRunResult) -> None:
         data = research_run_result_to_dict(sample_result)
         assert data["state"] == ResearchRunState.COMPLETED.value
@@ -324,6 +390,40 @@ class TestMarkdownText:
         assert "## Artifacts" in text
         assert "## Data Quality" in text
         assert "## Safety Flags" in text
+
+    def test_markdown_includes_controlled_universe_data_quality_fields(self) -> None:
+        data_quality = ResearchRunDataQuality(
+            controlled_universe_steps=1,
+            controlled_universe_blocked=1,
+            controlled_universe_universe_count=2,
+            controlled_universe_watchlist_count=3,
+            controlled_universe_blocked_count=4,
+        )
+        result = _make_result_for_step(
+            ResearchRunStep(kind=ResearchRunStepKind.CONTROLLED_UNIVERSE, step_id="cu1", inputs={}),
+            generated_at=datetime(2024, 1, 1, 12, 0, 0, tzinfo=timezone.utc),
+            run_id="r-cu",
+        )
+        result = ResearchRunResult(
+            run_id=result.run_id,
+            config=result.config,
+            plan=result.plan,
+            steps=result.steps,
+            artifacts=result.artifacts,
+            data_quality=data_quality,
+            safety_flags=result.safety_flags,
+            reason_codes=result.reason_codes,
+            generated_at=result.generated_at,
+            state=result.state,
+            metadata=result.metadata,
+            notes=result.notes,
+        )
+        text = research_run_result_to_markdown_text(result)
+        assert "controlled_universe_steps" in text
+        assert "controlled_universe_blocked" in text
+        assert "controlled_universe_universe_count" in text
+        assert "controlled_universe_watchlist_count" in text
+        assert "controlled_universe_blocked_count" in text
 
     def test_markdown_no_action_commands(self, sample_result: ResearchRunResult) -> None:
         text = research_run_result_to_markdown_text(sample_result).lower()

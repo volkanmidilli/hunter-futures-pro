@@ -29,7 +29,7 @@ if TYPE_CHECKING:
     from hunter.execution.models import ExecutionContext
     from hunter.portfolio_construction.models import PortfolioConstructionReport
 
-RUN_ORCHESTRATOR_VERSION: str = "0.30.0-dev"
+RUN_ORCHESTRATOR_VERSION: str = "0.52.0-dev"
 
 
 # ---------------------------------------------------------------------------

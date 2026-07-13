@@ -38,7 +38,7 @@ from hunter.run_orchestrator import (
 
 class TestPublicExports:
     def test_version_exported(self) -> None:
-        assert RUN_ORCHESTRATOR_VERSION == "0.30.0-dev"
+        assert RUN_ORCHESTRATOR_VERSION == "0.52.0-dev"
 
     def test_reason_codes_exported(self) -> None:
         assert isinstance(RUN_ORCHESTRATOR_REASON_CODES, frozenset)
@@ -92,7 +92,7 @@ class TestModelValidation:
         assert cfg.output_dir == "data/run_orchestrator/latest_run"
         assert cfg.fail_fast is True
         assert cfg.write_artifacts is True
-        assert cfg.project_version == "0.30.0-dev"
+        assert cfg.project_version == "0.52.0-dev"
 
     def test_research_run_config_rejects_empty_output_dir(self) -> None:
         with pytest.raises(ValueError, match="output_dir"):
