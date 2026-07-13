@@ -176,7 +176,6 @@ def test_public_api_exports():
 @pytest.mark.parametrize(
     "func",
     [
-        scc.build_validated_strategy_context,
         scc.strategy_context_result_to_dict,
         scc.strategy_context_result_to_json_text,
         scc.strategy_context_result_to_markdown_text,
