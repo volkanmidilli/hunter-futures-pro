@@ -6,6 +6,23 @@ All important project changes will be recorded in this file.
 
 No unreleased changes.
 
+## MVP-54 — Operational One-Call Coin-Discovery Pipeline Runner (Complete)
+
+- SPEC-055 — Operational One-Call Coin-Discovery Pipeline Runner approved.
+  - `specs/SPEC-055-Operational-One-Call-Coin-Discovery-Pipeline-Runner.md` — approved for MVP-54 implementation.
+  - Provides a single public function `run_coin_discovery_pipeline()` that converts raw `DiscoveryInput` and `ExecutionContext` into a `CoinDiscoveryPipelineResult` with a research-only controlled-universe export.
+  - Fail-closed behavior: blocked execution context, failed run, or partial run returns an empty whitelist with explicit reason codes.
+  - No direct file reads in the engine run path; no Freqtrade runtime integration, strategy changes, automatic config mutation, exchange/API/server/database/scheduler/live trading behavior, or actionable trading signals.
+- Steps 1–4 — Coin Discovery Pipeline Runner models, engine, writer, integration tests, and finalization.
+  - `src/hunter/coin_discovery_pipeline/models.py` — frozen dataclasses, enums, reason codes, and validation.
+  - `src/hunter/coin_discovery_pipeline/__init__.py` — public API exports.
+  - `src/hunter/coin_discovery_pipeline/engine.py` — one-call runner wiring research-run orchestrator and controlled-universe export adapter with SPEC-055 output paths.
+  - `src/hunter/coin_discovery_pipeline/writer.py` — deterministic JSON/markdown pipeline packet writer with human-audit safety notice.
+  - `tests/test_coin_discovery_pipeline/test_models.py`, `test_engine.py`, `test_writer.py`, `test_integration.py` — comprehensive unit and integration tests.
+  - 101 coin_discovery_pipeline tests in `tests/test_coin_discovery_pipeline/`; full suite: 8018 tests passing, 1 skipped.
+  - Version bumped to `0.54.0-dev` in `VERSION`, `pyproject.toml`, `src/hunter/__init__.py`, and `COIN_DISCOVERY_PIPELINE_VERSION`.
+  - Tag `v0.54.0-dev` pending.
+
 ## MVP-53 — Controlled Universe Export Adapter (Complete)
 
 - SPEC-054 — Controlled Universe Export Adapter approved.

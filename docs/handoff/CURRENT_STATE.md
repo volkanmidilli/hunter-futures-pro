@@ -4,11 +4,11 @@ Hunter Futures Pro
 
 ## Version
 
-0.53.0-dev (MVP-53 Step 4 finalization complete; version bumped to 0.53.0-dev; tagged `v0.53.0-dev`)
+0.54.0-dev (MVP-54 Step 5 finalization complete; version bumped to 0.54.0-dev; tag `v0.54.0-dev` pending)
 
 ## Current Phase
 
-The functional MVP chain now runs through **MVP-53 / v0.53.0-dev**, which is complete and tagged `v0.53.0-dev`. **MVP-53 — Controlled Universe Export Adapter** is finalized: `SPEC-054` has been approved and Steps 1–4 (models, engine, writer, integration tests, and documentation/version finalization) are all committed. Source code changes in `src/hunter/controlled_universe_export_adapter/models.py`, `src/hunter/controlled_universe_export_adapter/engine.py`, `src/hunter/controlled_universe_export_adapter/writer.py`, and `tests/test_controlled_universe_export_adapter/`. Tagged `v0.53.0-dev` (local-only; no push).
+The functional MVP chain now runs through **MVP-54 / v0.54.0-dev**, which is complete with tag `v0.54.0-dev` pending. **MVP-54 — Operational One-Call Coin-Discovery Pipeline Runner** is finalized: `SPEC-055` has been approved and Steps 1–5 (models, engine, writer, integration tests, and documentation/version finalization) are all committed. Source code changes in `src/hunter/coin_discovery_pipeline/models.py`, `src/hunter/coin_discovery_pipeline/engine.py`, `src/hunter/coin_discovery_pipeline/writer.py`, `src/hunter/coin_discovery_pipeline/__init__.py`, and `tests/test_coin_discovery_pipeline/`. Tag `v0.54.0-dev` is pending (local-only; no push).
 
 ## Background
 

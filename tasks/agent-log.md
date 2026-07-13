@@ -1,5 +1,48 @@
 ---
 
+### MVP-54 Step 5 — Version Bump and Documentation Finalization
+
+Date: 2026-07-13
+
+Agent: WrongStack
+
+Task: Complete Step 5 of MVP-54 — Operational One-Call Coin-Discovery Pipeline Runner (SPEC-055). Bump version, update docs/memory, verify tests, and record MVP-54 as complete with pending tag `v0.54.0-dev`.
+
+Files modified:
+
+- `VERSION` — bumped to `0.54.0-dev`.
+- `pyproject.toml` — project version bumped to `0.54.0-dev`.
+- `src/hunter/__init__.py` — `__version__` bumped to `0.54.0-dev`.
+- `CHANGELOG.md` — added MVP-54 completion section.
+- `docs/MVP_INDEX.md` — added MVP-54 row and SPEC-055 bullet; expanded chain updated to MVP-54.
+- `docs/handoff/CURRENT_STATE.md` — updated version and current phase to MVP-54 / v0.54.0-dev with tag pending.
+- `tasks/active.md` — updated current task and added Step 5 completion summary.
+- `tasks/agent-log.md` — added this entry.
+- `AGENTS.md` — updated active MVP and version guidance.
+
+Checks performed:
+
+- `pytest tests/test_coin_discovery_pipeline/ -q` — 101 passed.
+- `pytest -q` — 8018 passed, 1 skipped.
+- `biome check` on changed files — passed.
+- Verified `src/hunter/coin_discovery_pipeline/models.py` already defines `COIN_DISCOVERY_PIPELINE_VERSION = "0.54.0-dev"` (set in Step 1).
+- Verified commit `d60cf74` contains only MVP-54 Step 4 integration/path-alignment work.
+- Confirmed SPEC-055 path alignment: orchestrator receives `<output_dir>/<run_id>`; pipeline JSON goes to `<output_dir>/<run_id>/pipeline.json`; pipeline markdown goes to `reports/<pkg_name>/<run_id>/pipeline.md`; controlled-universe export JSON goes to `<output_dir>/<run_id>/controlled_universe_export/latest_export.json`; controlled-universe export markdown goes to `reports/<pkg_name>/<run_id>/controlled_universe_export/latest_export.md`.
+
+Boundaries preserved:
+
+- No runtime feature changes.
+- No Freqtrade runtime integration, strategy changes, automatic config mutation, exchange/API/server/database/scheduler/live trading behavior.
+- No data/ or reports/ inspection.
+- No commit, tag, or push.
+
+Residual notes:
+
+- Tag `v0.54.0-dev` is pending; Git mutation (commit, tag, push) intentionally deferred per instructions.
+- Untracked `tests/test_human_review_audit_bundle/__init__.py`, `tests/test_open_interest/__init__.py`, and `tests/test_relative_strength/__init__.py` were left untouched.
+
+---
+
 ### MVP-54 Step 1 — Models and Public API
 
 Date: 2026-07-13

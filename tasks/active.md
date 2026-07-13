@@ -2,28 +2,22 @@
 
 ## Current Task
 
-MVP-54 — Operational One-Call Coin-Discovery Pipeline Runner. SPEC-055 approved. Step 1 in progress: create `hunter.coin_discovery_pipeline` package with public models, enums, reason codes, version constant, and config/result contracts; no runner execution logic or writer implementation yet.
+MVP-54 — Operational One-Call Coin-Discovery Pipeline Runner. SPEC-055 approved. Steps 1–5 (models, engine, writer, integration tests, and documentation/version finalization) complete. Version bumped to `0.54.0-dev`; tag `v0.54.0-dev` pending. No push yet.
 
 MVP-53 — Controlled Universe Export Adapter. SPEC-054 approved. Steps 1–4 (models, engine, writer, integration tests, documentation/version finalization) complete. Full suite: 7917 tests passing, 1 skipped. No push yet.
 
 MVP-52 — End-to-End Research Run Orchestrator v2 is complete and tagged `v0.52.0-dev` at `0c65e20`. SPEC-053 approved; Steps 1–4 (models/dependency validator, engine dispatch/input resolution, writer/plan builder, integration tests, documentation/version finalization) completed. Version bumped to `0.52.0-dev`.
 
-Latest tagged functional milestone: MVP-53 / v0.53.0-dev.
+Latest tagged functional milestone: MVP-53 / v0.53.0-dev. MVP-54 tag pending.
 
-Completed under MVP-54 (Step 1):
-- `src/hunter/coin_discovery_pipeline/models.py` — frozen dataclasses (`CoinDiscoveryPipelineConfig`, `CoinDiscoveryPipelineResult`, `CoinDiscoveryPipelineSafetyFlags`, `CoinDiscoveryPipelineError`), `PipelineState` enum, reason codes, version constant `COIN_DISCOVERY_PIPELINE_VERSION = "0.54.0-dev"`, and validation.
-- `src/hunter/coin_discovery_pipeline/__init__.py` — public API exports and validation stubs for `run_coin_discovery_pipeline` and writer functions.
-- `tests/test_coin_discovery_pipeline/test_models.py` — 38 model/API tests.
-- Focused tests: `pytest tests/test_coin_discovery_pipeline/test_models.py -v` — 38 passed, 1 warning (fixed).
-- Full suite: `pytest -v` — 7955 passed, 1 skipped, 1 warning (existing deprecation).
+Completed under MVP-54 (Step 5):
+- Version bumped to `0.54.0-dev` in `VERSION`, `pyproject.toml`, `src/hunter/__init__.py`.
+- `COIN_DISCOVERY_PIPELINE_VERSION` was already `0.54.0-dev` (set in Step 1).
+- Updated `CHANGELOG.md`, `docs/MVP_INDEX.md`, `docs/handoff/CURRENT_STATE.md`, `tasks/active.md`, `tasks/agent-log.md`, `AGENTS.md`.
+- Focused tests: `pytest tests/test_coin_discovery_pipeline/ -q` — 101 passed.
+- Full suite: `pytest -q` — 8018 passed, 1 skipped.
 - Lint (`biome`) passed on changed files.
-- No commit, tag, or push yet.
-
-Remaining MVP-54 steps:
-- Step 2: Implement pipeline engine (`run_coin_discovery_pipeline`).
-- Step 3: Implement pipeline writer (dict/JSON/Markdown serializers and atomic writers).
-- Step 4: Add integration tests and finalize public API.
-- Step 5: Bump version and update docs.
+- Tag `v0.54.0-dev` pending; no commit, tag, or push yet.
 
 Boundaries preserved:
 - No Freqtrade runtime integration, strategy changes, automatic config mutation, exchange/API/server/database/scheduler/live trading behavior.
