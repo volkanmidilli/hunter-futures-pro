@@ -33,18 +33,27 @@ Remaining MVP-51 steps:
 Completed under MVP-52:
 - SPEC-053 approved.
 - Step 1 (models/dependency validator) completed.
-- New `ResearchRunStepKind.CONTROLLED_UNIVERSE`, reason codes, `ControlledUniverseRunInput`, `RunInputResolution`, extended `ResearchRunDataQuality`, and `validate_run_plan_dependencies`.
-- 21 new run_orchestrator tests (107 total, was 86).
-- Full suite: 7833 tests passing, 1 skipped.
+  - New `ResearchRunStepKind.CONTROLLED_UNIVERSE`, reason codes, `ControlledUniverseRunInput`, `RunInputResolution`, extended `ResearchRunDataQuality`, and `validate_run_plan_dependencies`.
+  - 21 new run_orchestrator tests (107 total, was 86).
+  - Full suite: 7833 tests passing, 1 skipped.
 - Step 2 (engine dispatch/input resolution) completed.
-- Added `CONTROLLED_UNIVERSE` step dispatch, `_dispatch_step` now accepts `prior_results`, `PORTFOLIO_CONSTRUCTION` returns full report under `data["report"]`, added controlled-universe input resolution, stale-input detection, deterministic blocking reason codes, and updated `PortfolioConstructionDataQuality` with `stale` flag.
-- 25 new run_orchestrator tests (132 total, was 107).
-- Full suite: 7858 tests passing, 1 skipped, 1 warning.
+  - Added `CONTROLLED_UNIVERSE` step dispatch, `_dispatch_step` now accepts `prior_results`, `PORTFOLIO_CONSTRUCTION` returns full report under `data["report"]`, controlled-universe input resolution, stale-input detection, deterministic blocking reason codes, and updated `PortfolioConstructionDataQuality` with `stale` flag.
+  - 25 new run_orchestrator tests (132 total, was 107).
+  - Full suite: 7858 tests passing, 1 skipped, 1 warning.
+- Step 3 (writer/plan builder) completed.
+  - Added `build_coin_discovery_run_plan` convenience builder.
+  - Serialized controlled-universe data quality counters in `research_run_result_to_dict` and Markdown output.
+  - Aligned `RUN_ORCHESTRATOR_VERSION` to `0.52.0-dev`.
+  - Updated `tests/test_run_orchestrator/test_writer.py` and `tests/test_run_orchestrator/test_models.py`.
+  - Full suite: 7868 tests passing, 1 skipped.
+- Step 4 (metadata/docs/version finalization + version bump to 0.52.0-dev) completed.
+  - Bumped `VERSION`, `pyproject.toml`, and `src/hunter/__init__.py` to `0.52.0-dev`.
+  - Updated `CHANGELOG.md`, `docs/MVP_INDEX.md`, `docs/handoff/CURRENT_STATE.md`, `tasks/active.md`, and `tasks/agent-log.md`.
+  - Performed project memory update.
+  - Full suite: 7868 tests passing, 1 skipped.
 
 Remaining MVP-52 steps:
-- Step 2 (engine dispatch/input resolution): completed.
-- Step 3 (writer/plan builder): not started.
-- Step 4 (metadata/docs/version finalization + version bump to 0.52.0-dev): not started.
+- None. MVP-52 is complete and ready for tagging `v0.52.0-dev`. Tag application requires human approval.
 
 Remaining MVP-50 steps:
 - None. MVP-50 is tagged.
@@ -81,12 +90,7 @@ MVP-48 — Research Audit Aggregate Health Report is complete and tagged v0.48.0
 
 The original master plan (MVP-0 through MVP-4) is complete. The repository has expanded to MVP-51 / v0.51.0-dev.
 
-MVP-52 — End-to-End Research Run Orchestrator v2 is in progress.
-SPEC-053 approved; Step 1 (models/dependency validator) completed; Step 2 (engine dispatch/input resolution) completed.
-Step 3 (writer/plan builder) not yet started. Version remains 0.51.0-dev until Step 4.
-
-Known anomalies:
-- `v0.32.0-dev` tag missing from tag list (recorded as anomaly; no automatic action).
+MVP-52 — End-to-End Research Run Orchestrator v2 is complete. SPEC-053 approved; Steps 1–4 (models/dependency validator, engine dispatch/input resolution, writer/plan builder, integration tests, and documentation/version finalization) completed. Version bumped to `0.52.0-dev` in `VERSION`, `pyproject.toml`, and `src/hunter/__init__.py`. `RUN_ORCHESTRATOR_VERSION` aligned to `0.52.0-dev`. Full suite: 7868 tests passing, 1 skipped. `v0.52.0-dev` tag is pending human approval. No next MVP selected; MVP-53 not started.
 - `v0.48.0-dev` tag applied at `779692f`.
 - `data/`, `reports/`, and local artifact areas remain opaque excluded local artifact areas.
 - No MVP-49 candidate has been selected yet.

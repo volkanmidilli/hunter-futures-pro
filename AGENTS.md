@@ -139,11 +139,11 @@ When continuing work on an MVP:
 
 ## Current MVP Context
 
-- Completed MVP: MVP-51 Controlled Universe Bridge Engine
-- SPEC: `specs/SPEC-052-Controlled-Universe-Bridge-Engine.md` — approved during MVP-51 cycle
-- Implementation (Steps 1–3: models/engine/writer/integration tests): committed during MVP-51 cycle
-- Step 4 (docs/version metadata): committed during MVP-51 cycle
-- Latest tag: `v0.51.0-dev` at `a75de79` (MVP-51 tagged)
-- Active MVP: MVP-52 — End-to-End Research Run Orchestrator v2. SPEC-053 approved; Step 1 (models/dependency validator) completed; Step 2 (engine dispatch/input resolution) not yet started. Version remains 0.51.0-dev until Step 4.
+- Completed MVP: MVP-52 End-to-End Research Run Orchestrator v2
+- SPEC: `specs/SPEC-053-End-to-End-Research-Run-Orchestrator-v2.md` — approved during MVP-52 cycle
+- Implementation (Steps 1–3: models/dependency validator, engine dispatch/input resolution, writer/plan builder, integration tests): committed during MVP-52 cycle
+- Step 4 (docs/version metadata): committed during MVP-52 cycle
+- Latest tag: `v0.51.0-dev` at `a75de79` (MVP-51); `v0.52.0-dev` tag pending human approval
+- Active MVP: None; next MVP (MVP-53) not selected. Version is `0.52.0-dev`.
 - Tag policy: never tag automatically; the human must provide the exact tag or commit command.
 - Safety: autonomous workflow only touches docs/version/task memory in Step 4; no runtime code changes, no tests changed, no data/reports inspection, no trading/API/Freqtrade/server/database/scheduler changes, no production-readiness, trading-readiness, approval, certification, recommendation, or suitability claims.

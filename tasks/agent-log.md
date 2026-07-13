@@ -1,5 +1,70 @@
 ---
 
+### MVP-52 Step 4 — Documentation and Version Finalization
+
+Date: 2026-07-13
+
+Agent: WrongStack
+
+Task: Complete MVP-52 Step 4 (documentation, version bump, and project memory update) per SPEC-053 and AGENTS.md.
+
+Files modified:
+
+- `VERSION` — bumped to `0.52.0-dev`.
+- `pyproject.toml` — bumped project version to `0.52.0-dev`.
+- `src/hunter/__init__.py` — bumped `__version__` to `0.52.0-dev`.
+- `CHANGELOG.md` — added `MVP-52 — End-to-End Research Run Orchestrator v2 (Complete)` section summarizing SPEC-053 approval, Steps 1–4 implementation, and version/tag status.
+- `docs/MVP_INDEX.md` — updated MVP-52 row to `committed` with `v0.52.0-dev` tag target and Step 4 completion note.
+- `docs/handoff/CURRENT_STATE.md` — updated version, current phase, expanded chain status, MVP-52 current status, and next step.
+- `tasks/active.md` — recorded Step 3 and Step 4 completion, updated remaining steps, and marked MVP-52 complete and ready for tagging.
+- `tasks/agent-log.md` — this entry.
+
+Project memory update:
+
+- Recorded: MVP-52 is complete at version 0.52.0-dev, all four steps committed, `v0.52.0-dev` tag pending human approval, no MVP-53 selected.
+
+Test results:
+
+- `pytest tests/test_run_orchestrator/ -q` — 142 passed.
+- `pytest -q` — 7868 passed, 1 skipped.
+
+Findings:
+
+- All authoritative version sources (`VERSION`, `pyproject.toml`, `src/hunter/__init__.py`) are now aligned to `0.52.0-dev`.
+- `RUN_ORCHESTRATOR_VERSION` in `src/hunter/run_orchestrator/models.py` is already aligned to `0.52.0-dev` from Step 3.
+- No runtime code changes were made in Step 4.
+- No `data/` or `reports/` inspection occurred.
+- `v0.32.0-dev` tag remains a recorded historical anomaly; no automatic action taken.
+
+Next: Human approval to apply `git tag v0.52.0-dev` and select/approve the next MVP (MVP-53 not started).
+
+---
+
+### MVP-52 Step 3 — Writer Serialization and Version Alignment
+
+Date: 2026-07-13
+
+Agent: WrongStack
+
+Task: Complete remaining MVP-52 Step 3 requirements (writer serialization, focused tests, and `RUN_ORCHESTRATOR_VERSION` alignment).
+
+Files modified:
+
+- `src/hunter/run_orchestrator/writer.py` — added controlled-universe data quality counters (`controlled_universe_steps`, `controlled_universe_blocked`, `controlled_universe_universe_count`, `controlled_universe_watchlist_count`, `controlled_universe_blocked_count`) to `_data_quality_to_dict` and `research_run_result_to_markdown_text`.
+- `src/hunter/run_orchestrator/models.py` — aligned `RUN_ORCHESTRATOR_VERSION` to `0.52.0-dev`.
+- `tests/test_run_orchestrator/test_writer.py` — added focused tests for JSON and Markdown serialization of controlled-universe data quality fields.
+- `tests/test_run_orchestrator/test_models.py` — updated version assertions to `0.52.0-dev`.
+
+Test results:
+
+- `pytest tests/test_run_orchestrator/test_writer.py -q` — 28 passed.
+- `pytest tests/test_run_orchestrator/ -q` — 142 passed.
+- `pytest -q` — 7868 passed, 1 skipped.
+
+Next: Step 4 — metadata/docs/version finalization and project memory update.
+
+---
+
 ### MVP-52 Step 2 — Engine Dispatch and Input Resolution for Controlled Universe
 
 Date: 2026-07-13

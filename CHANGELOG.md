@@ -6,6 +6,21 @@ All important project changes will be recorded in this file.
 
 No unreleased changes.
 
+## MVP-52 — End-to-End Research Run Orchestrator v2 (Complete)
+
+- SPEC-053 — End-to-End Research Run Orchestrator v2 approved.
+  - `specs/SPEC-053-End-to-End-Research-Run-Orchestrator-v2.md` — approved for MVP-52 implementation.
+  - Extends the research run orchestrator to support a `controlled_universe` step kind with deterministic dispatch, input resolution, and writer serialization.
+  - Research-only output; not a trading signal, execution approval, strategy selector, or position-sizing tool.
+- Steps 1–4 — End-to-End Research Run Orchestrator v2 models, dependency validator, engine dispatch, plan builder, writer serialization, integration tests, and finalization.
+  - `src/hunter/run_orchestrator/models.py` — added `ResearchRunStepKind.CONTROLLED_UNIVERSE`, new reason codes (`MISSING_PORTFOLIO_CONTEXT`, `MISSING_EXECUTION_CONTEXT`, `STALE_INPUT`, `UPSTREAM_STEP_FAILED`, `UPSTREAM_STEP_BLOCKED`, `INVALID_PORTFOLIO_SUMMARY`, `EXECUTION_BLOCKED`, `MACRO_MODE_NONE`, `CONTRADICTORY_INPUT`, `INVALID_CONTROLLED_UNIVERSE_INPUT`), `ControlledUniverseRunInput`, `RunInputResolution` helper, extended `ResearchRunDataQuality` with controlled-universe counters, and aligned `RUN_ORCHESTRATOR_VERSION` to `0.52.0-dev`.
+  - `src/hunter/run_orchestrator/engine.py` — added `validate_run_plan_dependencies`, `CONTROLLED_UNIVERSE` step dispatch in `_dispatch_step`, stale-input detection, deterministic blocking reason codes, and `build_coin_discovery_run_plan` convenience builder.
+  - `src/hunter/run_orchestrator/writer.py` — serialized controlled-universe data quality counters (`controlled_universe_steps`, `controlled_universe_blocked`, `controlled_universe_universe_count`, `controlled_universe_watchlist_count`, `controlled_universe_blocked_count`) in JSON and Markdown output.
+  - `tests/test_run_orchestrator/` — new model, engine, writer, plan-builder, and integration tests covering controlled-universe dispatch, input resolution, serialization, and end-to-end flows.
+  - 142 run_orchestrator tests in `tests/test_run_orchestrator/`; full suite: 7868 tests passing, 1 skipped.
+  - Version bumped to `0.52.0-dev` in `VERSION`, `pyproject.toml`, and `src/hunter/__init__.py`.
+  - Tag target: `v0.52.0-dev`.
+
 ## MVP-51 — Controlled Universe Bridge Engine (Complete, Tagged)
 
 - SPEC-052 — Controlled Universe Bridge Engine approved.
