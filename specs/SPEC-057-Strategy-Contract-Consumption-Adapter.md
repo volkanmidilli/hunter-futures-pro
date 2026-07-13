@@ -41,12 +41,12 @@ The adapter is **not** a trading signal, not a strategy selector, not a position
   - future timestamp tolerance;
   - `research_only` flag (must be `True`);
   - `human_approval_required` flag (must be `True`);
-  - mode (must be `LONG_RESEARCH_ONLY`, `SHORT_RESEARCH_ONLY`, or `BLOCK_ALL`);
+  - mode (must be `LONG`, `SHORT`, or `BLOCK_ALL`);
   - safety flags (must not enable live trading, real orders, leverage, shorting, runtime, entries, or exits);
   - pair syntax and canonicalization to uppercase `BASE/QUOTE`;
   - duplicate pairs within the whitelist or blacklist;
   - whitelist/blacklist conflicts;
-  - contradictory empty whitelist when mode is `LONG_RESEARCH_ONLY` or `SHORT_RESEARCH_ONLY`;
+  - contradictory empty whitelist when mode is `LONG` or `SHORT`;
   - unknown top-level control fields.
 - The adapter computes a deterministic SHA-256 fingerprint of the canonical source JSON.
 - Every blocking result forces:
@@ -128,7 +128,7 @@ The consumed `strategy_contract_input.json` is a JSON object with the following 
 | `generated_at` | `str` | yes | ISO-8601 timestamp when the input was produced. |
 | `research_only` | `bool` | yes | Must be `True`. |
 | `human_approval_required` | `bool` | yes | Must be `True`. |
-| `mode` | `str` | yes | One of `LONG_RESEARCH_ONLY`, `SHORT_RESEARCH_ONLY`, `BLOCK_ALL`. |
+| `mode` | `str` | yes | One of `LONG`, `SHORT`, `BLOCK_ALL`. |
 | `whitelist` | `list[str]` | yes | Pairs approved for research. |
 | `blacklist` | `list[str]` | yes | Pairs blocked or excluded. |
 | `safety_flags` | `dict[str, bool]` | yes | Safety flags. Unsafe flags must be `False`. |
@@ -148,7 +148,7 @@ Unknown top-level fields cause `INVALID_SCHEMA`.
 - Duplicate pairs within the whitelist are detected before deduplication and emit `DUPLICATE_PAIR`.
 - Duplicate pairs within the blacklist are detected before deduplication and emit `DUPLICATE_PAIR`.
 - Any pair present in both whitelist and blacklist emits `PAIR_LIST_CONFLICT`. The pair is removed from the whitelist and kept in the blacklist.
-- A non-empty `LONG_RESEARCH_ONLY` or `SHORT_RESEARCH_ONLY` mode with an empty whitelist emits `CONTRADICTORY_INPUT`.
+- A non-empty `LONG` or `SHORT` mode with an empty whitelist emits `CONTRADICTORY_INPUT`.
 
 ### Fingerprint
 
@@ -214,7 +214,7 @@ Validation rules:
 | `source_fingerprint` | `str` | SHA-256 hex of canonical source JSON. |
 | `source_path` | `str` | `"<mapping>"` for in-memory input, or the file path. |
 | `input_version` | `str` | The input version, or `""` if unknown. |
-| `mode` | `str` | One of `LONG_RESEARCH_ONLY`, `SHORT_RESEARCH_ONLY`, `BLOCK_ALL`. |
+| `mode` | `str` | One of `LONG`, `SHORT`, `BLOCK_ALL`. |
 | `whitelist` | `tuple[str, ...]` | Sorted, normalized pairs. |
 | `blacklist` | `tuple[str, ...]` | Sorted, normalized pairs. |
 | `safety_flags` | `dict[str, bool]` | Normalized safety flags. |
@@ -338,7 +338,7 @@ stop
   "source_fingerprint": "a1b2c3d4...",
   "source_path": "data/freqtrade_universe_adapter/strategy_contract_input.json",
   "input_version": "0.56.0-dev",
-  "mode": "LONG_RESEARCH_ONLY",
+  "mode": "LONG",
   "research_only": true,
   "human_approval_required": true,
   "whitelist": ["BTC/USDT", "ETH/USDT"],
