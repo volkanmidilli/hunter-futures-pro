@@ -1,5 +1,46 @@
 ---
 
+### MVP-54 Post-Tag Context Sync
+
+Date: 2026-07-13
+
+Agent: WrongStack
+
+Task: Record MVP-54 as complete and tagged `v0.54.0-dev` at `c7ef130`. Update project memory and handoff documentation to reflect the tagged state.
+
+Files modified:
+
+- `AGENTS.md` — replaced "Latest tag: v0.53.0-dev; Pending tag: v0.54.0-dev" with "Latest tag: v0.54.0-dev (MVP-54 tagged)".
+- `CHANGELOG.md` — replaced "Tag v0.54.0-dev pending." with "Tagged v0.54.0-dev at c7ef130 (local-only; no push)."
+- `docs/MVP_INDEX.md` — replaced "pending tag" status with "tagged" and added commit hash.
+- `docs/handoff/CURRENT_STATE.md` — replaced "tag pending" references with "tagged v0.54.0-dev at c7ef130".
+- `tasks/active.md` — replaced "tag pending" references with "tagged v0.54.0-dev at c7ef130".
+- `tasks/agent-log.md` — added this entry.
+
+Checks performed:
+
+- `biome check` on all changed files — passed.
+- `grep` for "tag pending" / "v0.54.0-dev pending" in `AGENTS.md`, `CHANGELOG.md`, `docs/MVP_INDEX.md`, `docs/handoff/CURRENT_STATE.md`, `tasks/active.md` — none remaining; only historical references in `tasks/agent-log.md` left untouched.
+
+Recorded state:
+
+- MVP-54 is complete and tagged `v0.54.0-dev` at `c7ef130`.
+- Latest tagged milestone: MVP-54.
+- MVP-55 is unselected and unstarted.
+- No push has occurred.
+
+Boundaries preserved:
+
+- No MVP-55 work started.
+- No SPEC-056 created.
+- No push.
+- No remote configuration.
+- No data/ or reports/ inspection.
+- Unrelated untracked files left untouched.
+- No staging or committing.
+
+---
+
 ### MVP-54 Step 5 — Version Bump and Documentation Finalization
 
 Date: 2026-07-13

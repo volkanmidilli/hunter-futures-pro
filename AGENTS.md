@@ -142,8 +142,7 @@ When continuing work on an MVP:
 - Completed MVP: MVP-54 Operational One-Call Coin-Discovery Pipeline Runner
 - SPEC: `specs/SPEC-055-Operational-One-Call-Coin-Discovery-Pipeline-Runner.md` — approved during MVP-54 cycle
 - Implementation (Steps 1–5: models, engine, writer, integration tests, docs/version finalization): committed during MVP-54 cycle
-- Latest tag: `v0.53.0-dev` (MVP-53 tagged); no push occurred
-- Pending tag: `v0.54.0-dev` for MVP-54; human must provide the exact tag or commit command
+- Latest tag: `v0.54.0-dev` (MVP-54 tagged); no push occurred
 - Active MVP: None; next MVP not selected. Version is `0.54.0-dev`.
 - Tag policy: never tag automatically; the human must provide the exact tag or commit command.
 - Safety: autonomous workflow only touches docs/version/task memory in Step 5; no runtime code changes, no tests changed, no data/reports inspection, no trading/API/Freqtrade/server/database/scheduler changes, no production-readiness, trading-readiness, approval, certification, recommendation, or suitability claims.

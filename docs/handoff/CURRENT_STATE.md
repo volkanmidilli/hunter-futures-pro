@@ -4,11 +4,11 @@ Hunter Futures Pro
 
 ## Version
 
-0.54.0-dev (MVP-54 Step 5 finalization complete; version bumped to 0.54.0-dev; tag `v0.54.0-dev` pending)
+0.54.0-dev (MVP-54 finalization complete; version bumped to 0.54.0-dev; tagged `v0.54.0-dev` at `c7ef130`)
 
 ## Current Phase
 
-The functional MVP chain now runs through **MVP-54 / v0.54.0-dev**, which is complete with tag `v0.54.0-dev` pending. **MVP-54 — Operational One-Call Coin-Discovery Pipeline Runner** is finalized: `SPEC-055` has been approved and Steps 1–5 (models, engine, writer, integration tests, and documentation/version finalization) are all committed. Source code changes in `src/hunter/coin_discovery_pipeline/models.py`, `src/hunter/coin_discovery_pipeline/engine.py`, `src/hunter/coin_discovery_pipeline/writer.py`, `src/hunter/coin_discovery_pipeline/__init__.py`, and `tests/test_coin_discovery_pipeline/`. Tag `v0.54.0-dev` is pending (local-only; no push).
+The functional MVP chain now runs through **MVP-54 / v0.54.0-dev**, which is complete and tagged `v0.54.0-dev` at `c7ef130`. **MVP-54 — Operational One-Call Coin-Discovery Pipeline Runner** is finalized: `SPEC-055` has been approved and Steps 1–5 (models, engine, writer, integration tests, and documentation/version finalization) are all committed. Source code changes in `src/hunter/coin_discovery_pipeline/models.py`, `src/hunter/coin_discovery_pipeline/engine.py`, `src/hunter/coin_discovery_pipeline/writer.py`, `src/hunter/coin_discovery_pipeline/__init__.py`, and `tests/test_coin_discovery_pipeline/`. Tagged `v0.54.0-dev` at `c7ef130` (local-only; no push).
 
 ## Background
 

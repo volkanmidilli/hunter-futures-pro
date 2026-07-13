@@ -2,13 +2,13 @@
 
 ## Current Task
 
-MVP-54 — Operational One-Call Coin-Discovery Pipeline Runner. SPEC-055 approved. Steps 1–5 (models, engine, writer, integration tests, and documentation/version finalization) complete. Version bumped to `0.54.0-dev`; tag `v0.54.0-dev` pending. No push yet.
+MVP-54 — Operational One-Call Coin-Discovery Pipeline Runner. SPEC-055 approved. Steps 1–5 (models, engine, writer, integration tests, and documentation/version finalization) complete. Version bumped to `0.54.0-dev`; tagged `v0.54.0-dev` at `c7ef130`. No push yet.
 
 MVP-53 — Controlled Universe Export Adapter. SPEC-054 approved. Steps 1–4 (models, engine, writer, integration tests, documentation/version finalization) complete. Full suite: 7917 tests passing, 1 skipped. No push yet.
 
 MVP-52 — End-to-End Research Run Orchestrator v2 is complete and tagged `v0.52.0-dev` at `0c65e20`. SPEC-053 approved; Steps 1–4 (models/dependency validator, engine dispatch/input resolution, writer/plan builder, integration tests, documentation/version finalization) completed. Version bumped to `0.52.0-dev`.
 
-Latest tagged functional milestone: MVP-53 / v0.53.0-dev. MVP-54 tag pending.
+Latest tagged functional milestone: MVP-54 / v0.54.0-dev at c7ef130.
 
 Completed under MVP-54 (Step 5):
 - Version bumped to `0.54.0-dev` in `VERSION`, `pyproject.toml`, `src/hunter/__init__.py`.
@@ -17,7 +17,7 @@ Completed under MVP-54 (Step 5):
 - Focused tests: `pytest tests/test_coin_discovery_pipeline/ -q` — 101 passed.
 - Full suite: `pytest -q` — 8018 passed, 1 skipped.
 - Lint (`biome`) passed on changed files.
-- Tag `v0.54.0-dev` pending; no commit, tag, or push yet.
+- Tagged `v0.54.0-dev` at `c7ef130`; no push yet.
 
 Boundaries preserved:
 - No Freqtrade runtime integration, strategy changes, automatic config mutation, exchange/API/server/database/scheduler/live trading behavior.

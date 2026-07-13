@@ -21,7 +21,7 @@ No unreleased changes.
   - `tests/test_coin_discovery_pipeline/test_models.py`, `test_engine.py`, `test_writer.py`, `test_integration.py` — comprehensive unit and integration tests.
   - 101 coin_discovery_pipeline tests in `tests/test_coin_discovery_pipeline/`; full suite: 8018 tests passing, 1 skipped.
   - Version bumped to `0.54.0-dev` in `VERSION`, `pyproject.toml`, `src/hunter/__init__.py`, and `COIN_DISCOVERY_PIPELINE_VERSION`.
-  - Tag `v0.54.0-dev` pending.
+  - Tagged `v0.54.0-dev` at `c7ef130` (local-only; no push).
 
 ## MVP-53 — Controlled Universe Export Adapter (Complete)
 
