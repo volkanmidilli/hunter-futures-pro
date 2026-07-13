@@ -79,6 +79,7 @@ def _validated_context_from_result(
     source_path: str,
     source_fingerprint: str,
     validated_at: datetime,
+    generated_at: datetime | None,
 ) -> ValidatedStrategyContext:
     """Construct a fail-closed immutable context from validation results."""
     if not accepted:
@@ -96,6 +97,7 @@ def _validated_context_from_result(
         safety_flags=safety_flags,
         metadata=metadata,
         reason_codes=reason_codes,
+        generated_at=generated_at,
     )
 
 
@@ -143,6 +145,7 @@ def build_validated_strategy_context(
             source_path=source_path,
             source_fingerprint=source_fingerprint,
             validated_at=validated_at,
+            generated_at=None,
         )
 
     source_fingerprint = _source_fingerprint(loaded, source_path, None)
@@ -165,4 +168,5 @@ def build_validated_strategy_context(
         source_path=source_path,
         source_fingerprint=source_fingerprint,
         validated_at=validated_at,
+        generated_at=result["generated_at"],
     )

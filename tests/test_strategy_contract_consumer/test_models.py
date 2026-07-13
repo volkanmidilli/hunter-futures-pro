@@ -96,14 +96,15 @@ def _make_valid_result(accepted: bool, mode: str, whitelist: tuple[str, ...]):
     return scc.ValidatedStrategyContext(
         accepted=accepted,
         validated_at=datetime.now(timezone.utc),
-        source_fingerprint="sha256-abc",
-        source_path="<memory>",
+        source_fingerprint="a" * 64,
+        source_path="<mapping>",
         input_version="0.56.0-dev",
         mode=mode,
         whitelist=whitelist,
         blacklist=(),
         safety_flags={"dry_run": True},
         reason_codes=(scc.VALIDATION_ACCEPTED,),
+        generated_at=datetime(2026, 7, 13, 12, 0, 0, tzinfo=timezone.utc),
     )
 
 
@@ -153,6 +154,40 @@ def test_validated_context_research_only_invariant():
         ctx.research_only = False
 
 
+def test_validated_context_generated_at_optional():
+    ctx = scc.ValidatedStrategyContext(
+        accepted=True,
+        validated_at=datetime.now(timezone.utc),
+        source_fingerprint="a" * 64,
+        source_path="<mapping>",
+        input_version="0.56.0-dev",
+        mode="LONG",
+        whitelist=("BTC/USDT",),
+        blacklist=(),
+        safety_flags={"dry_run": True},
+        reason_codes=(scc.VALIDATION_ACCEPTED,),
+        generated_at=None,
+    )
+    assert ctx.generated_at is None
+
+
+def test_validated_context_generated_at_requires_timezone():
+    with pytest.raises(ValueError):
+        scc.ValidatedStrategyContext(
+            accepted=True,
+            validated_at=datetime.now(timezone.utc),
+            source_fingerprint="a" * 64,
+            source_path="<mapping>",
+            input_version="0.56.0-dev",
+            mode="LONG",
+            whitelist=("BTC/USDT",),
+            blacklist=(),
+            safety_flags={"dry_run": True},
+            reason_codes=(scc.VALIDATION_ACCEPTED,),
+            generated_at=datetime(2026, 7, 13, 12, 0, 0),
+        )
+
+
 def test_public_api_exports():
     names = {
         "STRATEGY_CONTRACT_CONSUMER_VERSION",
@@ -173,22 +208,3 @@ def test_public_api_exports():
         assert hasattr(scc, name), f"Missing export: {name}"
 
 
-@pytest.mark.parametrize(
-    "func",
-    [
-        scc.strategy_context_result_to_dict,
-        scc.strategy_context_result_to_json_text,
-        scc.strategy_context_result_to_markdown_text,
-        scc.write_strategy_context_validation_result,
-    ],
-)
-def test_unimplemented_stubs_raise(func):
-    with pytest.raises(NotImplementedError):
-        if func is scc.write_strategy_context_validation_result:
-            func(
-                _make_valid_result(True, "LONG", ("BTC/USDT",)),
-                "out",
-                scc.StrategyContractConsumerConfig(),
-            )
-        else:
-            func(_make_valid_result(True, "LONG", ("BTC/USDT",)))

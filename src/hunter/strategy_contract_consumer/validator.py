@@ -133,6 +133,7 @@ def validate_strategy_contract_input(
     - ``blacklist``: tuple[str, ...]
     - ``safety_flags``: dict[str, bool]
     - ``metadata``: Mapping[str, object]
+    - ``generated_at``: datetime | None
     - ``reason_codes``: tuple[str, ...]
     """
     if not isinstance(validated_at, datetime) or validated_at.tzinfo is None:
@@ -150,6 +151,7 @@ def validate_strategy_contract_input(
             "blacklist": (),
             "safety_flags": {},
             "metadata": {},
+            "generated_at": None,
             "reason_codes": (MISSING_INPUT,),
         }
 
@@ -274,5 +276,6 @@ def validate_strategy_contract_input(
         "blacklist": blacklist,
         "safety_flags": safety_flags,
         "metadata": metadata,
+        "generated_at": generated_at,
         "reason_codes": tuple(sorted(reason_codes)),
     }

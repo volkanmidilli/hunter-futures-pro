@@ -304,3 +304,33 @@ def test_multiple_reason_codes_sorted_and_no_validation_accepted(valid_data, con
     assert ctx.accepted is False
     assert scc.VALIDATION_ACCEPTED not in ctx.reason_codes
     assert ctx.reason_codes == tuple(sorted(ctx.reason_codes))
+
+
+def test_generated_at_propagated_for_accepted(valid_data, config, validated_at):
+    ctx = _build(valid_data, config, validated_at)
+    assert ctx.generated_at == validated_at
+
+
+def test_generated_at_propagated_for_rejected_stale(valid_data, config, validated_at):
+    from datetime import datetime, timedelta
+    generated_at = datetime(2026, 7, 13, 11, 0, 0, tzinfo=timezone.utc)
+    valid_data["generated_at"] = generated_at.isoformat()
+    ctx = _build(valid_data, config, validated_at)
+    assert ctx.accepted is False
+    assert ctx.generated_at == generated_at
+
+
+def test_generated_at_is_none_for_missing_input(config, validated_at):
+    ctx = _build(None, config, validated_at)
+    assert ctx.generated_at is None
+
+
+def test_generated_at_is_none_for_invalid_json(tmp_path, config, validated_at):
+    path = tmp_path / "bad.json"
+    path.write_text("not json", encoding="utf-8")
+    ctx = _build(path, config, validated_at)
+    assert ctx.generated_at is None
+
+
+def test_no_freqtrade_runtime_imported():
+    assert "freqtrade" not in sys.modules

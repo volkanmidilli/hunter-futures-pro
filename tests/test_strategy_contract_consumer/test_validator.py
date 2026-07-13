@@ -293,3 +293,20 @@ def test_validator_does_not_mutate_input(valid_data, config, validated_at):
     original = dict(valid_data)
     _validate(valid_data, config, validated_at)
     assert valid_data == original
+
+
+def test_validator_returns_generated_at(valid_data, config, validated_at):
+    result = _validate(valid_data, config, validated_at)
+    assert result["generated_at"] == validated_at
+
+
+def test_validator_returns_none_generated_at_for_missing_input(config, validated_at):
+    result = scc.validate_strategy_contract_input(None, config, validated_at=validated_at)
+    assert result["generated_at"] is None
+
+
+def test_validator_parses_generated_at(valid_data, config, validated_at):
+    from datetime import datetime
+    valid_data["generated_at"] = "2026-07-10T10:00:00+00:00"
+    result = _validate(valid_data, config, validated_at)
+    assert result["generated_at"] == datetime(2026, 7, 10, 10, 0, 0, tzinfo=timezone.utc)

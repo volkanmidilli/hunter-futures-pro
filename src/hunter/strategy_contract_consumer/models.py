@@ -201,6 +201,7 @@ class ValidatedStrategyContext:
     research_only: bool = True
     human_approval_required: bool = True
     metadata: Mapping[str, object] = field(default_factory=dict)
+    generated_at: datetime | None = None
 
     def __post_init__(self) -> None:
         if not isinstance(self.accepted, bool):
@@ -209,6 +210,10 @@ class ValidatedStrategyContext:
             raise ValueError(f"validated_at must be a datetime, got {self.validated_at!r}")
         if self.validated_at.tzinfo is None:
             raise ValueError("validated_at must be timezone-aware")
+        if self.generated_at is not None and (
+            not isinstance(self.generated_at, datetime) or self.generated_at.tzinfo is None
+        ):
+            raise ValueError("generated_at must be a timezone-aware datetime or None")
         if not isinstance(self.source_fingerprint, str) or not self.source_fingerprint.strip():
             raise ValueError(
                 f"source_fingerprint must be a non-empty string, got {self.source_fingerprint!r}"
