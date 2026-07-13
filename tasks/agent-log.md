@@ -1,5 +1,28 @@
 ---
 
+### MVP-51 Tagging — `v0.51.0-dev`
+
+Date: 2026-07-13
+
+Agent: WrongStack
+
+Task: Tag MVP-51 as `v0.51.0-dev` at the finalization commit.
+
+Command executed:
+
+- `git tag -a v0.51.0-dev a75de79 -m "MVP-51 Controlled Universe Bridge Engine"`
+
+Files modified:
+
+- `tasks/active.md` — updated to reflect MVP-51 tagged and latest tagged milestone.
+- `docs/handoff/CURRENT_STATE.md` — updated to reflect tagged state and next phase.
+- `CHANGELOG.md` — updated to reflect tagged state.
+- `docs/MVP_INDEX.md` — updated to reflect tagged state.
+- `AGENTS.md` — updated to reflect latest tag and next phase.
+- `tasks/agent-log.md` — this entry.
+
+Summary: The annotated tag `v0.51.0-dev` was created at commit `a75de79`. Project memory was updated to record the tag and mark MVP-51 as complete and tagged. No push was performed. Next phase is MVP-52 planning.
+
 ### MVP-51 Step 4 — Controlled Universe Bridge Engine Finalization and Version Bump
 
 Date: 2026-07-13

@@ -8,7 +8,7 @@ Hunter Futures Pro
 
 ## Current Phase
 
-The functional MVP chain now runs through **MVP-51 / v0.51.0-dev**, which is complete. SPEC-052 was committed at the end of the MVP-51 implementation cycle. The latest tag is still `v0.50.0-dev` at `64004c3` until the human tags `v0.51.0-dev`. **MVP-51 — Controlled Universe Bridge Engine** is complete: Steps 1–4 (models/engine/writer/integration tests/finalization) are done and the version has been bumped to 0.51.0-dev.
+The functional MVP chain now runs through **MVP-51 / v0.51.0-dev**, which is complete and tagged at `a75de79`. SPEC-052 was implemented and committed; the tag `v0.51.0-dev` points to the finalization commit. Next phase is MVP-52 planning.
 
 ## Background
 
@@ -101,7 +101,7 @@ MVP-51 — Controlled Universe Bridge Engine is complete and version-bumped to `
 - Safety: fail-closed defaults; no file I/O, network, database, exchange API, Freqtrade runtime, action commands, or live trading in the engine; writers only serialize and write; research-only output; not a trading signal, not execution approval, not a strategy selector, not a position-sizing tool, and not an approval gate.
 - Boundaries: no modifications to `decision`, `execution`, `freqtrade_bridge`, `strategy_contract`, `discovery`, `portfolio_construction`, `relative_strength`, `open_interest`, or `market_state` packages; no new non-standard-library dependencies for engine/writer logic; no file reads inside the engine.
 - Version: `v0.51.0-dev` (bumped in `pyproject.toml`, `src/hunter/__init__.py`, and `CONTROLLED_UNIVERSE_VERSION` in `models.py`).
-- Tag pending: `v0.51.0-dev`.
+- Tag: `v0.51.0-dev` at `a75de79`.
 
 MVP-48 — Research Audit Aggregate Health Report is complete and tagged v0.48.0-dev at commit `779692f`.
 
@@ -571,7 +571,7 @@ MVP-22 — Local Research Audit Closure Report is complete and committed.
 
 MVP-50 — Research Audit Remediation Handoff Packet is complete and tagged `v0.50.0-dev` at `64004c3`. SPEC-051 at `f419790`; implementation at `417ada8`; Step 4 finalization at `64004c3`.
 
-1. Tag the current master as `v0.51.0-dev` and begin MVP-52 planning. SPEC-052 — Controlled Universe Bridge Engine is complete and version-bumped to 0.51.0-dev. Steps 1–4 done.
+1. Plan MVP-52. MVP-51 — Controlled Universe Bridge Engine is complete and tagged `v0.51.0-dev` at `a75de79`.
 
 ### Backlog (Non-Blocking)
 - Review `research_audit_snapshot` `data_quality.sections_present` / `sections_missing` reporting so successful snapshots correctly reflect the number of sections present (8) versus missing (0). Current behavior is fail-closed (0 / 8) and SPEC-compliant because `build_audit_snapshot_data_quality` does not receive the section list in its SPEC-024 signature.

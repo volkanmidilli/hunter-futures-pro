@@ -6,7 +6,7 @@ All important project changes will be recorded in this file.
 
 No unreleased changes.
 
-## MVP-51 — Controlled Universe Bridge Engine (Complete, Version Bumped)
+## MVP-51 — Controlled Universe Bridge Engine (Complete, Tagged)
 
 - SPEC-052 — Controlled Universe Bridge Engine approved.
   - `specs/SPEC-052-Controlled-Universe-Bridge-Engine.md` — approved for MVP-51 implementation.
@@ -20,7 +20,7 @@ No unreleased changes.
   - Integration tests: end-to-end engine → writer flows, fail-closed serialization, and safety notices.
   - 81 controlled_universe tests in `tests/test_controlled_universe/`; full suite: 7812 tests passing, 1 skipped.
   - Version bumped to `0.51.0-dev` in `pyproject.toml`, `src/hunter/__init__.py`, and `CONTROLLED_UNIVERSE_VERSION`.
-  - Awaiting tag `v0.51.0-dev`.
+  - Tagged `v0.51.0-dev` at `a75de79`.
 
 ## MVP-50 — Research Audit Remediation Handoff Packet (Complete, Tagged)
 
