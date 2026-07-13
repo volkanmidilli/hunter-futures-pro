@@ -143,8 +143,8 @@ When continuing work on an MVP:
 - SPEC: `specs/SPEC-051-Research-Audit-Remediation-Handoff-Packet.md` — committed during MVP-50 cycle
 - Implementation (Steps 1–3: models/engine/writer/integration tests): committed during MVP-50 cycle
 - Step 4 (docs/version metadata): committed during MVP-50 cycle
-- Latest commit: pending next commit/tag step (MVP-50 docs/version finalization not yet committed)
-- Latest tag: `v0.49.0-dev` at `eff7c93` (MVP-50 tag `v0.50.0-dev` pending human or later task)
-- Next: MVP-51 selection and planning. No SPEC exists yet. Stop until human provides direction.
+- Latest commit: `64004c3` Finalize MVP-50 metadata and documentation
+- Latest tag: `v0.50.0-dev` at `64004c3` (MVP-50 tagged)
+- Next: MVP-51 — Controlled Universe Bridge Engine. SPEC-052 approved. Implementation authorized.
 - Tag policy: never tag automatically; the human must provide the exact tag or commit command.
 - Safety: autonomous workflow only touches docs/version/task memory in Step 4; no runtime code changes, no tests changed, no data/reports inspection, no trading/API/Freqtrade/server/database/scheduler changes, no production-readiness, trading-readiness, approval, certification, recommendation, or suitability claims.

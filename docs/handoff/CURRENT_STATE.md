@@ -8,7 +8,7 @@ Hunter Futures Pro
 
 ## Current Phase
 
-The functional MVP chain now runs through **MVP-50 / v0.50.0-dev**, which is complete and pending tag. SPEC-051 was committed at the end of the MVP-50 implementation cycle. The latest tag is `v0.49.0-dev` at `eff7c93`; the next tag `v0.50.0-dev` is pending at the next commit/tag step. The next required action is **MVP-51 selection and planning**; no SPEC-052 exists yet.
+The functional MVP chain now runs through **MVP-50 / v0.50.0-dev**, which is complete and tagged at `64004c3`. SPEC-051 was committed at the end of the MVP-50 implementation cycle. The latest tag is `v0.50.0-dev` at `64004c3`. SPEC-052 for **MVP-51 — Controlled Universe Bridge Engine** has been approved and implementation is authorized.
 
 ## Background
 
@@ -62,7 +62,37 @@ MVP-49 — Research Audit Health Remediation Bridge is complete and tagged `v0.4
 - Current supported entry: `build_health_remediation_bridge_report(report, config)` public API; writer helpers available for dict/JSON/CSV/Markdown strings and optional atomic file writes.
 - Latest implementation commit: `1a4c7b2`; SPEC commit: `6806aa9`; Step 4 finalization commit: `eff7c93`.
 - Tag: `v0.49.0-dev` at `eff7c93`.
-- Next phase: MVP-50 selection and planning.
+- Next phase: MVP-51 selection and planning.
+
+MVP-50 — Research Audit Remediation Handoff Packet is complete and tagged `v0.50.0-dev` at `64004c3`. Finalization committed at `64004c3`. SPEC-051 at `f419790`; implementation at `417ada8`.
+
+- SPEC-051: `specs/SPEC-051-Research-Audit-Remediation-Handoff-Packet.md` — committed at `f419790`.
+- `src/hunter/research_audit_remediation_handoff/__init__.py` — public API exports for models, engine, writer, and default paths.
+- `src/hunter/research_audit_remediation_handoff/models.py` — frozen dataclasses for the handoff packet, packet groups, data quality, config, safety flags, and errors.
+- `src/hunter/research_audit_remediation_handoff/engine.py` — pure local deterministic handoff packet builder with forbidden-term scanning, stable IDs, and data-quality counters.
+- `src/hunter/research_audit_remediation_handoff/writer.py` — deterministic dict/JSON/Markdown serialization and atomic writes.
+- `tests/test_research_audit_remediation_handoff/test_models.py` — model tests.
+- `tests/test_research_audit_remediation_handoff/test_engine.py` — engine tests.
+- `tests/test_research_audit_remediation_handoff/test_writer.py` — writer tests.
+- `tests/test_research_audit_remediation_handoff/test_integration.py` — integration tests.
+- 61 research_audit_remediation_handoff tests total.
+- Full suite: 7741 tests passing, 1 skipped using `pytest -q` (default import mode).
+- Safety: local, call-triggered, audit-only handoff packet builder over caller-provided in-memory remediation reports and opaque artifact references; not a production release approval system, not a certification of trading readiness, not a trading signal, not a recommendation, not a strategy selector, and not an execution/portfolio/universe approval gate; artifact refs and paths are opaque strings and are never opened, traversed, validated, fetched, or executed; no `data/` or `reports/` inspection; no Freqtrade input, no Binance/exchange/API/live data, no order/execution/action commands, no leverage/shorting, no feedback into execution/strategy/portfolio paths; no scheduler, daemon, background job runner, server, REST API, database, Web UI, or dashboard introduced.
+- Current supported entry: `build_research_audit_remediation_handoff_packet(input, config)` public API; writer helpers available for dict/JSON/Markdown strings and optional atomic file writes.
+- Latest implementation commit: `417ada8`; SPEC commit: `f419790`; Step 4 finalization commit: `64004c3`.
+- Tag: `v0.50.0-dev` at `64004c3`.
+- Next phase: MVP-51 implementation.
+
+MVP-51 — Controlled Universe Bridge Engine is approved and ready for implementation.
+
+- SPEC-052: `specs/SPEC-052-Controlled-Universe-Bridge-Engine.md` — approved.
+- Purpose: deterministic, fail-closed bridge between macro execution context and per-coin portfolio construction report, producing a controlled universe list for downstream research audit only.
+- Inputs: `PortfolioConstructionReport` (MVP-27), `ExecutionContext` (MVP-4), `ControlledUniverseConfig` (new).
+- Outputs: `ControlledUniverseReport`, `ControlledUniverseSafetyFlags`, `ControlledUniverseDataQuality`, plus JSON/CSV/Markdown writers.
+- Safety: fail-closed defaults; no file I/O, network, database, exchange API, Freqtrade runtime, action commands, or live trading in the engine; research-only output; not a trading signal, not execution approval, not a strategy selector, not a position-sizing tool, and not an approval gate.
+- Boundaries: no modifications to `decision`, `execution`, `freqtrade_bridge`, `strategy_contract`, `discovery`, `portfolio_construction`, `relative_strength`, `open_interest`, or `market_state` packages; no new non-standard-library dependencies for engine logic; no file reads inside the engine.
+- Version target: `v0.51.0-dev`.
+- Implementation may begin.
 
 MVP-48 — Research Audit Aggregate Health Report is complete and tagged v0.48.0-dev at commit `779692f`.
 
@@ -530,9 +560,9 @@ MVP-22 — Local Research Audit Closure Report is complete and committed.
 
 ## Next Step
 
-MVP-49 — Research Audit Health Remediation Bridge is complete and tagged `v0.49.0-dev` at `eff7c93`. SPEC-050 at `6806aa9`; implementation at `1a4c7b2`; Step 4 finalization at `eff7c93`.
+MVP-50 — Research Audit Remediation Handoff Packet is complete and tagged `v0.50.0-dev` at `64004c3`. SPEC-051 at `f419790`; implementation at `417ada8`; Step 4 finalization at `64004c3`.
 
-1. Begin MVP-50 selection and planning. No SPEC-051 exists yet.
+1. Begin MVP-51 implementation. SPEC-052 — Controlled Universe Bridge Engine is approved. Implementation authorized.
 
 ### Backlog (Non-Blocking)
 - Review `research_audit_snapshot` `data_quality.sections_present` / `sections_missing` reporting so successful snapshots correctly reflect the number of sections present (8) versus missing (0). Current behavior is fail-closed (0 / 8) and SPEC-compliant because `build_audit_snapshot_data_quality` does not receive the section list in its SPEC-024 signature.

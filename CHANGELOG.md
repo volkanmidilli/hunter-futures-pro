@@ -4,15 +4,18 @@ All important project changes will be recorded in this file.
 
 ## Unreleased
 
-- (Nothing yet — MVP-50 tagged `v0.50.0-dev` will be applied at next commit.)
+- SPEC-052 — Controlled Universe Bridge Engine approved.
+  - `specs/SPEC-052-Controlled-Universe-Bridge-Engine.md` — approved for MVP-51 implementation.
+  - Bridges macro execution context (MVP-4) and per-coin portfolio construction report (MVP-27) into a deterministic, fail-closed controlled universe.
+  - Research-only output; not a trading signal, execution approval, strategy selector, or position-sizing tool.
 
-## MVP-50 — Research Audit Remediation Handoff Packet (Complete, Pending Tag)
+## MVP-50 — Research Audit Remediation Handoff Packet (Complete, Tagged)
 
 **Version:** 0.49.0-dev → 0.50.0-dev.
 
 **SPEC-051:** `specs/SPEC-051-Research-Audit-Remediation-Handoff-Packet.md` — implemented across models, engine, writer, and integration tests.
 
-**Tag:** `v0.50.0-dev` pending at next commit/tag step.
+**Tag:** `v0.50.0-dev` at `64004c3`.
 
 - `src/hunter/research_audit_remediation_handoff/__init__.py` — public API exports for models (`HandoffPacket`, `HandoffPacketConfig`, `HandoffPacketDataQuality`, `HandoffPacketError`, `HandoffPacketGroup`, `HandoffPacketSafetyFlags`), engine (`build_research_audit_remediation_handoff_packet`), writer (`handoff_packet_to_dict`, `handoff_packet_to_json`, `handoff_packet_to_markdown`, `atomic_write_json_handoff_packet`, `atomic_write_markdown_handoff_packet`).
 - `src/hunter/research_audit_remediation_handoff/models.py` — frozen dataclass models for the handoff packet, packet groups, data quality, config, safety flags, and errors.

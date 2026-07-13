@@ -2,11 +2,14 @@
 
 ## Current Task
 
-MVP-50 — Research Audit Remediation Handoff Packet is complete and pending tag `v0.50.0-dev`.
+MVP-50 — Research Audit Remediation Handoff Packet is complete and tagged `v0.50.0-dev` at `64004c3`.
 SPEC-051 has been implemented and reviewed.
 Version bumped to 0.50.0-dev.
 
-Latest tagged functional milestone: MVP-49 / v0.49.0-dev at commit `eff7c93`.
+MVP-51 planning approved: Controlled Universe Bridge Engine.
+SPEC-052 approved. Implementation authorized.
+
+Latest tagged functional milestone: MVP-50 / v0.50.0-dev at commit `64004c3`.
 
 Completed under MVP-50:
 - SPEC-051 (Research Audit Remediation Handoff Packet spec) committed.
@@ -18,7 +21,7 @@ Completed under MVP-50:
 - Full suite: 7741 tests passing, 1 skipped using `pytest -q` (default import mode).
 
 Remaining MVP-50 steps:
-- None. Tag `v0.50.0-dev` to be applied by human or later task.
+- None. MVP-50 is tagged.
 
 Boundaries:
 - Documentation and version metadata only in Step 4.
@@ -52,7 +55,7 @@ MVP-48 — Research Audit Aggregate Health Report is complete and tagged v0.48.0
 
 The original master plan (MVP-0 through MVP-4) is complete. The repository has expanded to MVP-50 / v0.50.0-dev.
 
-Next: MVP-51 selection and planning. No candidate has been selected yet.
+Next: MVP-51 implementation. SPEC-052 approved; Controlled Universe Bridge Engine implementation authorized. No source code changes until this approval was recorded.
 
 Known anomalies:
 - `v0.32.0-dev` tag missing from tag list (recorded as anomaly; no automatic action).
@@ -138,9 +141,9 @@ MVP-14 Step 4 — Final Review and Version Bump (Complete).
 
 ## Scope
 
-Next MVP: not started.
-- No SPEC drafted yet. Requires human approval before any implementation.
-- No source code changes until next MVP planning approved.
+Next MVP: MVP-51 — Controlled Universe Bridge Engine.
+- SPEC-052 approved. Implementation may begin.
+- Source code changes for `src/hunter/controlled_universe/` and `tests/test_controlled_universe/` are now authorized.
 
 ### Allowed
 - Planning documents, discussion, SPEC drafting (outside repo or in docs/ if needed).
@@ -341,7 +344,7 @@ MVP-23 Step 4 — Final validation and version bump (Complete).
 - [x] MVP-49 Step 4 complete: SPEC alignment and final validation passed, version bumped to 0.49.0-dev.
 - [x] MVP-49 complete.
 - [x] Full suite 7680 tests pass, 1 skipped. No regressions.
-- [ ] Next MVP: not started. No SPEC drafted yet. Requires human approval before any implementation.
+- [x] Next MVP planning approved: MVP-51 — Controlled Universe Bridge Engine. SPEC-052 approved.
 
 ## Backlog (Non-Blocking)
 - Review `research_audit_snapshot` `data_quality.sections_present` / `sections_missing` reporting so successful snapshots correctly reflect the number of sections present (8) versus missing (0). Current behavior is fail-closed (0 / 8) and SPEC-compliant because `build_audit_snapshot_data_quality` does not receive the section list in its SPEC-024 signature.
@@ -349,6 +352,6 @@ MVP-23 Step 4 — Final validation and version bump (Complete).
 
 ## Next Step
 
-Next MVP: not started. No SPEC drafted yet. Requires human approval before any implementation.
+Next MVP: MVP-51 — Controlled Universe Bridge Engine. SPEC-052 approved. Implementation authorized.
 
-MVP-51 selection and planning. No candidate or SPEC-052 exists yet; requires human approval before any implementation.
+MVP-51 — Controlled Universe Bridge Engine. SPEC-052 approved. Implementation authorized.
