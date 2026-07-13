@@ -11,8 +11,6 @@ All outputs are research-only and require human approval before any downstream u
 
 from __future__ import annotations
 
-from typing import Any
-
 from hunter.coin_discovery_pipeline.models import (
     COIN_DISCOVERY_PIPELINE_REASON_CODES,
     COIN_DISCOVERY_PIPELINE_VERSION,
@@ -64,124 +62,14 @@ __all__ = [
     "atomic_write_markdown_coin_discovery_pipeline_result",
 ]
 
-
 from hunter.coin_discovery_pipeline.engine import (
     run_coin_discovery_pipeline,
 )
-
-# Writer stubs (implemented in Step 3)
-def coin_discovery_pipeline_result_to_dict(
-    result: CoinDiscoveryPipelineResult,
-) -> dict[str, Any]:
-    """Convert a pipeline result to a JSON-safe dictionary.
-
-    This is a validation stub for Step 1. The full implementation is deferred to
-    Step 3 of MVP-54.
-    """
-    if not isinstance(result, CoinDiscoveryPipelineResult):
-        raise CoinDiscoveryPipelineError(
-            f"result must be a CoinDiscoveryPipelineResult, got {result!r}"
-        )
-    raise NotImplementedError(
-        "coin_discovery_pipeline_result_to_dict is implemented in MVP-54 Step 3"
-    )
-
-
-def coin_discovery_pipeline_result_to_json_text(
-    result: CoinDiscoveryPipelineResult,
-) -> str:
-    """Convert a pipeline result to a deterministic JSON string.
-
-    This is a validation stub for Step 1. The full implementation is deferred to
-    Step 3 of MVP-54.
-    """
-    if not isinstance(result, CoinDiscoveryPipelineResult):
-        raise CoinDiscoveryPipelineError(
-            f"result must be a CoinDiscoveryPipelineResult, got {result!r}"
-        )
-    raise NotImplementedError(
-        "coin_discovery_pipeline_result_to_json_text is implemented in MVP-54 Step 3"
-    )
-
-
-def coin_discovery_pipeline_result_to_markdown_text(
-    result: CoinDiscoveryPipelineResult,
-) -> str:
-    """Convert a pipeline result to a deterministic Markdown string.
-
-    This is a validation stub for Step 1. The full implementation is deferred to
-    Step 3 of MVP-54.
-    """
-    if not isinstance(result, CoinDiscoveryPipelineResult):
-        raise CoinDiscoveryPipelineError(
-            f"result must be a CoinDiscoveryPipelineResult, got {result!r}"
-        )
-    raise NotImplementedError(
-        "coin_discovery_pipeline_result_to_markdown_text is implemented in MVP-54 Step 3"
-    )
-
-
-def write_coin_discovery_pipeline_result(
-    result: CoinDiscoveryPipelineResult,
-    config: CoinDiscoveryPipelineConfig,
-) -> tuple[str, ...]:
-    """Write pipeline result artifacts to local paths.
-
-    This is a validation stub for Step 1. The full implementation is deferred to
-    Step 3 of MVP-54.
-    """
-    if not isinstance(result, CoinDiscoveryPipelineResult):
-        raise CoinDiscoveryPipelineError(
-            f"result must be a CoinDiscoveryPipelineResult, got {result!r}"
-        )
-    if not isinstance(config, CoinDiscoveryPipelineConfig):
-        raise CoinDiscoveryPipelineError(
-            f"config must be a CoinDiscoveryPipelineConfig, got {config!r}"
-        )
-    raise NotImplementedError(
-        "write_coin_discovery_pipeline_result is implemented in MVP-54 Step 3"
-    )
-
-
-def atomic_write_json_coin_discovery_pipeline_result(
-    result: CoinDiscoveryPipelineResult,
-    path: str,
-) -> str:
-    """Atomically write a pipeline result JSON packet.
-
-    This is a validation stub for Step 1. The full implementation is deferred to
-    Step 3 of MVP-54.
-    """
-    if not isinstance(result, CoinDiscoveryPipelineResult):
-        raise CoinDiscoveryPipelineError(
-            f"result must be a CoinDiscoveryPipelineResult, got {result!r}"
-        )
-    if not isinstance(path, str) or not path.strip():
-        raise CoinDiscoveryPipelineError(
-            f"path must be a non-empty string, got {path!r}"
-        )
-    raise NotImplementedError(
-        "atomic_write_json_coin_discovery_pipeline_result is implemented in MVP-54 Step 3"
-    )
-
-
-def atomic_write_markdown_coin_discovery_pipeline_result(
-    result: CoinDiscoveryPipelineResult,
-    path: str,
-) -> str:
-    """Atomically write a pipeline result Markdown packet.
-
-    This is a validation stub for Step 1. The full implementation is deferred to
-    Step 3 of MVP-54.
-    """
-    if not isinstance(result, CoinDiscoveryPipelineResult):
-        raise CoinDiscoveryPipelineError(
-            f"result must be a CoinDiscoveryPipelineResult, got {result!r}"
-        )
-    if not isinstance(path, str) or not path.strip():
-        raise CoinDiscoveryPipelineError(
-            f"path must be a non-empty string, got {path!r}"
-        )
-    raise NotImplementedError(
-        "atomic_write_markdown_coin_discovery_pipeline_result is implemented in MVP-54 Step 3"
-    )
+from hunter.coin_discovery_pipeline.writer import (
+    atomic_write_json_coin_discovery_pipeline_result,
+    atomic_write_markdown_coin_discovery_pipeline_result,
+    coin_discovery_pipeline_result_to_dict,
+    coin_discovery_pipeline_result_to_json_text,
+    coin_discovery_pipeline_result_to_markdown_text,
+    write_coin_discovery_pipeline_result,
+)
