@@ -2,11 +2,11 @@
 
 ## Current Task
 
-MVP-56 — Strategy Contract Consumption Adapter. SPEC-057 approved. Steps 1–6 (models, loader, validator, engine, writer, integration tests, and documentation/version finalization) complete. Version bumped to `0.56.0-dev`; tag `v0.56.0-dev` pending. No push yet.
+MVP-56 — Strategy Contract Consumption Adapter. SPEC-057 approved. Steps 1–6 (models, loader, validator, engine, writer, integration tests, and documentation/version finalization) complete. Version bumped to `0.56.0-dev`; tagged `v0.56.0-dev` at `238e387`. No push yet.
 
 MVP-55 — Freqtrade Universe Consumption Adapter. SPEC-056 approved. Steps 1–5 (models, engine, writer, integration tests, and documentation/version finalization) complete. Version bumped to `0.55.0-dev`; tagged `v0.55.0-dev` at `8f9730a2`. No push yet.
 
-Latest tagged functional milestone: MVP-55 / v0.55.0-dev at 8f9730a2. MVP-56 tag `v0.56.0-dev` pending.
+Latest tagged functional milestone: MVP-56 / v0.56.0-dev at 238e387.
 
 Completed under MVP-56 (Finalization):
 - Version bumped to `0.56.0-dev` in `VERSION`, `pyproject.toml`, `src/hunter/__init__.py`.
@@ -14,7 +14,7 @@ Completed under MVP-56 (Finalization):
 - Updated `CHANGELOG.md`, `docs/MVP_INDEX.md`, `docs/handoff/CURRENT_STATE.md`, `tasks/active.md`, `tasks/agent-log.md`, `AGENTS.md`.
 - Focused tests: `pytest tests/test_strategy_contract_consumer/ -q` — 158 passed.
 - Full suite: `pytest -q` — 8324 passed, 1 skipped.
-- Tag `v0.56.0-dev` pending; no push yet.
+- Tagged `v0.56.0-dev` at `238e387`; no push yet.
 
 Boundaries preserved:
 - No Freqtrade runtime integration, strategy changes, automatic config mutation, exchange/API/server/database/scheduler/live trading behavior.

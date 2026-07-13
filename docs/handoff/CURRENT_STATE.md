@@ -4,11 +4,11 @@ Hunter Futures Pro
 
 ## Version
 
-0.56.0-dev (MVP-56 finalization complete; version bumped to 0.56.0-dev; tag `v0.56.0-dev` pending)
+0.56.0-dev (MVP-56 finalization complete; version bumped to 0.56.0-dev; tagged `v0.56.0-dev` at `238e387`)
 
 ## Current Phase
 
-The functional MVP chain now runs through **MVP-56 / v0.56.0-dev**, which is complete with tag `v0.56.0-dev` pending. **MVP-56 — Strategy Contract Consumption Adapter** is finalized: `SPEC-057` has been approved and Steps 1–6 (models, loader, validator, engine, writer, integration tests, and documentation/version finalization) are all committed. Source code changes in `src/hunter/strategy_contract_consumer/models.py`, `src/hunter/strategy_contract_consumer/loader.py`, `src/hunter/strategy_contract_consumer/validator.py`, `src/hunter/strategy_contract_consumer/engine.py`, `src/hunter/strategy_contract_consumer/writer.py`, `src/hunter/strategy_contract_consumer/__init__.py`, and `tests/test_strategy_contract_consumer/`. Tag `v0.56.0-dev` pending (local-only; no push).
+The functional MVP chain now runs through **MVP-56 / v0.56.0-dev**, which is complete and tagged `v0.56.0-dev` at `238e387`. **MVP-56 — Strategy Contract Consumption Adapter** is finalized: `SPEC-057` has been approved and Steps 1–6 (models, loader, validator, engine, writer, integration tests, and documentation/version finalization) are all committed. Source code changes in `src/hunter/strategy_contract_consumer/models.py`, `src/hunter/strategy_contract_consumer/loader.py`, `src/hunter/strategy_contract_consumer/validator.py`, `src/hunter/strategy_contract_consumer/engine.py`, `src/hunter/strategy_contract_consumer/writer.py`, `src/hunter/strategy_contract_consumer/__init__.py`, and `tests/test_strategy_contract_consumer/`. Tagged `v0.56.0-dev` at `238e387` (local-only; no push).
 
 ## Background
 

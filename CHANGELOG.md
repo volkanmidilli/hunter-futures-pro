@@ -23,7 +23,7 @@ All important project changes will be recorded in this file.
   - SPEC-057 corrected to align mode values with implementation (`LONG`, `SHORT`, `BLOCK_ALL`).
   - Version bumped to `0.56.0-dev` in `VERSION`, `pyproject.toml`, `src/hunter/__init__.py`.
   - `STRATEGY_CONTRACT_CONSUMER_VERSION` was already `0.56.0-dev` (set in Step 1).
-  - Tag `v0.56.0-dev` pending (local-only; no push).
+  - Tagged `v0.56.0-dev` at `238e387` (local-only; no push).
 
 ## MVP-55 — Freqtrade Universe Consumption Adapter (Complete)
 
