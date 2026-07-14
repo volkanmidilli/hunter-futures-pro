@@ -45,7 +45,7 @@ The repository now contains 48 specs (SPEC-001 through SPEC-048). MVPs beyond th
 
 ## Next
 
-MVP-58 — Portfolio Risk Constraint Evaluator is complete and tagged `v0.58.0-dev` at `8578fe4` (local-only; no push). No next MVP selected; the next phase requires human direction.
+MVP-58 — Portfolio Risk Constraint Evaluator is complete and tagged `v0.58.0-dev` at `8578fe4` (local-only; no push). **MVP-59 — Research Decision Gate Engine** is selected and in planning; SPEC-060 scope drafted, awaiting human approval before implementation. No source code changes yet; the next phase requires human direction.
 
 ## Current Status
 

@@ -1,5 +1,43 @@
 ---
 
+### MVP-59 Scope Selection
+
+Date: 2026-07-14
+
+Agent: WrongStack
+
+Task: Select MVP-59 scope and update active project documentation. No source code changes.
+
+Selected scope:
+
+- **MVP-59 — Research Decision Gate Engine**
+- Consumes `ValidatedPortfolioRiskContext` (MVP-58), `ControlledUniverseReport` (MVP-51/MVP-52), and optional strategy contract input.
+- Produces a deterministic, research-only `ResearchDecisionGateReport` with `GO` / `NO_GO` / `NEEDS_REVIEW` decision, explicit reason codes, safety flags, and `human_approval_required=True`.
+- No Freqtrade runtime integration, strategy changes, automatic config mutation, exchange/API/server/database/scheduler/live trading behavior, or actionable trading signals.
+- Version target: `v0.59.0-dev` after implementation.
+- SPEC-060 to be drafted and approved before implementation begins.
+
+Files modified:
+
+- `tasks/active.md` — added MVP-59 as current task in planning.
+- `docs/handoff/CURRENT_STATE.md` — updated Next section to reflect MVP-59 selected.
+- `AGENTS.md` — updated Current MVP Context to MVP-59.
+- `tasks/agent-log.md` — added this entry.
+
+Checks performed:
+
+- No `data/` or `reports/` inspection.
+- No source code or test changes.
+- Project memory updated with MVP-59 decision.
+
+Boundaries preserved:
+
+- No runtime feature changes.
+- No MVP-59 implementation started.
+- Tag `v0.58.0-dev` remains at `8578fe4` (local-only; no push).
+
+---
+
 ### MVP-58 Finalization
 
 Date: 2026-07-14
