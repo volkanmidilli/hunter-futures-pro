@@ -66,6 +66,14 @@ from hunter.governance_summary.validator import (
     validate_gate_report,
     validate_review_records,
 )
+from hunter.governance_summary.writer import (
+    atomic_write_json_governance_decision_summary,
+    atomic_write_markdown_governance_decision_summary,
+    governance_decision_summary_to_dict,
+    governance_decision_summary_to_json_text,
+    governance_decision_summary_to_markdown_text,
+    write_governance_decision_summary,
+)
 
 __all__ = [
     # Version
@@ -123,4 +131,11 @@ __all__ = [
     # Engine
     "build_governance_decision_summary",
     "compute_governance_fingerprint",
+    # Writer
+    "governance_decision_summary_to_dict",
+    "governance_decision_summary_to_json_text",
+    "governance_decision_summary_to_markdown_text",
+    "write_governance_decision_summary",
+    "atomic_write_json_governance_decision_summary",
+    "atomic_write_markdown_governance_decision_summary",
 ]
