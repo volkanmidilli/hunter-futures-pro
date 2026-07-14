@@ -20,6 +20,7 @@ from hunter.research_decision_gate.models import (
     RESEARCH_DECISION_GATE_VERSION,
     DecisionSourceSummary,
     ResearchDecisionGateConfig,
+    ResearchDecisionGateError,
     ResearchDecisionGateReport,
 )
 from hunter.research_decision_gate.policy import (
@@ -189,6 +190,10 @@ def build_research_decision_gate_report(
     The report is fail-closed: any blocking issue yields ``NO_GO``, review-only
     issues yield ``NEEDS_REVIEW``, and only clean inputs produce ``GO``.
     """
+    if not isinstance(config, ResearchDecisionGateConfig):
+        raise ResearchDecisionGateError(
+            "config must be a ResearchDecisionGateConfig", reason_code="INVALID_CONFIG"
+        )
     if not isinstance(evaluated_at, datetime) or evaluated_at.tzinfo is None:
         raise ValueError(
             f"evaluated_at must be a timezone-aware datetime, got {evaluated_at!r}"
