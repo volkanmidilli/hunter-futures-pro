@@ -146,15 +146,15 @@ cards:
   review_findings: []
 - id: CARD-61-10
   title: Post-Tag Sync
-  status: TEST
+  status: DONE
   owner: null
   blocked_by:
   - CARD-61-09
   started_at: '2026-07-14T20:07:02Z'
   reviewed_at: '2026-07-14T20:07:21Z'
   tested_at: '2026-07-14T20:07:21Z'
-  completed_at: null
-  commit: null
+  completed_at: '2026-07-14T20:07:32Z'
+  commit: 486ea52c87d681e3b075d5085470bc61f36da54b
   changed_files: []
   test_results: []
   review_findings: []

@@ -61,3 +61,5 @@
 {"actor":"coordinator","card_id":"CARD-61-10","evidence":{"changed_files":[],"review_findings":[],"test_results":[]},"from":"READY","timestamp":"2026-07-14T20:07:02Z","to":"IN_PROGRESS"}
 {"actor":"coordinator","card_id":"CARD-61-10","evidence":{"changed_files":[],"review_findings":[],"test_results":[]},"from":"IN_PROGRESS","timestamp":"2026-07-14T20:07:21Z","to":"REVIEW"}
 {"actor":"coordinator","card_id":"CARD-61-10","evidence":{"changed_files":[],"review_findings":[],"test_results":[]},"from":"REVIEW","timestamp":"2026-07-14T20:07:21Z","to":"TEST"}
+{"actor":"coordinator","card_id":"CARD-61-10","evidence":{"changed_files":[],"review_findings":[],"test_results":[]},"from":"TEST","timestamp":"2026-07-14T20:07:32Z","to":"COMMIT"}
+{"actor":"coordinator","card_id":"CARD-61-10","evidence":{"changed_files":[],"review_findings":[],"test_results":[]},"from":"COMMIT","timestamp":"2026-07-14T20:07:32Z","to":"DONE"}
