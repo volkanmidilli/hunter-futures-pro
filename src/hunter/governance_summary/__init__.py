@@ -49,6 +49,10 @@ from hunter.governance_summary.models import (
     UNKNOWN_NON_BLOCKING_FIELD,
     UNSAFE_GOVERNANCE_FLAG,
 )
+from hunter.governance_summary.engine import (
+    build_governance_decision_summary,
+    compute_governance_fingerprint,
+)
 from hunter.governance_summary.policy import (
     build_governance_safety_flags,
     classify_governance_reasons,
@@ -116,4 +120,7 @@ __all__ = [
     "detect_open_change_request",
     "classify_governance_reasons",
     "resolve_governance_status",
+    # Engine
+    "build_governance_decision_summary",
+    "compute_governance_fingerprint",
 ]

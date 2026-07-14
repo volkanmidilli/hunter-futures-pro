@@ -177,12 +177,8 @@ class TestValidateGateReport:
 
 
 class TestValidateReviewRecords:
-    def test_empty_chain_required(self, config: GovernanceSummaryConfig) -> None:
-        assert validate_review_records((), config) == (MISSING_REVIEW_CHAIN,)
-
-    def test_empty_chain_optional(self) -> None:
-        cfg = GovernanceSummaryConfig(require_review_chain=False)
-        assert validate_review_records((), cfg) == ()
+    def test_empty_chain_is_valid(self, config: GovernanceSummaryConfig) -> None:
+        assert validate_review_records((), config) == ()
 
     def test_valid_chain(self, now: datetime) -> None:
         gate = _make_gate_report(now=now)

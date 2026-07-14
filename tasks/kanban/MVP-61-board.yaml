@@ -62,27 +62,27 @@ cards:
   review_findings: []
 - id: CARD-61-04
   title: Governance Policy
-  status: TEST
+  status: DONE
   owner: null
   blocked_by:
   - CARD-61-03
   started_at: '2026-07-14T19:54:07Z'
   reviewed_at: '2026-07-14T19:55:31Z'
   tested_at: '2026-07-14T19:55:31Z'
-  completed_at: null
-  commit: null
+  completed_at: '2026-07-14T19:55:46Z'
+  commit: 2d1372c0dece6256e1c2df52c81ca355b9d0989d
   changed_files: []
   test_results: []
   review_findings: []
 - id: CARD-61-05
   title: Summary Engine
-  status: BLOCKED
+  status: TEST
   owner: null
   blocked_by:
   - CARD-61-04
-  started_at: null
-  reviewed_at: null
-  tested_at: null
+  started_at: '2026-07-14T19:55:51Z'
+  reviewed_at: '2026-07-14T19:58:07Z'
+  tested_at: '2026-07-14T19:58:07Z'
   completed_at: null
   commit: null
   changed_files: []

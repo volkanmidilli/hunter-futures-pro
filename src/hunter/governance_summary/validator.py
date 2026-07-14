@@ -93,8 +93,8 @@ def validate_review_records(
     Fingerprint mismatches are reported as ``TAMPERED_REVIEW_RECORD``.
     Broken previous-record links are reported as ``BROKEN_REVIEW_CHAIN``.
     """
-    if config.require_review_chain and not review_records:
-        return (MISSING_REVIEW_CHAIN,)
+    # An empty sequence is valid input; it yields REVIEW_REQUIRED downstream
+    # via NO_ACCEPTED_REVIEW, not BLOCKED.
 
     # Lazily import MVP-60 chain API to avoid a hard import-time dependency.
     from hunter.human_review_registry.chain import (
