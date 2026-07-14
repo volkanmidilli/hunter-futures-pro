@@ -22,7 +22,7 @@ All important project changes will be recorded in this file.
   - 140 portfolio_research_adapter tests in `tests/test_portfolio_research_adapter/`; full suite: 8464 tests passing, 1 skipped.
   - Version bumped to `0.57.0-dev` in `VERSION`, `pyproject.toml`, `src/hunter/__init__.py`.
   - `PORTFOLIO_RESEARCH_ADAPTER_VERSION` was already `0.57.0-dev` (set in Step 1).
-  - Tag `v0.57.0-dev` pending.
+  - Tagged `v0.57.0-dev` at `2d68a75` (local-only; no push).
 
 ## MVP-56 — Strategy Contract Consumption Adapter (Complete)
 

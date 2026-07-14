@@ -4,11 +4,11 @@ Hunter Futures Pro
 
 ## Version
 
-0.57.0-dev (MVP-57 finalization complete; version bumped to 0.57.0-dev; tag pending `v0.57.0-dev`)
+0.57.0-dev (MVP-57 finalization + tag complete; version bumped to 0.57.0-dev; tagged `v0.57.0-dev` at `2d68a75`)
 
 ## Current Phase
 
-The functional MVP chain now runs through **MVP-57 / v0.57.0-dev**, which is complete with tag pending `v0.57.0-dev`. **MVP-57 — Portfolio Construction Research Adapter** is finalized: `SPEC-058` has been approved and Steps 1–6 (models, validator, allocator, engine, writer, integration tests, and documentation/version finalization) are all committed. Source code changes in `src/hunter/portfolio_research_adapter/models.py`, `src/hunter/portfolio_research_adapter/validator.py`, `src/hunter/portfolio_research_adapter/allocator.py`, `src/hunter/portfolio_research_adapter/engine.py`, `src/hunter/portfolio_research_adapter/writer.py`, `src/hunter/portfolio_research_adapter/__init__.py`, and `tests/test_portfolio_research_adapter/`. Tag `v0.57.0-dev` pending (local-only; no push).
+The functional MVP chain now runs through **MVP-57 / v0.57.0-dev**, which is complete and tagged `v0.57.0-dev` at `2d68a75`. **MVP-57 — Portfolio Construction Research Adapter** is finalized: `SPEC-058` has been approved and Steps 1–6 (models, validator, allocator, engine, writer, integration tests, and documentation/version finalization) are all committed. Source code changes in `src/hunter/portfolio_research_adapter/models.py`, `src/hunter/portfolio_research_adapter/validator.py`, `src/hunter/portfolio_research_adapter/allocator.py`, `src/hunter/portfolio_research_adapter/engine.py`, `src/hunter/portfolio_research_adapter/writer.py`, `src/hunter/portfolio_research_adapter/__init__.py`, and `tests/test_portfolio_research_adapter/`. Tagged `v0.57.0-dev` at `2d68a75` (local-only; no push).
 
 ## Background
 
@@ -45,11 +45,11 @@ The repository now contains 48 specs (SPEC-001 through SPEC-048). MVPs beyond th
 
 ## Next
 
-MVP-57 — Portfolio Construction Research Adapter is complete and tag pending `v0.57.0-dev` (local-only; no push). No next MVP selected; the next phase requires human direction.
+MVP-57 — Portfolio Construction Research Adapter is complete and tagged `v0.57.0-dev` at `2d68a75` (local-only; no push). No next MVP selected; the next phase requires human direction.
 
 ## Current Status
 
-MVP-57 — Portfolio Construction Research Adapter is complete with tag pending `v0.57.0-dev`. SPEC-058 approved; Steps 1–6 (models, validator, allocator, engine, writer, integration tests, docs/version finalization) completed. Package `src/hunter/portfolio_research_adapter/` with `models.py`, `validator.py`, `allocator.py`, `engine.py`, `writer.py`, `__init__.py`. 140 portfolio_research_adapter tests in `tests/test_portfolio_research_adapter/`. Version bumped to `0.57.0-dev`. Full suite: 8464 tests passing, 1 skipped. Tag `v0.57.0-dev` pending (local-only; no push).
+MVP-57 — Portfolio Construction Research Adapter is complete and tagged `v0.57.0-dev` at `2d68a75`. SPEC-058 approved; Steps 1–6 (models, validator, allocator, engine, writer, integration tests, docs/version finalization) completed. Package `src/hunter/portfolio_research_adapter/` with `models.py`, `validator.py`, `allocator.py`, `engine.py`, `writer.py`, `__init__.py`. 140 portfolio_research_adapter tests in `tests/test_portfolio_research_adapter/`. Version bumped to `0.57.0-dev`. Full suite: 8464 tests passing, 1 skipped. Tagged `v0.57.0-dev` at `2d68a75` (local-only; no push).
 
 MVP-54 — Operational One-Call Coin-Discovery Pipeline Runner is complete and tagged `v0.54.0-dev` at `c7ef130`. SPEC-055 approved; Steps 1–5 (models, engine, writer, integration tests, and documentation/version finalization) are all committed. Version bumped to `0.54.0-dev`. Full suite: 8018 tests passing, 1 skipped. No push has occurred.
 

@@ -44,7 +44,7 @@ Excluded from evidence:
 - `SPEC-055` exists for MVP-54 Operational One-Call Coin-Discovery Pipeline Runner. Complete; tagged `v0.54.0-dev` at `c7ef130` (local-only; no push).
 - `SPEC-056` exists for MVP-55 Freqtrade Universe Consumption Adapter. Complete; tagged `v0.55.0-dev` at `8f9730a2` (local-only; no push).
 - `SPEC-057` exists for MVP-56 Strategy Contract Consumption Adapter. Complete; tagged `v0.56.0-dev` at `238e387` (local-only; no push).
-- `SPEC-058` exists for MVP-57 Portfolio Construction Research Adapter. Complete; tag pending at `v0.57.0-dev` (local-only; no push).
+- `SPEC-058` exists for MVP-57 Portfolio Construction Research Adapter. Complete; tagged `v0.57.0-dev` at `2d68a75` (local-only; no push).
 
 ## MVP Index Table
 
@@ -106,7 +106,7 @@ Excluded from evidence:
 | MVP-53 | Controlled Universe Export Adapter | `SPEC-054` | `v0.53.0-dev` | `controlled_universe_export_adapter` | `test_controlled_universe_export_adapter` | tagged | Tagged `v0.53.0-dev` (local-only; no push) |
 | MVP-55 | Freqtrade Universe Consumption Adapter | `SPEC-056` | `v0.55.0-dev` | `freqtrade_universe_adapter` | `test_freqtrade_universe_adapter` | tagged | Tagged `v0.55.0-dev` at `8f9730a2` (local-only; no push) |
 | MVP-56 | Strategy Contract Consumption Adapter | `SPEC-057` | `v0.56.0-dev` | `strategy_contract_consumer` | `test_strategy_contract_consumer` | tagged | Tagged `v0.56.0-dev` at `238e387` (local-only; no push) |
-| MVP-57 | Portfolio Construction Research Adapter | `SPEC-058` | `v0.57.0-dev` (pending) | `portfolio_research_adapter` | `test_portfolio_research_adapter` | committed | Tag pending; no push |
+| MVP-57 | Portfolio Construction Research Adapter | `SPEC-058` | `v0.57.0-dev` | `portfolio_research_adapter` | `test_portfolio_research_adapter` | tagged | Tagged `v0.57.0-dev` at `2d68a75` (local-only; no push) |
 | MVP-54 | Operational One-Call Coin-Discovery Pipeline Runner | `SPEC-055` | `v0.54.0-dev` | `coin_discovery_pipeline` | `test_coin_discovery_pipeline` | tagged | Tagged `v0.54.0-dev` at `c7ef130` (local-only; no push) |
 
 ## Package Mapping

@@ -31,7 +31,33 @@ Boundaries preserved:
 
 - No runtime feature changes.
 - No MVP-58 work started.
-- Tag `v0.57.0-dev` pending; no push.
+- Tagged `v0.57.0-dev` at `2d68a75`; no push.
+
+---
+
+### MVP-57 Post-Tag Context Sync
+
+Date: 2026-07-14
+
+Agent: WrongStack
+
+Task: Sync all active documentation to reflect that `v0.57.0-dev` was created at commit `2d68a75`. Tag is lightweight (not annotated) — points directly to the finalization commit.
+
+Files updated:
+
+- `AGENTS.md` — replaced "pending" -> "tagged v0.57.0-dev at 2d68a75"; updated latest tag line.
+- `CHANGELOG.md` — replaced "Tag pending" -> "Tagged v0.57.0-dev at 2d68a75 (local-only; no push)".
+- `docs/MVP_INDEX.md` — replaced "tag pending" with "tagged v0.57.0-dev at 2d68a75" in SPEC-058 bullet; updated MVP-57 table row status to "tagged" with commit hash.
+- `docs/handoff/CURRENT_STATE.md` — replaced "tag pending" with "tagged v0.57.0-dev at 2d68a75" in Version, Current Phase, Next, and Current Status.
+- `tasks/active.md` — replaced "tag pending" with "tagged v0.57.0-dev at 2d68a75" in current task, finalization notes, status, and scope.
+- `tasks/agent-log.md` — added this entry.
+
+Consistency checks:
+
+- `grep -Rn "pending" AGENTS.md CHANGELOG.md docs/MVP_INDEX.md docs/handoff/CURRENT_STATE.md tasks/active.md` — no remaining "pending" references for v0.57.0-dev in active docs.
+- `git rev-parse v0.57.0-dev` — resolves to commit `2d68a75` (lightweight tag).
+- Working tree: clean except for untracked files (`data/`, `reports/`, test `__init__.py` stubs, two WrongStack plan files).
+- No source, tests, or version files touched.
 
 ---
 
