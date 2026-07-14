@@ -64,6 +64,15 @@ from hunter.human_review_registry.validator import (
     validate_reason_codes,
     validate_review_input,
 )
+from hunter.human_review_registry.writer import (
+    SAFETY_NOTICE,
+    atomic_write_json_human_review_record,
+    atomic_write_markdown_human_review_record,
+    human_review_record_to_dict,
+    human_review_record_to_json_text,
+    human_review_record_to_markdown_text,
+    write_human_review_record,
+)
 
 __all__ = [
     # Version
@@ -125,4 +134,12 @@ __all__ = [
     "detect_duplicate_review",
     # Engine
     "build_human_review_record",
+    # Writer
+    "SAFETY_NOTICE",
+    "human_review_record_to_dict",
+    "human_review_record_to_json_text",
+    "human_review_record_to_markdown_text",
+    "atomic_write_json_human_review_record",
+    "atomic_write_markdown_human_review_record",
+    "write_human_review_record",
 ]
