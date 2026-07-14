@@ -46,6 +46,13 @@ from hunter.human_review_registry.models import (
     SOURCE_DECISIONS,
     SOURCE_FINGERPRINT_MISSING,
 )
+from hunter.human_review_registry.chain import (
+    compute_record_fingerprint,
+    detect_duplicate_review,
+    duplicate_review_key,
+    verify_chain,
+    verify_record_fingerprint,
+)
 from hunter.human_review_registry.policy import (
     accepted_reason_code,
     evaluate_review_policy,
@@ -109,4 +116,10 @@ __all__ = [
     # Policy
     "evaluate_review_policy",
     "accepted_reason_code",
+    # Chain
+    "compute_record_fingerprint",
+    "duplicate_review_key",
+    "verify_record_fingerprint",
+    "verify_chain",
+    "detect_duplicate_review",
 ]
