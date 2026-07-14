@@ -34,27 +34,27 @@ cards:
   review_findings: []
 - id: CARD-61-02
   title: Foundation and Models
-  status: TEST
+  status: DONE
   owner: null
   blocked_by:
   - CARD-61-01
   started_at: '2026-07-14T19:46:49Z'
   reviewed_at: '2026-07-14T19:49:28Z'
   tested_at: '2026-07-14T19:49:28Z'
-  completed_at: null
-  commit: null
+  completed_at: '2026-07-14T19:49:44Z'
+  commit: 4051767ca46e1a2206b751804ca94ba884411d62
   changed_files: []
   test_results: []
   review_findings: []
 - id: CARD-61-03
   title: Input and Chain Validation
-  status: BLOCKED
+  status: TEST
   owner: null
   blocked_by:
   - CARD-61-02
-  started_at: null
-  reviewed_at: null
-  tested_at: null
+  started_at: '2026-07-14T19:49:49Z'
+  reviewed_at: '2026-07-14T19:53:41Z'
+  tested_at: '2026-07-14T19:53:41Z'
   completed_at: null
   commit: null
   changed_files: []

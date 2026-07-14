@@ -49,6 +49,12 @@ from hunter.governance_summary.models import (
     UNKNOWN_NON_BLOCKING_FIELD,
     UNSAFE_GOVERNANCE_FLAG,
 )
+from hunter.governance_summary.validator import (
+    build_review_chain_facts,
+    validate_evaluated_at,
+    validate_gate_report,
+    validate_review_records,
+)
 
 __all__ = [
     # Version
@@ -92,4 +98,9 @@ __all__ = [
     "GovernanceReviewSummary",
     "GovernanceDecisionSummary",
     "GovernanceSummaryError",
+    # Validator
+    "validate_gate_report",
+    "validate_review_records",
+    "validate_evaluated_at",
+    "build_review_chain_facts",
 ]
