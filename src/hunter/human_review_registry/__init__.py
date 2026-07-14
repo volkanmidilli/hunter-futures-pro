@@ -46,6 +46,10 @@ from hunter.human_review_registry.models import (
     SOURCE_DECISIONS,
     SOURCE_FINGERPRINT_MISSING,
 )
+from hunter.human_review_registry.policy import (
+    accepted_reason_code,
+    evaluate_review_policy,
+)
 from hunter.human_review_registry.validator import (
     validate_created_at,
     validate_decision_report,
@@ -102,4 +106,7 @@ __all__ = [
     "validate_review_input",
     "validate_created_at",
     "validate_reason_codes",
+    # Policy
+    "evaluate_review_policy",
+    "accepted_reason_code",
 ]
