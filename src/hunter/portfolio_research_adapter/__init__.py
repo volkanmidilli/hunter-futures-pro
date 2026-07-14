@@ -35,6 +35,14 @@ from hunter.portfolio_research_adapter.models import (
     PortfolioResearchContext,
     PortfolioResearchError,
 )
+from hunter.portfolio_research_adapter.allocator import (
+    allocate_equal_weight,
+    allocate_score_proportional,
+    apply_cluster_limits,
+    compute_cluster_exposure,
+    compute_total_exposure,
+    quantize_allocations,
+)
 from hunter.portfolio_research_adapter.validator import (
     check_blacklist_exclusion,
     validate_cluster_mapping,
@@ -75,4 +83,11 @@ __all__ = [
     "validate_cluster_mapping",
     "validate_score_mapping",
     "check_blacklist_exclusion",
+    # Allocator
+    "allocate_equal_weight",
+    "allocate_score_proportional",
+    "apply_cluster_limits",
+    "quantize_allocations",
+    "compute_cluster_exposure",
+    "compute_total_exposure",
 ]
