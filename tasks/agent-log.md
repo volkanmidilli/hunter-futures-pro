@@ -1,5 +1,57 @@
 ---
 
+### MVP-61 Finalization
+
+Date: 2026-07-14
+
+Agent: WrongStack
+
+Task: Implement MVP-61 Governance Decision Summary Aggregator under the stateful Kanban SDD execution board. Finalize version bump to `0.61.0-dev`, documentation updates, and local annotated tag `v0.61.0-dev`.
+
+Selected scope:
+
+- **MVP-61 — Governance Decision Summary Aggregator**
+- Consumes `ResearchDecisionGateReport` (MVP-59) and `HumanReviewRecord` chain (MVP-60).
+- Produces a deterministic, research-only `GovernanceDecisionSummary` with `READY_FOR_RESEARCH_HANDOFF` / `REVIEW_REQUIRED` / `BLOCKED` status, explicit reason codes, safety flags, and `execution_approval_granted=False`.
+- No Freqtrade runtime integration, strategy changes, automatic config mutation, exchange/API/server/database/scheduler/live trading behavior, or actionable trading signals.
+- Version target: `v0.61.0-dev` after implementation.
+- SPEC-062 approved and implemented.
+
+Files modified:
+
+- `specs/SPEC-062-Governance-Decision-Summary-Aggregator.md` — approved SPEC.
+- `src/hunter/governance_summary/models.py` — frozen dataclasses, version, statuses, reason codes.
+- `src/hunter/governance_summary/validator.py` — gate report, review chain, and timestamp validation.
+- `src/hunter/governance_summary/policy.py` — latest accepted review selection, change-request detection, reason classification, status resolution.
+- `src/hunter/governance_summary/engine.py` — `build_governance_decision_summary` orchestration and fingerprinting.
+- `src/hunter/governance_summary/writer.py` — deterministic JSON/Markdown serialization and atomic writers.
+- `src/hunter/governance_summary/__init__.py` — public API exports.
+- `tests/test_governance_summary/test_models.py`, `test_validator.py`, `test_policy.py`, `test_engine.py`, `test_writer.py`, `test_integration.py` — 97 tests.
+- `tasks/kanban/MVP-61-board.yaml` — stateful Kanban board with all cards DONE.
+- `tasks/kanban/MVP-61-events.jsonl` — append-only transition event log.
+- `VERSION`, `pyproject.toml`, `src/hunter/__init__.py` — bumped to `0.61.0-dev`.
+- `CHANGELOG.md` — added MVP-61 section.
+- `docs/MVP_INDEX.md` — added SPEC-062 bullet and MVP-61 table row.
+- `docs/handoff/CURRENT_STATE.md` — updated to MVP-61 / v0.61.0-dev.
+- `AGENTS.md` — updated Current MVP Context.
+- `tasks/active.md` — updated current task and milestone notes.
+- `tasks/agent-log.md` — added this entry.
+
+Checks performed:
+
+- Focused tests: `pytest tests/test_governance_summary/ -q` — 97 passed.
+- Full suite: `pytest -q` — 8815 passed, 1 skipped.
+- Board/event consistency verified with a Python validation script.
+- No `data/` or `reports/` inspection.
+
+Boundaries preserved:
+
+- No runtime feature changes beyond MVP-61 package.
+- No MVP-62 work started.
+- No push; tag `v0.61.0-dev` created locally.
+
+---
+
 ### MVP-59 Scope Selection
 
 Date: 2026-07-14

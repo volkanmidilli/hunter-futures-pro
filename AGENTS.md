@@ -139,10 +139,10 @@ When continuing work on an MVP:
 
 ## Current MVP Context
 
-- Completed MVP: MVP-58 Portfolio Risk Constraint Evaluator
-- Active MVP: MVP-59 Research Decision Gate Engine — selected, in planning; SPEC-060 scope drafted, awaiting human approval
-- SPEC: `specs/SPEC-060-Research-Decision-Gate-Engine.md` — scope drafted during MVP-59 selection
-- Implementation: not started; awaits human approval
-- Latest tag: `v0.58.0-dev` (MVP-58 tagged at `8578fe4`)
+- Completed MVP: MVP-61 Governance Decision Summary Aggregator
+- Active MVP: none selected
+- SPEC: `specs/SPEC-062-Governance-Decision-Summary-Aggregator.md` — approved and implemented for MVP-61
+- Implementation: complete; local annotated tag `v0.61.0-dev` pending
+- Latest tag: `v0.60.0-dev` (MVP-60 Human Review Decision Registry)
 - Tag policy: never tag automatically; the human must provide the exact tag or commit command.
 - Safety: autonomous workflow only touches docs/version/task memory in finalization steps; no runtime code changes, no tests changed, no data/reports inspection, no trading/API/Freqtrade/server/database/scheduler changes, no production-readiness, trading-readiness, approval, certification, recommendation, or suitability claims.

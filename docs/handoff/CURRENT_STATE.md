@@ -4,11 +4,11 @@ Hunter Futures Pro
 
 ## Version
 
-0.58.0-dev (MVP-58 finalization + tag complete; version bumped to 0.58.0-dev; tagged `v0.58.0-dev` at `8578fe4`)
+0.61.0-dev (MVP-61 finalization + tag complete; version bumped to 0.61.0-dev; tagged `v0.61.0-dev` pending)
 
 ## Current Phase
 
-The functional MVP chain now runs through **MVP-58 / v0.58.0-dev**, which is complete and tagged `v0.58.0-dev` at `8578fe4`. **MVP-58 — Portfolio Risk Constraint Evaluator** is finalized: `SPEC-059` has been approved and Steps 1–6 (models, validator, metrics, engine, writer, integration tests, and documentation/version finalization) are all committed. Source code changes in `src/hunter/portfolio_risk_evaluator/models.py`, `src/hunter/portfolio_risk_evaluator/validator.py`, `src/hunter/portfolio_risk_evaluator/metrics.py`, `src/hunter/portfolio_risk_evaluator/engine.py`, `src/hunter/portfolio_risk_evaluator/writer.py`, `src/hunter/portfolio_risk_evaluator/__init__.py`, and `tests/test_portfolio_risk_evaluator/`. Tagged `v0.58.0-dev` at `8578fe4` (local-only; no push).
+The functional MVP chain now runs through **MVP-61 / v0.61.0-dev**, which is complete with a pending local tag. **MVP-61 — Governance Decision Summary Aggregator** is finalized: `SPEC-062` has been approved and Steps 1–6 (models, validator, policy, engine, writer, integration tests, and documentation/version finalization) are all committed. Source code changes in `src/hunter/governance_summary/models.py`, `src/hunter/governance_summary/validator.py`, `src/hunter/governance_summary/policy.py`, `src/hunter/governance_summary/engine.py`, `src/hunter/governance_summary/writer.py`, `src/hunter/governance_summary/__init__.py`, and `tests/test_governance_summary/`. Tag `v0.61.0-dev` pending (local-only; no push).
 
 ## Background
 
@@ -26,7 +26,7 @@ The original plan captured in `PROJECT.md`, `README.md`, and `tasks/backlog.md` 
 
 ### Expanded MVP Chain
 
-The repository now contains 48 specs (SPEC-001 through SPEC-048). MVPs beyond the original plan:
+The repository now contains 62 specs (SPEC-001 through SPEC-062). MVPs beyond the original plan:
 
 - MVP-5 through MVP-9: Freqtrade execution contract chain
 - MVP-10 through MVP-23: Local research audit / review chain
@@ -42,14 +42,23 @@ The repository now contains 48 specs (SPEC-001 through SPEC-048). MVPs beyond th
 - MVP-50: Research Audit Remediation Handoff Packet (complete, tagged v0.50.0-dev at 64004c3)
 - MVP-51: Controlled Universe Bridge Engine (complete, tagged v0.51.0-dev at a75de79)
 - MVP-52: End-to-End Research Run Orchestrator v2 (complete, tagged `v0.52.0-dev` at `0c65e20`)
+- MVP-53: Controlled Universe Export Adapter (complete, tagged `v0.53.0-dev`)
+- MVP-54: Operational One-Call Coin-Discovery Pipeline Runner (complete, tagged `v0.54.0-dev` at `c7ef130`)
+- MVP-55: Freqtrade Universe Consumption Adapter (complete, tagged `v0.55.0-dev` at `8f9730a2`)
+- MVP-56: Strategy Contract Consumption Adapter (complete, tagged `v0.56.0-dev` at `238e387`)
+- MVP-57: Portfolio Construction Research Adapter (complete, tagged `v0.57.0-dev` at `2d68a75`)
+- MVP-58: Portfolio Risk Constraint Evaluator (complete, tagged `v0.58.0-dev` at `8578fe4`)
+- MVP-59: Research Decision Gate Engine (complete, tagged `v0.59.0-dev` at `8d00af3`)
+- MVP-60: Human Review Decision Registry (complete, tagged `v0.60.0-dev`)
+- MVP-61: Governance Decision Summary Aggregator (complete, tag pending)
 
 ## Next
 
-MVP-58 — Portfolio Risk Constraint Evaluator is complete and tagged `v0.58.0-dev` at `8578fe4` (local-only; no push). **MVP-59 — Research Decision Gate Engine** is selected and in planning; SPEC-060 scope drafted, awaiting human approval before implementation. No source code changes yet; the next phase requires human direction.
+MVP-61 — Governance Decision Summary Aggregator is complete and version-bumped to `v0.61.0-dev`. The local annotated tag `v0.61.0-dev` is pending. No next MVP is selected. No push has occurred.
 
 ## Current Status
 
-MVP-58 — Portfolio Risk Constraint Evaluator is complete and tagged `v0.58.0-dev` at `8578fe4`. SPEC-059 approved; Steps 1–6 (models, validator, metrics, engine, writer, integration tests, docs/version finalization) completed. Package `src/hunter/portfolio_risk_evaluator/` with `models.py`, `validator.py`, `metrics.py`, `engine.py`, `writer.py`, `__init__.py`. 98 portfolio_risk_evaluator tests in `tests/test_portfolio_risk_evaluator/`. Version bumped to `0.58.0-dev`. Full suite: 8562 tests passing, 1 skipped. Tagged `v0.58.0-dev` at `8578fe4` (local-only; no push).
+MVP-61 — Governance Decision Summary Aggregator is complete and version-bumped to `v0.61.0-dev`. SPEC-062 approved; Steps 1–6 (models, validator, policy, engine, writer, integration tests, docs/version finalization) completed. Package `src/hunter/governance_summary/` with `models.py`, `validator.py`, `policy.py`, `engine.py`, `writer.py`, `__init__.py`. 97 governance_summary tests in `tests/test_governance_summary/`. Version bumped to `0.61.0-dev` in `VERSION`, `pyproject.toml`, `src/hunter/__init__.py`. Full suite: 8815 tests passing, 1 skipped. Tag `v0.61.0-dev` pending (local-only; no push).
 
 MVP-57 — Portfolio Construction Research Adapter is complete and tagged `v0.57.0-dev` at `2d68a75`. SPEC-058 approved; Steps 1–6 (models, validator, allocator, engine, writer, integration tests, docs/version finalization) completed. Package `src/hunter/portfolio_research_adapter/` with `models.py`, `validator.py`, `allocator.py`, `engine.py`, `writer.py`, `__init__.py`. 140 portfolio_research_adapter tests in `tests/test_portfolio_research_adapter/`. Version bumped to `0.57.0-dev`. Full suite: 8464 tests passing, 1 skipped. Tagged `v0.57.0-dev` at `2d68a75` (local-only; no push).
 

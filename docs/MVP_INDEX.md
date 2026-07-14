@@ -47,6 +47,8 @@ Excluded from evidence:
 - `SPEC-058` exists for MVP-57 Portfolio Construction Research Adapter. Complete; tagged `v0.57.0-dev` at `2d68a75` (local-only; no push).
 - `SPEC-059` exists for MVP-58 Portfolio Risk Constraint Evaluator. Complete; tag pending at `v0.58.0-dev` (local-only; no push).
 - `SPEC-060` exists for MVP-59 Research Decision Gate Engine. Complete; tagged `v0.59.0-dev` at `8d00af3` (local-only; no push).
+- `SPEC-061` exists for MVP-60 Human Review Decision Registry. Complete; tagged `v0.60.0-dev` (local-only; no push).
+- `SPEC-062` exists for MVP-61 Governance Decision Summary Aggregator. Complete; tag pending at `v0.61.0-dev` (local-only; no push).
 
 ## MVP Index Table
 
@@ -109,6 +111,8 @@ Excluded from evidence:
 | MVP-55 | Freqtrade Universe Consumption Adapter | `SPEC-056` | `v0.55.0-dev` | `freqtrade_universe_adapter` | `test_freqtrade_universe_adapter` | tagged | Tagged `v0.55.0-dev` at `8f9730a2` (local-only; no push) |
 | MVP-56 | Strategy Contract Consumption Adapter | `SPEC-057` | `v0.56.0-dev` | `strategy_contract_consumer` | `test_strategy_contract_consumer` | tagged | Tagged `v0.56.0-dev` at `238e387` (local-only; no push) |
 | MVP-57 | Portfolio Construction Research Adapter | `SPEC-058` | `v0.57.0-dev` | `portfolio_research_adapter` | `test_portfolio_research_adapter` | tagged | Tagged `v0.57.0-dev` at `2d68a75` (local-only; no push) |
+| MVP-61 | Governance Decision Summary Aggregator | `SPEC-062` | `v0.61.0-dev` | `governance_summary` | `test_governance_summary` | tagged | Tag pending; local-only; no push |
+| MVP-60 | Human Review Decision Registry | `SPEC-061` | `v0.60.0-dev` | `human_review_registry` | `test_human_review_registry` | tagged | Tagged `v0.60.0-dev` (local-only; no push) |
 | MVP-59 | Research Decision Gate Engine | `SPEC-060` | `v0.59.0-dev` | `research_decision_gate` | `test_research_decision_gate` | tagged | Tagged `v0.59.0-dev` at `8d00af3` (local-only; no push) |
 | MVP-58 | Portfolio Risk Constraint Evaluator | `SPEC-059` | `v0.58.0-dev` | `portfolio_risk_evaluator` | `test_portfolio_risk_evaluator` | tagged | Tagged `v0.58.0-dev` at `8578fe4` (local-only; no push) |
 | MVP-54 | Operational One-Call Coin-Discovery Pipeline Runner | `SPEC-055` | `v0.54.0-dev` | `coin_discovery_pipeline` | `test_coin_discovery_pipeline` | tagged | Tagged `v0.54.0-dev` at `c7ef130` (local-only; no push) |

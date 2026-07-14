@@ -4,6 +4,29 @@ All important project changes will be recorded in this file.
 
 ## Unreleased
 
+## MVP-61 — Governance Decision Summary Aggregator (Complete)
+
+- SPEC-062 — Governance Decision Summary Aggregator approved.
+  - `specs/SPEC-062-Governance-Decision-Summary-Aggregator.md` — approved for MVP-61 implementation.
+  - Consumes a `ResearchDecisionGateReport` (MVP-59), a sequence of `HumanReviewRecord` entries (MVP-60), and chain verification state.
+  - Produces a deterministic, research-only, human-approval-required `GovernanceDecisionSummary` with one of `READY_FOR_RESEARCH_HANDOFF`, `REVIEW_REQUIRED`, or `BLOCKED`.
+  - Fail-closed behavior: `NO_GO` gate, missing gate report, broken/tampered/duplicate review chain, contradictory governance state, or unsafe flags yields `BLOCKED` with explicit reason codes.
+  - Open change requests, rejected reviews, no accepted review, or `NEEDS_REVIEW` upstream gate yields `REVIEW_REQUIRED`.
+  - Reuses MVP-60 chain verification for fingerprint integrity and linkage checks.
+  - No Freqtrade runtime integration, strategy changes, automatic config mutation, exchange/API/server/database/scheduler/live trading behavior, or actionable trading signals.
+- Steps 1–6 — Governance Decision Summary Aggregator models, validator, policy, engine, writer, integration tests, and finalization.
+  - `src/hunter/governance_summary/models.py` — frozen dataclasses (`GovernanceSummaryConfig`, `GovernanceReviewSummary`, `GovernanceDecisionSummary`), `GOVERNANCE_SUMMARY_VERSION = "0.61.0-dev"`, status/reason code constants, and validation.
+  - `src/hunter/governance_summary/validator.py` — validation for gate report, review-record chain integrity, and timestamp; maps MVP-60 chain reason codes to the MVP-61 namespace.
+  - `src/hunter/governance_summary/policy.py` — deterministic policy: latest accepted review selection, open change-request detection, reason-code classification, and governance-status resolution.
+  - `src/hunter/governance_summary/engine.py` — `build_governance_decision_summary` orchestrates validation, policy, fingerprinting, and fail-closed rejection.
+  - `src/hunter/governance_summary/writer.py` — deterministic JSON/Markdown serialization with safety notice, artifact paths, and atomic writers.
+  - `src/hunter/governance_summary/__init__.py` — public API exports.
+  - `tests/test_governance_summary/test_models.py`, `test_validator.py`, `test_policy.py`, `test_engine.py`, `test_writer.py`, `test_integration.py` — comprehensive unit and integration tests.
+  - 97 governance_summary tests; full suite: 8815 passed, 1 skipped.
+  - Version bumped to `0.61.0-dev` in `VERSION`, `pyproject.toml`, `src/hunter/__init__.py`.
+  - `GOVERNANCE_SUMMARY_VERSION` already `0.61.0-dev` (set in Step 1).
+  - Tagged `v0.61.0-dev` pending.
+
 ## MVP-60 — Human Review Decision Registry (Complete)
 
 - SPEC-061 — Human Review Decision Registry approved.

@@ -2,9 +2,9 @@
 
 ## Current Task
 
-MVP-59 — Research Decision Gate Engine. SPEC-060 in planning; scope selected. Awaits human approval before implementation. No source code changes yet.
+No active MVP selected.
 
-MVP-58 — Portfolio Risk Constraint Evaluator. SPEC-059 approved. Steps 1–6 (models, validator, metrics, engine, writer, integration tests, and documentation/version finalization) complete. Version bumped to `0.58.0-dev`; tagged `v0.58.0-dev` at `8578fe4`. No push yet.
+MVP-61 — Governance Decision Summary Aggregator. SPEC-062 approved. Steps 1–6 (models, validator, policy, engine, writer, integration tests, and documentation/version finalization) complete. Version bumped to `0.61.0-dev`; tag `v0.61.0-dev` pending. No push yet.
 
 MVP-57 — Portfolio Construction Research Adapter. SPEC-058 approved. Steps 1–6 (models, validator, allocator, engine, writer, integration tests, and documentation/version finalization) complete. Version bumped to `0.57.0-dev`; tagged `v0.57.0-dev` at `2d68a75`. No push yet.
 

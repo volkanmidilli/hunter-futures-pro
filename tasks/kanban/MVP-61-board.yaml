@@ -104,27 +104,27 @@ cards:
   review_findings: []
 - id: CARD-61-07
   title: Integration
-  status: TEST
+  status: DONE
   owner: null
   blocked_by:
   - CARD-61-06
   started_at: '2026-07-14T20:00:48Z'
   reviewed_at: '2026-07-14T20:02:22Z'
   tested_at: '2026-07-14T20:02:22Z'
-  completed_at: null
-  commit: null
+  completed_at: '2026-07-14T20:02:34Z'
+  commit: e13e9deb68acd31c6a0833a1f6e49f56941e8c89
   changed_files: []
   test_results: []
   review_findings: []
 - id: CARD-61-08
   title: Finalization
-  status: BLOCKED
+  status: TEST
   owner: null
   blocked_by:
   - CARD-61-07
-  started_at: null
-  reviewed_at: null
-  tested_at: null
+  started_at: '2026-07-14T20:02:39Z'
+  reviewed_at: '2026-07-14T20:06:18Z'
+  tested_at: '2026-07-14T20:06:18Z'
   completed_at: null
   commit: null
   changed_files: []
