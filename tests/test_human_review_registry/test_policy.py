@@ -15,6 +15,7 @@ from hunter.human_review_registry import (
     REVIEW_APPROVED_FOR_RESEARCH,
     REVIEW_CHANGES_REQUESTED,
     REVIEW_REJECTED,
+    REVIEW_NOTE_TOO_SHORT,
     HumanReviewInput,
     HumanReviewRegistryConfig,
     accepted_reason_code,
@@ -92,7 +93,7 @@ def test_needs_review_approve_with_short_note_blocked() -> None:
         HumanReviewRegistryConfig.default(),
     )
     assert accepted is False
-    assert "MISSING_REQUIRED_REVIEW_NOTE" in blocking
+    assert REVIEW_NOTE_TOO_SHORT in blocking
     assert accepted_reasons == ()
 
 
@@ -103,7 +104,7 @@ def test_needs_review_request_changes_with_short_note_blocked() -> None:
         HumanReviewRegistryConfig.default(),
     )
     assert accepted is False
-    assert "MISSING_REQUIRED_REVIEW_NOTE" in blocking
+    assert REVIEW_NOTE_TOO_SHORT in blocking
 
 
 def test_needs_review_reject_accepted() -> None:

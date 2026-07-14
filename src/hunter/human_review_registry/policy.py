@@ -6,7 +6,6 @@ from hunter.human_review_registry.models import (
     ACCEPTED_REASON_CODES,
     APPROVE_FOR_RESEARCH,
     BLOCKING_REASON_CODES,
-    MISSING_REQUIRED_REVIEW_NOTE,
     NEEDS_REVIEW,
     NO_GO,
     NO_GO_APPROVAL_FORBIDDEN,
@@ -15,6 +14,7 @@ from hunter.human_review_registry.models import (
     REVIEW_APPROVED_FOR_RESEARCH,
     REVIEW_CHANGES_REQUESTED,
     REVIEW_REJECTED,
+    REVIEW_NOTE_TOO_SHORT,
     HumanReviewInput,
     HumanReviewRegistryConfig,
 )
@@ -49,12 +49,12 @@ def evaluate_review_policy(
 
     if review_input.reviewer_decision == APPROVE_FOR_RESEARCH:
         if source_decision == NEEDS_REVIEW and not _note_is_adequate(review_input, config):
-            return False, (MISSING_REQUIRED_REVIEW_NOTE,), ()
+            return False, (REVIEW_NOTE_TOO_SHORT,), ()
         return True, (), (REVIEW_APPROVED_FOR_RESEARCH,)
 
     if review_input.reviewer_decision == REQUEST_CHANGES:
         if source_decision == NEEDS_REVIEW and not _note_is_adequate(review_input, config):
-            return False, (MISSING_REQUIRED_REVIEW_NOTE,), ()
+            return False, (REVIEW_NOTE_TOO_SHORT,), ()
         return True, (), (REVIEW_CHANGES_REQUESTED,)
 
     # Unknown reviewer decision should already be caught by the validator, but

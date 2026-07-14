@@ -53,6 +53,7 @@ from hunter.human_review_registry.chain import (
     verify_chain,
     verify_record_fingerprint,
 )
+from hunter.human_review_registry.engine import build_human_review_record
 from hunter.human_review_registry.policy import (
     accepted_reason_code,
     evaluate_review_policy,
@@ -122,4 +123,6 @@ __all__ = [
     "verify_record_fingerprint",
     "verify_chain",
     "detect_duplicate_review",
+    # Engine
+    "build_human_review_record",
 ]
