@@ -1,0 +1,154 @@
+cards:
+- id: CARD-61-00
+  title: Kanban Foundation
+  status: DONE
+  owner: null
+  blocked_by: []
+  started_at: '2026-07-14T19:43:14Z'
+  reviewed_at: '2026-07-14T19:43:20Z'
+  tested_at: '2026-07-14T19:43:24Z'
+  completed_at: '2026-07-14T19:43:38Z'
+  commit: df2102a24d43db71b1a4e975fb8b4a4afd2ebb9a
+  changed_files: []
+  test_results: []
+  review_findings: []
+- id: CARD-61-01
+  title: SPEC-062
+  status: TEST
+  owner: null
+  blocked_by:
+  - CARD-61-00
+  started_at: '2026-07-14T19:43:46Z'
+  reviewed_at: '2026-07-14T19:44:21Z'
+  tested_at: '2026-07-14T19:44:21Z'
+  completed_at: null
+  commit: null
+  changed_files: []
+  test_results: []
+  review_findings: []
+- id: CARD-61-02
+  title: Foundation and Models
+  status: BLOCKED
+  owner: null
+  blocked_by:
+  - CARD-61-01
+  started_at: null
+  reviewed_at: null
+  tested_at: null
+  completed_at: null
+  commit: null
+  changed_files: []
+  test_results: []
+  review_findings: []
+- id: CARD-61-03
+  title: Input and Chain Validation
+  status: BLOCKED
+  owner: null
+  blocked_by:
+  - CARD-61-02
+  started_at: null
+  reviewed_at: null
+  tested_at: null
+  completed_at: null
+  commit: null
+  changed_files: []
+  test_results: []
+  review_findings: []
+- id: CARD-61-04
+  title: Governance Policy
+  status: BLOCKED
+  owner: null
+  blocked_by:
+  - CARD-61-03
+  started_at: null
+  reviewed_at: null
+  tested_at: null
+  completed_at: null
+  commit: null
+  changed_files: []
+  test_results: []
+  review_findings: []
+- id: CARD-61-05
+  title: Summary Engine
+  status: BLOCKED
+  owner: null
+  blocked_by:
+  - CARD-61-04
+  started_at: null
+  reviewed_at: null
+  tested_at: null
+  completed_at: null
+  commit: null
+  changed_files: []
+  test_results: []
+  review_findings: []
+- id: CARD-61-06
+  title: Audit Writer
+  status: BLOCKED
+  owner: null
+  blocked_by:
+  - CARD-61-05
+  started_at: null
+  reviewed_at: null
+  tested_at: null
+  completed_at: null
+  commit: null
+  changed_files: []
+  test_results: []
+  review_findings: []
+- id: CARD-61-07
+  title: Integration
+  status: BLOCKED
+  owner: null
+  blocked_by:
+  - CARD-61-06
+  started_at: null
+  reviewed_at: null
+  tested_at: null
+  completed_at: null
+  commit: null
+  changed_files: []
+  test_results: []
+  review_findings: []
+- id: CARD-61-08
+  title: Finalization
+  status: BLOCKED
+  owner: null
+  blocked_by:
+  - CARD-61-07
+  started_at: null
+  reviewed_at: null
+  tested_at: null
+  completed_at: null
+  commit: null
+  changed_files: []
+  test_results: []
+  review_findings: []
+- id: CARD-61-09
+  title: Local Annotated Tag
+  status: BLOCKED
+  owner: null
+  blocked_by:
+  - CARD-61-08
+  started_at: null
+  reviewed_at: null
+  tested_at: null
+  completed_at: null
+  commit: null
+  changed_files: []
+  test_results: []
+  review_findings: []
+- id: CARD-61-10
+  title: Post-Tag Sync
+  status: BLOCKED
+  owner: null
+  blocked_by:
+  - CARD-61-09
+  started_at: null
+  reviewed_at: null
+  tested_at: null
+  completed_at: null
+  commit: null
+  changed_files: []
+  test_results: []
+  review_findings: []
