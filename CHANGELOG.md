@@ -24,7 +24,7 @@ All important project changes will be recorded in this file.
   - 85 research_decision_gate tests in `tests/test_research_decision_gate/`; full suite: 8647 tests passing, 1 skipped.
   - Version bumped to `0.59.0-dev` in `VERSION`, `pyproject.toml`, `src/hunter/__init__.py`.
   - `RESEARCH_DECISION_GATE_VERSION` was already `0.59.0-dev` (set in Step 1).
-  - Tag `v0.59.0-dev` pending.
+  - Tagged `v0.59.0-dev` at `8d00af3` (local-only; no push).
 
 ## MVP-58 — Portfolio Risk Constraint Evaluator (Complete)
 
