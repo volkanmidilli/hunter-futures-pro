@@ -182,6 +182,7 @@ def build_research_decision_gate_report(
     *,
     strategy_contract_input: Mapping[str, object] | None = None,
     evaluated_at: datetime,
+    metadata: Mapping[str, object] | None = None,
 ) -> ResearchDecisionGateReport:
     """Build a deterministic research-only decision gate report.
 
@@ -251,4 +252,5 @@ def build_research_decision_gate_report(
         safety_flags=safety_flags,
         research_only=True,
         human_approval_required=True,
+        metadata=metadata,
     )

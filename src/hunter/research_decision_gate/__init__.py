@@ -65,6 +65,14 @@ from hunter.research_decision_gate.validator import (
     validate_strategy_contract_input,
     validate_universe_report,
 )
+from hunter.research_decision_gate.writer import (
+    atomic_write_json_research_decision_gate_report,
+    atomic_write_markdown_research_decision_gate_report,
+    research_decision_gate_report_to_dict,
+    research_decision_gate_report_to_json_text,
+    research_decision_gate_report_to_markdown_text,
+    write_research_decision_gate_report,
+)
 
 __all__ = [
     # Version
@@ -124,4 +132,11 @@ __all__ = [
     "build_canonical_safety_flags",
     # Engine
     "build_research_decision_gate_report",
+    # Writer
+    "research_decision_gate_report_to_dict",
+    "research_decision_gate_report_to_json_text",
+    "research_decision_gate_report_to_markdown_text",
+    "write_research_decision_gate_report",
+    "atomic_write_json_research_decision_gate_report",
+    "atomic_write_markdown_research_decision_gate_report",
 ]
