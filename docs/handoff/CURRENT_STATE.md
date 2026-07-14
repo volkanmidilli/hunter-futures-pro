@@ -4,11 +4,11 @@ Hunter Futures Pro
 
 ## Version
 
-0.57.0-dev (MVP-57 finalization + tag complete; version bumped to 0.57.0-dev; tagged `v0.57.0-dev` at `2d68a75`)
+0.58.0-dev (MVP-58 finalization complete; version bumped to 0.58.0-dev; tag pending `v0.58.0-dev`)
 
 ## Current Phase
 
-The functional MVP chain now runs through **MVP-57 / v0.57.0-dev**, which is complete and tagged `v0.57.0-dev` at `2d68a75`. **MVP-57 — Portfolio Construction Research Adapter** is finalized: `SPEC-058` has been approved and Steps 1–6 (models, validator, allocator, engine, writer, integration tests, and documentation/version finalization) are all committed. Source code changes in `src/hunter/portfolio_research_adapter/models.py`, `src/hunter/portfolio_research_adapter/validator.py`, `src/hunter/portfolio_research_adapter/allocator.py`, `src/hunter/portfolio_research_adapter/engine.py`, `src/hunter/portfolio_research_adapter/writer.py`, `src/hunter/portfolio_research_adapter/__init__.py`, and `tests/test_portfolio_research_adapter/`. Tagged `v0.57.0-dev` at `2d68a75` (local-only; no push).
+The functional MVP chain now runs through **MVP-58 / v0.58.0-dev**, which is complete with tag pending `v0.58.0-dev`. **MVP-58 — Portfolio Risk Constraint Evaluator** is finalized: `SPEC-059` has been approved and Steps 1–6 (models, validator, metrics, engine, writer, integration tests, and documentation/version finalization) are all committed. Source code changes in `src/hunter/portfolio_risk_evaluator/models.py`, `src/hunter/portfolio_risk_evaluator/validator.py`, `src/hunter/portfolio_risk_evaluator/metrics.py`, `src/hunter/portfolio_risk_evaluator/engine.py`, `src/hunter/portfolio_risk_evaluator/writer.py`, `src/hunter/portfolio_risk_evaluator/__init__.py`, and `tests/test_portfolio_risk_evaluator/`. Tag `v0.58.0-dev` pending (local-only; no push).
 
 ## Background
 
@@ -45,9 +45,11 @@ The repository now contains 48 specs (SPEC-001 through SPEC-048). MVPs beyond th
 
 ## Next
 
-MVP-57 — Portfolio Construction Research Adapter is complete and tagged `v0.57.0-dev` at `2d68a75` (local-only; no push). No next MVP selected; the next phase requires human direction.
+MVP-58 — Portfolio Risk Constraint Evaluator is complete and tag pending `v0.58.0-dev` (local-only; no push). No next MVP selected; the next phase requires human direction.
 
 ## Current Status
+
+MVP-58 — Portfolio Risk Constraint Evaluator is complete with tag pending `v0.58.0-dev`. SPEC-059 approved; Steps 1–6 (models, validator, metrics, engine, writer, integration tests, docs/version finalization) completed. Package `src/hunter/portfolio_risk_evaluator/` with `models.py`, `validator.py`, `metrics.py`, `engine.py`, `writer.py`, `__init__.py`. 98 portfolio_risk_evaluator tests in `tests/test_portfolio_risk_evaluator/`. Version bumped to `0.58.0-dev`. Full suite: 8562 tests passing, 1 skipped. Tag `v0.58.0-dev` pending (local-only; no push).
 
 MVP-57 — Portfolio Construction Research Adapter is complete and tagged `v0.57.0-dev` at `2d68a75`. SPEC-058 approved; Steps 1–6 (models, validator, allocator, engine, writer, integration tests, docs/version finalization) completed. Package `src/hunter/portfolio_research_adapter/` with `models.py`, `validator.py`, `allocator.py`, `engine.py`, `writer.py`, `__init__.py`. 140 portfolio_research_adapter tests in `tests/test_portfolio_research_adapter/`. Version bumped to `0.57.0-dev`. Full suite: 8464 tests passing, 1 skipped. Tagged `v0.57.0-dev` at `2d68a75` (local-only; no push).
 

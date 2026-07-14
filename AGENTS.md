@@ -139,11 +139,11 @@ When continuing work on an MVP:
 
 ## Current MVP Context
 
-- Completed MVP: MVP-57 Portfolio Construction Research Adapter
+- Completed MVP: MVP-58 Portfolio Risk Constraint Evaluator
 - Active MVP: None; next MVP not selected
-- SPEC: `specs/SPEC-058-Portfolio-Construction-Research-Adapter.md` — approved during MVP-57 cycle
-- Implementation (Steps 1–6: models, validator, allocator, engine, writer, integration tests, docs/version finalization): committed during MVP-57 cycle
-- Tagged `v0.57.0-dev` at `2d68a75` (local-only; no push)
-- Latest tag: `v0.57.0-dev` (MVP-57 tagged)
+- SPEC: `specs/SPEC-059-Portfolio-Risk-Constraint-Evaluator.md` — approved during MVP-58 cycle
+- Implementation (Steps 1–6: models, validator, metrics, engine, writer, integration tests, docs/version finalization): committed during MVP-58 cycle
+- Tag `v0.58.0-dev` pending (local-only; no push)
+- Latest tag: `v0.57.0-dev` (MVP-57 tagged at `2d68a75`)
 - Tag policy: never tag automatically; the human must provide the exact tag or commit command.
 - Safety: autonomous workflow only touches docs/version/task memory in finalization steps; no runtime code changes, no tests changed, no data/reports inspection, no trading/API/Freqtrade/server/database/scheduler changes, no production-readiness, trading-readiness, approval, certification, recommendation, or suitability claims.

@@ -1,5 +1,40 @@
 ---
 
+### MVP-58 Finalization
+
+Date: 2026-07-14
+
+Agent: WrongStack
+
+Task: Finalize MVP-58 Portfolio Risk Constraint Evaluator. Version bump to `0.58.0-dev`, documentation updates, and memory recording. Tag `v0.58.0-dev` pending.
+
+Files modified:
+
+- `VERSION` — bumped from `0.57.0-dev` to `0.58.0-dev`.
+- `pyproject.toml` — bumped from `0.57.0-dev` to `0.58.0-dev`.
+- `src/hunter/__init__.py` — bumped from `0.57.0-dev` to `0.58.0-dev`.
+- `CHANGELOG.md` — added MVP-58 section with full implementation summary.
+- `docs/MVP_INDEX.md` — added SPEC-059 bullet and MVP-58 table row; updated expanded chain.
+- `docs/handoff/CURRENT_STATE.md` — updated Version, Current Phase, Next, and Current Status to MVP-58 / v0.58.0-dev.
+- `AGENTS.md` — updated Current MVP Context to MVP-58.
+- `tasks/active.md` — updated current task, latest milestone notes, and scope to MVP-58.
+- `tasks/agent-log.md` — added this entry.
+
+Checks performed:
+
+- `PORTFOLIO_RISK_EVALUATOR_VERSION` was already `0.58.0-dev` (set in Step 1) — no change needed.
+- Focused tests: `pytest tests/test_portfolio_risk_evaluator/ -q` — 98 passed.
+- Full suite: `pytest -q` — 8562 passed, 1 skipped.
+- No `data/` or `reports/` inspection.
+
+Boundaries preserved:
+
+- No runtime feature changes.
+- No MVP-59 work started.
+- Tag `v0.58.0-dev` pending; no push.
+
+---
+
 ### MVP-57 Finalization
 
 Date: 2026-07-14

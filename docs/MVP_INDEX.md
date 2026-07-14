@@ -27,7 +27,7 @@ Excluded from evidence:
 - MVP-0 and MVP-1 have no `-dev` tag in the current tag list; this is recorded as expected for pre-`v0.8.0-dev` history.
 - MVP-46 is a documentation-only realignment step; its status is `tagged` at `v0.46.0-dev`.
 - The original master plan is MVP-0 through MVP-4.
-- The expanded chain is MVP-5 through MVP-57.
+- The expanded chain is MVP-5 through MVP-58.
 - MVP-47 is complete and tagged at `v0.47.0-dev`.
 - MVP-48 is complete and tagged at `v0.48.0-dev` (commit `779692f`).
 - MVP-49 is complete and tagged `v0.49.0-dev` at `eff7c93`.
@@ -45,6 +45,7 @@ Excluded from evidence:
 - `SPEC-056` exists for MVP-55 Freqtrade Universe Consumption Adapter. Complete; tagged `v0.55.0-dev` at `8f9730a2` (local-only; no push).
 - `SPEC-057` exists for MVP-56 Strategy Contract Consumption Adapter. Complete; tagged `v0.56.0-dev` at `238e387` (local-only; no push).
 - `SPEC-058` exists for MVP-57 Portfolio Construction Research Adapter. Complete; tagged `v0.57.0-dev` at `2d68a75` (local-only; no push).
+- `SPEC-059` exists for MVP-58 Portfolio Risk Constraint Evaluator. Complete; tag pending at `v0.58.0-dev` (local-only; no push).
 
 ## MVP Index Table
 
@@ -107,6 +108,7 @@ Excluded from evidence:
 | MVP-55 | Freqtrade Universe Consumption Adapter | `SPEC-056` | `v0.55.0-dev` | `freqtrade_universe_adapter` | `test_freqtrade_universe_adapter` | tagged | Tagged `v0.55.0-dev` at `8f9730a2` (local-only; no push) |
 | MVP-56 | Strategy Contract Consumption Adapter | `SPEC-057` | `v0.56.0-dev` | `strategy_contract_consumer` | `test_strategy_contract_consumer` | tagged | Tagged `v0.56.0-dev` at `238e387` (local-only; no push) |
 | MVP-57 | Portfolio Construction Research Adapter | `SPEC-058` | `v0.57.0-dev` | `portfolio_research_adapter` | `test_portfolio_research_adapter` | tagged | Tagged `v0.57.0-dev` at `2d68a75` (local-only; no push) |
+| MVP-58 | Portfolio Risk Constraint Evaluator | `SPEC-059` | `v0.58.0-dev` (pending) | `portfolio_risk_evaluator` | `test_portfolio_risk_evaluator` | committed | Tag pending; no push |
 | MVP-54 | Operational One-Call Coin-Discovery Pipeline Runner | `SPEC-055` | `v0.54.0-dev` | `coin_discovery_pipeline` | `test_coin_discovery_pipeline` | tagged | Tagged `v0.54.0-dev` at `c7ef130` (local-only; no push) |
 
 ## Package Mapping

@@ -4,6 +4,26 @@ All important project changes will be recorded in this file.
 
 ## Unreleased
 
+## MVP-58 — Portfolio Risk Constraint Evaluator (Complete)
+
+- SPEC-059 — Portfolio Risk Constraint Evaluator approved.
+  - `specs/SPEC-059-Portfolio-Risk-Constraint-Evaluator.md` — approved for MVP-58 implementation.
+  - Consumes a `PortfolioResearchContext` (MVP-57) and produces a deterministic, research-only, human-approval-required `ValidatedPortfolioRiskContext`.
+  - Fail-closed behavior: missing, rejected, blocked, structurally invalid, or limit-violating input yields empty validated allocations with explicit reason codes.
+  - No Freqtrade runtime integration, strategy changes, automatic config mutation, exchange/API/server/database/scheduler/live trading behavior, or actionable trading signals.
+- Steps 1–6 — Portfolio Risk Constraint Evaluator models, validator, metrics, engine, writer, integration tests, and finalization.
+  - `src/hunter/portfolio_risk_evaluator/models.py` — frozen dataclasses (`PortfolioRiskConfig`, `PortfolioRiskMetrics`, `ValidatedPortfolioRiskContext`), `PORTFOLIO_RISK_EVALUATOR_VERSION = "0.58.0-dev"`, reason codes, and validation.
+  - `src/hunter/portfolio_risk_evaluator/validator.py` — structural validation for context presence, acceptance, mode, allocations, canonical pairs, weights, blacklist/exclusion conflicts, and exposure reconciliation.
+  - `src/hunter/portfolio_risk_evaluator/metrics.py` — deterministic `recalculate_total_exposure`, `recalculate_cluster_exposure`, `calculate_hhi`, `calculate_effective_asset_count`, and `build_portfolio_risk_metrics` using Decimal `ROUND_DOWN` quantization.
+  - `src/hunter/portfolio_risk_evaluator/engine.py` — `build_validated_portfolio_risk_context` with validation, metrics, risk-gate limits, and SHA-256 fingerprint.
+  - `src/hunter/portfolio_risk_evaluator/writer.py` — deterministic JSON/Markdown serialization with safety notice, artifact paths, atomic writers, and `evaluated_at` propagation.
+  - `src/hunter/portfolio_risk_evaluator/__init__.py` — public API exports.
+  - `tests/test_portfolio_risk_evaluator/test_models.py`, `test_validator.py`, `test_metrics.py`, `test_engine.py`, `test_writer.py`, `test_integration.py` — comprehensive unit and integration tests.
+  - 98 portfolio_risk_evaluator tests in `tests/test_portfolio_risk_evaluator/`; full suite: 8562 tests passing, 1 skipped.
+  - Version bumped to `0.58.0-dev` in `VERSION`, `pyproject.toml`, `src/hunter/__init__.py`.
+  - `PORTFOLIO_RISK_EVALUATOR_VERSION` was already `0.58.0-dev` (set in Step 1).
+  - Tag `v0.58.0-dev` pending.
+
 ## MVP-57 — Portfolio Construction Research Adapter (Complete)
 
 - SPEC-058 — Portfolio Construction Research Adapter approved.

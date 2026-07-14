@@ -2,13 +2,28 @@
 
 ## Current Task
 
+MVP-58 — Portfolio Risk Constraint Evaluator. SPEC-059 approved. Steps 1–6 (models, validator, metrics, engine, writer, integration tests, and documentation/version finalization) complete. Version bumped to `0.58.0-dev`; tag pending `v0.58.0-dev`. No push yet.
+
 MVP-57 — Portfolio Construction Research Adapter. SPEC-058 approved. Steps 1–6 (models, validator, allocator, engine, writer, integration tests, and documentation/version finalization) complete. Version bumped to `0.57.0-dev`; tagged `v0.57.0-dev` at `2d68a75`. No push yet.
 
 MVP-56 — Strategy Contract Consumption Adapter. SPEC-057 approved. Steps 1–6 (models, loader, validator, engine, writer, integration tests, and documentation/version finalization) complete. Version bumped to `0.56.0-dev`; tagged `v0.56.0-dev` at `238e387`. No push yet.
 
 MVP-55 — Freqtrade Universe Consumption Adapter. SPEC-056 approved. Steps 1–5 (models, engine, writer, integration tests, and documentation/version finalization) complete. Version bumped to `0.55.0-dev`; tagged `v0.55.0-dev` at `8f9730a2`. No push yet.
 
-Latest tagged functional milestone: MVP-56 / v0.56.0-dev at 238e387.
+Latest tagged functional milestone: MVP-57 / v0.57.0-dev at 2d68a75.
+
+Completed under MVP-58 (Finalization):
+- Version bumped to `0.58.0-dev` in `VERSION`, `pyproject.toml`, `src/hunter/__init__.py`.
+- `PORTFOLIO_RISK_EVALUATOR_VERSION` was already `0.58.0-dev` (set in Step 1).
+- Updated `CHANGELOG.md`, `docs/MVP_INDEX.md`, `docs/handoff/CURRENT_STATE.md`, `tasks/active.md`, `tasks/agent-log.md`, `AGENTS.md`.
+- Focused tests: `pytest tests/test_portfolio_risk_evaluator/ -q` — 98 passed.
+- Full suite: `pytest -q` — 8562 passed, 1 skipped.
+- Tag `v0.58.0-dev` pending (local-only; no push).
+
+Boundaries preserved:
+- No Freqtrade runtime integration, strategy changes, automatic config mutation, exchange/API/server/database/scheduler/live trading behavior.
+- No data/ or reports/ inspection.
+- No commit, tag, or push (tag to be created in a separate step).
 
 Completed under MVP-57 (Finalization):
 - Version bumped to `0.57.0-dev` in `VERSION`, `pyproject.toml`, `src/hunter/__init__.py`.
