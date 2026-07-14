@@ -4,6 +4,28 @@ All important project changes will be recorded in this file.
 
 ## Unreleased
 
+## MVP-59 — Research Decision Gate Engine (Complete)
+
+- SPEC-060 — Research Decision Gate Engine approved.
+  - `specs/SPEC-060-Research-Decision-Gate-Engine.md` — approved for MVP-59 implementation.
+  - Consumes a `ValidatedPortfolioRiskContext` (MVP-58), a `ControlledUniverseReport` (MVP-51/MVP-52), and an optional strategy-contract mapping.
+  - Produces a deterministic, research-only, human-approval-required `ResearchDecisionGateReport` with `GO`/`NO_GO`/`NEEDS_REVIEW` decision, explicit reason codes, source summaries, canonical safety flags, and SHA-256 decision fingerprint.
+  - Fail-closed behavior: missing, rejected, stale, unsafe, contradictory, or fingerprint-missing upstream inputs yield `NO_GO` with explicit reason codes.
+  - Strategy-contract policy: `ALLOW_WITH_REVIEW`, `REQUIRE`, or `IGNORE`.
+  - No Freqtrade runtime integration, strategy changes, automatic config mutation, exchange/API/server/database/scheduler/live trading behavior, or actionable trading signals.
+- Steps 1–6 — Research Decision Gate Engine models, validator, policy, engine, writer, integration tests, and finalization.
+  - `src/hunter/research_decision_gate/models.py` — frozen dataclasses (`ResearchDecisionGateConfig`, `DecisionSourceSummary`, `ResearchDecisionGateReport`), `RESEARCH_DECISION_GATE_VERSION = "0.59.0-dev"`, decision values (`GO`, `NO_GO`, `NEEDS_REVIEW`), reason codes, and validation.
+  - `src/hunter/research_decision_gate/validator.py` — validation for timestamp freshness, risk context acceptance/gate/state, universe report safety, and strategy-contract safety.
+  - `src/hunter/research_decision_gate/policy.py` — reason-code classification, strategy-contract policy evaluation, contradiction/review detection, decision resolution, and canonical safety flags.
+  - `src/hunter/research_decision_gate/engine.py` — `build_research_decision_gate_report` with validation, policy, fingerprinting, and source summaries.
+  - `src/hunter/research_decision_gate/writer.py` — deterministic JSON/Markdown serialization with safety notice, artifact paths, and atomic writers.
+  - `src/hunter/research_decision_gate/__init__.py` — public API exports.
+  - `tests/test_research_decision_gate/test_models.py`, `test_validator.py`, `test_policy.py`, `test_engine.py`, `test_writer.py`, `test_integration.py` — comprehensive unit and integration tests.
+  - 85 research_decision_gate tests in `tests/test_research_decision_gate/`; full suite: 8647 tests passing, 1 skipped.
+  - Version bumped to `0.59.0-dev` in `VERSION`, `pyproject.toml`, `src/hunter/__init__.py`.
+  - `RESEARCH_DECISION_GATE_VERSION` was already `0.59.0-dev` (set in Step 1).
+  - Tag `v0.59.0-dev` pending.
+
 ## MVP-58 — Portfolio Risk Constraint Evaluator (Complete)
 
 - SPEC-059 — Portfolio Risk Constraint Evaluator approved.

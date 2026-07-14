@@ -108,6 +108,7 @@ Excluded from evidence:
 | MVP-55 | Freqtrade Universe Consumption Adapter | `SPEC-056` | `v0.55.0-dev` | `freqtrade_universe_adapter` | `test_freqtrade_universe_adapter` | tagged | Tagged `v0.55.0-dev` at `8f9730a2` (local-only; no push) |
 | MVP-56 | Strategy Contract Consumption Adapter | `SPEC-057` | `v0.56.0-dev` | `strategy_contract_consumer` | `test_strategy_contract_consumer` | tagged | Tagged `v0.56.0-dev` at `238e387` (local-only; no push) |
 | MVP-57 | Portfolio Construction Research Adapter | `SPEC-058` | `v0.57.0-dev` | `portfolio_research_adapter` | `test_portfolio_research_adapter` | tagged | Tagged `v0.57.0-dev` at `2d68a75` (local-only; no push) |
+| MVP-59 | Research Decision Gate Engine | `SPEC-060` | `v0.59.0-dev` | `research_decision_gate` | `test_research_decision_gate` | committed | Tag pending; local-only |
 | MVP-58 | Portfolio Risk Constraint Evaluator | `SPEC-059` | `v0.58.0-dev` | `portfolio_risk_evaluator` | `test_portfolio_risk_evaluator` | tagged | Tagged `v0.58.0-dev` at `8578fe4` (local-only; no push) |
 | MVP-54 | Operational One-Call Coin-Discovery Pipeline Runner | `SPEC-055` | `v0.54.0-dev` | `coin_discovery_pipeline` | `test_coin_discovery_pipeline` | tagged | Tagged `v0.54.0-dev` at `c7ef130` (local-only; no push) |
 
