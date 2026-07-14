@@ -139,11 +139,11 @@ When continuing work on an MVP:
 
 ## Current MVP Context
 
-- Completed MVP: MVP-56 Strategy Contract Consumption Adapter
+- Completed MVP: MVP-57 Portfolio Construction Research Adapter
 - Active MVP: None; next MVP not selected
-- SPEC: `specs/SPEC-057-Strategy-Contract-Consumption-Adapter.md` — approved during MVP-56 cycle
-- Implementation (Steps 1–6: models, loader, validator, engine, writer, integration tests, docs/version finalization): committed during MVP-56 cycle
-- Tagged `v0.56.0-dev` at `238e387` (local-only; no push)
-- Latest tag: `v0.56.0-dev` (MVP-56 tagged)
+- SPEC: `specs/SPEC-058-Portfolio-Construction-Research-Adapter.md` — approved during MVP-57 cycle
+- Implementation (Steps 1–6: models, validator, allocator, engine, writer, integration tests, docs/version finalization): committed during MVP-57 cycle
+- Tagged `v0.57.0-dev` pending (local-only; no push)
+- Latest tag: `v0.56.0-dev` (MVP-56 tagged); `v0.57.0-dev` pending
 - Tag policy: never tag automatically; the human must provide the exact tag or commit command.
 - Safety: autonomous workflow only touches docs/version/task memory in finalization steps; no runtime code changes, no tests changed, no data/reports inspection, no trading/API/Freqtrade/server/database/scheduler changes, no production-readiness, trading-readiness, approval, certification, recommendation, or suitability claims.

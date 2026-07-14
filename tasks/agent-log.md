@@ -1,5 +1,40 @@
 ---
 
+### MVP-57 Finalization
+
+Date: 2026-07-14
+
+Agent: WrongStack
+
+Task: Finalize MVP-57 Portfolio Construction Research Adapter. Version bump to `0.57.0-dev`, documentation updates, and memory recording. Tag `v0.57.0-dev` pending.
+
+Files modified:
+
+- `VERSION` — bumped from `0.56.0-dev` to `0.57.0-dev`.
+- `pyproject.toml` — bumped from `0.56.0-dev` to `0.57.0-dev`.
+- `src/hunter/__init__.py` — bumped from `0.56.0-dev` to `0.57.0-dev`.
+- `CHANGELOG.md` — added MVP-57 section with full implementation summary.
+- `docs/MVP_INDEX.md` — added SPEC-058 bullet and MVP-57 table row; updated expanded chain.
+- `docs/handoff/CURRENT_STATE.md` — updated Version, Current Phase, Next, and Current Status to MVP-57 / v0.57.0-dev.
+- `AGENTS.md` — updated Current MVP Context to MVP-57.
+- `tasks/active.md` — updated current task, latest milestone notes, and scope to MVP-57.
+- `tasks/agent-log.md` — added this entry.
+
+Checks performed:
+
+- `PORTFOLIO_RESEARCH_ADAPTER_VERSION` was already `0.57.0-dev` (set in Step 1) — no change needed.
+- Focused tests: `pytest tests/test_portfolio_research_adapter/ -q` — 140 passed.
+- Full suite: `pytest -q` — 8464 passed, 1 skipped.
+- No `data/` or `reports/` inspection.
+
+Boundaries preserved:
+
+- No runtime feature changes.
+- No MVP-58 work started.
+- Tag `v0.57.0-dev` pending; no push.
+
+---
+
 ### MVP-56 Finalization
 
 Date: 2026-07-13

@@ -2,11 +2,26 @@
 
 ## Current Task
 
+MVP-57 — Portfolio Construction Research Adapter. SPEC-058 approved. Steps 1–6 (models, validator, allocator, engine, writer, integration tests, and documentation/version finalization) complete. Version bumped to `0.57.0-dev`; tag pending `v0.57.0-dev`. No push yet.
+
 MVP-56 — Strategy Contract Consumption Adapter. SPEC-057 approved. Steps 1–6 (models, loader, validator, engine, writer, integration tests, and documentation/version finalization) complete. Version bumped to `0.56.0-dev`; tagged `v0.56.0-dev` at `238e387`. No push yet.
 
 MVP-55 — Freqtrade Universe Consumption Adapter. SPEC-056 approved. Steps 1–5 (models, engine, writer, integration tests, and documentation/version finalization) complete. Version bumped to `0.55.0-dev`; tagged `v0.55.0-dev` at `8f9730a2`. No push yet.
 
 Latest tagged functional milestone: MVP-56 / v0.56.0-dev at 238e387.
+
+Completed under MVP-57 (Finalization):
+- Version bumped to `0.57.0-dev` in `VERSION`, `pyproject.toml`, `src/hunter/__init__.py`.
+- `PORTFOLIO_RESEARCH_ADAPTER_VERSION` was already `0.57.0-dev` (set in Step 1).
+- Updated `CHANGELOG.md`, `docs/MVP_INDEX.md`, `docs/handoff/CURRENT_STATE.md`, `tasks/active.md`, `tasks/agent-log.md`, `AGENTS.md`.
+- Focused tests: `pytest tests/test_portfolio_research_adapter/ -q` — 140 passed.
+- Full suite: `pytest -q` — 8464 passed, 1 skipped.
+- Tag `v0.57.0-dev` pending; no push yet.
+
+Boundaries preserved:
+- No Freqtrade runtime integration, strategy changes, automatic config mutation, exchange/API/server/database/scheduler/live trading behavior.
+- No data/ or reports/ inspection.
+- No commit, tag, or push (tag to be created in a separate step).
 
 Completed under MVP-56 (Finalization):
 - Version bumped to `0.56.0-dev` in `VERSION`, `pyproject.toml`, `src/hunter/__init__.py`.
@@ -131,7 +146,7 @@ Boundaries:
 
 ## Status
 
-MVP-53 — Controlled Universe Export Adapter is complete and tagged `v0.53.0-dev`. SPEC-054 approved; Steps 1–4 (models, engine, writer, integration tests, documentation/version finalization) completed. Version `0.53.0-dev`. Full suite: 7917 tests passing, 1 skipped. No push has occurred. No next MVP selected.
+MVP-57 — Portfolio Construction Research Adapter is complete with tag pending `v0.57.0-dev`. SPEC-058 approved; Steps 1–6 (models, validator, allocator, engine, writer, integration tests, documentation/version finalization) completed. Version `0.57.0-dev`. 140 portfolio_research_adapter tests passing; full suite: 8464 tests passing, 1 skipped. No push has occurred. No next MVP selected.
 - `data/`, `reports/`, and local artifact areas remain opaque excluded local artifact areas.
 - Boundaries preserved: no Freqtrade runtime integration, strategy changes, automatic config mutation, exchange/API/server/database/scheduler/live trading behavior.
 
@@ -213,7 +228,7 @@ MVP-14 Step 4 — Final Review and Version Bump (Complete).
 
 ## Scope
 
-Current MVP: MVP-53 — Controlled Universe Export Adapter is complete. SPEC-054 approved; all four SDD steps completed. No further source code changes for this MVP. No next MVP selected; next phase requires human direction.
+Current MVP: MVP-57 — Portfolio Construction Research Adapter is complete with tag pending `v0.57.0-dev`. SPEC-058 approved; all SDD steps completed. No further source code changes for this MVP. No next MVP selected; next phase requires human direction.
 
 ### Allowed
 - Documentation updates only for finalization.

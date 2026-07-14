@@ -4,6 +4,26 @@ All important project changes will be recorded in this file.
 
 ## Unreleased
 
+## MVP-57 — Portfolio Construction Research Adapter (Complete)
+
+- SPEC-058 — Portfolio Construction Research Adapter approved.
+  - `specs/SPEC-058-Portfolio-Construction-Research-Adapter.md` — approved for MVP-57 implementation.
+  - Consumes a `ValidatedStrategyContext` (MVP-56) and produces a deterministic, research-only, human-approval-required `PortfolioResearchContext` with rule-based portfolio allocations and exclusions.
+  - Fail-closed behavior: rejected, stale, unsafe, contradictory, or BLOCK_ALL input yields an empty portfolio with explicit reason codes.
+  - No Freqtrade runtime integration, strategy changes, automatic config mutation, exchange/API/server/database/scheduler/live trading behavior, or actionable trading signals.
+- Steps 1–6 — Portfolio Construction Research Adapter models, validator, allocator, engine, writer, integration tests, and finalization.
+  - `src/hunter/portfolio_research_adapter/models.py` — frozen dataclasses (`PortfolioResearchConfig`, `PortfolioAllocation`, `PortfolioExclusion`, `PortfolioResearchContext`), `PORTFOLIO_RESEARCH_ADAPTER_VERSION = "0.57.0-dev"`, reason codes, and validation.
+  - `src/hunter/portfolio_research_adapter/validator.py` — pure validators for config, input, cluster, and score mappings with deterministic reason-code lists.
+  - `src/hunter/portfolio_research_adapter/allocator.py` — deterministic `allocate_equal_weight` and `allocate_score_proportional` with min/max weight, max-assets, max-total-exposure, and cluster-exposure limits using Decimal `ROUND_DOWN` quantization.
+  - `src/hunter/portfolio_research_adapter/engine.py` — `build_portfolio_research_context` with validation, allocation, cluster limit enforcement, and SHA-256 fingerprint.
+  - `src/hunter/portfolio_research_adapter/writer.py` — deterministic JSON/Markdown serialization with safety notice, artifact paths, and atomic writers.
+  - `src/hunter/portfolio_research_adapter/__init__.py` — public API exports.
+  - `tests/test_portfolio_research_adapter/test_models.py`, `test_validator.py`, `test_allocator.py`, `test_engine.py`, `test_writer.py`, `test_integration.py` — comprehensive unit and integration tests.
+  - 140 portfolio_research_adapter tests in `tests/test_portfolio_research_adapter/`; full suite: 8464 tests passing, 1 skipped.
+  - Version bumped to `0.57.0-dev` in `VERSION`, `pyproject.toml`, `src/hunter/__init__.py`.
+  - `PORTFOLIO_RESEARCH_ADAPTER_VERSION` was already `0.57.0-dev` (set in Step 1).
+  - Tag `v0.57.0-dev` pending.
+
 ## MVP-56 — Strategy Contract Consumption Adapter (Complete)
 
 - SPEC-057 — Strategy Contract Consumption Adapter approved.
