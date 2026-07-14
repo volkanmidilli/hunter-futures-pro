@@ -12,6 +12,10 @@ live trading systems.
 
 from __future__ import annotations
 
+from hunter.governance_handoff.engine import (
+    build_research_governance_handoff_package,
+    compute_package_fingerprint,
+)
 from hunter.governance_handoff.policy import (
     build_handoff_manifest,
     build_handoff_safety_flags,
@@ -106,6 +110,9 @@ __all__ = [
     "HANDOFF_PACKAGE_READY",
     # Safety flags
     "CANONICAL_SAFETY_FLAGS",
+    # Engine
+    "build_research_governance_handoff_package",
+    "compute_package_fingerprint",
     # Policy
     "build_handoff_safety_flags",
     "build_source_references",
