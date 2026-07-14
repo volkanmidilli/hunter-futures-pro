@@ -24,7 +24,7 @@ All important project changes will be recorded in this file.
   - 112 governance_handoff tests; full suite: 8927 passed, 1 skipped.
   - Version bumped to `0.62.0-dev` in `VERSION`, `pyproject.toml`, `src/hunter/__init__.py`.
   - `GOVERNANCE_HANDOFF_VERSION` already `0.62.0-dev` (set in Step 1).
-  - Tagged `v0.62.0-dev` pending.
+  - Tagged `v0.62.0-dev` at `9db5148` (local-only; no push).
 
 ## MVP-61 — Governance Decision Summary Aggregator (Complete)
 
