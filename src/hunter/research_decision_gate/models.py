@@ -52,7 +52,12 @@ INCOMPLETE_PROVENANCE = "INCOMPLETE_PROVENANCE"
 UNKNOWN_NON_BLOCKING_FIELD = "UNKNOWN_NON_BLOCKING_FIELD"
 UPSTREAM_REVIEW_REQUIRED = "UPSTREAM_REVIEW_REQUIRED"
 
-# Decision reason codes
+# Decision values
+GO = "GO"
+NO_GO = "NO_GO"
+NEEDS_REVIEW = "NEEDS_REVIEW"
+
+# Decision reason codes (semantic labels, not decision values)
 DECISION_GO = "DECISION_GO"
 DECISION_NO_GO = "DECISION_NO_GO"
 DECISION_NEEDS_REVIEW = "DECISION_NEEDS_REVIEW"
@@ -102,7 +107,7 @@ RESEARCH_DECISION_GATE_REASON_CODES: frozenset[str] = (
     BLOCKING_REASON_CODES | REVIEW_REASON_CODES | DECISION_REASON_CODES
 )
 
-_DECISIONS: frozenset[str] = frozenset({"GO", "NO_GO", "NEEDS_REVIEW"})
+_DECISIONS: frozenset[str] = frozenset({GO, NO_GO, NEEDS_REVIEW})
 
 DEFAULT_OUTPUT_DIR: Path = Path("data/research_decision_gate")
 DEFAULT_REPORT_OUTPUT_DIR: Path = Path("reports/research_decision_gate")

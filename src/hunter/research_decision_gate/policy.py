@@ -19,10 +19,13 @@ from hunter.research_decision_gate.models import (
     DECISION_GO,
     DECISION_NEEDS_REVIEW,
     DECISION_NO_GO,
+    GO,
     IGNORE,
     INCOMPLETE_PROVENANCE,
     INVALID_STRATEGY_CONTRACT,
     MISSING_STRATEGY_CONTRACT,
+    NEEDS_REVIEW,
+    NO_GO,
     OPTIONAL_STRATEGY_CONTRACT_MISSING,
     REQUIRE,
     REVIEW_REASON_CODES,
@@ -185,18 +188,18 @@ def resolve_decision(
 ) -> str:
     """Resolve final decision from blocking and review reasons."""
     if blocking_reasons:
-        return "NO_GO"
+        return NO_GO
     if review_reasons:
-        return "NEEDS_REVIEW"
-    return "GO"
+        return NEEDS_REVIEW
+    return GO
 
 
 def decision_reason_code(decision: str) -> str:
     """Return the canonical decision reason code for a decision value."""
-    if decision == "GO":
+    if decision == GO:
         return DECISION_GO
-    if decision == "NO_GO":
+    if decision == NO_GO:
         return DECISION_NO_GO
-    if decision == "NEEDS_REVIEW":
+    if decision == NEEDS_REVIEW:
         return DECISION_NEEDS_REVIEW
     raise ValueError(f"unsupported decision: {decision!r}")
