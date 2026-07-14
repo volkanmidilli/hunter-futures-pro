@@ -35,6 +35,13 @@ from hunter.portfolio_research_adapter.models import (
     PortfolioResearchContext,
     PortfolioResearchError,
 )
+from hunter.portfolio_research_adapter.validator import (
+    check_blacklist_exclusion,
+    validate_cluster_mapping,
+    validate_portfolio_research_config,
+    validate_portfolio_research_input,
+    validate_score_mapping,
+)
 
 __all__ = [
     # Version
@@ -62,4 +69,10 @@ __all__ = [
     "PortfolioExclusion",
     "PortfolioResearchContext",
     "PortfolioResearchError",
+    # Validator
+    "validate_portfolio_research_config",
+    "validate_portfolio_research_input",
+    "validate_cluster_mapping",
+    "validate_score_mapping",
+    "check_blacklist_exclusion",
 ]
