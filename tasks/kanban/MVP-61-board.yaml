@@ -118,41 +118,41 @@ cards:
   review_findings: []
 - id: CARD-61-08
   title: Finalization
-  status: TEST
+  status: DONE
   owner: null
   blocked_by:
   - CARD-61-07
   started_at: '2026-07-14T20:02:39Z'
   reviewed_at: '2026-07-14T20:06:18Z'
   tested_at: '2026-07-14T20:06:18Z'
-  completed_at: null
-  commit: null
+  completed_at: '2026-07-14T20:06:29Z'
+  commit: 35afab779fdbbaa0353cd75a2108c705c1009330
   changed_files: []
   test_results: []
   review_findings: []
 - id: CARD-61-09
   title: Local Annotated Tag
-  status: BLOCKED
+  status: DONE
   owner: null
   blocked_by:
   - CARD-61-08
-  started_at: null
-  reviewed_at: null
-  tested_at: null
-  completed_at: null
-  commit: null
+  started_at: '2026-07-14T20:06:34Z'
+  reviewed_at: '2026-07-14T20:06:57Z'
+  tested_at: '2026-07-14T20:06:57Z'
+  completed_at: '2026-07-14T20:06:57Z'
+  commit: 35afab779fdbbaa0353cd75a2108c705c1009330
   changed_files: []
   test_results: []
   review_findings: []
 - id: CARD-61-10
   title: Post-Tag Sync
-  status: BLOCKED
+  status: TEST
   owner: null
   blocked_by:
   - CARD-61-09
-  started_at: null
-  reviewed_at: null
-  tested_at: null
+  started_at: '2026-07-14T20:07:02Z'
+  reviewed_at: '2026-07-14T20:07:21Z'
+  tested_at: '2026-07-14T20:07:21Z'
   completed_at: null
   commit: null
   changed_files: []
