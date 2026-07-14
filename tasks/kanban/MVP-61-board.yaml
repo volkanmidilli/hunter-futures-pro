@@ -7,34 +7,40 @@ cards:
   started_at: '2026-07-14T19:43:14Z'
   reviewed_at: '2026-07-14T19:43:20Z'
   tested_at: '2026-07-14T19:43:24Z'
-  completed_at: '2026-07-14T19:43:38Z'
-  commit: df2102a24d43db71b1a4e975fb8b4a4afd2ebb9a
-  changed_files: []
-  test_results: []
+  completed_at: '2026-07-14T19:47:00Z'
+  commit: d61350444c65303846c5107af1b7950d96cfb9d8
+  changed_files:
+  - tasks/kanban/MVP-61-board.yaml
+  - tasks/kanban/MVP-61-events.jsonl
+  test_results:
+  - board schema validated
+  - event log initialized
   review_findings: []
 - id: CARD-61-01
   title: SPEC-062
-  status: TEST
+  status: DONE
   owner: null
   blocked_by:
   - CARD-61-00
   started_at: '2026-07-14T19:43:46Z'
   reviewed_at: '2026-07-14T19:44:21Z'
   tested_at: '2026-07-14T19:44:21Z'
-  completed_at: null
-  commit: null
-  changed_files: []
-  test_results: []
+  completed_at: '2026-07-14T19:47:30Z'
+  commit: 3887c672d306e71c29af4abb74ec58d9c2577baa
+  changed_files:
+  - specs/SPEC-062-Governance-Decision-Summary-Aggregator.md
+  test_results:
+  - spec structure reviewed
   review_findings: []
 - id: CARD-61-02
   title: Foundation and Models
-  status: BLOCKED
+  status: TEST
   owner: null
   blocked_by:
   - CARD-61-01
-  started_at: null
-  reviewed_at: null
-  tested_at: null
+  started_at: '2026-07-14T19:46:49Z'
+  reviewed_at: '2026-07-14T19:49:28Z'
+  tested_at: '2026-07-14T19:49:28Z'
   completed_at: null
   commit: null
   changed_files: []
