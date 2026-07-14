@@ -4,6 +4,29 @@ All important project changes will be recorded in this file.
 
 ## Unreleased
 
+## MVP-60 — Human Review Decision Registry (Complete)
+
+- SPEC-061 — Human Review Decision Registry approved.
+  - `specs/SPEC-061-Human-Review-Decision-Registry.md` — approved for MVP-60 implementation.
+  - Consumes a `ResearchDecisionGateReport` (MVP-59) and a human review input to produce an immutable, append-only `HumanReviewRecord`.
+  - Deterministic review decisions: `APPROVE_FOR_RESEARCH`, `REJECT`, and `REQUEST_CHANGES`.
+  - Fail-closed behavior: missing decision report, missing review input, invalid timestamps, broken chains, or duplicate reviews produce rejected records with explicit reason codes.
+  - SHA-256 record fingerprints chain records for audit integrity; `execution_approval_granted` is always `False`.
+  - No Freqtrade runtime integration, strategy changes, automatic config mutation, exchange/API/server/database/scheduler/live trading behavior, or actionable trading signals.
+- Steps 1–6 — Human Review Decision Registry models, validator, policy, chain validator, engine, writer, integration tests, and finalization.
+  - `src/hunter/human_review_registry/models.py` — frozen dataclasses (`HumanReviewRegistryConfig`, `HumanReviewInput`, `HumanReviewRecord`), `HUMAN_REVIEW_REGISTRY_VERSION = "0.60.0-dev"`, decision/reason code constants, and validation.
+  - `src/hunter/human_review_registry/validator.py` — validation for decision report provenance, review input, and timestamp.
+  - `src/hunter/human_review_registry/policy.py` — deterministic review policy: `NO_GO` cannot be approved, `NEEDS_REVIEW` requires adequate notes, accepted records carry explicit accepted reason codes.
+  - `src/hunter/human_review_registry/chain.py` — SHA-256 fingerprinting, duplicate detection, and chain verification.
+  - `src/hunter/human_review_registry/engine.py` — `build_human_review_record` orchestrates validation, policy, chain verification, fingerprinting, and fail-closed rejection.
+  - `src/hunter/human_review_registry/writer.py` — deterministic JSON/Markdown serialization with safety notice, atomic writers, and convenience latest copies.
+  - `src/hunter/human_review_registry/__init__.py` — public API exports.
+  - `tests/test_human_review_registry/test_models.py`, `test_validator.py`, `test_policy.py`, `test_chain.py`, `test_engine.py`, `test_writer.py`, `test_integration.py` — comprehensive unit and integration tests.
+  - 53 human_review_registry tests; full suite passes after integration.
+  - Version bumped to `0.60.0-dev` in `VERSION`, `pyproject.toml`, `src/hunter/__init__.py`.
+  - `HUMAN_REVIEW_REGISTRY_VERSION` already `0.60.0-dev` (set in Step 1).
+  - Tag `v0.60.0-dev` pending.
+
 ## MVP-59 — Research Decision Gate Engine (Complete)
 
 - SPEC-060 — Research Decision Gate Engine approved.
