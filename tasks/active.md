@@ -2,7 +2,7 @@
 
 ## Current Task
 
-MVP-58 — Portfolio Risk Constraint Evaluator. SPEC-059 approved. Steps 1–6 (models, validator, metrics, engine, writer, integration tests, and documentation/version finalization) complete. Version bumped to `0.58.0-dev`; tag pending `v0.58.0-dev`. No push yet.
+MVP-58 — Portfolio Risk Constraint Evaluator. SPEC-059 approved. Steps 1–6 (models, validator, metrics, engine, writer, integration tests, and documentation/version finalization) complete. Version bumped to `0.58.0-dev`; tagged `v0.58.0-dev` at `8578fe4`. No push yet.
 
 MVP-57 — Portfolio Construction Research Adapter. SPEC-058 approved. Steps 1–6 (models, validator, allocator, engine, writer, integration tests, and documentation/version finalization) complete. Version bumped to `0.57.0-dev`; tagged `v0.57.0-dev` at `2d68a75`. No push yet.
 
@@ -18,7 +18,7 @@ Completed under MVP-58 (Finalization):
 - Updated `CHANGELOG.md`, `docs/MVP_INDEX.md`, `docs/handoff/CURRENT_STATE.md`, `tasks/active.md`, `tasks/agent-log.md`, `AGENTS.md`.
 - Focused tests: `pytest tests/test_portfolio_risk_evaluator/ -q` — 98 passed.
 - Full suite: `pytest -q` — 8562 passed, 1 skipped.
-- Tag `v0.58.0-dev` pending (local-only; no push).
+- Tag `v0.58.0-dev` created at `8578fe4` (local-only; no push).
 
 Boundaries preserved:
 - No Freqtrade runtime integration, strategy changes, automatic config mutation, exchange/API/server/database/scheduler/live trading behavior.

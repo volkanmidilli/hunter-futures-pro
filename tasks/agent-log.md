@@ -6,7 +6,7 @@ Date: 2026-07-14
 
 Agent: WrongStack
 
-Task: Finalize MVP-58 Portfolio Risk Constraint Evaluator. Version bump to `0.58.0-dev`, documentation updates, and memory recording. Tag `v0.58.0-dev` pending.
+Task: Finalize MVP-58 Portfolio Risk Constraint Evaluator. Version bump to `0.58.0-dev`, documentation updates, tag `v0.58.0-dev` at `8578fe4`, and memory recording.
 
 Files modified:
 
@@ -31,7 +31,7 @@ Boundaries preserved:
 
 - No runtime feature changes.
 - No MVP-59 work started.
-- Tag `v0.58.0-dev` pending; no push.
+- Tag `v0.58.0-dev` created at `8578fe4` (local-only; no push).
 
 ---
 
