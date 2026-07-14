@@ -12,6 +12,17 @@ live trading systems.
 
 from __future__ import annotations
 
+from hunter.governance_handoff.writer import (
+    DEFAULT_JSON_PATH,
+    DEFAULT_MD_PATH,
+    GovernanceHandoffWriterError,
+    atomic_write_json_research_governance_handoff_package,
+    atomic_write_markdown_research_governance_handoff_package,
+    research_governance_handoff_package_to_dict,
+    research_governance_handoff_package_to_json_text,
+    research_governance_handoff_package_to_markdown_text,
+    write_research_governance_handoff_package,
+)
 from hunter.governance_handoff.engine import (
     build_research_governance_handoff_package,
     compute_package_fingerprint,
@@ -110,6 +121,16 @@ __all__ = [
     "HANDOFF_PACKAGE_READY",
     # Safety flags
     "CANONICAL_SAFETY_FLAGS",
+    # Writer
+    "DEFAULT_JSON_PATH",
+    "DEFAULT_MD_PATH",
+    "GovernanceHandoffWriterError",
+    "research_governance_handoff_package_to_dict",
+    "research_governance_handoff_package_to_json_text",
+    "research_governance_handoff_package_to_markdown_text",
+    "atomic_write_json_research_governance_handoff_package",
+    "atomic_write_markdown_research_governance_handoff_package",
+    "write_research_governance_handoff_package",
     # Engine
     "build_research_governance_handoff_package",
     "compute_package_fingerprint",
