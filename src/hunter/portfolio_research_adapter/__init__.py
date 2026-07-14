@@ -51,6 +51,15 @@ from hunter.portfolio_research_adapter.validator import (
     validate_portfolio_research_input,
     validate_score_mapping,
 )
+from hunter.portfolio_research_adapter.writer import (
+    PortfolioResearchWriterError,
+    atomic_write_json_portfolio_research_context,
+    atomic_write_markdown_portfolio_research_context,
+    portfolio_research_context_to_dict,
+    portfolio_research_context_to_json_text,
+    portfolio_research_context_to_markdown_text,
+    write_portfolio_research_context,
+)
 
 __all__ = [
     # Version
@@ -93,4 +102,12 @@ __all__ = [
     "quantize_allocations",
     "compute_cluster_exposure",
     "compute_total_exposure",
+    # Writer
+    "PortfolioResearchWriterError",
+    "portfolio_research_context_to_dict",
+    "portfolio_research_context_to_json_text",
+    "portfolio_research_context_to_markdown_text",
+    "write_portfolio_research_context",
+    "atomic_write_json_portfolio_research_context",
+    "atomic_write_markdown_portfolio_research_context",
 ]
