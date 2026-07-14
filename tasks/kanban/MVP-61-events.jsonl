@@ -19,3 +19,9 @@
 {"actor":"coordinator","card_id":"CARD-61-03","evidence":{"changed_files":[],"review_findings":[],"test_results":[]},"from":"READY","timestamp":"2026-07-14T19:49:49Z","to":"IN_PROGRESS"}
 {"actor":"coordinator","card_id":"CARD-61-03","evidence":{"changed_files":[],"review_findings":[],"test_results":[]},"from":"IN_PROGRESS","timestamp":"2026-07-14T19:53:41Z","to":"REVIEW"}
 {"actor":"coordinator","card_id":"CARD-61-03","evidence":{"changed_files":[],"review_findings":[],"test_results":[]},"from":"REVIEW","timestamp":"2026-07-14T19:53:41Z","to":"TEST"}
+{"actor":"coordinator","card_id":"CARD-61-03","evidence":{"changed_files":[],"review_findings":[],"test_results":[]},"from":"TEST","timestamp":"2026-07-14T19:54:00Z","to":"COMMIT"}
+{"actor":"coordinator","card_id":"CARD-61-03","evidence":{"changed_files":[],"review_findings":[],"test_results":[]},"from":"COMMIT","timestamp":"2026-07-14T19:54:00Z","to":"DONE"}
+{"actor":"coordinator","card_id":"CARD-61-04","evidence":{"changed_files":[],"review_findings":[],"test_results":[]},"from":"BLOCKED","timestamp":"2026-07-14T19:54:07Z","to":"READY"}
+{"actor":"coordinator","card_id":"CARD-61-04","evidence":{"changed_files":[],"review_findings":[],"test_results":[]},"from":"READY","timestamp":"2026-07-14T19:54:07Z","to":"IN_PROGRESS"}
+{"actor":"coordinator","card_id":"CARD-61-04","evidence":{"changed_files":[],"review_findings":[],"test_results":[]},"from":"IN_PROGRESS","timestamp":"2026-07-14T19:55:31Z","to":"REVIEW"}
+{"actor":"coordinator","card_id":"CARD-61-04","evidence":{"changed_files":[],"review_findings":[],"test_results":[]},"from":"REVIEW","timestamp":"2026-07-14T19:55:31Z","to":"TEST"}

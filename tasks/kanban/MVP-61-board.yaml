@@ -48,27 +48,27 @@ cards:
   review_findings: []
 - id: CARD-61-03
   title: Input and Chain Validation
-  status: TEST
+  status: DONE
   owner: null
   blocked_by:
   - CARD-61-02
   started_at: '2026-07-14T19:49:49Z'
   reviewed_at: '2026-07-14T19:53:41Z'
   tested_at: '2026-07-14T19:53:41Z'
-  completed_at: null
-  commit: null
+  completed_at: '2026-07-14T19:54:00Z'
+  commit: 131bbde97ddc13b2422bc3e48ed63e0c6c36ebf0
   changed_files: []
   test_results: []
   review_findings: []
 - id: CARD-61-04
   title: Governance Policy
-  status: BLOCKED
+  status: TEST
   owner: null
   blocked_by:
   - CARD-61-03
-  started_at: null
-  reviewed_at: null
-  tested_at: null
+  started_at: '2026-07-14T19:54:07Z'
+  reviewed_at: '2026-07-14T19:55:31Z'
+  tested_at: '2026-07-14T19:55:31Z'
   completed_at: null
   commit: null
   changed_files: []
