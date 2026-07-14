@@ -12,10 +12,21 @@ live trading systems.
 
 from __future__ import annotations
 
+from hunter.governance_handoff.validator import (
+    validate_all,
+    validate_built_at,
+    validate_gate_report,
+    validate_governance_summary,
+    validate_latest_review,
+    validate_provenance_links,
+    validate_safety_flags,
+    validate_source_versions,
+)
 from hunter.governance_handoff.models import (
     BLOCKED,
     CANONICAL_SAFETY_FLAGS,
     CONTRADICTORY_HANDOFF_STATE,
+    MISSING_REQUIRED_FINGERPRINT,
     DEFAULT_JSON_FILENAME,
     DEFAULT_MARKDOWN_FILENAME,
     DEFAULT_OUTPUT_DIR,
@@ -78,6 +89,7 @@ __all__ = [
     "REVIEW_FINGERPRINT_MISMATCH",
     "SOURCE_VERSION_MISMATCH",
     "CONTRADICTORY_HANDOFF_STATE",
+    "MISSING_REQUIRED_FINGERPRINT",
     "UNSAFE_HANDOFF_FLAG",
     "INVALID_TIMESTAMP",
     "GOVERNANCE_REVIEW_REQUIRED",
@@ -87,6 +99,15 @@ __all__ = [
     "HANDOFF_PACKAGE_READY",
     # Safety flags
     "CANONICAL_SAFETY_FLAGS",
+    # Validator
+    "validate_all",
+    "validate_built_at",
+    "validate_governance_summary",
+    "validate_gate_report",
+    "validate_latest_review",
+    "validate_source_versions",
+    "validate_provenance_links",
+    "validate_safety_flags",
     # Defaults
     "DEFAULT_REQUIRE_LATEST_ACCEPTED_REVIEW",
     "DEFAULT_OUTPUT_DIR",
