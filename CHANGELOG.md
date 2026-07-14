@@ -4,6 +4,28 @@ All important project changes will be recorded in this file.
 
 ## Unreleased
 
+## MVP-62 — Research Governance Handoff Package Builder (Complete)
+
+- SPEC-063 — Research Governance Handoff Package Builder approved.
+  - `specs/SPEC-063-Governance-Handoff-Package-Builder.md` — approved for MVP-62 implementation.
+  - Consumes a `GovernanceDecisionSummary` (MVP-61), a `ResearchDecisionGateReport` (MVP-59), and the latest accepted `HumanReviewRecord` (MVP-60).
+  - Produces an immutable, research-only `ResearchGovernanceHandoffPackage` with an explicit `handoff_allowed` boolean, deterministic SHA-256 package fingerprint, embedded `ResearchGovernanceHandoffManifest`, and safety flags.
+  - Fail-closed behavior: mismatched governance/gate/review fingerprints, missing required review, unsafe flags, unsupported upstream status, or contradictory provenance yields `handoff_allowed=False` with explicit reason codes.
+  - Reuses MVP-61 provenance and fingerprints; manifest captures source versions, source fingerprints, artifact filenames, canonical safety flags, and package fingerprint.
+  - No Freqtrade runtime integration, strategy changes, automatic config mutation, exchange/API/server/database/scheduler/live trading behavior, or actionable trading signals.
+- Steps 1–6 — Research Governance Handoff Package Builder models, validator, policy, engine, writer, integration tests, and finalization.
+  - `src/hunter/governance_handoff/models.py` — frozen dataclasses (`GovernanceHandoffConfig`, `HandoffSourceReference`, `ResearchGovernanceHandoffManifest`, `ResearchGovernanceHandoffPackage`), `GOVERNANCE_HANDOFF_VERSION = "0.62.0-dev"`, status/reason code constants, and validation.
+  - `src/hunter/governance_handoff/validator.py` — validation for source provenance, fingerprint linkage, timestamp, review record, source versions, and manifest structure.
+  - `src/hunter/governance_handoff/policy.py` — deterministic policy: source reference construction, reason-code classification, `handoff_allowed` resolution, canonical safety flags, and manifest assembly.
+  - `src/hunter/governance_handoff/engine.py` — `build_research_governance_handoff_package` orchestrates validation, policy, manifest construction, package fingerprinting, and fail-closed rejection.
+  - `src/hunter/governance_handoff/writer.py` — deterministic JSON/Markdown serialization with safety notice, artifact paths, and atomic writers.
+  - `src/hunter/governance_handoff/__init__.py` — public API exports.
+  - `tests/test_governance_handoff/test_models.py`, `test_validator.py`, `test_policy.py`, `test_engine.py`, `test_writer.py`, `test_integration.py` — comprehensive unit and integration tests.
+  - 112 governance_handoff tests; full suite: 8927 passed, 1 skipped.
+  - Version bumped to `0.62.0-dev` in `VERSION`, `pyproject.toml`, `src/hunter/__init__.py`.
+  - `GOVERNANCE_HANDOFF_VERSION` already `0.62.0-dev` (set in Step 1).
+  - Tagged `v0.62.0-dev` pending.
+
 ## MVP-61 — Governance Decision Summary Aggregator (Complete)
 
 - SPEC-062 — Governance Decision Summary Aggregator approved.
