@@ -35,6 +35,7 @@ from hunter.portfolio_research_adapter.models import (
     PortfolioResearchContext,
     PortfolioResearchError,
 )
+from hunter.portfolio_research_adapter.engine import build_portfolio_research_context
 from hunter.portfolio_research_adapter.allocator import (
     allocate_equal_weight,
     allocate_score_proportional,
@@ -77,6 +78,8 @@ __all__ = [
     "PortfolioExclusion",
     "PortfolioResearchContext",
     "PortfolioResearchError",
+    # Engine
+    "build_portfolio_research_context",
     # Validator
     "validate_portfolio_research_config",
     "validate_portfolio_research_input",
