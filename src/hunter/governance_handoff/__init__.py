@@ -12,6 +12,13 @@ live trading systems.
 
 from __future__ import annotations
 
+from hunter.governance_handoff.policy import (
+    build_handoff_manifest,
+    build_handoff_safety_flags,
+    build_source_references,
+    classify_handoff_reasons,
+    resolve_handoff_allowed,
+)
 from hunter.governance_handoff.validator import (
     validate_all,
     validate_built_at,
@@ -99,6 +106,12 @@ __all__ = [
     "HANDOFF_PACKAGE_READY",
     # Safety flags
     "CANONICAL_SAFETY_FLAGS",
+    # Policy
+    "build_handoff_safety_flags",
+    "build_source_references",
+    "classify_handoff_reasons",
+    "resolve_handoff_allowed",
+    "build_handoff_manifest",
     # Validator
     "validate_all",
     "validate_built_at",
