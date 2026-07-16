@@ -119,7 +119,8 @@ Excluded from evidence:
 | MVP-58 | Portfolio Risk Constraint Evaluator | `SPEC-059` | `v0.58.0-dev` | `portfolio_risk_evaluator` | `test_portfolio_risk_evaluator` | tagged | Tagged `v0.58.0-dev` at `8578fe4` (local-only; no push) |
 | MVP-54 | Operational One-Call Coin-Discovery Pipeline Runner | `SPEC-055` | `v0.54.0-dev` | `coin_discovery_pipeline` | `test_coin_discovery_pipeline` | tagged | Tagged `v0.54.0-dev` at `c7ef130` (local-only; no push) |
 | MVP-62 | Research Governance Handoff Package Builder | `SPEC-063` | `v0.62.0-dev` | `governance_handoff` | `test_governance_handoff` | tagged | Tagged `v0.62.0-dev` (local-only; no push) |
-| MVP-63 | Research Market Data CSV Loader and Adapter | `SPEC-064` | `v0.63.0-dev` | `research_market_data` | `test_research_market_data` | committed | Tag pending at `v0.63.0-dev` (local-only; no push) |
+| MVP-63 | Research Market Data CSV Loader and Adapter | `SPEC-064` | `v0.63.0-dev` | `research_market_data` | `test_research_market_data` | tagged | Tagged `v0.63.0-dev` (local-only; no push) |
+| MVP-64 | Dual Universe Builder | `SPEC-065` | `v0.64.0-dev` | `research_universe` | `test_research_universe` | tagged | Tagged `v0.64.0-dev` (local-only; no push) |
 
 ## Package Mapping
 

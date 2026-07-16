@@ -4,6 +4,27 @@ All important project changes will be recorded in this file.
 
 ## Unreleased
 
+## MVP-64 — Dual Universe Builder (Complete)
+
+- SPEC-065 — Dual Universe Builder approved.
+  - `specs/SPEC-065-Dual-Universe-Builder.md` — approved for MVP-64 implementation.
+  - Adds `src/hunter/research_universe/` package: models, eligibility, candidate builder, baseline builder, comparison engine, validator, and deterministic writer.
+  - `models.py` — frozen dataclasses for `CandidateUniverseResult`, `BaselineUniverseResult`, `UniversePairDecision`, `ResearchUniverseComparison`, `ResearchUniverseConfig`, and `ResearchUniverseReport` with SHA-256 fingerprints.
+  - `eligibility.py` — shared eligibility policy (minimum coverage, required quote currency, blocked symbols, top-N limits) applied to both universes.
+  - `candidate.py` — builds the candidate universe from `ControlledUniverseReport` and `PortfolioConstructionReport`, ranking by portfolio weight.
+  - `baseline.py` — builds the baseline universe from `ResearchMarketDataBundle` using only quote-volume ranking, with no portfolio construction or controlled universe logic.
+  - `comparison.py` — produces deterministic overlap, candidate-only, baseline-only, union count, and Jaccard similarity metrics.
+  - `engine.py` — orchestrates candidate, baseline, comparison, and report generation with deterministic fingerprints.
+  - `validator.py` — input validation for all upstream artifacts and the selection window.
+  - `writer.py` — deterministic JSON/Markdown artifacts, atomic writes, silent-overwrite protection, failed-write cleanup, and manifest generation.
+  - `__init__.py` — public API exports.
+  - `tests/test_research_universe/` — unit, writer, integration, and regression tests covering eligibility, candidate/baseline builders, comparison, engine, writer, and safety invariants.
+  - Safety invariants are hard-coded research-only: `execution_approval_granted=False`, `production_approval_granted=False`, `live_trading_allowed=False`, `automatic_execution_allowed=False`, `human_approval_required=True`, `research_only=True`.
+  - Fail-closed behavior: invalid inputs, missing controlled universe, or all pairs excluded yields explicit reason codes and an exception.
+  - No Freqtrade runtime integration, strategy changes, automatic config mutation, exchange/API/server/database/scheduler/live trading behavior, or actionable trading signals.
+- 58 `research_universe` tests; full suite: 9075 passed, 1 skipped.
+
+
 ## MVP-63 — Research Market Data CSV Loader and Adapter (Complete)
 
 - SPEC-064 — Research Market Data CSV Loader and Adapter approved.
