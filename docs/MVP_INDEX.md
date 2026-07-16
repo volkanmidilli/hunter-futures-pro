@@ -49,6 +49,8 @@ Excluded from evidence:
 - `SPEC-060` exists for MVP-59 Research Decision Gate Engine. Complete; tagged `v0.59.0-dev` at `8d00af3` (local-only; no push).
 - `SPEC-061` exists for MVP-60 Human Review Decision Registry. Complete; tagged `v0.60.0-dev` (local-only; no push).
 - `SPEC-062` exists for MVP-61 Governance Decision Summary Aggregator. Complete; tag pending at `v0.61.0-dev` (local-only; no push).
+- `SPEC-063` exists for MVP-62 Research Governance Handoff Package Builder. Complete; tagged `v0.62.0-dev` (local-only; no push).
+- `SPEC-064` exists for MVP-63 Research Market Data CSV Loader and Adapter. Complete; tag pending at `v0.63.0-dev` (local-only; no push).
 
 ## MVP Index Table
 
@@ -116,6 +118,8 @@ Excluded from evidence:
 | MVP-59 | Research Decision Gate Engine | `SPEC-060` | `v0.59.0-dev` | `research_decision_gate` | `test_research_decision_gate` | tagged | Tagged `v0.59.0-dev` at `8d00af3` (local-only; no push) |
 | MVP-58 | Portfolio Risk Constraint Evaluator | `SPEC-059` | `v0.58.0-dev` | `portfolio_risk_evaluator` | `test_portfolio_risk_evaluator` | tagged | Tagged `v0.58.0-dev` at `8578fe4` (local-only; no push) |
 | MVP-54 | Operational One-Call Coin-Discovery Pipeline Runner | `SPEC-055` | `v0.54.0-dev` | `coin_discovery_pipeline` | `test_coin_discovery_pipeline` | tagged | Tagged `v0.54.0-dev` at `c7ef130` (local-only; no push) |
+| MVP-62 | Research Governance Handoff Package Builder | `SPEC-063` | `v0.62.0-dev` | `governance_handoff` | `test_governance_handoff` | tagged | Tagged `v0.62.0-dev` (local-only; no push) |
+| MVP-63 | Research Market Data CSV Loader and Adapter | `SPEC-064` | `v0.63.0-dev` | `research_market_data` | `test_research_market_data` | committed | Tag pending at `v0.63.0-dev` (local-only; no push) |
 
 ## Package Mapping
 

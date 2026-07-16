@@ -4,6 +4,34 @@ All important project changes will be recorded in this file.
 
 ## Unreleased
 
+## MVP-63 — Research Market Data CSV Loader and Adapter (Complete)
+
+- SPEC-064 — Research Market Data CSV Loader and Adapter approved.
+  - `specs/SPEC-064-Research-Market-Data-CSV-Loader-and-Adapter.md` — approved for MVP-63 implementation.
+  - Adds `src/hunter/research_market_data/` package: read-only CSV candle loader, symbol normalizer, validator, aligner, adapters, fingerprint, engine, and deterministic writer.
+  - Consumes caller-provided CSV files for BTC benchmark, optional ETH benchmark, and candidate series.
+  - Produces an immutable `ResearchMarketDataBundle` with deterministic per-series, policy, and bundle SHA-256 fingerprints.
+  - Adapts the bundle to the existing MVP-24 `RelativeStrengthRunInputs` and MVP-26 `DiscoveryInputBundle` without synthesizing Open Interest.
+  - Safety invariants are hard-coded research-only: `execution_approval_granted=False`, `production_approval_granted=False`, `live_trading_allowed=False`, `automatic_execution_allowed=False`.
+  - Fail-closed behavior: missing BTC benchmark, all candidates excluded, invalid safety flags, or unsafe symbol content yields explicit reason codes and an exception; ETH benchmark missing triggers BTC-only mode.
+  - No Freqtrade runtime integration, strategy changes, automatic config mutation, exchange/API/server/database/scheduler/live trading behavior, or actionable trading signals.
+- Steps 1–7 — research market data models, loader, normalizer, validator, aligner, adapters, fingerprint, engine, writer, integration tests, and finalization.
+  - `src/hunter/research_market_data/models.py` — frozen dataclasses, safety flags, reason codes, and validation.
+  - `src/hunter/research_market_data/symbol_normalizer.py` — compact and Freqtrade-style symbol normalization to canonical pair form.
+  - `src/hunter/research_market_data/csv_loader.py` — strict header detection, row parsing, and source reference capture.
+  - `src/hunter/research_market_data/validator.py` — timestamp, numeric, OHLC relation, duplicate, and row-order validation.
+  - `src/hunter/research_market_data/aligner.py` — timeframe detection, coverage/gap analysis, and benchmark alignment.
+  - `src/hunter/research_market_data/adapters.py` — pure transforms to `RelativeStrengthRunInputs` and `DiscoveryInputBundle`.
+  - `src/hunter/research_market_data/fingerprint.py` — deterministic SHA-256 fingerprints for series, policy, and bundle.
+  - `src/hunter/research_market_data/engine.py` — `build_research_market_data_bundle` orchestrates loading, validation, alignment, and fingerprinting.
+  - `src/hunter/research_market_data/writer.py` — deterministic JSON/Markdown serialization with safety notice, atomic writers, and default artifact paths.
+  - `src/hunter/research_market_data/__init__.py` — public API exports.
+  - `tests/test_research_market_data/` — unit and integration tests covering models, loader, normalizer, validator, aligner, adapters, engine, writer, and end-to-end pipeline to Discovery.
+  - 90 research_market_data tests; full suite: 9017 passed, 1 skipped.
+  - Version bumped to `0.63.0-dev` in `VERSION`, `pyproject.toml`, `src/hunter/__init__.py`.
+  - `RESEARCH_MARKET_DATA_VERSION` set to `0.63.0-dev` in `src/hunter/research_market_data/models.py`.
+  - Tag `v0.63.0-dev` pending.
+
 ## MVP-62 — Research Governance Handoff Package Builder (Complete)
 
 - SPEC-063 — Research Governance Handoff Package Builder approved.
