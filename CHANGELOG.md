@@ -4,6 +4,32 @@ All important project changes will be recorded in this file.
 
 ## Unreleased
 
+## MVP-66 — Walk-Forward Universe Comparison and Regime Evaluation (Complete)
+
+- SPEC-067 — Walk-Forward Universe Comparison and Regime Evaluation approved.
+  - `specs/SPEC-067-Walk-Forward-Universe-Comparison.md` — approved for MVP-66 implementation.
+  - Adds `src/hunter/research_walk_forward/` package: models, errors, planner, validator, leakage guard, sequential runner, metric aggregation, regime aggregation, fingerprints, engine, writer, and public API.
+  - Consumes `CandidateUniverseResult` and `BaselineUniverseResult` from MVP-64 and invokes the MVP-65 `research_backtest_comparison` engine once per window.
+  - Only MVP-65 may invoke Freqtrade; no subprocess code exists in MVP-66.
+  - Supports rolling and expanding walk-forward plans with explicit deterministic windows.
+  - Enforces strict selection/evaluation chronology (`selection_start < selection_end < evaluation_start < evaluation_end`).
+  - Rejects leakage, duplicates, out-of-order windows, rolling-duration drift, expanding-start drift, and invalid contiguous boundaries.
+  - Windows execute sequentially; no parallel execution, no automatic retry.
+  - Preserves failed, blocked, timed-out, unsupported, and insufficient-trade evidence.
+  - Aggregates all 12 canonical MVP-65 metrics with Decimal mean, median, min, max, and explicitly implemented quartiles (q1, q3, IQR).
+  - Computes descriptive consistency states: `CONSISTENT_CANDIDATE_HIGHER`, `MOSTLY_CANDIDATE_HIGHER`, `MIXED`, `MOSTLY_BASELINE_HIGHER`, `CONSISTENT_BASELINE_HIGHER`, `EQUAL_OR_UNAVAILABLE`.
+  - Regime grouping accepts caller-provided labels only; default is `UNKNOWN`; no automatic regime inference.
+  - Deterministic SHA-256 fingerprints for plan, windows, overall aggregates, regime aggregates, and report exclude temp paths, runtime, PID, timestamps, and stdout/stderr.
+  - Atomic deterministic JSON/Markdown writers with silent-overwrite protection, path redaction, secret redaction, and failed-write cleanup.
+  - Rejects output under `data/` or `reports/`.
+  - All public artifacts carry hard-coded research-only safety flags: `research_only=True`, `execution_approval_granted=False`, `production_approval_granted=False`, `live_trading_allowed=False`, `automatic_execution_allowed=False`, `human_approval_required=True`.
+  - `__init__.py` — public API exports.
+  - `tests/test_research_walk_forward/` — 127 unit, integration, determinism, and safety tests using a fake MVP-65 engine.
+  - Safety invariants: no direct subprocess, no parallel execution, no live/dry-run trading, no exchange/API/network data access, no data download, no tracked config/strategy/universe mutation, no `data/` or `reports/` access, no push, no remote changes, no execution/production/live approval.
+- 127 `research_walk_forward` tests; full suite: 9334 passed, 1 skipped.
+- Version bumped to `0.66.0-dev` in `VERSION`, `pyproject.toml`, and `src/hunter/__init__.py`.
+- Local annotated tag `v0.66.0-dev` created; no push performed.
+
 ## MVP-65 — Research Universe Backtest Comparison Harness (Complete)
 
 - SPEC-066 — Research Universe Backtest Comparison Harness approved.
