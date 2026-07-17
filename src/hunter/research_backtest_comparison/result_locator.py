@@ -19,34 +19,41 @@ def locate_result_file(
 ) -> Path:
     """Verify that the expected result file is a regular file inside the workspace.
 
-    Rejects symlinks, path escapes, and missing files.
+    Rejects **all** symlinks (even when the target is inside the workspace),
+    path escapes, non-regular files, and missing files.
 
     Raises:
         ResearchBacktestComparisonRunnerError: on containment failure.
     """
-    expected = Path(expected_path).resolve()
+    # Preserve the original (unresolved) entry so we can detect symlinks
+    # before resolve() follows them.
+    original = Path(expected_path)
+    resolved = original.resolve()
     workspace_root = Path(workspace).resolve()
 
-    if not expected.exists():
+    # Reject every symlink — regardless of where the target lives.
+    # Must check the original entry because resolve() follows the link.
+    if original.is_symlink():
         raise ResearchBacktestComparisonRunnerError(
-            f"result file not found: {expected}", reason_code=RESULT_NOT_FOUND
-        )
-    if not expected.is_file():
-        raise ResearchBacktestComparisonRunnerError(
-            f"result path is not a regular file: {expected}",
+            f"result file is a symlink: {original}",
             reason_code=RESULT_CONTAINMENT_FAILURE,
         )
-    if expected.is_symlink():
+
+    if not resolved.exists():
         raise ResearchBacktestComparisonRunnerError(
-            f"result file is a symlink: {expected}",
+            f"result file not found: {resolved}", reason_code=RESULT_NOT_FOUND
+        )
+    if not resolved.is_file():
+        raise ResearchBacktestComparisonRunnerError(
+            f"result path is not a regular file: {resolved}",
             reason_code=RESULT_CONTAINMENT_FAILURE,
         )
     try:
-        expected.relative_to(workspace_root)
+        resolved.relative_to(workspace_root)
     except ValueError:
         raise ResearchBacktestComparisonRunnerError(
-            f"result file escapes workspace: {expected}",
+            f"result file escapes workspace: {resolved}",
             reason_code=RESULT_CONTAINMENT_FAILURE,
         )
 
-    return expected
+    return resolved

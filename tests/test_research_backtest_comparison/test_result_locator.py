@@ -48,6 +48,20 @@ class TestLocateResultFile:
             if outside.exists():
                 outside.unlink()
 
+    def test_symlink_inside_workspace_rejected(self) -> None:
+        ws = create_workspace(prefix="test_loc_inside_link_")
+        ws.create()
+        try:
+            # Create a real file inside the workspace.
+            real_target = ws.path / "real_result.json"
+            real_target.write_text("{}")
+            # Symlink whose target IS inside the workspace.
+            ws.result_path.symlink_to(real_target)
+            with pytest.raises(ResearchBacktestComparisonRunnerError):
+                locate_result_file(ws.result_path, ws.path)
+        finally:
+            ws.cleanup(force=True)
+
     def test_path_escape_rejected(self) -> None:
         ws = create_workspace(prefix="test_loc_escape_")
         ws.create()
