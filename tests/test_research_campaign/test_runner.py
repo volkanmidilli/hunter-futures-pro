@@ -102,6 +102,41 @@ class TestCollectAll:
         assert dossier.status_summary.total == len(execution_manifest.compiled_campaign.experiments)
         assert dossier.status_summary.completed == len(execution_manifest.compiled_campaign.experiments)
 
+    def test_insufficient_evidence_on_incomplete_windows(
+        self,
+        execution_manifest: CampaignExecutionManifest,
+    ) -> None:
+        """Incomplete walk-forward windows produce INSUFFICIENT_EVIDENCE, not FAILED."""
+        mock_wf_report = MagicMock(spec=WalkForwardExperimentReport)
+        mock_wf_report.fingerprint = "wf_fp_001"
+
+        from hunter.research_campaign.errors import ResearchCampaignRunnerError
+        from hunter.research_campaign.models import MISSING_WALK_FORWARD_EVIDENCE
+
+        with (
+            patch(
+                "hunter.research_campaign.runner.run_walk_forward_for_experiment",
+                return_value=mock_wf_report,
+            ) as mock_wf,
+            patch(
+                "hunter.research_campaign.runner.run_confidence_for_experiment",
+                side_effect=ResearchCampaignRunnerError(
+                    "incomplete windows",
+                    reason_code=MISSING_WALK_FORWARD_EVIDENCE,
+                ),
+            ) as mock_conf,
+        ):
+            dossier = run_campaign_sequential(execution_manifest)
+
+        assert dossier is not None
+        for rec in dossier.execution_records:
+            assert rec.outcome == ExperimentOutcome.INSUFFICIENT_EVIDENCE, (
+                f"Expected INSUFFICIENT_EVIDENCE, got {rec.outcome}"
+            )
+            assert MISSING_WALK_FORWARD_EVIDENCE in rec.reason_codes
+        mock_wf.assert_called_once()
+        mock_conf.assert_called_once()
+
 
 # ===========================================================================
 # FAIL_FAST

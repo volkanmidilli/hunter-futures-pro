@@ -17,6 +17,7 @@ from hunter.research_campaign.integration import (
     run_walk_forward_for_experiment,
 )
 from hunter.research_campaign.models import (
+    MISSING_WALK_FORWARD_EVIDENCE,
     RESUME_FINGERPRINT_MISMATCH,
     RUNNER_ERROR,
     CampaignDossier,
