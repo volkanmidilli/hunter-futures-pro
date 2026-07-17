@@ -157,6 +157,14 @@ class TestWriteJsonAtomic:
 
 
 class TestWalkForwardWriter:
+    def test_missing_output_dir_rejected(self) -> None:
+        with pytest.raises(WalkForwardWriterError):
+            WalkForwardWriter()
+
+    def test_empty_output_dir_rejected(self, tmp_path: Path) -> None:
+        with pytest.raises(WalkForwardWriterError):
+            WalkForwardWriter(output_dir="")
+
     def test_write_all(self, tmp_path: Path) -> None:
         report = _make_report(tmp_path)
         writer = WalkForwardWriter(output_dir=tmp_path / "out")
@@ -198,10 +206,24 @@ class TestWalkForwardWriter:
         assert report_path.exists()
         assert manifest_path.exists()
 
+    def test_convenience_function_missing_output_dir_rejected(
+        self, tmp_path: Path
+    ) -> None:
+        report = _make_report(tmp_path)
+        with pytest.raises(WalkForwardWriterError):
+            write_walk_forward_report(report)
+
     def test_all_artifacts_convenience(self, tmp_path: Path) -> None:
         report = _make_report(tmp_path)
         paths = write_all_walk_forward_artifacts(report, output_dir=tmp_path / "out")
         assert len(paths) == 7
+
+    def test_all_artifacts_convenience_missing_output_dir_rejected(
+        self, tmp_path: Path
+    ) -> None:
+        report = _make_report(tmp_path)
+        with pytest.raises(WalkForwardWriterError):
+            write_all_walk_forward_artifacts(report)
 
     def test_silent_overwrite_markdown(self, tmp_path: Path) -> None:
         report = _make_report(tmp_path)

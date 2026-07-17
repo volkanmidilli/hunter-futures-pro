@@ -24,6 +24,14 @@ from hunter.research_walk_forward.models import (
 _SILENT_OVERWRITE = "SILENT_OVERWRITE_BLOCKED"
 _WRITE_FAILED = "WRITE_FAILED"
 _FORBIDDEN_OUTPUT_ROOT = "FORBIDDEN_OUTPUT_ROOT"
+_MISSING_OUTPUT_DIR = "MISSING_OUTPUT_DIR"
+
+
+class _MissingOutputDir:
+    """Sentinel indicating no output_dir was supplied."""
+
+
+_MISSING_OUTPUT_DIR_SENTINEL = _MissingOutputDir()
 
 _MANDATORY_NOTICE = (
     "This artifact is research-only and is based on historical walk-forward backtesting.\n"
@@ -296,10 +304,20 @@ class WalkForwardWriter:
     def __init__(
         self,
         *,
-        output_dir: str | Path = "reports/research_walk_forward",
+        output_dir: str | Path | _MissingOutputDir = _MISSING_OUTPUT_DIR_SENTINEL,
         indent: int | None = 2,
         sort_keys: bool = True,
     ) -> None:
+        if isinstance(output_dir, _MissingOutputDir):
+            raise WalkForwardWriterError(
+                "output_dir is mandatory; pass an explicit safe output directory",
+                reason_code=_MISSING_OUTPUT_DIR,
+            )
+        if output_dir is None or str(output_dir).strip() == "":
+            raise WalkForwardWriterError(
+                "output_dir cannot be empty or None",
+                reason_code=_MISSING_OUTPUT_DIR,
+            )
         self.output_dir = Path(output_dir)
         self.indent = indent
         self.sort_keys = sort_keys
@@ -527,9 +545,14 @@ class WalkForwardWriter:
 def write_walk_forward_report(
     report: WalkForwardExperimentReport,
     *,
-    output_dir: str | Path = "reports/research_walk_forward",
+    output_dir: str | Path | _MissingOutputDir = _MISSING_OUTPUT_DIR_SENTINEL,
 ) -> tuple[Path, Path]:
-    """Convenience function to write the report and manifest."""
+    """Convenience function to write the report and manifest.
+
+    Args:
+        report: The walk-forward experiment report to write.
+        output_dir: Mandatory explicit safe output directory.
+    """
     writer = WalkForwardWriter(output_dir=output_dir)
     return writer.write(report)
 
@@ -537,8 +560,13 @@ def write_walk_forward_report(
 def write_all_walk_forward_artifacts(
     report: WalkForwardExperimentReport,
     *,
-    output_dir: str | Path = "reports/research_walk_forward",
+    output_dir: str | Path | _MissingOutputDir = _MISSING_OUTPUT_DIR_SENTINEL,
 ) -> dict[str, Path]:
-    """Convenience function to write all walk-forward artifacts."""
+    """Convenience function to write all walk-forward artifacts.
+
+    Args:
+        report: The walk-forward experiment report to write.
+        output_dir: Mandatory explicit safe output directory.
+    """
     writer = WalkForwardWriter(output_dir=output_dir)
     return writer.write_all(report)
