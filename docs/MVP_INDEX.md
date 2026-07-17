@@ -53,7 +53,8 @@ Excluded from evidence:
 - `SPEC-064` exists for MVP-63 Research Market Data CSV Loader and Adapter. Complete; tag pending at `v0.63.0-dev` (local-only; no push).
 - `SPEC-065` exists for MVP-64 Dual Universe Builder. Complete; tagged `v0.64.0-dev` (local-only; no push).
 - `SPEC-066` exists for MVP-65 Research Universe Backtest Comparison Harness. Complete; tagged `v0.65.0-dev` at `7278e04` (local-only; no push).
-- `SPEC-067` exists for MVP-66 Walk-Forward Universe Comparison and Regime Evaluation. Complete; tag pending at `v0.66.0-dev` (local-only; no push).
+- `SPEC-067` exists for MVP-66 Walk-Forward Universe Comparison and Regime Evaluation. Complete; tagged `v0.66.0-dev` at `7c85533` (local-only; no push).
+- `SPEC-068` exists for MVP-67 Walk-Forward Statistical Confidence and Stability Evaluation. Complete; tag pending at `v0.67.0-dev` (local-only; no push).
 
 ## MVP Index Table
 
@@ -125,7 +126,8 @@ Excluded from evidence:
 | MVP-63 | Research Market Data CSV Loader and Adapter | `SPEC-064` | `v0.63.0-dev` | `research_market_data` | `test_research_market_data` | tagged | Tagged `v0.63.0-dev` (local-only; no push) |
 | MVP-64 | Dual Universe Builder | `SPEC-065` | `v0.64.0-dev` | `research_universe` | `test_research_universe` | tagged | Tagged `v0.64.0-dev` (local-only; no push) |
 | MVP-65 | Research Universe Backtest Comparison Harness | `SPEC-066` | `v0.65.0-dev` | `research_backtest_comparison` | `test_research_backtest_comparison` | tagged | Tagged `v0.65.0-dev` at `7278e04` (local-only; no push) |
-| MVP-66 | Walk-Forward Universe Comparison and Regime Evaluation | `SPEC-067` | `v0.66.0-dev` | `research_walk_forward` | `test_research_walk_forward` | tagged | Tagged `v0.66.0-dev` (local-only; no push) |
+| MVP-66 | Walk-Forward Universe Comparison and Regime Evaluation | `SPEC-067` | `v0.66.0-dev` | `research_walk_forward` | `test_research_walk_forward` | tagged | Tagged `v0.66.0-dev` at `7c85533` (local-only; no push) |
+| MVP-67 | Walk-Forward Statistical Confidence and Stability Evaluation | `SPEC-068` | `v0.67.0-dev` | `research_statistical_confidence` | `test_research_statistical_confidence` | tagged | Tagged `v0.67.0-dev` (local-only; no push) |
 
 ## Package Mapping
 

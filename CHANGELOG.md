@@ -4,6 +4,31 @@ All important project changes will be recorded in this file.
 
 ## Unreleased
 
+## MVP-67 — Walk-Forward Statistical Confidence and Stability Evaluation (Complete)
+
+- SPEC-068 — Walk-Forward Statistical Confidence and Stability Evaluation approved.
+  - `specs/SPEC-068-Walk-Forward-Statistical-Confidence.md` — approved for MVP-67 implementation.
+  - Adds `src/hunter/research_statistical_confidence/` package: models, errors, validator, descriptive statistics, deterministic bootstrap, leave-one-window-out sensitivity, regime stratification, confidence classification, fingerprints, engine, writer, and public API.
+  - Consumes immutable MVP-66 `WalkForwardExperimentReport` objects and canonical MVP-65 metric deltas.
+  - No new backtest execution, no Freqtrade invocation, no subprocess, no exchange/network/data access, no strategy/config/universe mutation, no live/dry-run trading, no scheduler/database/queue.
+  - Frozen public models with hard-coded research-only safety flags.
+  - Config validation: minimum available windows >= 2, `0 < confidence_level < 1`, bootstrap seed integer, iterations >= 100, `0.5 <= sign_share_threshold <= 1`, `0 <= maximum_influence_ratio <= 1`.
+  - Descriptive statistics: sample mean, median, sample standard deviation, MAD, min, max, explicit q1/q3/IQR, positive/negative/zero shares.
+  - Deterministic bootstrap using `random.Random(config.bootstrap_seed)` with nearest-rank percentile intervals for mean and median.
+  - Leave-one-window-out sensitivity: mean/median ranges, maximum single-window influence ratio, sign stability.
+  - Caller-provided regime stratification only; no regime inference.
+  - Confidence classification: `INSUFFICIENT_EVIDENCE`, `UNSTABLE`, `MIXED`, `DIRECTIONALLY_STABLE_CANDIDATE`, `DIRECTIONALLY_STABLE_BASELINE`, `ROBUST_CANDIDATE`, `ROBUST_BASELINE`.
+  - No claims of profitability, guaranteed results, approved, ready-for-live, execution/production/live status.
+  - No composite trading score; no strategy or universe ranking/selection.
+  - Deterministic SHA-256 fingerprints for config, per-metric results, regime results, report, and manifest; exclude paths, PID, hostname, timestamps, durations, insertion order.
+  - Explicit-output-directory deterministic writer with atomic JSON/Markdown, redaction, silent-overwrite protection, failed-write cleanup, and rejection of `data/` and `reports/`.
+  - `__init__.py` — public API exports.
+  - `tests/test_research_statistical_confidence/` — 134 unit, integration, determinism, and safety tests.
+  - Safety invariants: no direct subprocess, no parallel execution, no live/dry-run trading, no exchange/API/network/data access, no data download, no tracked config/strategy/universe mutation, no `data/` or `reports/` access, no push, no remote changes, no execution/production/live approval.
+- 134 `research_statistical_confidence` tests; full suite: 9472 passed, 1 skipped.
+- Version bumped to `0.67.0-dev` in `VERSION`, `pyproject.toml`, and `src/hunter/__init__.py`.
+- Local annotated tag `v0.67.0-dev` created; no push performed.
+
 ## MVP-66 — Walk-Forward Universe Comparison and Regime Evaluation (Complete)
 
 - SPEC-067 — Walk-Forward Universe Comparison and Regime Evaluation approved.
