@@ -4,6 +4,32 @@ All important project changes will be recorded in this file.
 
 ## Unreleased
 
+## MVP-65 — Research Universe Backtest Comparison Harness (Complete)
+
+- SPEC-066 — Research Universe Backtest Comparison Harness approved.
+  - `specs/SPEC-066-Research-Universe-Backtest-Comparison-Harness.md` — approved for MVP-65 implementation.
+  - Adds `src/hunter/research_backtest_comparison/` package: models, errors, executable validation, validator, ephemeral workspace, config builder, fairness contract, command builder, sequential runner, result locator, versioned parser, comparison engine, deterministic fingerprints, engine, writer, and redaction.
+  - Consumes `CandidateUniverseResult` and `BaselineUniverseResult` from MVP-64.
+  - Runs only `freqtrade backtesting` as a subprocess; rejects all other Freqtrade subcommands/modes (`trade`, `webserver`, `hyperopt`, etc.).
+  - Uses `shell=False`, argument lists, allowlisted environment, mandatory timeout, and bounded/redacted stdout/stderr.
+  - Strategy file and historical data directory are caller-provided and read-only; strategy SHA-256 is verified before and after each run to detect mutation.
+  - Candidate and baseline run sequentially in separate repository-external temporary workspaces; only one subprocess is active at a time.
+  - Fairness contract enforces identical strategy, timeframe, timerange, balance, stake, `max_open_trades`, fee, protections, and execution assumptions; only the pairlist may differ.
+  - Versioned parser produces canonical Decimal metrics: total return, absolute profit, final balance, max drawdown, Sharpe, Sortino, Calmar, profit factor, win rate, trade count, average trade duration, and fees paid.
+  - Missing metrics are `UNAVAILABLE`; never fabricated.
+  - Deltas are `candidate - baseline`; interpretations are `CANDIDATE_HIGHER`, `BASELINE_HIGHER`, `EQUAL`, or `UNAVAILABLE`.
+  - Zero-trade results are valid but marked as insufficient evidence.
+  - Deterministic SHA-256 fingerprints exclude temp paths, PID, hostname, wall-clock time, stdout/stderr.
+  - Atomic deterministic JSON/Markdown writers with silent-overwrite protection, redaction, and failed-write cleanup.
+  - Workspaces are cleaned up on success and optionally retained on failure.
+  - All public artifacts carry hard-coded research-only safety flags: `research_only=True`, `execution_approval_granted=False`, `production_approval_granted=False`, `live_trading_allowed=False`, `automatic_execution_allowed=False`, `human_approval_required=True`.
+  - `__init__.py` — public API exports.
+  - `tests/test_research_backtest_comparison/` — 131 unit, integration, security, determinism, and isolation tests using a fake Freqtrade executable.
+  - Safety invariants: no live/dry-run trading, no exchange/API/network data access, no data download, no tracked config/strategy mutation, no `data/` or `reports/` access, no push, no remote changes, no execution/production/live approval.
+- 131 `research_backtest_comparison` tests; full suite: 9206 passed, 1 skipped.
+- Version bumped to `0.65.0-dev` in `VERSION`, `pyproject.toml`, and `src/hunter/__init__.py`.
+- Local annotated tag `v0.65.0-dev` created; no push performed.
+
 ## MVP-64 — Dual Universe Builder (Complete)
 
 - SPEC-065 — Dual Universe Builder approved.

@@ -51,6 +51,8 @@ Excluded from evidence:
 - `SPEC-062` exists for MVP-61 Governance Decision Summary Aggregator. Complete; tag pending at `v0.61.0-dev` (local-only; no push).
 - `SPEC-063` exists for MVP-62 Research Governance Handoff Package Builder. Complete; tagged `v0.62.0-dev` (local-only; no push).
 - `SPEC-064` exists for MVP-63 Research Market Data CSV Loader and Adapter. Complete; tag pending at `v0.63.0-dev` (local-only; no push).
+- `SPEC-065` exists for MVP-64 Dual Universe Builder. Complete; tagged `v0.64.0-dev` (local-only; no push).
+- `SPEC-066` exists for MVP-65 Research Universe Backtest Comparison Harness. Complete; tag pending at `v0.65.0-dev` (local-only; no push).
 
 ## MVP Index Table
 
@@ -121,6 +123,7 @@ Excluded from evidence:
 | MVP-62 | Research Governance Handoff Package Builder | `SPEC-063` | `v0.62.0-dev` | `governance_handoff` | `test_governance_handoff` | tagged | Tagged `v0.62.0-dev` (local-only; no push) |
 | MVP-63 | Research Market Data CSV Loader and Adapter | `SPEC-064` | `v0.63.0-dev` | `research_market_data` | `test_research_market_data` | tagged | Tagged `v0.63.0-dev` (local-only; no push) |
 | MVP-64 | Dual Universe Builder | `SPEC-065` | `v0.64.0-dev` | `research_universe` | `test_research_universe` | tagged | Tagged `v0.64.0-dev` (local-only; no push) |
+| MVP-65 | Research Universe Backtest Comparison Harness | `SPEC-066` | `v0.65.0-dev` | `research_backtest_comparison` | `test_research_backtest_comparison` | tagged | Tagged `v0.65.0-dev` (local-only; no push) |
 
 ## Package Mapping
 
