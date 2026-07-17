@@ -27,7 +27,7 @@ from hunter.research_walk_forward.models import (
     WalkForwardExperimentReport,
 )
 
-RESEARCH_CAMPAIGN_VERSION: str = "0.69.0-dev"
+RESEARCH_CAMPAIGN_VERSION: str = "0.70.0-dev"
 SPEC_VERSION: str = "SPEC-070"
 
 UNAVAILABLE: str = "UNAVAILABLE"

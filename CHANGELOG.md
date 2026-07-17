@@ -4,6 +4,14 @@ All important project changes will be recorded in this file.
 
 ## Unreleased
 
+## v0.70.0-dev — MVP-70 Controlled Batch Experiment Orchestrator (SPEC-070)
+
+- Closed MVP-70 Research Campaign Batch Orchestrator on top of MVP-69 Research Campaign Compiler.
+- Staged and committed `tests/test_research_campaign/test_py_compile.py` for deterministic source/test byte-compile verification.
+- Removed temporary helper scripts `.temp_files/bad_test_py_compile.py` and `.temp_files/py_compile_check.py`.
+- Version bumped to `0.70.0-dev` in `VERSION`, `pyproject.toml`, `src/hunter/__init__.py`, and `src/hunter/research_campaign/models.py`.
+- Local annotated tag `v0.70.0-dev` created; historical tag `v0.69.0-dev` preserved at `e826936`; no push performed.
+
 ## v0.69.0-dev — Research Campaign Compiler and Batch Orchestrator (MVP-69 / MVP-70)
 
 - Package `src/hunter/research_campaign/` with models, validator, compiler, engine, runner, integration adapters, fingerprinting, resume, ordering, safety, filters, registration, and writer.
