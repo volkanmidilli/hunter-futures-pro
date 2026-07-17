@@ -4,6 +4,32 @@ All important project changes will be recorded in this file.
 
 ## Unreleased
 
+## MVP-68 — Research Experiment Ledger, Replication and Multiple-Testing Control (Complete)
+
+- SPEC-069 — Research Experiment Ledger, Replication and Multiple-Testing Control approved.
+  - `specs/SPEC-069-Research-Experiment-Ledger.md` — approved for MVP-68 implementation.
+  - Adds `src/hunter/research_evidence_ledger/` package: models, errors, validator, registration, duplicate detection, drift detection, family indexes, multiple-testing adjustment, replication, snapshot chaining, fingerprints, engine, writer, and public API.
+  - Consumes only immutable MVP-66 `WalkForwardExperimentReport` and MVP-67 `ExperimentConfidenceReport` evidence.
+  - Frozen public models with hard-coded research-only safety flags.
+  - Statuses: `REGISTERED`, `EXECUTED`, `FAILED`, `BLOCKED`, `TIMED_OUT`, `INSUFFICIENT_EVIDENCE`, `COMPLETED`, `WITHDRAWN`.
+  - Explicit pre-registration required before ingestion; never silently treats post-hoc evidence as pre-registered.
+  - Detects duplicate experiment ID, duplicate registration fingerprint, duplicate walk-forward/confidence/complete evidence fingerprints, repeated identical hypotheses, result-before-registration, missing registration, post-registration mutation.
+  - Detects drift in strategy reference, universe plan, timeframe, walk-forward plan, metric family, confidence config, regime policy, and direction policy.
+  - Supports independence classes `INDEPENDENT`, `RELATED`, `DERIVED`, `DUPLICATE`, `UNKNOWN`; requires explicit independence metadata.
+  - Deterministic Benjamini-Hochberg FDR: raw values in `[0,1]`, sort by raw value then canonical evidence ID, compute `raw * family_size / rank`, enforce monotonicity from largest rank backward, clamp to `1`, restore canonical ordering, deterministic ties.
+  - Deterministic Bonferroni: `adjusted = min(raw * family_size, 1)`.
+  - Replication per metric and hypothesis family using states `NOT_REPLICATED`, `PARTIALLY_REPLICATED`, `REPLICATED_CANDIDATE`, `REPLICATED_BASELINE`, `CONFLICTING`, `INSUFFICIENT_EVIDENCE`.
+  - Immutable snapshot chaining with previous snapshot fingerprint, ordered records, family indexes, adjustment and replication results.
+  - Deterministic SHA-256 fingerprints for all artifacts; exclude paths, timestamps, durations, PID, hostname, insertion order, display notes, file mtime.
+  - Explicit-output-directory deterministic writer with atomic JSON/Markdown, silent-overwrite protection, failed-write cleanup, `data/`/`reports/` rejection, redaction, and mandatory safety notice.
+  - `__init__.py` — public API exports.
+  - `tests/test_research_evidence_ledger/` — 186 unit, integration, determinism, and safety tests.
+  - Safety invariants: no direct subprocess, no parallel execution, no live/dry-run trading, no exchange/API/network/data access, no data download, no tracked config/strategy/universe mutation, no `data/` or `reports/` access, no push, no remote changes, no execution/production/live approval.
+  - No composite trading score, no strategy/universe ranking/selection, no `BEST_STRATEGY`, `BEST_UNIVERSE`, `WINNER`, `PROFITABLE`, `GUARANTEED`, `APPROVED`, `READY_FOR_LIVE`, `EXECUTION_ALLOWED`, `PRODUCTION_READY` labels.
+- 186 `research_evidence_ledger` tests; full suite: 9658 passed, 1 skipped.
+- Version bumped to `0.68.0-dev` in `VERSION`, `pyproject.toml`, and `src/hunter/__init__.py`.
+- Local annotated tag `v0.68.0-dev` created; no push performed.
+
 ## MVP-67 — Walk-Forward Statistical Confidence and Stability Evaluation (Complete)
 
 - SPEC-068 — Walk-Forward Statistical Confidence and Stability Evaluation approved.

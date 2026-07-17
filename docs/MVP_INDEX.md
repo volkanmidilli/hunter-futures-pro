@@ -54,7 +54,8 @@ Excluded from evidence:
 - `SPEC-065` exists for MVP-64 Dual Universe Builder. Complete; tagged `v0.64.0-dev` (local-only; no push).
 - `SPEC-066` exists for MVP-65 Research Universe Backtest Comparison Harness. Complete; tagged `v0.65.0-dev` at `7278e04` (local-only; no push).
 - `SPEC-067` exists for MVP-66 Walk-Forward Universe Comparison and Regime Evaluation. Complete; tagged `v0.66.0-dev` at `7c85533` (local-only; no push).
-- `SPEC-068` exists for MVP-67 Walk-Forward Statistical Confidence and Stability Evaluation. Complete; tag pending at `v0.67.0-dev` (local-only; no push).
+- `SPEC-068` exists for MVP-67 Walk-Forward Statistical Confidence and Stability Evaluation. Complete; tagged `v0.67.0-dev` at `201044a` (local-only; no push).
+- `SPEC-069` exists for MVP-68 Research Experiment Ledger, Replication and Multiple-Testing Control. Complete; tag pending at `v0.68.0-dev` (local-only; no push).
 
 ## MVP Index Table
 
@@ -127,7 +128,8 @@ Excluded from evidence:
 | MVP-64 | Dual Universe Builder | `SPEC-065` | `v0.64.0-dev` | `research_universe` | `test_research_universe` | tagged | Tagged `v0.64.0-dev` (local-only; no push) |
 | MVP-65 | Research Universe Backtest Comparison Harness | `SPEC-066` | `v0.65.0-dev` | `research_backtest_comparison` | `test_research_backtest_comparison` | tagged | Tagged `v0.65.0-dev` at `7278e04` (local-only; no push) |
 | MVP-66 | Walk-Forward Universe Comparison and Regime Evaluation | `SPEC-067` | `v0.66.0-dev` | `research_walk_forward` | `test_research_walk_forward` | tagged | Tagged `v0.66.0-dev` at `7c85533` (local-only; no push) |
-| MVP-67 | Walk-Forward Statistical Confidence and Stability Evaluation | `SPEC-068` | `v0.67.0-dev` | `research_statistical_confidence` | `test_research_statistical_confidence` | tagged | Tagged `v0.67.0-dev` (local-only; no push) |
+| MVP-67 | Walk-Forward Statistical Confidence and Stability Evaluation | `SPEC-068` | `v0.67.0-dev` | `research_statistical_confidence` | `test_research_statistical_confidence` | tagged | Tagged `v0.67.0-dev` at `201044a` (local-only; no push) |
+| MVP-68 | Research Experiment Ledger, Replication and Multiple-Testing Control | `SPEC-069` | `v0.68.0-dev` | `research_evidence_ledger` | `test_research_evidence_ledger` | tagged | Tagged `v0.68.0-dev` (local-only; no push) |
 
 ## Package Mapping
 
