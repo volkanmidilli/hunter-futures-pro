@@ -4,6 +4,18 @@ All important project changes will be recorded in this file.
 
 ## Unreleased
 
+## v0.69.0-dev — Research Campaign Compiler and Batch Orchestrator (MVP-69 / MVP-70)
+
+- Package `src/hunter/research_campaign/` with models, validator, compiler, engine, runner, integration adapters, fingerprinting, resume, ordering, safety, filters, registration, and writer.
+- Deterministic Cartesian-product campaign compilation with include/exclude filters, max experiment count, and validation.
+- Campaign execution manifest builder with registration-set coherence checks and deterministic fingerprints.
+- Sequential runner with `COLLECT_ALL`, `FAIL_FAST`, `STOP_AFTER_N_FAILURES`, `BLOCK_POLICY`, and `REUSE` resume policies.
+- Evidence-ledger-aware resume manifest that reuses prior experiments only when all 11 fingerprints and inherited safety invariants match.
+- Adversarial test coverage for negative counts, writer output-path restrictions, secret redaction, fail-fast/stop behavior, and no retries.
+- Full suite: 9920 passed, 1 skipped, 9 warnings.
+- Version bumped to `0.69.0-dev`.
+- Local annotated tag `v0.69.0-dev` created; no push performed.
+
 ## v0.68.1-dev — Research Pipeline Review Patch (Complete)
 
 - Repository-wide architecture, security, correctness, determinism, API-contract, provenance, and regression review of MVP-59 through MVP-68.
