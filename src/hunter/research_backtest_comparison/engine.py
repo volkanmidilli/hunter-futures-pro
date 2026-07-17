@@ -110,6 +110,7 @@ def _parse_and_enrich(
         strategy_sha_before=result.strategy_sha_before,
         strategy_sha_after=result.strategy_sha_after,
         fingerprint=run_result_fingerprint(result),
+        pairlist=result.pairlist,
         reason_codes=result.reason_codes,
         metadata=result.metadata,
     )

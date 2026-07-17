@@ -69,7 +69,7 @@ __all__ = [
     "BacktestComparisonReport",
     "BacktestComparisonResult",
     "BacktestComparisonWriter",
-    "BacktestComparisonWriterError",
+    "ResearchBacktestComparisonWriterError",
     "BacktestFairnessManifest",
     "BacktestMetrics",
     "BacktestRunResult",
