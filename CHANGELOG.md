@@ -4,6 +4,21 @@ All important project changes will be recorded in this file.
 
 ## Unreleased
 
+## v0.68.1-dev — Research Pipeline Review Patch (Complete)
+
+- Repository-wide architecture, security, correctness, determinism, API-contract, provenance, and regression review of MVP-59 through MVP-68.
+- **Fixed:** MVP-68 evidence ledger writer (`research_evidence_ledger/writer.py`) lacked silent-overwrite protection and failed-write cleanup.
+  - Added existence check before write; raises `EvidenceLedgerWriterError` with `SILENT_OVERWRITE_BLOCKED` unless `overwrite=True`.
+  - Added try/except around temp-file write and atomic replace; cleans up `.tmp` file on any failure.
+  - Changed `rename()` to `replace()` for cross-filesystem atomicity on Linux.
+  - Added `overwrite: bool = False` keyword parameter to all 10 public write methods.
+  - Added 2 new tests for overwrite rejection and overwrite-allowed behavior.
+- **No findings (verified clean):** Architecture boundaries, dependency graph, public API exports, safety flags, forbidden-behavior scan, fingerprint determinism, BH/Bonferroni/bootstrap algorithm correctness, redaction, symlink rejection, MVP-65 subprocess isolation.
+- Full suite: 9660 passed, 1 skipped, 9 warnings (all pre-existing).
+- Version bumped to `0.68.1-dev`.
+- Historical tag `v0.68.0-dev` preserved at `3fb2819`.
+- Local annotated tag `v0.68.1-dev` created; no push performed.
+
 ## MVP-68 — Research Experiment Ledger, Replication and Multiple-Testing Control (Complete)
 
 - SPEC-069 — Research Experiment Ledger, Replication and Multiple-Testing Control approved.

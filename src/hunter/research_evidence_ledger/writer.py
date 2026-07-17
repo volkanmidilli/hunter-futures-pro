@@ -242,8 +242,25 @@ def _build_report_dict(report: EvidenceLedgerReport) -> dict[str, Any]:
     }
 
 
-def _write_json(output_path: Path, payload: dict[str, Any]) -> None:
-    """Atomically write a JSON file with deterministic encoding."""
+_SILENT_OVERWRITE = "SILENT_OVERWRITE_BLOCKED"
+
+def _write_json(
+    output_path: Path,
+    payload: dict[str, Any],
+    *,
+    overwrite: bool = False,
+) -> None:
+    """Atomically write a JSON file with deterministic encoding.
+
+    Rejects silent overwrite unless ``overwrite=True``.
+    Cleans up the temp file on any write or rename failure.
+    """
+    if output_path.exists() and not overwrite:
+        raise EvidenceLedgerWriterError(
+            f"Refusing to silently overwrite existing file: {output_path}",
+            reason_code=_SILENT_OVERWRITE,
+        )
+
     json_bytes = json.dumps(
         payload,
         indent=2,
@@ -253,8 +270,16 @@ def _write_json(output_path: Path, payload: dict[str, Any]) -> None:
 
     # Atomic write via temp file + rename
     tmp_path = output_path.with_suffix(".tmp")
-    tmp_path.write_bytes(json_bytes)
-    tmp_path.rename(output_path)
+    try:
+        tmp_path.write_bytes(json_bytes)
+        tmp_path.replace(output_path)
+    except Exception:
+        # Clean up the temp file on any failure
+        try:
+            tmp_path.unlink(missing_ok=True)
+        except OSError:
+            pass
+        raise
 
 
 def _generate_markdown(report: EvidenceLedgerReport) -> str:
@@ -369,7 +394,7 @@ class EvidenceLedgerWriter:
         return self._output_dir
 
     def write_registrations(
-        self, registrations: tuple[ExperimentRegistration, ...]
+        self, registrations: tuple[ExperimentRegistration, ...], *, overwrite: bool = False,
     ) -> Path:
         """Write experiment registrations JSON."""
         payload = {
@@ -379,11 +404,11 @@ class EvidenceLedgerWriter:
             "data": [_registration_payload(r) for r in registrations],
         }
         path = self._output_dir / "experiment_registrations.json"
-        _write_json(path, _redact_paths(payload))
+        _write_json(path, _redact_paths(payload), overwrite=overwrite)
         return path
 
     def write_entries(
-        self, entries: tuple[EvidenceLedgerEntry, ...]
+        self, entries: tuple[EvidenceLedgerEntry, ...], *, overwrite: bool = False,
     ) -> Path:
         """Write evidence ledger entries JSON."""
         payload = {
@@ -393,11 +418,11 @@ class EvidenceLedgerWriter:
             "data": [_evidence_ledger_entry_payload(e) for e in entries],
         }
         path = self._output_dir / "evidence_ledger_entries.json"
-        _write_json(path, _redact_paths(payload))
+        _write_json(path, _redact_paths(payload), overwrite=overwrite)
         return path
 
     def write_hypothesis_families(
-        self, families: tuple[HypothesisFamily, ...]
+        self, families: tuple[HypothesisFamily, ...], *, overwrite: bool = False,
     ) -> Path:
         """Write hypothesis family index JSON."""
         payload = {
@@ -407,11 +432,11 @@ class EvidenceLedgerWriter:
             "data": [_hypothesis_family_payload(f) for f in families],
         }
         path = self._output_dir / "hypothesis_family_index.json"
-        _write_json(path, _redact_paths(payload))
+        _write_json(path, _redact_paths(payload), overwrite=overwrite)
         return path
 
     def write_experiment_families(
-        self, families: tuple[ExperimentFamily, ...]
+        self, families: tuple[ExperimentFamily, ...], *, overwrite: bool = False,
     ) -> Path:
         """Write experiment family index JSON."""
         payload = {
@@ -421,11 +446,11 @@ class EvidenceLedgerWriter:
             "data": [_experiment_family_payload(f) for f in families],
         }
         path = self._output_dir / "experiment_family_index.json"
-        _write_json(path, _redact_paths(payload))
+        _write_json(path, _redact_paths(payload), overwrite=overwrite)
         return path
 
     def write_metric_families(
-        self, families: tuple[MetricFamily, ...]
+        self, families: tuple[MetricFamily, ...], *, overwrite: bool = False,
     ) -> Path:
         """Write metric family index JSON."""
         payload = {
@@ -435,11 +460,11 @@ class EvidenceLedgerWriter:
             "data": [_metric_family_payload(f) for f in families],
         }
         path = self._output_dir / "metric_family_index.json"
-        _write_json(path, _redact_paths(payload))
+        _write_json(path, _redact_paths(payload), overwrite=overwrite)
         return path
 
     def write_adjustments(
-        self, adjustments: tuple[AdjustedEvidence, ...]
+        self, adjustments: tuple[AdjustedEvidence, ...], *, overwrite: bool = False,
     ) -> Path:
         """Write multiple-testing adjustments JSON."""
         payload = {
@@ -449,11 +474,11 @@ class EvidenceLedgerWriter:
             "data": [_adjusted_evidence_payload(a) for a in adjustments],
         }
         path = self._output_dir / "multiple_testing_adjustments.json"
-        _write_json(path, _redact_paths(payload))
+        _write_json(path, _redact_paths(payload), overwrite=overwrite)
         return path
 
     def write_replications(
-        self, replications: tuple[ReplicationResult, ...]
+        self, replications: tuple[ReplicationResult, ...], *, overwrite: bool = False,
     ) -> Path:
         """Write replication results JSON."""
         payload = {
@@ -463,10 +488,10 @@ class EvidenceLedgerWriter:
             "data": [_replication_payload(r) for r in replications],
         }
         path = self._output_dir / "replication_results.json"
-        _write_json(path, _redact_paths(payload))
+        _write_json(path, _redact_paths(payload), overwrite=overwrite)
         return path
 
-    def write_snapshot(self, snapshot: LedgerSnapshot) -> Path:
+    def write_snapshot(self, snapshot: LedgerSnapshot, *, overwrite: bool = False) -> Path:
         """Write ledger snapshot JSON."""
         payload = {
             "version": EVIDENCE_LEDGER_VERSION,
@@ -475,15 +500,15 @@ class EvidenceLedgerWriter:
             "data": _snapshot_payload(snapshot),
         }
         path = self._output_dir / "evidence_ledger_snapshot.json"
-        _write_json(path, _redact_paths(payload))
+        _write_json(path, _redact_paths(payload), overwrite=overwrite)
         return path
 
-    def write_report(self, report: EvidenceLedgerReport) -> Path:
+    def write_report(self, report: EvidenceLedgerReport, *, overwrite: bool = False) -> Path:
         """Write evidence ledger report JSON."""
         payload = _build_report_dict(report)
         payload["_safety_notice"] = _SAFETY_NOTICE
         path = self._output_dir / "evidence_ledger_report.json"
-        _write_json(path, _redact_paths(payload))
+        _write_json(path, _redact_paths(payload), overwrite=overwrite)
         return path
 
     def write_report_markdown(self, report: EvidenceLedgerReport) -> Path:
@@ -493,7 +518,7 @@ class EvidenceLedgerWriter:
         path.write_text(md, encoding="utf-8")
         return path
 
-    def write_manifest(self, manifest: EvidenceLedgerManifest) -> Path:
+    def write_manifest(self, manifest: EvidenceLedgerManifest, *, overwrite: bool = False) -> Path:
         """Write evidence ledger manifest JSON."""
         payload = {
             "version": EVIDENCE_LEDGER_VERSION,
@@ -502,7 +527,7 @@ class EvidenceLedgerWriter:
             "data": _manifest_payload(manifest),
         }
         path = self._output_dir / "evidence_ledger_manifest.json"
-        _write_json(path, _redact_paths(payload))
+        _write_json(path, _redact_paths(payload), overwrite=overwrite)
         return path
 
 

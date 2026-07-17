@@ -227,3 +227,59 @@ class TestEvidenceLedgerWriter:
             assert len(paths) >= 8  # At minimum 8 artifact files
             for p in paths:
                 assert p.exists()
+
+    def test_silent_overwrite_rejected(self, tmp_path: Path) -> None:
+        """Writing to an existing file without overwrite=True raises."""
+        from hunter.research_evidence_ledger.writer import EvidenceLedgerWriterError
+        from hunter.research_evidence_ledger.models import (
+            EvidenceLedgerSafetyFlags,
+            ExperimentRegistration,
+            IndependenceClass,
+            ExperimentStatus,
+        )
+        flags = EvidenceLedgerSafetyFlags()
+        reg = ExperimentRegistration(
+            experiment_id="e1",
+            hypothesis="h",
+            strategy_name="s",
+            universe_plan="u",
+            timeframe="1h",
+            walk_forward_plan_fingerprint="fp",
+            metric_family=("m1",),
+            independence=IndependenceClass.INDEPENDENT,
+            status=ExperimentStatus.REGISTERED,
+            safety_flags=flags,
+        )
+        writer = EvidenceLedgerWriter(output_dir=tmp_path)
+        writer.write_registrations((reg,))
+        with pytest.raises(Exception):
+            writer.write_registrations((reg,))
+        # With overwrite=True it should succeed
+        writer.write_registrations((reg,), overwrite=True)
+
+    def test_overwrite_allowed(self, tmp_path: Path) -> None:
+        """Writing with overwrite=True succeeds on existing file."""
+        from hunter.research_evidence_ledger.models import (
+            EvidenceLedgerSafetyFlags,
+            ExperimentRegistration,
+            IndependenceClass,
+            ExperimentStatus,
+        )
+        flags = EvidenceLedgerSafetyFlags()
+        reg = ExperimentRegistration(
+            experiment_id="e1",
+            hypothesis="h",
+            strategy_name="s",
+            universe_plan="u",
+            timeframe="1h",
+            walk_forward_plan_fingerprint="fp",
+            metric_family=("m1",),
+            independence=IndependenceClass.INDEPENDENT,
+            status=ExperimentStatus.REGISTERED,
+            safety_flags=flags,
+        )
+        writer = EvidenceLedgerWriter(output_dir=tmp_path)
+        path1 = writer.write_registrations((reg,))
+        path2 = writer.write_registrations((reg,), overwrite=True)
+        assert path1 == path2
+        assert path2.exists()
