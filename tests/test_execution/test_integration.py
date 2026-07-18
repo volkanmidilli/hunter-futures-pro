@@ -319,6 +319,7 @@ class TestJsonOutputVerification:
             "data_quality",
             "safety_flags",
             "version",
+            "_safety_notice",
         }
         assert set(parsed.keys()) == expected_fields
         

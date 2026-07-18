@@ -329,6 +329,7 @@ class TestEndToEndFlow:
             "reason_codes",
             "input_refs",
             "data_quality",
+            "_safety_notice",
         }
         assert set(parsed.keys()) == expected_fields
         
