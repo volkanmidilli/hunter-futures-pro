@@ -81,7 +81,7 @@ def build_research_universe_report(
     safety_flags = ResearchUniverseSafetyFlags()
 
     manifest = ResearchUniverseManifest(
-        version="0.64.0-dev",
+        version=RESEARCH_UNIVERSE_VERSION,
         spec_version=SPEC_VERSION,
         research_universe_version=RESEARCH_UNIVERSE_VERSION,
         generated_at=datetime.now(timezone.utc),

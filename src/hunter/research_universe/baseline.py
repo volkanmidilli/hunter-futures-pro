@@ -127,6 +127,15 @@ def build_baseline_universe(
     if not selected:
         reason_codes = (EMPTY_BASELINE_UNIVERSE,)
 
+    # Keep included decisions in rank order for the public ``pairs`` property,
+    # then append excluded decisions sorted deterministically by pair.
+    sorted_excluded = sorted(
+        [d for d in decisions if d.decision == UniversePairDecisionKind.EXCLUDED],
+        key=lambda d: d.pair,
+    )
+    included_decisions = [d for d in decisions if d.decision == UniversePairDecisionKind.INCLUDED]
+    decisions = included_decisions + sorted_excluded
+
     safety_flags = ResearchUniverseSafetyFlags()
     fingerprint = baseline_universe_fingerprint(
         BaselineUniverseResult(

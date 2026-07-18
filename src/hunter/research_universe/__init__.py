@@ -46,6 +46,8 @@ from hunter.research_universe.writer import (
 )
 
 __all__ = [
+    "RESEARCH_UNIVERSE_VERSION",
+    "SPEC_VERSION",
     "assess_pair_eligibility",
     "baseline_universe_fingerprint",
     "build_baseline_universe",

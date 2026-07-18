@@ -159,3 +159,22 @@ class TestBaselineBuilder:
         config = _config()
         result = build_baseline_universe(bundle, config)
         assert result.pairs == ("SOL/USDT",)
+
+    def test_fingerprint_deterministic_under_candidate_order_permutation(self) -> None:
+        a = _series("AAA/USDT", Decimal("10"), Decimal("10000"))
+        b = _series("BBB/USDT", Decimal("9"), Decimal("9000"))
+        c = _series("CCC/USDT", Decimal("8"), Decimal("8000"))
+        d = _series("DDD/USDT", Decimal("7"), Decimal("7000"))
+        e = _series("EEE/USDT", Decimal("6"), Decimal("6000"))
+        candidates = (a, b, c, d, e)
+        config = _config()
+        fps: set[str] = set()
+        for candidates in [
+            (a, b, c, d, e),
+            (e, d, c, b, a),
+            (c, a, e, b, d),
+        ]:
+            bundle = _bundle(candidates)
+            result = build_baseline_universe(bundle, config)
+            fps.add(result.fingerprint)
+        assert len(fps) == 1

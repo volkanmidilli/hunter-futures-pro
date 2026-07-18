@@ -51,6 +51,13 @@ from hunter.research_universe.models import (
 from hunter.research_universe.writer import ResearchUniverseWriter
 
 
+def test_version_constants_exported() -> None:
+    from hunter.research_universe import RESEARCH_UNIVERSE_VERSION, SPEC_VERSION
+
+    assert RESEARCH_UNIVERSE_VERSION == "0.64.0-dev"
+    assert SPEC_VERSION == "SPEC-065"
+
+
 def _candle(
     timestamp: datetime,
     close: Decimal = Decimal("100"),
