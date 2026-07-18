@@ -32,7 +32,9 @@ from hunter.research_campaign.models import (
     ExperimentEvidence,
     ExperimentExecutionRecord,
     ExperimentOutcome,
+    PriorExperimentEvidence,
     ResearchCampaignSafetyFlags,
+    ResumePolicy,
 )
 from hunter.research_campaign.resume import match_resume_evidence
 from hunter.research_campaign.writer import CampaignWriter
@@ -277,12 +279,40 @@ def run_campaign_sequential(
                 )
             continue
 
-        # Check for resume match.
-        matched = match_resume_evidence(
-            compiled_exp, prior_evidence, resume_policy
-        )
+        # Check for resume match according to the resume policy.
+        matched: PriorExperimentEvidence | None = None
+        if resume_policy == ResumePolicy.RERUN:
+            matched = None
+        else:
+            matched = match_resume_evidence(
+                compiled_exp, prior_evidence, resume_policy
+            )
+            if matched is None and resume_policy == ResumePolicy.BLOCK:
+                completed_at = datetime.now(timezone.utc)
+                rec = _build_failed_record(
+                    compiled_exp,
+                    definition.campaign_id,
+                    completed_at,
+                    ExperimentOutcome.STALE_RESUME_EVIDENCE,
+                    ("RESUME_BLOCK_MISSING_EVIDENCE",),
+                )
+                records.append(rec)
+                failure_count += 1
+                stopped = _check_stop_policy(
+                    definition, failure_count, rec.outcome
+                )
+                if writer is not None:
+                    writer.write_checkpoint(
+                        checkpoint_id=f"cp-{run_id or 'run'}-{len(records)}",
+                        campaign_id=definition.campaign_id,
+                        checkpoint_index=len(records),
+                        experiment_records=tuple(records),
+                        status=CampaignStatus.RUNNING,
+                    )
+                continue
+
+        # If a matching prior record exists, reuse it.
         if matched is not None:
-            # Reuse prior evidence.
             completed_at = datetime.now(timezone.utc)
             evidence = ExperimentEvidence(
                 walk_forward_report=(

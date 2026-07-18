@@ -492,6 +492,184 @@ class TestResumeReusesEvidence:
         mock_conf.assert_called()
         mock_ingest.assert_called()
 
+    def test_rerun_policy_ignores_matching_prior_evidence(
+        self,
+        sample_definition: ResearchCampaignDefinition,
+        compiled_and_registered: tuple[CompiledCampaign, CampaignRegistrationSet],
+    ) -> None:
+        """RERUN policy must ignore matching prior evidence and execute fresh."""
+        compiled, reg_set = compiled_and_registered
+        manifest = build_campaign_execution_manifest(sample_definition, compiled, reg_set)
+
+        compiled_exp = compiled.experiments[0]
+        prior = PriorExperimentEvidence(
+            experiment_id=compiled_exp.experiment_id,
+            experiment_fingerprint=compiled_exp.fingerprint,
+            registration_fingerprint=compiled_exp.registration_fingerprint,
+            strategy_reference_fingerprint=compiled_exp.strategy.fingerprint,
+            historical_data_reference_fingerprint=compiled_exp.historical_data.fingerprint,
+            universe_plan_reference_fingerprint=compiled_exp.universe_plan.fingerprint,
+            walk_forward_template_reference_fingerprint=compiled_exp.walk_forward_template.fingerprint,
+            confidence_config_reference_fingerprint=compiled_exp.confidence_config.fingerprint,
+            walk_forward_report_fingerprint="wf_fp",
+            confidence_report_fingerprint="cf_fp",
+            ledger_entry_fingerprint="le_fp",
+            ledger_snapshot_fingerprint="ls_fp",
+            inherited_safety_invariants=ResearchCampaignSafetyFlags(),
+            outcome=ExperimentOutcome.COMPLETED,
+            evidence=None,
+        )
+        resume_manifest = CampaignResumeManifest(
+            campaign_fingerprint=compiled.campaign.fingerprint,
+            prior_evidence=(prior,),
+            resume_policy=ResumePolicy.RERUN,
+            fingerprint="",
+            reason_codes=(),
+        )
+        from hunter.research_campaign.fingerprint import (
+            campaign_resume_manifest_fingerprint,
+        )
+        fp = campaign_resume_manifest_fingerprint(resume_manifest)
+        object.__setattr__(resume_manifest, "fingerprint", fp)
+
+        mock_wf_report = MagicMock(spec=WalkForwardExperimentReport)
+        mock_wf_report.fingerprint = "wf_fp"
+        mock_conf_report = MagicMock(fingerprint="conf_fp")
+        mock_entry = MagicMock(fingerprint="entry_fp")
+        mock_snapshot = MagicMock(fingerprint="snap_fp")
+
+        with (
+            patch(
+                "hunter.research_campaign.runner.run_walk_forward_for_experiment",
+                return_value=mock_wf_report,
+            ) as mock_wf,
+            patch(
+                "hunter.research_campaign.runner.run_confidence_for_experiment",
+                return_value=mock_conf_report,
+            ) as mock_conf,
+            patch(
+                "hunter.research_campaign.runner.ingest_experiment_evidence",
+                return_value=(mock_entry, mock_snapshot),
+            ) as mock_ingest,
+        ):
+            dossier = run_campaign_sequential(
+                manifest,
+                resume_manifest=resume_manifest,
+            )
+
+        for rec in dossier.execution_records:
+            assert rec.outcome == ExperimentOutcome.COMPLETED
+        mock_wf.assert_called()
+        mock_conf.assert_called()
+        mock_ingest.assert_called()
+
+    def test_block_policy_blocks_without_matching_evidence(
+        self,
+        sample_definition: ResearchCampaignDefinition,
+        compiled_and_registered: tuple[CompiledCampaign, CampaignRegistrationSet],
+    ) -> None:
+        """BLOCK policy without matching prior evidence must fail closed."""
+        compiled, reg_set = compiled_and_registered
+        manifest = build_campaign_execution_manifest(sample_definition, compiled, reg_set)
+
+        resume_manifest = CampaignResumeManifest(
+            campaign_fingerprint=compiled.campaign.fingerprint,
+            prior_evidence=(),
+            resume_policy=ResumePolicy.BLOCK,
+            fingerprint="",
+            reason_codes=(),
+        )
+        from hunter.research_campaign.fingerprint import (
+            campaign_resume_manifest_fingerprint,
+        )
+        fp = campaign_resume_manifest_fingerprint(resume_manifest)
+        object.__setattr__(resume_manifest, "fingerprint", fp)
+
+        with (
+            patch(
+                "hunter.research_campaign.runner.run_walk_forward_for_experiment",
+            ) as mock_wf,
+            patch(
+                "hunter.research_campaign.runner.run_confidence_for_experiment",
+            ) as mock_conf,
+            patch(
+                "hunter.research_campaign.runner.ingest_experiment_evidence",
+            ) as mock_ingest,
+        ):
+            dossier = run_campaign_sequential(
+                manifest,
+                resume_manifest=resume_manifest,
+            )
+
+        rec = dossier.execution_records[0]
+        assert rec.outcome == ExperimentOutcome.STALE_RESUME_EVIDENCE
+        assert "RESUME_BLOCK_MISSING_EVIDENCE" in rec.reason_codes
+        mock_wf.assert_not_called()
+        mock_conf.assert_not_called()
+        mock_ingest.assert_not_called()
+
+    def test_block_policy_reuses_matching_evidence(
+        self,
+        sample_definition: ResearchCampaignDefinition,
+        compiled_and_registered: tuple[CompiledCampaign, CampaignRegistrationSet],
+    ) -> None:
+        """BLOCK policy with matching prior evidence must reuse it."""
+        compiled, reg_set = compiled_and_registered
+        manifest = build_campaign_execution_manifest(sample_definition, compiled, reg_set)
+
+        compiled_exp = compiled.experiments[0]
+        prior = PriorExperimentEvidence(
+            experiment_id=compiled_exp.experiment_id,
+            experiment_fingerprint=compiled_exp.fingerprint,
+            registration_fingerprint=compiled_exp.registration_fingerprint,
+            strategy_reference_fingerprint=compiled_exp.strategy.fingerprint,
+            historical_data_reference_fingerprint=compiled_exp.historical_data.fingerprint,
+            universe_plan_reference_fingerprint=compiled_exp.universe_plan.fingerprint,
+            walk_forward_template_reference_fingerprint=compiled_exp.walk_forward_template.fingerprint,
+            confidence_config_reference_fingerprint=compiled_exp.confidence_config.fingerprint,
+            walk_forward_report_fingerprint="wf_fp",
+            confidence_report_fingerprint="cf_fp",
+            ledger_entry_fingerprint="le_fp",
+            ledger_snapshot_fingerprint="ls_fp",
+            inherited_safety_invariants=ResearchCampaignSafetyFlags(),
+            outcome=ExperimentOutcome.COMPLETED,
+            evidence=None,
+        )
+        resume_manifest = CampaignResumeManifest(
+            campaign_fingerprint=compiled.campaign.fingerprint,
+            prior_evidence=(prior,),
+            resume_policy=ResumePolicy.BLOCK,
+            fingerprint="",
+            reason_codes=(),
+        )
+        from hunter.research_campaign.fingerprint import (
+            campaign_resume_manifest_fingerprint,
+        )
+        fp = campaign_resume_manifest_fingerprint(resume_manifest)
+        object.__setattr__(resume_manifest, "fingerprint", fp)
+
+        with (
+            patch(
+                "hunter.research_campaign.runner.run_walk_forward_for_experiment",
+            ) as mock_wf,
+            patch(
+                "hunter.research_campaign.runner.run_confidence_for_experiment",
+            ) as mock_conf,
+            patch(
+                "hunter.research_campaign.runner.ingest_experiment_evidence",
+            ) as mock_ingest,
+        ):
+            dossier = run_campaign_sequential(
+                manifest,
+                resume_manifest=resume_manifest,
+            )
+
+        for rec in dossier.execution_records:
+            assert rec.outcome == ExperimentOutcome.COMPLETED
+        mock_wf.assert_not_called()
+        mock_conf.assert_not_called()
+        mock_ingest.assert_not_called()
+
 
 # ===========================================================================
 # BLOCK policy with stale evidence
@@ -504,33 +682,56 @@ class TestBlockPolicyStale:
     def test_block_with_stale_evidence(
         self, sample_definition: ResearchCampaignDefinition
     ) -> None:
-        """BLOCK policy should still run experiments (block doesn't stop the runner,
-        it just means stale evidence isn't reused)."""
+        """BLOCK policy with stale fingerprint should fail closed."""
         compiled, reg_set = compile_campaign(sample_definition, compile_only=False)
         manifest = build_campaign_execution_manifest(sample_definition, compiled, reg_set)
 
-        mock_wf_report = MagicMock(spec=WalkForwardExperimentReport)
-        mock_wf_report.fingerprint = "wf_fp"
-        mock_conf_report = MagicMock(fingerprint="conf_fp")
-        mock_entry = MagicMock(fingerprint="entry_fp")
-        mock_snapshot = MagicMock(fingerprint="snap_fp")
+        prior = PriorExperimentEvidence(
+            experiment_id=compiled.experiments[0].experiment_id,
+            experiment_fingerprint="stale_exp_fp",
+            registration_fingerprint=compiled.experiments[0].registration_fingerprint,
+            strategy_reference_fingerprint=compiled.experiments[0].strategy.fingerprint,
+            historical_data_reference_fingerprint=compiled.experiments[0].historical_data.fingerprint,
+            universe_plan_reference_fingerprint=compiled.experiments[0].universe_plan.fingerprint,
+            walk_forward_template_reference_fingerprint=compiled.experiments[0].walk_forward_template.fingerprint,
+            confidence_config_reference_fingerprint=compiled.experiments[0].confidence_config.fingerprint,
+            walk_forward_report_fingerprint="wf_fp",
+            confidence_report_fingerprint="cf_fp",
+            ledger_entry_fingerprint="le_fp",
+            ledger_snapshot_fingerprint="ls_fp",
+            inherited_safety_invariants=ResearchCampaignSafetyFlags(),
+            outcome=ExperimentOutcome.COMPLETED,
+            evidence=None,
+        )
+        resume_manifest = CampaignResumeManifest(
+            campaign_fingerprint=compiled.campaign.fingerprint,
+            prior_evidence=(prior,),
+            resume_policy=ResumePolicy.BLOCK,
+            fingerprint="",
+            reason_codes=(),
+        )
+        from hunter.research_campaign.fingerprint import (
+            campaign_resume_manifest_fingerprint,
+        )
+        fp = campaign_resume_manifest_fingerprint(resume_manifest)
+        object.__setattr__(resume_manifest, "fingerprint", fp)
 
         with (
             patch(
                 "hunter.research_campaign.runner.run_walk_forward_for_experiment",
-                return_value=mock_wf_report,
-            ),
+            ) as mock_wf,
             patch(
                 "hunter.research_campaign.runner.run_confidence_for_experiment",
-                return_value=mock_conf_report,
-            ),
+            ) as mock_conf,
             patch(
                 "hunter.research_campaign.runner.ingest_experiment_evidence",
-                return_value=(mock_entry, mock_snapshot),
-            ),
+            ) as mock_ingest,
         ):
-            dossier = run_campaign_sequential(manifest)
+            dossier = run_campaign_sequential(manifest, resume_manifest=resume_manifest)
 
-        # Should still produce COMPLETED records
-        for rec in dossier.execution_records:
-            assert rec.outcome == ExperimentOutcome.COMPLETED
+        rec = dossier.execution_records[0]
+        assert rec.outcome == ExperimentOutcome.STALE_RESUME_EVIDENCE
+        assert "RESUME_BLOCK_MISSING_EVIDENCE" in rec.reason_codes
+        mock_wf.assert_not_called()
+        mock_conf.assert_not_called()
+        mock_ingest.assert_not_called()
