@@ -248,6 +248,10 @@ class TestRunCandidateAndBaseline:
         assert b_result.success is True
         assert c_result.label == BacktestArmLabel.CANDIDATE
         assert b_result.label == BacktestArmLabel.BASELINE
-        # Workspaces should be cleaned up on success.
-        assert not c_result.workspace.exists()
-        assert not b_result.workspace.exists()
+        # Workspaces are retained on success so the caller can parse results.
+        assert c_result.workspace.exists()
+        assert b_result.workspace.exists()
+        assert c_result.result_file is not None
+        assert b_result.result_file is not None
+        assert c_result.result_file.exists()
+        assert b_result.result_file.exists()

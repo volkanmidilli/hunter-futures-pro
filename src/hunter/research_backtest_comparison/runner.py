@@ -268,19 +268,26 @@ def run_backtest_arm(
     config: BacktestComparisonConfig,
     arm: BacktestArmInput,
     workspace: BacktestWorkspace | None = None,
+    cleanup_on_success: bool = False,
 ) -> BacktestRunResult:
     """Run a single backtest arm in an isolated workspace.
 
-    If workspace is None, a fresh workspace is created and cleaned up on success.
+    If workspace is None, a fresh workspace is created. By default the workspace
+    is retained on success so the caller can parse ``result.result_file`` before
+    calling ``workspace.cleanup()``. Pass ``cleanup_on_success=True`` to let the
+    runner dispose of the workspace immediately after a successful run.
     """
+    own_workspace = workspace is None
     if workspace is None:
         workspace = BacktestWorkspace(retain_on_failure=config.retain_workspace_on_failure)
         workspace.create()
 
+    result: BacktestRunResult | None = None
     try:
-        return _run_single_backtest(config, arm, workspace)
+        result = _run_single_backtest(config, arm, workspace)
+        return result
     finally:
-        if not workspace.retain_on_failure:
+        if own_workspace and cleanup_on_success and result is not None and result.success:
             workspace.cleanup(force=True)
 
 
@@ -289,12 +296,13 @@ def run_candidate_and_baseline(
     candidate: BacktestArmInput,
     baseline: BacktestArmInput,
     *,
-    cleanup_on_success: bool = True,
+    cleanup_on_success: bool = False,
 ) -> tuple[BacktestRunResult, BacktestRunResult]:
     """Run candidate and baseline sequentially.
 
     Candidate runs first, then baseline. Only one subprocess is active at a time.
-    Workspaces are cleaned up on success unless cleanup_on_success is False.
+    Workspaces are retained on success by default so callers can parse the result
+    files. Pass ``cleanup_on_success=True`` to dispose of them immediately.
     """
     candidate_result: BacktestRunResult | None = None
     baseline_result: BacktestRunResult | None = None
