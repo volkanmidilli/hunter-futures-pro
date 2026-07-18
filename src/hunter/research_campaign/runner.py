@@ -20,6 +20,7 @@ from hunter.research_campaign.models import (
     MISSING_WALK_FORWARD_EVIDENCE,
     RESUME_FINGERPRINT_MISMATCH,
     RUNNER_ERROR,
+    CampaignCheckpoint,
     CampaignDossier,
     CampaignEvidenceSummary,
     CampaignExecutionManifest,
@@ -198,6 +199,7 @@ def run_campaign_sequential(
     failure_count: int = 0
     stopped: bool = False
     final_status: CampaignStatus = CampaignStatus.COMPLETED
+    previous_checkpoint_fingerprint: str = ""
 
     # Determine prior evidence from resume manifest.
     prior_evidence = (
@@ -215,7 +217,9 @@ def run_campaign_sequential(
             rec = _build_skipped_record(compiled_exp, definition.campaign_id)
             records.append(rec)
             if writer is not None:
-                writer.write_checkpoint(
+                previous_checkpoint_fingerprint = _write_checkpoint(
+                    writer,
+                    previous_checkpoint_fingerprint,
                     checkpoint_id=f"cp-{run_id or 'run'}-{len(records)}",
                     campaign_id=definition.campaign_id,
                     checkpoint_index=len(records),
@@ -245,7 +249,9 @@ def run_campaign_sequential(
                 definition, failure_count, rec.outcome
             )
             if writer is not None:
-                writer.write_checkpoint(
+                previous_checkpoint_fingerprint = _write_checkpoint(
+                    writer,
+                    previous_checkpoint_fingerprint,
                     checkpoint_id=f"cp-{run_id or 'run'}-{len(records)}",
                     campaign_id=definition.campaign_id,
                     checkpoint_index=len(records),
@@ -270,7 +276,9 @@ def run_campaign_sequential(
                 definition, failure_count, rec.outcome
             )
             if writer is not None:
-                writer.write_checkpoint(
+                previous_checkpoint_fingerprint = _write_checkpoint(
+                    writer,
+                    previous_checkpoint_fingerprint,
                     checkpoint_id=f"cp-{run_id or 'run'}-{len(records)}",
                     campaign_id=definition.campaign_id,
                     checkpoint_index=len(records),
@@ -302,7 +310,9 @@ def run_campaign_sequential(
                     definition, failure_count, rec.outcome
                 )
                 if writer is not None:
-                    writer.write_checkpoint(
+                    previous_checkpoint_fingerprint = _write_checkpoint(
+                        writer,
+                        previous_checkpoint_fingerprint,
                         checkpoint_id=f"cp-{run_id or 'run'}-{len(records)}",
                         campaign_id=definition.campaign_id,
                         checkpoint_index=len(records),
@@ -359,7 +369,9 @@ def run_campaign_sequential(
             )
             records.append(rec)
             if writer is not None:
-                writer.write_checkpoint(
+                previous_checkpoint_fingerprint = _write_checkpoint(
+                    writer,
+                    previous_checkpoint_fingerprint,
                     checkpoint_id=f"cp-{run_id or 'run'}-{len(records)}",
                     campaign_id=definition.campaign_id,
                     checkpoint_index=len(records),
@@ -390,7 +402,9 @@ def run_campaign_sequential(
                 definition, failure_count, rec.outcome
             )
             if writer is not None:
-                writer.write_checkpoint(
+                previous_checkpoint_fingerprint = _write_checkpoint(
+                    writer,
+                    previous_checkpoint_fingerprint,
                     checkpoint_id=f"cp-{run_id or 'run'}-{len(records)}",
                     campaign_id=definition.campaign_id,
                     checkpoint_index=len(records),
@@ -422,7 +436,9 @@ def run_campaign_sequential(
             )
             records.append(rec)
             if writer is not None:
-                writer.write_checkpoint(
+                previous_checkpoint_fingerprint = _write_checkpoint(
+                    writer,
+                    previous_checkpoint_fingerprint,
                     checkpoint_id=f"cp-{run_id or 'run'}-{len(records)}",
                     campaign_id=definition.campaign_id,
                     checkpoint_index=len(records),
@@ -452,7 +468,9 @@ def run_campaign_sequential(
                 definition, failure_count, rec.outcome
             )
             if writer is not None:
-                writer.write_checkpoint(
+                previous_checkpoint_fingerprint = _write_checkpoint(
+                    writer,
+                    previous_checkpoint_fingerprint,
                     checkpoint_id=f"cp-{run_id or 'run'}-{len(records)}",
                     campaign_id=definition.campaign_id,
                     checkpoint_index=len(records),
@@ -525,7 +543,9 @@ def run_campaign_sequential(
         )
         records.append(rec)
         if writer is not None:
-            writer.write_checkpoint(
+            previous_checkpoint_fingerprint = _write_checkpoint(
+                writer,
+                previous_checkpoint_fingerprint,
                 checkpoint_id=f"cp-{run_id or 'run'}-{len(records)}",
                 campaign_id=definition.campaign_id,
                 checkpoint_index=len(records),
@@ -657,17 +677,68 @@ def _check_stop_policy(
 
 
 def _classify_exception_outcome(exc: Exception) -> ExperimentOutcome:
-    """Classify an exception into an ExperimentOutcome."""
-    exc_name = type(exc).__name__
-    exc_msg = str(exc).upper()
+    """Classify an exception into an ExperimentOutcome by type/reason code.
 
-    if "TIMEOUT" in exc_msg or "TIMED_OUT" in exc_msg:
+    Avoids substring matching on exception messages.
+    """
+    exc_name = type(exc).__name__
+
+    if exc_name in ("TimeoutError", "SubprocessTimeoutError"):
         return ExperimentOutcome.TIMED_OUT
-    if "UNSUPPORTED" in exc_msg:
+    if exc_name == "NotImplementedError":
         return ExperimentOutcome.UNSUPPORTED
-    if "BLOCKED" in exc_msg:
-        return ExperimentOutcome.BLOCKED
-    if "INSUFFICIENT" in exc_msg:
+    if exc_name == "ResearchCampaignInsufficientEvidenceError":
         return ExperimentOutcome.INSUFFICIENT_EVIDENCE
 
-    return ExperimentOutcome.FAILED
+    reason_code = ""
+    if hasattr(exc, "reason_code") and isinstance(getattr(exc, "reason_code"), str):
+        reason_code = exc.reason_code
+
+    outcome_map = {
+        "TIMEOUT": ExperimentOutcome.TIMED_OUT,
+        "TIMED_OUT": ExperimentOutcome.TIMED_OUT,
+        "UNSUPPORTED": ExperimentOutcome.UNSUPPORTED,
+        "BLOCKED": ExperimentOutcome.BLOCKED,
+        "INSUFFICIENT_EVIDENCE": ExperimentOutcome.INSUFFICIENT_EVIDENCE,
+        "RUNNER_ERROR": ExperimentOutcome.FAILED,
+    }
+    return outcome_map.get(reason_code, ExperimentOutcome.FAILED)
+
+
+def _write_checkpoint(
+    writer: CampaignWriter,
+    previous_checkpoint_fingerprint: str,
+    checkpoint_id: str,
+    campaign_id: str,
+    checkpoint_index: int,
+    experiment_records: tuple[ExperimentExecutionRecord, ...],
+    status: CampaignStatus,
+) -> str:
+    """Write a checkpoint and return the new fingerprint, or the previous one on failure.
+
+    Checkpoint failures are isolated so they do not abort the campaign run.
+    """
+    from hunter.research_campaign.fingerprint import checkpoint_fingerprint
+
+    try:
+        writer.write_checkpoint(
+            checkpoint_id=checkpoint_id,
+            campaign_id=campaign_id,
+            checkpoint_index=checkpoint_index,
+            experiment_records=experiment_records,
+            status=status,
+            previous_checkpoint_fingerprint=previous_checkpoint_fingerprint,
+        )
+    except Exception:
+        # Checkpoint persistence is best-effort; do not abort the run.
+        return previous_checkpoint_fingerprint
+
+    checkpoint = CampaignCheckpoint(
+        checkpoint_id=checkpoint_id,
+        campaign_id=campaign_id,
+        checkpoint_index=checkpoint_index,
+        experiment_records=experiment_records,
+        status=status,
+        previous_checkpoint_fingerprint=previous_checkpoint_fingerprint,
+    )
+    return checkpoint_fingerprint(checkpoint)

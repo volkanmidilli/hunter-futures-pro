@@ -44,7 +44,6 @@ def _source_fingerprint(report: ControlledUniverseReport) -> str:
     """Deterministic fingerprint of the controlled universe source universe."""
     payload = {
         "universe": sorted(report.universe),
-        "generated_at": report.generated_at.isoformat(),
         "version": report.version,
     }
     text = json.dumps(payload, sort_keys=True, separators=(",", ":"), ensure_ascii=True)

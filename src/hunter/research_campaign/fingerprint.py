@@ -438,6 +438,7 @@ def checkpoint_fingerprint(checkpoint: CampaignCheckpoint) -> str:
         "checkpoint_id": checkpoint.checkpoint_id,
         "campaign_id": checkpoint.campaign_id,
         "checkpoint_index": checkpoint.checkpoint_index,
+        "previous_checkpoint_fingerprint": checkpoint.previous_checkpoint_fingerprint,
         "experiment_records": tuple(
             experiment_execution_record_fingerprint(r)
             for r in checkpoint.experiment_records

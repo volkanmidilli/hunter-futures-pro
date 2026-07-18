@@ -6,6 +6,7 @@ from datetime import datetime, timezone
 from decimal import Decimal
 from pathlib import Path
 
+import json
 import pytest
 
 from hunter.research_campaign.compiler import compile_campaign
@@ -418,6 +419,103 @@ class TestAdversarialRunner:
 
         run_campaign_sequential(manifest)
         assert call_count == 1  # failed once, no retry
+
+    def test_checkpoint_writer_failure_is_isolated(
+        self,
+        sample_definition,
+        monkeypatch,
+        tmp_path,
+    ) -> None:
+        """Checkpoint write failures must not abort the campaign run."""
+        compiled, reg_set = compile_campaign(sample_definition)
+        manifest = CampaignExecutionManifest(
+            campaign_definition=sample_definition,
+            compiled_campaign=compiled,
+            registration_set=reg_set,
+        )
+        writer = CampaignWriter(tmp_path)
+
+        call_count = 0
+
+        def mock_run_wf(experiment, execution_policy):
+            nonlocal call_count
+            call_count += 1
+            raise ResearchCampaignRunnerError("fail", reason_code="RUNNER_ERROR")
+
+        import hunter.research_campaign.runner as runner_mod
+        monkeypatch.setattr(runner_mod, "run_walk_forward_for_experiment", mock_run_wf)
+
+        # Make the writer raise on checkpoint writes but still allow dossier.
+        from unittest.mock import patch
+        with patch.object(
+            writer,
+            "write_checkpoint",
+            side_effect=ResearchCampaignWriterError("disk full"),
+        ):
+            dossier = run_campaign_sequential(manifest, writer=writer)
+
+        assert dossier.status_summary.failed == 1
+        assert call_count == 1
+
+    def test_checkpoint_chain_links_previous_fingerprint(
+        self,
+        sample_definition,
+        monkeypatch,
+        tmp_path,
+    ) -> None:
+        """Each checkpoint should reference the previous checkpoint fingerprint."""
+        from hunter.research_campaign.models import CampaignExecutionPolicy
+        s1 = sample_definition.parameters.strategies[0]
+        s2 = StrategyReference(
+            strategy_name=s1.strategy_name,
+            strategy_path=s1.strategy_path,
+            fingerprint="strat_fp_002",
+        )
+        params = CampaignParameterSet(
+            common_config=sample_definition.parameters.common_config,
+            strategies=(s1, s2),
+            timeframes=sample_definition.parameters.timeframes,
+            historical_data=sample_definition.parameters.historical_data,
+            universe_plans=sample_definition.parameters.universe_plans,
+            walk_forward_templates=sample_definition.parameters.walk_forward_templates,
+            confidence_configs=sample_definition.parameters.confidence_configs,
+            experiment_families=sample_definition.parameters.experiment_families,
+            hypothesis_families=sample_definition.parameters.hypothesis_families,
+            metric_families=sample_definition.parameters.metric_families,
+            independence_metadata=sample_definition.parameters.independence_metadata,
+            regime_policies=sample_definition.parameters.regime_policies,
+        )
+        definition = ResearchCampaignDefinition(
+            campaign_id=sample_definition.campaign_id,
+            campaign_schema_version=sample_definition.campaign_schema_version,
+            parameters=params,
+            max_experiment_count=10,
+            execution_policy=CampaignExecutionPolicy.COLLECT_ALL,
+            output_policy=sample_definition.output_policy,
+        )
+        compiled, reg_set = compile_campaign(definition)
+        manifest = CampaignExecutionManifest(
+            campaign_definition=definition,
+            compiled_campaign=compiled,
+            registration_set=reg_set,
+        )
+        writer = CampaignWriter(tmp_path)
+
+        def mock_run_wf(experiment, execution_policy):
+            raise ResearchCampaignRunnerError("fail", reason_code="RUNNER_ERROR")
+
+        import hunter.research_campaign.runner as runner_mod
+        monkeypatch.setattr(runner_mod, "run_walk_forward_for_experiment", mock_run_wf)
+
+        run_campaign_sequential(manifest, writer=writer)
+        checkpoints = sorted((tmp_path / "checkpoints").glob("checkpoint_*.json"))
+        assert len(checkpoints) >= 2
+        prev_fp = ""
+        for cp in checkpoints:
+            data = json.loads(cp.read_text())
+            assert data["previous_checkpoint_fingerprint"] == prev_fp
+            prev_fp = data["fingerprint"]
+        assert prev_fp
 
 
 class TestAdversarialModels:

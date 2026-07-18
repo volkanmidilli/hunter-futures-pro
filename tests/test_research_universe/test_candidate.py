@@ -27,7 +27,10 @@ from hunter.portfolio_construction.models import (
     PortfolioConstructionState,
     PortfolioConstructionUniverseSummary,
 )
-from hunter.research_universe.candidate import build_candidate_universe
+from hunter.research_universe.candidate import (
+    _source_fingerprint,
+    build_candidate_universe,
+)
 from hunter.research_universe.models import (
     EMPTY_CANDIDATE_UNIVERSE,
     ResearchUniverseConfig,
@@ -238,3 +241,24 @@ class TestCandidateBuilder:
         result = build_candidate_universe(cu, None, _config())
         assert result.pairs == ()
         assert EMPTY_CANDIDATE_UNIVERSE in result.reason_codes
+
+    def test_source_fingerprint_excludes_generated_at(self) -> None:
+        cu = _cu_report()
+        fp1 = _source_fingerprint(cu)
+        cu2 = ControlledUniverseReport(
+            version=cu.version,
+            generated_at=datetime(2025, 1, 1, tzinfo=timezone.utc),
+            config=cu.config,
+            execution_state=cu.execution_state,
+            allowed_mode=cu.allowed_mode,
+            universe=cu.universe,
+            watchlist=cu.watchlist,
+            blocked=cu.blocked,
+            items=cu.items,
+            data_quality=cu.data_quality,
+            safety_flags=cu.safety_flags,
+            reason_codes=cu.reason_codes,
+        )
+        fp2 = _source_fingerprint(cu2)
+        assert fp1 == fp2
+        assert len(fp1) == 64

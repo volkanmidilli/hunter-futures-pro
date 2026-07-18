@@ -689,6 +689,7 @@ class CampaignCheckpoint:
     experiment_records: tuple[ExperimentExecutionRecord, ...]
     status: CampaignStatus | str
     fingerprint: str = ""
+    previous_checkpoint_fingerprint: str = ""
     created_at: datetime = field(default_factory=lambda: datetime.now(timezone.utc))
     reason_codes: tuple[str, ...] = ()
 
@@ -697,6 +698,10 @@ class CampaignCheckpoint:
             object.__setattr__(self, "status", CampaignStatus(self.status))
         elif not isinstance(self.status, CampaignStatus):
             raise ValueError(f"status must be a CampaignStatus or str, got {self.status!r}")
+        if not isinstance(self.previous_checkpoint_fingerprint, str):
+            raise ValueError(
+                f"previous_checkpoint_fingerprint must be a string, got {self.previous_checkpoint_fingerprint!r}"
+            )
         object.__setattr__(self, "reason_codes", _coerce_tuple_strs(self.reason_codes))
 
 

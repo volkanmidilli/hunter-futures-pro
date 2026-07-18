@@ -473,6 +473,7 @@ class CampaignWriter:
         checkpoint_index: int,
         experiment_records: tuple[ExperimentExecutionRecord, ...],
         status: str | object,
+        previous_checkpoint_fingerprint: str = "",
     ) -> Path:
         """Write a checkpoint file atomically."""
         from hunter.research_campaign.fingerprint import (
@@ -485,6 +486,7 @@ class CampaignWriter:
             checkpoint_index=checkpoint_index,
             experiment_records=experiment_records,
             status=status,
+            previous_checkpoint_fingerprint=previous_checkpoint_fingerprint,
         )
         fp = checkpoint_fingerprint(checkpoint)
         object.__setattr__(checkpoint, "fingerprint", fp)
@@ -500,6 +502,7 @@ class CampaignWriter:
             "checkpoint_id": checkpoint.checkpoint_id,
             "campaign_id": checkpoint.campaign_id,
             "checkpoint_index": checkpoint.checkpoint_index,
+            "previous_checkpoint_fingerprint": checkpoint.previous_checkpoint_fingerprint,
             "status": checkpoint.status.value
             if hasattr(checkpoint.status, "value")
             else str(checkpoint.status),

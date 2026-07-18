@@ -19,6 +19,7 @@ from hunter.research_market_data.errors import (
 from hunter.research_market_data.models import (
     EMPTY_FILE,
     FORBIDDEN_PATH,
+    INVALID_FILE_PATH,
     MarketDataFileSpec,
     MISSING_COLUMN,
     MISSING_FILE,
@@ -52,6 +53,11 @@ class TestLoadCsvFile:
         with pytest.raises(ResearchMarketDataIOError) as exc:
             load_csv_file(spec)
         assert exc.value.reason_code == MISSING_FILE
+
+    def test_invalid_spec(self) -> None:
+        with pytest.raises(ResearchMarketDataIOError) as exc:
+            load_csv_file("not_a_spec")  # type: ignore[arg-type]
+        assert exc.value.reason_code == INVALID_FILE_PATH
 
     def test_empty_file(self, tmp_path: Path) -> None:
         path = tmp_path / "empty.csv"

@@ -16,6 +16,7 @@ from hunter.research_market_data.models import (
     EMPTY_FILE,
     FORBIDDEN_PATH,
     INVALID_CSV_HEADER,
+    INVALID_FILE_PATH,
     MarketDataFileSpec,
     MarketDataSourceRef,
     MISSING_COLUMN,
