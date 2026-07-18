@@ -18,6 +18,12 @@ from hunter.dry_run_strategy.models import (
 )
 
 
+_SAFETY_NOTICE = """\
+This artifact is produced for observability, audit, and human review only. It is not an
+action command, not an authorization, and does not modify external state. Any downstream
+use requires explicit human review and approval."""
+
+
 DEFAULT_DRY_RUN_STRATEGY_RUNTIME_PATH = Path(
     "data/freqtrade_strategy/current_dry_run_strategy_runtime.json"
 )

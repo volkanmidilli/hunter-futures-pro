@@ -21,6 +21,12 @@ from hunter.freqtrade_bridge.models import (
 )
 
 
+_SAFETY_NOTICE = """\
+This artifact is produced for observability, audit, and human review only. It is not an
+action command, not an authorization, and does not modify external state. Any downstream
+use requires explicit human review and approval."""
+
+
 def _serialize_datetime(dt: datetime) -> str:
     """Serialize datetime to ISO-8601 format with UTC suffix."""
     if dt.tzinfo is None:

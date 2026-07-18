@@ -220,6 +220,24 @@ class TestAtomicWriteJson:
                 content = f.read()
             assert "日本語" in content
 
+    def test_overwrite_rejected(self) -> None:
+        with tempfile.TemporaryDirectory() as tmpdir:
+            target = Path(tmpdir) / "test.json"
+            target.write_text("{}")
+            data = {"key": "value"}
+            with pytest.raises(FileExistsError):
+                atomic_write_json(data, target)
+
+    def test_overwrite_allowed(self) -> None:
+        with tempfile.TemporaryDirectory() as tmpdir:
+            target = Path(tmpdir) / "test.json"
+            target.write_text("{}")
+            data = {"key": "value"}
+            atomic_write_json(data, target, overwrite=True)
+            with open(target, "r", encoding="utf-8") as f:
+                parsed = json.load(f)
+            assert parsed == data
+
 
 # ---------------------------------------------------------------------------
 # write_decision_output tests
@@ -237,6 +255,16 @@ class TestWriteDecisionOutput:
                 parsed = json.load(f)
             assert parsed["decision_state"] == "ALLOW"
             assert parsed["confidence"] == 0.82
+
+    def test_safety_notice_in_output(self) -> None:
+        with tempfile.TemporaryDirectory() as tmpdir:
+            target = Path(tmpdir) / "decision.json"
+            output = _make_decision_output()
+            write_decision_output(output, target)
+            with open(target, "r", encoding="utf-8") as f:
+                parsed = json.load(f)
+            assert "_safety_notice" in parsed
+            assert "human review" in parsed["_safety_notice"].lower()
 
     def test_creates_parent_directories(self) -> None:
         with tempfile.TemporaryDirectory() as tmpdir:

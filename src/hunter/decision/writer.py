@@ -17,6 +17,12 @@ from hunter.decision.models import DecisionOutput, DecisionInputRefs
 from hunter.market_state.models import DataQuality
 
 
+_SAFETY_NOTICE = """\
+This artifact is produced for observability, audit, and human review only. It is not an
+action command, not an authorization, and does not modify external state. Any downstream
+use requires explicit human review and approval."""
+
+
 def _serialize_datetime(dt: datetime) -> str:
     """Serialize datetime to ISO-8601 format with UTC suffix."""
     if dt.tzinfo is None:
@@ -67,7 +73,7 @@ def decision_to_dict(output: DecisionOutput) -> Dict[str, Any]:
     }
 
 
-def atomic_write_json(data: Dict[str, Any], target_path: Path) -> None:
+def atomic_write_json(data: Dict[str, Any], target_path: Path, overwrite: bool = False) -> None:
     """Atomically write JSON data to target_path.
 
     Writes to a temp file in the same directory first, then renames.
@@ -77,13 +83,18 @@ def atomic_write_json(data: Dict[str, Any], target_path: Path) -> None:
     Args:
         data: JSON-serializable dict.
         target_path: Destination path.
+        overwrite: If False, refuse to overwrite an existing file.
 
     Raises:
         OSError: If directory creation or write fails.
         TypeError: If data is not JSON-serializable.
+        FileExistsError: If target exists and overwrite is False.
     """
     target_path = Path(target_path)
     parent = target_path.parent
+
+    if target_path.exists() and not overwrite:
+        raise FileExistsError(f'Refusing to overwrite existing file: {target_path}')
 
     # Create parent directories if missing
     parent.mkdir(parents=True, exist_ok=True)
@@ -108,12 +119,14 @@ def atomic_write_json(data: Dict[str, Any], target_path: Path) -> None:
 def write_decision_output(
     output: DecisionOutput,
     target_path: Path | str = Path("data/decision/current_decision.json"),
+    overwrite: bool = False,
 ) -> Path:
     """Write DecisionOutput to JSON file.
 
     Args:
         output: DecisionOutput to serialize.
         target_path: Destination path. Defaults to data/decision/current_decision.json.
+        overwrite: If False, refuse to overwrite an existing file.
 
     Returns:
         Path to written file.
@@ -121,8 +134,10 @@ def write_decision_output(
     Raises:
         OSError: If write fails.
         TypeError: If serialization fails.
+        FileExistsError: If target exists and overwrite is False.
     """
     target_path = Path(target_path)
     data = decision_to_dict(output)
-    atomic_write_json(data, target_path)
+    data["_safety_notice"] = _SAFETY_NOTICE
+    atomic_write_json(data, target_path, overwrite=overwrite)
     return target_path

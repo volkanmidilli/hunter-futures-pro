@@ -242,11 +242,18 @@ class TestAtomicWriteJson:
             loaded = json.load(f)
         assert loaded == data
 
-    def test_overwrites_existing(self, tmp_path: Path) -> None:
+    def test_overwrite_rejected(self, tmp_path: Path) -> None:
         target = tmp_path / "test.json"
         target.write_text("{}")
         data = {"new": "data"}
-        atomic_write_json(data, target)
+        with pytest.raises(FileExistsError):
+            atomic_write_json(data, target)
+
+    def test_overwrite_allowed(self, tmp_path: Path) -> None:
+        target = tmp_path / "test.json"
+        target.write_text("{}")
+        data = {"new": "data"}
+        atomic_write_json(data, target, overwrite=True)
         with open(target, "r", encoding="utf-8") as f:
             loaded = json.load(f)
         assert loaded == data
@@ -257,7 +264,16 @@ class TestAtomicWriteJson:
 # ---------------------------------------------------------------------------
 
 class TestSafety:
-    def test_no_network_calls(self) -> None:
+    def test_safety_notice_in_output(self, tmp_path: Path) -> None:
+        ctx = make_execution_context()
+        target = tmp_path / "exec.json"
+        write_execution_context(ctx, target)
+        with open(target, "r", encoding="utf-8") as f:
+            loaded = json.load(f)
+        assert "_safety_notice" in loaded
+        assert "human review" in loaded["_safety_notice"].lower()
+
+    def test_no_network_calls(self, tmp_path: Path) -> None:
         ctx = make_execution_context()
         d = execution_context_to_dict(ctx)
         # No network-related fields should exist

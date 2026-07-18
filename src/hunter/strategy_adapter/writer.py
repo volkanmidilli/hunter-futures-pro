@@ -21,6 +21,12 @@ from hunter.strategy_adapter.models import (
 )
 
 
+_SAFETY_NOTICE = """\
+This artifact is produced for observability, audit, and human review only. It is not an
+action command, not an authorization, and does not modify external state. Any downstream
+use requires explicit human review and approval."""
+
+
 DEFAULT_ADAPTER_DECISION_PATH = Path(
     "data/strategy_adapter/current_adapter_decision.json"
 )

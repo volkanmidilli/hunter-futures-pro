@@ -280,6 +280,24 @@ class TestAtomicWriteJson:
                 loaded = json.load(f)
             assert loaded["unicode"] == "hello 世界"
 
+    def test_overwrite_rejected(self) -> None:
+        with tempfile.TemporaryDirectory() as tmpdir:
+            target = Path(tmpdir) / "test.json"
+            target.write_text("{}")
+            data = {"key": "value"}
+            with pytest.raises(FileExistsError):
+                atomic_write_json(data, target)
+
+    def test_overwrite_allowed(self) -> None:
+        with tempfile.TemporaryDirectory() as tmpdir:
+            target = Path(tmpdir) / "test.json"
+            target.write_text("{}")
+            data = {"key": "value"}
+            atomic_write_json(data, target, overwrite=True)
+            with open(target, "r", encoding="utf-8") as f:
+                loaded = json.load(f)
+            assert loaded == data
+
 
 class TestWriteRegimeOutput:
     """Tests for writing regime output to file."""
@@ -314,6 +332,16 @@ class TestWriteRegimeOutput:
             output = RegimeOutput.unknown()
             write_regime_output(output, target)
             assert target.exists()
+
+    def test_safety_notice_in_output(self) -> None:
+        with tempfile.TemporaryDirectory() as tmpdir:
+            target = Path(tmpdir) / "regime.json"
+            output = RegimeOutput.unknown()
+            write_regime_output(output, target)
+            with open(target, "r", encoding="utf-8") as f:
+                loaded = json.load(f)
+            assert "_safety_notice" in loaded
+            assert "human review" in loaded["_safety_notice"].lower()
 
 
 class TestWriteBreadthOutput:
@@ -356,6 +384,16 @@ class TestWriteBreadthOutput:
             output = BreadthOutput.invalid()
             write_breadth_output(output, target)
             assert target.exists()
+
+    def test_safety_notice_in_output(self) -> None:
+        with tempfile.TemporaryDirectory() as tmpdir:
+            target = Path(tmpdir) / "breadth.json"
+            output = BreadthOutput.invalid()
+            write_breadth_output(output, target)
+            with open(target, "r", encoding="utf-8") as f:
+                loaded = json.load(f)
+            assert "_safety_notice" in loaded
+            assert "human review" in loaded["_safety_notice"].lower()
 
 
 class TestSafety:
