@@ -56,6 +56,48 @@ class TestValidateExecutable:
         with pytest.raises(ResearchBacktestComparisonExecutableError):
             verify_executable_supports_backtesting(info)
 
+    def test_non_executable_file(self, tmp_path: Path) -> None:
+        exe = tmp_path / "freqtrade"
+        exe.write_text("#!/bin/sh\necho 'freqtrade 2024.1'")
+        exe.chmod(0o644)
+        info = validate_executable(exe)
+        assert info.is_valid is False
+        assert INVALID_EXECUTABLE in info.reason_codes
+
+    def test_wrong_basename_rejected(self, tmp_path: Path) -> None:
+        exe = tmp_path / "malicious"
+        exe.write_text("#!/bin/sh\necho 'freqtrade 2024.1'")
+        exe.chmod(0o755)
+        info = validate_executable(exe)
+        assert info.is_valid is False
+        assert INVALID_EXECUTABLE in info.reason_codes
+
+    def test_custom_allowed_names(self, tmp_path: Path) -> None:
+        exe = tmp_path / "custom-backtest"
+        exe.write_text("#!/bin/sh\necho 'freqtrade 2024.1'")
+        exe.chmod(0o755)
+        info = validate_executable(exe, allowed_names=frozenset({"custom-backtest"}))
+        assert info.is_valid is True
+
+    def test_symlink_rejected_by_default(self, tmp_path: Path) -> None:
+        real = tmp_path / "real_freqtrade"
+        real.write_text("#!/bin/sh\necho 'freqtrade 2024.1'")
+        real.chmod(0o755)
+        link = tmp_path / "freqtrade"
+        link.symlink_to(real)
+        info = validate_executable(link)
+        assert info.is_valid is False
+        assert INVALID_EXECUTABLE in info.reason_codes
+
+    def test_symlink_allowed_with_flag(self, tmp_path: Path) -> None:
+        real = tmp_path / "real_freqtrade"
+        real.write_text("#!/bin/sh\necho 'freqtrade 2024.1'")
+        real.chmod(0o755)
+        link = tmp_path / "freqtrade"
+        link.symlink_to(real)
+        info = validate_executable(link, allow_symlink=True)
+        assert info.is_valid is True
+
     def test_allowlisted_env(self, tmp_path: Path) -> None:
         exe = tmp_path / "freqtrade"
         exe.write_text("#!/bin/sh\necho $TZ")

@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import os
 import subprocess
 from pathlib import Path
 from typing import Any
@@ -30,6 +31,10 @@ _ENV_ALLOWLIST: frozenset[str] = frozenset(
     }
 )
 
+# Allowed executable basenames. Only ``freqtrade`` (and its Windows variant) is
+# permitted by default; callers may override for testing or explicit policy.
+_ALLOWED_EXECUTABLE_NAMES: frozenset[str] = frozenset({"freqtrade", "freqtrade.exe"})
+
 
 def _build_allowlisted_env(
     extra: dict[str, str] | None = None,
@@ -56,6 +61,8 @@ def validate_executable(
     timeout_seconds: int = 60,
     env_allowlist: frozenset[str] | None = None,
     extra_env: dict[str, str] | None = None,
+    allowed_names: frozenset[str] | None = None,
+    allow_symlink: bool = False,
 ) -> FreqtradeExecutableInfo:
     """Validate a Freqtrade executable by running ``<freqtrade> --version``.
 
@@ -64,6 +71,8 @@ def validate_executable(
         timeout_seconds: Timeout for the version probe.
         env_allowlist: Optional override of allowed environment variables.
         extra_env: Optional extra environment variables to include.
+        allowed_names: Optional override of allowed executable basenames.
+        allow_symlink: If False, symlinks are rejected.
 
     Returns:
         FreqtradeExecutableInfo with version and validity status.
@@ -89,6 +98,50 @@ def validate_executable(
             is_valid=False,
             reason_codes=(INVALID_EXECUTABLE,),
             metadata={"error": "executable_path is not a regular file"},
+        )
+
+    if executable_path.is_symlink() and not allow_symlink:
+        return FreqtradeExecutableInfo(
+            path=executable_path,
+            version="",
+            is_valid=False,
+            reason_codes=(INVALID_EXECUTABLE,),
+            metadata={"error": "executable_path is a symlink and symlink_policy is deny"},
+        )
+
+    if executable_path.resolve() != executable_path.absolute():
+        # Symlink escape: resolved path differs from absolute path. Reject
+        # unless symlinks are explicitly allowed.
+        if not allow_symlink:
+            return FreqtradeExecutableInfo(
+                path=executable_path,
+                version="",
+                is_valid=False,
+                reason_codes=(INVALID_EXECUTABLE,),
+                metadata={"error": "executable_path resolves to a different location via symlink"},
+            )
+
+    allowed = allowed_names if allowed_names is not None else _ALLOWED_EXECUTABLE_NAMES
+    if executable_path.name not in allowed:
+        return FreqtradeExecutableInfo(
+            path=executable_path,
+            version="",
+            is_valid=False,
+            reason_codes=(INVALID_EXECUTABLE,),
+            metadata={
+                "error": "executable_path basename is not in allowed_names",
+                "basename": executable_path.name,
+                "allowed_names": sorted(allowed),
+            },
+        )
+
+    if not os.access(executable_path, os.X_OK):
+        return FreqtradeExecutableInfo(
+            path=executable_path,
+            version="",
+            is_valid=False,
+            reason_codes=(INVALID_EXECUTABLE,),
+            metadata={"error": "executable_path is not executable"},
         )
 
     env = _build_allowlisted_env(extra_env, env_allowlist)

@@ -9,6 +9,7 @@ import pytest
 
 from hunter.research_backtest_comparison.config_builder import (
     build_freqtrade_config,
+    enforce_forbidden_exchange_fields,
     write_freqtrade_config,
 )
 from hunter.research_backtest_comparison.errors import (
@@ -58,7 +59,10 @@ class TestBuildFreqtradeConfig:
             assert cfg["stake_currency"] == "USDT"
             assert cfg["stake_amount"] == "100"
             assert cfg["dry_run"] is True
-            assert cfg["research_only"] is True
+            assert "research_only" not in cfg
+            assert "human_approval_required" not in cfg
+            assert "no_live_trading" not in cfg
+            assert "no_automatic_execution" not in cfg
             assert cfg["pairlists"][0]["method"] == "StaticPairList"
             assert cfg["exchange"]["name"] == "research-only"
             assert cfg["exchange"]["key"] == ""
@@ -93,5 +97,39 @@ class TestBuildFreqtradeConfig:
             path = write_freqtrade_config(config, arm, ws)
             assert path.exists()
             assert "max_open_trades" in path.read_text()
+        finally:
+            ws.cleanup()
+
+    def test_forbidden_field_rejected(self, tmp_path: Path) -> None:
+        config = self._make_config(tmp_path)
+        ws = create_workspace(prefix="test_forbidden_")
+        ws.create()
+        try:
+            arm = BacktestArmInput(
+                pairlist=("BTC/USDT",),
+                label=BacktestArmLabel.CANDIDATE,
+                universe_fingerprint="fp",
+            )
+            cfg = build_freqtrade_config(config, arm, ws)
+            cfg["api_server"] = {"enabled": True}
+            with pytest.raises(ResearchBacktestComparisonConfigError):
+                enforce_forbidden_exchange_fields(cfg)
+        finally:
+            ws.cleanup()
+
+    def test_forbidden_credential_rejected(self, tmp_path: Path) -> None:
+        config = self._make_config(tmp_path)
+        ws = create_workspace(prefix="test_cred_")
+        ws.create()
+        try:
+            arm = BacktestArmInput(
+                pairlist=("BTC/USDT",),
+                label=BacktestArmLabel.CANDIDATE,
+                universe_fingerprint="fp",
+            )
+            cfg = build_freqtrade_config(config, arm, ws)
+            cfg["exchange"]["secret"] = "leaked_secret"
+            with pytest.raises(ResearchBacktestComparisonConfigError):
+                enforce_forbidden_exchange_fields(cfg)
         finally:
             ws.cleanup()

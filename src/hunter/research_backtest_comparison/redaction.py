@@ -6,12 +6,43 @@ import re
 from pathlib import Path
 
 
-# Patterns that may indicate secrets or sensitive data.
+def _redact_secret_match(m: re.Match[str]) -> str:
+    """Redact a secret match while preserving the key and its separator.
+
+    Handles both ``key=value`` and ``key: value`` forms, including optional
+    whitespace around the separator. The value is always replaced with a
+    deterministic redaction token.
+    """
+    full = m.group(0)
+    colon_pos = full.find(":")
+    equal_pos = full.find("=")
+    if colon_pos >= 0 and (equal_pos < 0 or colon_pos < equal_pos):
+        key = full[:colon_pos].rstrip()
+        return f"{key}:[REDACTED]"
+    key = full[:equal_pos].rstrip()
+    return f"{key}=[REDACTED]"
+
+
+# Patterns that may indicate secrets or sensitive data. Each pattern allows
+# both ``key=value`` and ``key: value`` forms, including optional whitespace
+# and JSON-style quotes around the separator.
 _SECRET_VALUE_PATTERNS: tuple[re.Pattern[str], ...] = (
-    re.compile(r"api_?key\s*[:=]\s*['\"]?([A-Za-z0-9_\-]{16,})['\"]?", re.IGNORECASE),
-    re.compile(r"secret\s*[:=]\s*['\"]?([A-Za-z0-9/+=_\-]{16,})['\"]?", re.IGNORECASE),
-    re.compile(r"password\s*[:=]\s*['\"]?([^\s'\"]+)['\"]?", re.IGNORECASE),
-    re.compile(r"token\s*[:=]\s*['\"]?([A-Za-z0-9_\-]{16,})['\"]?", re.IGNORECASE),
+    re.compile(
+        r"api_?key\s*['\"]?\s*[:=]\s*['\"]?\s*([A-Za-z0-9_\-]{16,})['\"]?",
+        re.IGNORECASE,
+    ),
+    re.compile(
+        r"secret\s*['\"]?\s*[:=]\s*['\"]?\s*([A-Za-z0-9/+=_\-]{16,})['\"]?",
+        re.IGNORECASE,
+    ),
+    re.compile(
+        r"password\s*['\"]?\s*[:=]\s*['\"]?\s*([^\s'\"]+)['\"]?",
+        re.IGNORECASE,
+    ),
+    re.compile(
+        r"token\s*['\"]?\s*[:=]\s*['\"]?\s*([A-Za-z0-9_\-]{16,})['\"]?",
+        re.IGNORECASE,
+    ),
 )
 
 # Tokens that are likely API keys or secrets (heuristic).
@@ -36,7 +67,7 @@ def redact_text(text: str) -> str:
 
     # Redact secrets by pattern.
     for pattern in _SECRET_VALUE_PATTERNS:
-        text = pattern.sub(lambda m: f"{m.group(0).split('=', 1)[0]}=[REDACTED]", text)
+        text = pattern.sub(_redact_secret_match, text)
 
     # Redact lines containing secret-like prefixes.
     lines = text.splitlines()
@@ -51,8 +82,9 @@ def redact_text(text: str) -> str:
             line = re.sub(r"/home/[^/\s]+", "/home/[REDACTED]", line)
         # Redact absolute paths.
         line = re.sub(r"/tmp/[A-Za-z0-9_./-]+", "/tmp/[REDACTED]", line)
-        # Redact PIDs.
-        line = re.sub(r"\b\d{4,}\b", "[PID]", line)
+        # Redact PIDs, but avoid over-redacting decimal metric values such as
+        # ``1.23456``.
+        line = re.sub(r"(?<!\d\.)\b\d{4,}\b(?!\.\d)", "[PID]", line)
         # Redact ISO-like timestamps.
         line = re.sub(
             r"\d{4}-\d{2}-\d{2}[T ]\d{2}:\d{2}:\d{2}(\.\d+)?(Z|[+-]\d{2}:?\d{2})?",

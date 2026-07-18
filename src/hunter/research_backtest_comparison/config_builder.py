@@ -17,23 +17,58 @@ from hunter.research_backtest_comparison.models import (
 from hunter.research_backtest_comparison.workspace import BacktestWorkspace
 
 
-# Fields that are not allowed in the research-only config.
+# Fields that must never appear in the research-only Freqtrade runtime config.
+# These are credential-oriented or execution-oriented fields that could
+# enable live trading, external messaging, or database connections.
 _FORBIDDEN_EXCHANGE_FIELDS: frozenset[str] = frozenset(
     {
-        "exchange",
         "api_server",
         "db_url",
         "telegram",
         "webhook",
-        "dry_run",
-        "dry_run_wallet",
+        "force_entry_enable",
+        "force_exit_enable",
+        "trading_mode",
+        "margin",
+        "liquidation_buffer",
+        "max_entry_position_adjustment",
+        "disable_paramexport",
     }
+)
+
+# Credential fields nested under the ``exchange`` key. These must remain empty
+# in the research-only config.
+_FORBIDDEN_EXCHANGE_CREDENTIALS: frozenset[str] = frozenset(
+    {"key", "secret", "password", "wallet"}
 )
 
 
 def _json_decimal(value: Decimal) -> str:
     """Return a deterministic JSON-safe string representation."""
     return format(value, "f")
+
+
+def enforce_forbidden_exchange_fields(config_dict: dict[str, Any]) -> None:
+    """Raise if the config dict contains forbidden execution/credential fields.
+
+    The research-only Freqtrade config must not contain fields that enable live
+    trading, external messaging, or database connections. Nested exchange
+    credentials must be empty strings.
+    """
+    for key in config_dict:
+        if key in _FORBIDDEN_EXCHANGE_FIELDS:
+            raise ResearchBacktestComparisonConfigError(
+                f"Forbidden field in research config: {key}"
+            )
+
+    exchange = config_dict.get("exchange")
+    if isinstance(exchange, dict):
+        for key in _FORBIDDEN_EXCHANGE_CREDENTIALS:
+            value = exchange.get(key)
+            if value not in ("", None):
+                raise ResearchBacktestComparisonConfigError(
+                    f"Forbidden non-empty exchange credential: {key}"
+                )
 
 
 def build_freqtrade_config(
@@ -103,10 +138,6 @@ def build_freqtrade_config(
         "user_data_dir": str(workspace.userdir),
         "strategy": config.strategy_name,
         "strategy_path": str(workspace.strategy_path),
-        "research_only": True,
-        "human_approval_required": True,
-        "no_live_trading": True,
-        "no_automatic_execution": True,
     }
 
     # Explicitly disable live trading and signal-related features.
@@ -128,6 +159,8 @@ def build_freqtrade_config(
     # Static pairlist is authoritative; place it in the config as well.
     freqtrade_config["exchange"]["pair_whitelist"] = freqtrade_pairs
     freqtrade_config["pair_whitelist"] = freqtrade_pairs
+
+    enforce_forbidden_exchange_fields(freqtrade_config)
 
     return freqtrade_config
 
