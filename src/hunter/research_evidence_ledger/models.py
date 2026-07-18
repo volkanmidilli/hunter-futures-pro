@@ -248,6 +248,7 @@ class ExperimentRegistration:
     direction_policy: str = ""
     notes: str = ""
     fingerprint: str = ""
+    registered_at: datetime = field(default_factory=lambda: datetime.now(timezone.utc))
     safety_flags: EvidenceLedgerSafetyFlags = field(default_factory=EvidenceLedgerSafetyFlags)
     reason_codes: tuple[str, ...] = ()
     metadata: Any = field(default_factory=dict)
@@ -276,6 +277,8 @@ class ExperimentRegistration:
             raise ValueError(f"status must be an ExperimentStatus, got {self.status!r}")
         if not isinstance(self.safety_flags, EvidenceLedgerSafetyFlags):
             raise ValueError(f"safety_flags must be EvidenceLedgerSafetyFlags, got {self.safety_flags!r}")
+        if not isinstance(self.registered_at, datetime) or self.registered_at.tzinfo is None:
+            raise ValueError("registered_at must be a timezone-aware datetime")
 
 
 @dataclass(frozen=True)
@@ -288,6 +291,7 @@ class ExperimentEvidence:
     evidence_fingerprint: str = ""
     walk_forward_fingerprint: str = ""
     confidence_fingerprint: str = ""
+    registration_fingerprint: str = ""
     reason_codes: tuple[str, ...] = ()
     metadata: Any = field(default_factory=dict)
 

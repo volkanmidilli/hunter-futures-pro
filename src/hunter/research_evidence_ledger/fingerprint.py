@@ -29,6 +29,7 @@ from hunter.research_evidence_ledger.models import (
 
 _FINGERPRINT_EXCLUDED_KEYS: frozenset[str] = frozenset({
     "generated_at",
+    "registered_at",
     "fingerprint",
     "notes",
     "metadata",
@@ -138,11 +139,15 @@ def registration_fingerprint(registration: ExperimentRegistration) -> str:
 def evidence_fingerprint(evidence: ExperimentEvidence) -> str:
     """Return a deterministic fingerprint of experiment evidence.
 
-    Excludes metadata and reason_codes.
+    Excludes metadata and reason_codes. Includes the registration fingerprint
+    so that evidence is cryptographically bound to the registration it was
+    ingested under.
     """
     payload: dict[str, Any] = {
         "experiment_id": evidence.experiment_id,
     }
+    if evidence.registration_fingerprint:
+        payload["registration_fingerprint"] = evidence.registration_fingerprint
     if evidence.walk_forward_report is not None:
         payload["walk_forward_fingerprint"] = evidence.walk_forward_fingerprint
     if evidence.confidence_report is not None:

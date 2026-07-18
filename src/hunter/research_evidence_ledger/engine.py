@@ -23,6 +23,7 @@ from hunter.research_evidence_ledger.fingerprint import (
     snapshot_fingerprint,
 )
 from hunter.research_evidence_ledger.models import (
+    DUPLICATE_EVIDENCE,
     EVIDENCE_LEDGER_VERSION,
     SPEC_VERSION,
     AdjustedEvidence,
@@ -128,6 +129,7 @@ class EvidenceLedgerEngine:
         - Missing registration
         - Result before registration
         - Post-registration mutation (fingerprint mismatch)
+        - Duplicate evidence fingerprints
         """
         # Check registration exists
         if experiment_id not in self._registrations:
@@ -138,39 +140,65 @@ class EvidenceLedgerEngine:
 
         reg = self._registrations[experiment_id]
 
-        # Check result-before-registration
-        if reg.status == ExperimentStatus.REGISTERED and (
-            walk_forward_report is not None or confidence_report is not None
-        ):
-            pass  # This is expected — having evidence for a registered experiment is fine
-
-        # Create evidence
-        ev = ExperimentEvidence(
-            experiment_id=experiment_id,
-            walk_forward_report=walk_forward_report,
-            confidence_report=confidence_report,
-        )
+        # Detect evidence generated before the experiment was registered.
+        evidence_timestamps: list[datetime] = []
+        if walk_forward_report is not None:
+            evidence_timestamps.append(walk_forward_report.manifest.generated_at)
+        if confidence_report is not None:
+            evidence_timestamps.append(confidence_report.manifest.generated_at)
+        if evidence_timestamps and min(evidence_timestamps) < reg.registered_at:
+            raise EvidenceLedgerSnapshotError(
+                f"Result for {experiment_id} generated before registration",
+                reason_code=RESULT_BEFORE_REGISTRATION,
+            )
 
         # Compute evidence fingerprints
-        ev_wf_fp = ""
-        if walk_forward_report is not None:
-            ev_wf_fp = walk_forward_report.fingerprint
-        ev_cf_fp = ""
-        if confidence_report is not None:
-            ev_cf_fp = confidence_report.fingerprint
+        ev_wf_fp = walk_forward_report.fingerprint if walk_forward_report is not None else ""
+        ev_cf_fp = confidence_report.fingerprint if confidence_report is not None else ""
 
+        # Duplicate detection on individual report fingerprints.
+        self._duplicate_detector.check_duplicate_walk_forward_fingerprint(
+            experiment_id, ev_wf_fp
+        )
+        self._duplicate_detector.check_duplicate_confidence_fingerprint(
+            experiment_id, ev_cf_fp
+        )
+
+        # Build evidence object bound to the current registration.
         ev = ExperimentEvidence(
             experiment_id=experiment_id,
             walk_forward_report=walk_forward_report,
             confidence_report=confidence_report,
             walk_forward_fingerprint=ev_wf_fp,
             confidence_fingerprint=ev_cf_fp,
+            registration_fingerprint=reg.fingerprint,
         )
         ev_fp = evidence_fingerprint(ev)
         ev = ExperimentEvidence(**{**ev.__dict__, "evidence_fingerprint": ev_fp})
 
+        # Full evidence duplicate detection before accepting the evidence.
+        self._check_duplicate_evidence_for_experiment(experiment_id, ev)
+
+        # Record fingerprints so that subsequent ingestion attempts are
+        # detected as duplicates even before an entry is built.
+        self._duplicate_detector.register_evidence_object(ev, experiment_id)
+
         self._evidence[experiment_id] = ev
         return ev
+
+    def _check_duplicate_evidence_for_experiment(
+        self, experiment_id: str, ev: ExperimentEvidence
+    ) -> None:
+        """Raise if this evidence is a duplicate of another experiment's evidence."""
+        if not ev.evidence_fingerprint:
+            return
+        if ev.evidence_fingerprint in self._duplicate_detector._seen_evidence_fingerprints:
+            existing = self._duplicate_detector._seen_evidence_fingerprints[ev.evidence_fingerprint]
+            if existing.registration.experiment_id != experiment_id:
+                raise EvidenceLedgerDuplicateError(
+                    f"Duplicate evidence fingerprint for {experiment_id}",
+                    reason_code=DUPLICATE_EVIDENCE,
+                )
 
     def build_entry(
         self,
@@ -185,6 +213,14 @@ class EvidenceLedgerEngine:
 
         reg = self._registrations[experiment_id]
         ev = self._evidence.get(experiment_id)
+
+        # Detect post-registration mutation by comparing the registration
+        # fingerprint captured at ingestion time with the current registration.
+        if ev is not None and ev.registration_fingerprint and ev.registration_fingerprint != reg.fingerprint:
+            raise EvidenceLedgerSnapshotError(
+                f"Registration for {experiment_id} mutated after evidence ingestion",
+                reason_code=POST_REGISTRATION_MUTATION,
+            )
 
         # Determine the effective status
         status = reg.status

@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+from datetime import datetime, timedelta, timezone
 from decimal import Decimal
 
 import pytest
@@ -10,10 +11,14 @@ from hunter.research_evidence_ledger.engine import EvidenceLedgerEngine
 from hunter.research_evidence_ledger.models import (
     AdjustmentConfig,
     AdjustmentMethod,
+    DUPLICATE_EVIDENCE,
     EvidenceLedgerSafetyFlags,
     ExperimentRegistration,
     ExperimentStatus,
     IndependenceClass,
+    MISSING_REGISTRATION,
+    POST_REGISTRATION_MUTATION,
+    RESULT_BEFORE_REGISTRATION,
 )
 from hunter.research_evidence_ledger.errors import (
     EvidenceLedgerDuplicateError,
@@ -21,6 +26,72 @@ from hunter.research_evidence_ledger.errors import (
     EvidenceLedgerSnapshotError,
     EvidenceLedgerSafetyError,
 )
+from hunter.research_walk_forward.models import (
+    MarketRegimeLabel,
+    WalkForwardCommonConfig,
+    WalkForwardExperimentPlan,
+    WalkForwardExperimentReport,
+    WalkForwardManifest,
+    WalkForwardMode,
+    WalkForwardSafetyFlags,
+    WalkForwardWindow,
+)
+
+
+def _make_walk_forward_report(
+    fingerprint: str = "wf_report_fp_001",
+    generated_at: datetime | None = None,
+) -> WalkForwardExperimentReport:
+    """Return a minimal valid WalkForwardExperimentReport for engine tests."""
+    now = generated_at or datetime.now(timezone.utc)
+    window = WalkForwardWindow(
+        selection_start="2024-01-01",
+        selection_end="2024-06-01",
+        evaluation_start="2024-06-01",
+        evaluation_end="2024-12-01",
+        regime_label=MarketRegimeLabel.UNKNOWN,
+    )
+    common = WalkForwardCommonConfig(
+        strategy_name="test_strategy",
+        strategy_path="/tmp/strategies/test",
+        data_path="/tmp/data/ohlcv_1h",
+        timeframe="1h",
+        balance=Decimal("10000"),
+        stake=Decimal("100"),
+        max_open_trades=5,
+        fee=Decimal("0.001"),
+        executable_path="/usr/bin/freqtrade",
+    )
+    plan = WalkForwardExperimentPlan(
+        mode=WalkForwardMode.ROLLING,
+        windows=(window,),
+        common=common,
+        contiguous=False,
+        safety_flags=WalkForwardSafetyFlags(),
+        fingerprint="wf_plan_fp_001",
+    )
+    manifest = WalkForwardManifest(
+        version="0.66.0-dev",
+        spec_version="SPEC-067",
+        walk_forward_version="0.66.0-dev",
+        generated_at=now,
+        plan_fingerprint="wf_plan_fp_001",
+        overall_aggregate_fingerprint="overall_fp_001",
+        regime_aggregate_fingerprint="regime_fp_001",
+        safety_flags=WalkForwardSafetyFlags(),
+    )
+    return WalkForwardExperimentReport(
+        version="0.66.0-dev",
+        spec_version="SPEC-067",
+        walk_forward_version="0.66.0-dev",
+        plan=plan,
+        window_results=(),
+        metric_aggregates={},
+        regime_aggregates=(),
+        manifest=manifest,
+        safety_flags=WalkForwardSafetyFlags(),
+        fingerprint=fingerprint,
+    )
 
 
 def _make_reg(
@@ -32,6 +103,7 @@ def _make_reg(
     universe_plan: str = "top_100",
     timeframe: str = "1h",
     walk_forward_plan_fingerprint: str = "wf_fp_1",
+    registered_at: datetime | None = None,
 ) -> ExperimentRegistration:
     return ExperimentRegistration(
         experiment_id=experiment_id,
@@ -43,6 +115,7 @@ def _make_reg(
         metric_family=metric_family,
         independence=independence,
         experiment_family_id="ef_001",
+        registered_at=registered_at or datetime.now(timezone.utc),
     )
 
 
@@ -144,3 +217,48 @@ class TestEvidenceLedgerEngine:
         assert len(report.registrations) == 1
         assert report.research_only is True
         assert report.human_approval_required is True
+
+    def test_ingest_unregistered_returns_missing_reason_code(self) -> None:
+        engine = EvidenceLedgerEngine()
+        with pytest.raises(EvidenceLedgerSnapshotError) as exc_info:
+            engine.ingest_evidence(experiment_id="unknown")
+        assert exc_info.value.reason_code == MISSING_REGISTRATION
+
+    def test_result_before_registration_rejected(self) -> None:
+        engine = EvidenceLedgerEngine()
+        now = datetime.now(timezone.utc)
+        reg = _make_reg("exp_001", registered_at=now + timedelta(hours=1))
+        engine.register_experiment(reg)
+        report = _make_walk_forward_report(generated_at=now)
+        with pytest.raises(EvidenceLedgerSnapshotError) as exc_info:
+            engine.ingest_evidence(experiment_id="exp_001", walk_forward_report=report)
+        assert exc_info.value.reason_code == RESULT_BEFORE_REGISTRATION
+        assert "exp_001" not in engine._evidence
+
+    def test_post_registration_mutation_detected(self) -> None:
+        engine = EvidenceLedgerEngine()
+        reg = _make_reg("exp_001")
+        engine.register_experiment(reg)
+        engine.ingest_evidence(experiment_id="exp_001", walk_forward_report=_make_walk_forward_report())
+        # Simulate a registration mutation that bypassed the duplicate detector.
+        mutated = _make_reg(
+            experiment_id="exp_001",
+            hypothesis="mutated hypothesis",
+        )
+        engine._registrations["exp_001"] = mutated
+        with pytest.raises(EvidenceLedgerSnapshotError) as exc_info:
+            engine.build_entry("exp_001")
+        assert exc_info.value.reason_code == POST_REGISTRATION_MUTATION
+
+    def test_duplicate_walk_forward_fingerprint_rejected(self) -> None:
+        engine = EvidenceLedgerEngine()
+        reg1 = _make_reg("exp_001", hypothesis="hypothesis a")
+        reg2 = _make_reg("exp_002", hypothesis="hypothesis b")
+        engine.register_experiment(reg1)
+        engine.register_experiment(reg2)
+        report = _make_walk_forward_report(fingerprint="shared_fp")
+        engine.ingest_evidence(experiment_id="exp_001", walk_forward_report=report)
+        with pytest.raises(EvidenceLedgerDuplicateError) as exc_info:
+            engine.ingest_evidence(experiment_id="exp_002", walk_forward_report=report)
+        assert exc_info.value.reason_code == DUPLICATE_EVIDENCE
+        assert "exp_002" not in engine._evidence
