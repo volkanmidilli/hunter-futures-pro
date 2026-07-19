@@ -66,6 +66,41 @@ def _safety_flags_payload(safety_flags: ResearchUniverseSafetyFlags) -> dict[str
     }
 
 
+_FORBIDDEN_OUTPUT_ROOT = "FORBIDDEN_OUTPUT_ROOT"
+
+
+def _project_root() -> Path:
+    """Return the project root inferred from this file's location."""
+    return Path(__file__).resolve().parents[3]
+
+
+def _is_forbidden_output_path(path: Path) -> bool:
+    """Return True if the resolved path is under the project ``data/`` or ``reports/`` directories."""
+    resolved = path.resolve()
+    root = _project_root()
+    data_dir = root / "data"
+    reports_dir = root / "reports"
+    try:
+        resolved.relative_to(data_dir)
+        return True
+    except ValueError:
+        pass
+    try:
+        resolved.relative_to(reports_dir)
+        return True
+    except ValueError:
+        pass
+    return False
+
+
+def _validate_output_path(path: Path) -> None:
+    """Validate that ``path`` is not inside the project ``data/`` or ``reports/`` directories."""
+    if _is_forbidden_output_path(path):
+        raise ResearchUniverseWriterError(
+            _FORBIDDEN_OUTPUT_ROOT, f"path is forbidden: {path}"
+        )
+
+
 def _write_json_atomic(
     path: Path,
     payload: dict[str, Any],
@@ -124,15 +159,18 @@ class ResearchUniverseWriter:
     def __init__(
         self,
         *,
-        output_dir: str | Path = "reports/research_universe",
-        data_dir: str | Path = "data/research_universe",
+        output_dir: str | Path,
+        data_dir: str | Path | None = None,
         indent: int | None = 2,
         sort_keys: bool = True,
     ) -> None:
         self.output_dir = Path(output_dir)
-        self.data_dir = Path(data_dir)
+        self.data_dir = Path(data_dir) if data_dir is not None else self.output_dir / "data"
         self.indent = indent
         self.sort_keys = sort_keys
+
+        _validate_output_path(self.output_dir)
+        _validate_output_path(self.data_dir)
 
     # -------------------------------------------------------------------------
     # Candidate artifact writers
@@ -534,8 +572,8 @@ class ResearchUniverseWriter:
 def write_research_universe_report(
     report: ResearchUniverseReport,
     *,
-    output_dir: str | Path = "reports/research_universe",
-    data_dir: str | Path = "data/research_universe",
+    output_dir: str | Path,
+    data_dir: str | Path | None = None,
 ) -> tuple[Path, Path]:
     """Convenience function to write a research universe report and manifest."""
     writer = ResearchUniverseWriter(output_dir=output_dir, data_dir=data_dir)
@@ -545,8 +583,8 @@ def write_research_universe_report(
 def write_all_research_universe_artifacts(
     report: ResearchUniverseReport,
     *,
-    output_dir: str | Path = "reports/research_universe",
-    data_dir: str | Path = "data/research_universe",
+    output_dir: str | Path,
+    data_dir: str | Path | None = None,
 ) -> dict[str, Path]:
     """Convenience function to write all research universe artifacts."""
     writer = ResearchUniverseWriter(output_dir=output_dir, data_dir=data_dir)

@@ -36,6 +36,41 @@ _SAFETY_NOTICE = (
     "Human approval is required before any runtime or production use."
 )
 
+_FORBIDDEN_OUTPUT_ROOT = "FORBIDDEN_OUTPUT_ROOT"
+
+
+def _project_root() -> Path:
+    """Return the project root inferred from this file's location."""
+    return Path(__file__).resolve().parents[3]
+
+
+def _is_forbidden_output_path(path: Path) -> bool:
+    """Return True if the resolved path is under the project ``data/`` or ``reports/`` directories."""
+    resolved = path.resolve()
+    root = _project_root()
+    data_dir = root / "data"
+    reports_dir = root / "reports"
+    try:
+        resolved.relative_to(data_dir)
+        return True
+    except ValueError:
+        pass
+    try:
+        resolved.relative_to(reports_dir)
+        return True
+    except ValueError:
+        pass
+    return False
+
+
+def _validate_output_path(path: Path) -> None:
+    """Validate that ``path`` is not inside the project ``data/`` or ``reports/`` directories."""
+    if _is_forbidden_output_path(path):
+        raise ResearchBacktestComparisonWriterError(
+            _FORBIDDEN_OUTPUT_ROOT, f"path is forbidden: {path}"
+        )
+
+
 
 def _serialize_value(value: Any) -> Any:
     """Serialize a value into a deterministic JSON-safe structure."""
@@ -189,15 +224,18 @@ class BacktestComparisonWriter:
     def __init__(
         self,
         *,
-        output_dir: str | Path = "reports/research_backtest_comparison",
-        data_dir: str | Path = "data/research_backtest_comparison",
+        output_dir: str | Path,
+        data_dir: str | Path | None = None,
         indent: int | None = 2,
         sort_keys: bool = True,
     ) -> None:
         self.output_dir = Path(output_dir)
-        self.data_dir = Path(data_dir)
+        self.data_dir = Path(data_dir) if data_dir is not None else self.output_dir / "data"
         self.indent = indent
         self.sort_keys = sort_keys
+
+        _validate_output_path(self.output_dir)
+        _validate_output_path(self.data_dir)
 
     def _report_payload(self, report: BacktestComparisonReport) -> dict[str, Any]:
         """Convert a report into a deterministic JSON-safe payload."""
@@ -442,8 +480,8 @@ class BacktestComparisonWriter:
 def write_backtest_comparison_report(
     report: BacktestComparisonReport,
     *,
-    output_dir: str | Path = "reports/research_backtest_comparison",
-    data_dir: str | Path = "data/research_backtest_comparison",
+    output_dir: str | Path,
+    data_dir: str | Path | None = None,
 ) -> tuple[Path, Path]:
     """Convenience function to write a backtest comparison report and manifest."""
     writer = BacktestComparisonWriter(output_dir=output_dir, data_dir=data_dir)
@@ -453,8 +491,8 @@ def write_backtest_comparison_report(
 def write_all_backtest_comparison_artifacts(
     report: BacktestComparisonReport,
     *,
-    output_dir: str | Path = "reports/research_backtest_comparison",
-    data_dir: str | Path = "data/research_backtest_comparison",
+    output_dir: str | Path,
+    data_dir: str | Path | None = None,
 ) -> dict[str, Path]:
     """Convenience function to write all backtest comparison artifacts."""
     writer = BacktestComparisonWriter(output_dir=output_dir, data_dir=data_dir)

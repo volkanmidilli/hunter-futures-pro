@@ -280,6 +280,35 @@ def _write_json(
         except OSError:
             pass
         raise
+def _write_markdown(
+    output_path: Path,
+    content: str,
+    *,
+    overwrite: bool = False,
+) -> None:
+    """Atomically write a Markdown file with deterministic encoding.
+
+    Rejects silent overwrite unless ``overwrite=True``.
+    Cleans up the temp file on any write or rename failure.
+    """
+    if output_path.exists() and not overwrite:
+        raise EvidenceLedgerWriterError(
+            f"Refusing to silently overwrite existing file: {output_path}",
+            reason_code=_SILENT_OVERWRITE,
+        )
+
+    tmp_path = output_path.with_suffix(".tmp")
+    try:
+        tmp_path.write_text(content, encoding="utf-8")
+        tmp_path.replace(output_path)
+    except Exception:
+        try:
+            tmp_path.unlink(missing_ok=True)
+        except OSError:
+            pass
+        raise
+
+
 
 
 def _generate_markdown(report: EvidenceLedgerReport) -> str:
@@ -511,11 +540,16 @@ class EvidenceLedgerWriter:
         _write_json(path, _redact_paths(payload), overwrite=overwrite)
         return path
 
-    def write_report_markdown(self, report: EvidenceLedgerReport) -> Path:
+    def write_report_markdown(
+        self,
+        report: EvidenceLedgerReport,
+        *,
+        overwrite: bool = False,
+    ) -> Path:
         """Write evidence ledger report Markdown."""
         md = _generate_markdown(report)
         path = self._output_dir / "evidence_ledger_report.md"
-        path.write_text(md, encoding="utf-8")
+        _write_markdown(path, md, overwrite=overwrite)
         return path
 
     def write_manifest(self, manifest: EvidenceLedgerManifest, *, overwrite: bool = False) -> Path:

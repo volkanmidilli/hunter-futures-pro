@@ -92,8 +92,6 @@ from hunter.research_market_data.models import (
 from hunter.research_market_data.symbol_normalizer import normalize_symbol
 from hunter.research_market_data.validator import build_normalized_candles, detect_timeframe
 from hunter.research_market_data.writer import (
-    DEFAULT_JSON_PATH,
-    DEFAULT_MD_PATH,
     ResearchMarketDataBundleWriterError,
     atomic_write_json_research_market_data_bundle,
     atomic_write_markdown_research_market_data_bundle,
@@ -194,6 +192,4 @@ __all__ = [
     "write_research_market_data_bundle",
     "atomic_write_json_research_market_data_bundle",
     "atomic_write_markdown_research_market_data_bundle",
-    "DEFAULT_JSON_PATH",
-    "DEFAULT_MD_PATH",
 ]

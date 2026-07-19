@@ -322,11 +322,18 @@ class WalkForwardWriter:
         self.indent = indent
         self.sort_keys = sort_keys
 
+    def _project_root(self) -> Path:
+        """Return the project root inferred from this file's location."""
+        return Path(__file__).resolve().parents[3]
+
     def _reject_forbidden_paths(self, path: Path) -> None:
-        """Reject writes under data/ or reports/."""
+        """Reject writes under the project data/ or reports/ directories, including absolute paths."""
+        resolved = path.resolve()
+        root = self._project_root()
         for forbidden_root in ("data", "reports"):
+            forbidden_dir = root / forbidden_root
             try:
-                path.relative_to(Path(forbidden_root))
+                resolved.relative_to(forbidden_dir)
                 raise WalkForwardWriterError(
                     f"Refusing to write under {forbidden_root}/: {path}",
                     reason_code=_FORBIDDEN_OUTPUT_ROOT,

@@ -15,13 +15,11 @@ from typing import Any
 
 from hunter.research_market_data.errors import ResearchMarketDataWriterError
 from hunter.research_market_data.models import (
+    FORBIDDEN_PATH,
     ResearchMarketDataBundle,
     ResearchMarketDataConfig,
     ResearchMarketDataManifest,
 )
-
-DEFAULT_JSON_PATH: Path = Path("data/research_market_data/latest_bundle.json")
-DEFAULT_MD_PATH: Path = Path("reports/research_market_data/latest_bundle.md")
 
 _SAFETY_NOTICE = (
     "This research market data bundle is a human-audit / research-only artifact. "
@@ -227,6 +225,38 @@ def research_market_data_bundle_to_markdown_text(
     return "\n".join(lines)
 
 
+def _project_root() -> Path:
+    """Return the project root inferred from this file's location."""
+    return Path(__file__).resolve().parents[3]
+
+
+def _is_forbidden_path(path: Path) -> bool:
+    """Return True if the resolved path is under the project ``data/`` or ``reports/`` directories."""
+    resolved = path.resolve()
+    root = _project_root()
+    data_dir = root / "data"
+    reports_dir = root / "reports"
+    try:
+        resolved.relative_to(data_dir)
+        return True
+    except ValueError:
+        pass
+    try:
+        resolved.relative_to(reports_dir)
+        return True
+    except ValueError:
+        pass
+    return False
+
+
+def _validate_write_path(path: Path) -> None:
+    """Validate that ``path`` is not inside the project ``data/`` or ``reports/`` directories."""
+    if _is_forbidden_path(path):
+        raise ResearchMarketDataBundleWriterError(
+            FORBIDDEN_PATH, f"path is forbidden: {path}"
+        )
+
+
 def _atomic_write(path: Path, content: str) -> None:
     """Write ``content`` to ``path`` atomically via a temporary file."""
     path = path.resolve()
@@ -247,17 +277,21 @@ def _atomic_write(path: Path, content: str) -> None:
 def write_research_market_data_bundle(
     bundle: ResearchMarketDataBundle,
     *,
-    json_path: Path | str | None = None,
-    markdown_path: Path | str | None = None,
+    json_path: Path | str,
+    markdown_path: Path | str,
     overwrite: bool = False,
 ) -> tuple[Path, Path]:
     """Write a ``ResearchMarketDataBundle`` to JSON and Markdown artifacts.
 
     Raises ``ResearchMarketDataBundleWriterError`` if the target exists and
-    ``overwrite`` is not True, or if the write fails.
+    ``overwrite`` is not True, if the path is under the project ``data/`` or
+    ``reports/`` directories, or if the write fails.
     """
-    json_path = Path(json_path or DEFAULT_JSON_PATH)
-    markdown_path = Path(markdown_path or DEFAULT_MD_PATH)
+    json_path = Path(json_path)
+    markdown_path = Path(markdown_path)
+
+    _validate_write_path(json_path)
+    _validate_write_path(markdown_path)
 
     if not overwrite:
         for target in (json_path, markdown_path):
@@ -284,6 +318,7 @@ def atomic_write_json_research_market_data_bundle(
 ) -> Path:
     """Write only the JSON artifact atomically."""
     path = Path(path)
+    _validate_write_path(path)
     if not overwrite and path.exists():
         raise ResearchMarketDataBundleWriterError(
             "FILE_EXISTS", f"refusing to overwrite existing file: {path}"
@@ -300,6 +335,7 @@ def atomic_write_markdown_research_market_data_bundle(
 ) -> Path:
     """Write only the Markdown artifact atomically."""
     path = Path(path)
+    _validate_write_path(path)
     if not overwrite and path.exists():
         raise ResearchMarketDataBundleWriterError(
             "FILE_EXISTS", f"refusing to overwrite existing file: {path}"
