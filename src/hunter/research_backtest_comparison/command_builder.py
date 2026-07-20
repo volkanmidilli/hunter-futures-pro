@@ -40,14 +40,27 @@ def build_backtest_command(
         <freqtrade> backtesting
         --config <temp-config>
         --userdir <temp-userdir>
+        --datadir <isolated-data-dir>
         --strategy <strategy-name>
         --timeframe <timeframe>
         --timerange <timerange>
         --export trades
-        --export-filename <temp-result>
+        --backtest-directory <isolated-results-dir>
 
     Any deviation from this shape (including forbidden subcommands or shell
     metacharacters) raises ResearchBacktestComparisonValidationError.
+
+    ``--datadir`` is always ``config.data_path`` — the isolated, workspace-
+    materialized copy of manifest-validated fixture files when the caller is
+    the real-compatibility harness, or the caller's own supplied data
+    directory for the generic comparison engine. Freqtrade is never left to
+    resolve its own default data directory implicitly.
+
+    ``--backtest-directory`` (not the deprecated ``--export-filename``, which
+    modern Freqtrade silently ignores for backtesting) is always
+    ``workspace.backtest_results_dir`` — an isolated, per-arm directory that
+    only this run writes to, so the result is discoverable afterward via its
+    ``.last_result.json`` pointer.
     """
     if not isinstance(config, BacktestComparisonConfig):
         raise ResearchBacktestComparisonValidationError(
@@ -64,7 +77,8 @@ def build_backtest_command(
     timerange = _sanitize_arg(config.timerange)
     config_path = _sanitize_arg(str(workspace.config_path))
     userdir = _sanitize_arg(str(workspace.userdir))
-    result_path = _sanitize_arg(str(workspace.result_path))
+    datadir = _sanitize_arg(str(config.data_path))
+    results_dir = _sanitize_arg(str(workspace.backtest_results_dir))
 
     args: list[str] = [
         executable,
@@ -73,6 +87,8 @@ def build_backtest_command(
         config_path,
         "--userdir",
         userdir,
+        "--datadir",
+        datadir,
         "--strategy",
         strategy_name,
         "--timeframe",
@@ -81,8 +97,8 @@ def build_backtest_command(
         timerange,
         "--export",
         "trades",
-        "--export-filename",
-        result_path,
+        "--backtest-directory",
+        results_dir,
     ]
 
     validate_command_args(args)

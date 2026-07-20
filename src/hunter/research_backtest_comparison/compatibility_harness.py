@@ -61,7 +61,7 @@ from hunter.research_backtest_comparison.models import (
     SPEC_VERSION,
 )
 from hunter.research_backtest_comparison.redaction import redact_text
-from hunter.research_backtest_comparison.result_locator import locate_result_file
+from hunter.research_backtest_comparison.result_locator import locate_latest_backtest_result
 from hunter.research_backtest_comparison.runner import run_backtest_arm
 from hunter.research_backtest_comparison.validator import validate_strategy_class_name
 from hunter.research_backtest_comparison.workspace import BacktestWorkspace
@@ -126,12 +126,16 @@ def _write_hunter_metadata(
 def _build_backtest_comparison_config(
     input: FreqtradeCompatibilityInput,
     strategy_path: Path,
+    data_path: Path | None = None,
 ) -> BacktestComparisonConfig:
+    # data_path overrides input.data_path when given — points Freqtrade at the
+    # isolated, workspace-materialized copy of manifest-validated fixture
+    # files rather than the raw caller-controlled directory.
     """Build a BacktestComparisonConfig from compatibility input."""
     return BacktestComparisonConfig(
         strategy_name=input.strategy_name,
         strategy_path=strategy_path,
-        data_path=input.data_path,
+        data_path=data_path if data_path is not None else input.data_path,
         timeframe=input.timeframe,
         timerange=input.timerange,
         balance=Decimal(input.starting_balance) if input.starting_balance is not None else Decimal("1000"),
@@ -140,6 +144,8 @@ def _build_backtest_comparison_config(
         fee=Decimal(input.fee) if input.fee is not None else Decimal("0.001"),
         protections=tuple(input.protections) if input.protections else (),
         executable_path=input.executable_path,
+        exchange_identifier=input.exchange_identifier,
+        trading_mode=input.trading_mode,
     )
 
 
@@ -166,12 +172,20 @@ def run_freqtrade_compatibility_smoke_test(
     input: FreqtradeCompatibilityInput,
     *,
     retain_workspace_on_failure: bool = False,
+    fixture_manifest: Any | None = None,
 ) -> FreqtradeCompatibilityReport:
     """Run a single-arm real Freqtrade compatibility smoke test.
 
     The test is skipped with status ``NOT_EXECUTED`` if any external resource is
     missing. Only the allowed ``freqtrade backtesting`` subcommand is invoked. All
     safety invariants are enforced and recorded in the metadata evidence file.
+
+    When *fixture_manifest* (an ``ExternalFixtureManifest``) is given, only its
+    declared, hash-validated files are copied into an isolated workspace
+    directory and Freqtrade is pointed at that materialized copy — never at
+    ``input.data_path`` directly. When omitted, ``input.data_path`` is used
+    as-is (back-compatible with callers that have no external fixture
+    manifest, e.g. synthetic test data).
 
     Returns a ``FreqtradeCompatibilityReport`` containing the manifest, status,
     and bounded stdout/stderr.
@@ -318,8 +332,20 @@ def run_freqtrade_compatibility_smoke_test(
         strategy_fp = strategy_fingerprint(input.strategy_path)
         data_fp = data_fingerprint(input.data_path)
 
+        # Materialize only manifest-validated fixture files into the isolated
+        # workspace when an external fixture manifest is provided. Freqtrade
+        # is always pointed at this materialized copy, never at the raw
+        # caller-controlled input.data_path directly.
+        materialized_data_path: Path | None = None
+        if fixture_manifest is not None:
+            materialized_data_path = workspace.materialize_fixture_data(
+                input.data_path, fixture_manifest
+            )
+
         # Build comparison config and arm.
-        comparison_config = _build_backtest_comparison_config(input, staged_path)
+        comparison_config = _build_backtest_comparison_config(
+            input, staged_path, data_path=materialized_data_path
+        )
         config_fp = config_fingerprint(comparison_config)
         arm = BacktestArmInput(
             pairlist=tuple(input.pairs),
@@ -355,7 +381,7 @@ def run_freqtrade_compatibility_smoke_test(
 
         # Locate and parse real export.
         try:
-            result_path = locate_result_file(workspace.result_path, workspace.path)
+            result_path = locate_latest_backtest_result(workspace.backtest_results_dir, workspace.path)
             metrics, export_schema, raw_export_fp = parse_real_export(
                 result_path,
                 strategy_name=input.strategy_name,

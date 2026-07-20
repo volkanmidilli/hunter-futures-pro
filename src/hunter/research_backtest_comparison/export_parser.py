@@ -9,6 +9,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+import zipfile
 from decimal import Decimal
 from pathlib import Path
 from typing import Any
@@ -93,6 +94,32 @@ def _coerce_decimal(value: Any) -> Decimal | None:
     return None
 
 
+def _read_export_json_text(result_path: Path) -> str:
+    """Return the raw JSON stats text for a Freqtrade export.
+
+    Modern Freqtrade backtesting writes a ``.zip`` archive (member named
+    ``<archive-stem>.json``) rather than a flat JSON file. When *result_path*
+    is a ``.zip``, extract and decode that member; otherwise read the file
+    directly (back-compatible with flat-JSON exports and synthetic fixtures).
+    """
+    if result_path.suffix == ".zip":
+        member_name = f"{result_path.stem}.json"
+        try:
+            with zipfile.ZipFile(result_path) as zf:
+                if member_name not in zf.namelist():
+                    raise ResearchBacktestComparisonParserError(
+                        f"export zip does not contain expected member: {member_name}",
+                        reason_code=COMPATIBILITY_UNSUPPORTED_EXPORT_SCHEMA,
+                    )
+                return zf.read(member_name).decode("utf-8")
+        except zipfile.BadZipFile as exc:
+            raise ResearchBacktestComparisonParserError(
+                f"export file is not a valid zip archive: {exc}",
+                reason_code=COMPATIBILITY_UNSUPPORTED_EXPORT_SCHEMA,
+            ) from exc
+    return result_path.read_text(encoding="utf-8")
+
+
 def raw_export_fingerprint(path: str | Path) -> str:
     """Return the SHA-256 fingerprint of the raw export file."""
     result_path = Path(path)
@@ -138,7 +165,7 @@ def detect_export_schema(path: str | Path) -> str:
             reason_code=COMPATIBILITY_UNSUPPORTED_EXPORT_SCHEMA,
         )
     try:
-        text = result_path.read_text(encoding="utf-8")
+        text = _read_export_json_text(result_path)
         data = json.loads(text)
     except json.JSONDecodeError as exc:
         raise ResearchBacktestComparisonParserError(
@@ -367,7 +394,7 @@ def parse_real_export(
     raw_fingerprint = raw_export_fingerprint(result_path)
 
     try:
-        raw_text = result_path.read_text(encoding="utf-8")
+        raw_text = _read_export_json_text(result_path)
         data = json.loads(raw_text)
     except json.JSONDecodeError as exc:
         raise ResearchBacktestComparisonParserError(

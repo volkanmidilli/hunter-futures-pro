@@ -23,26 +23,41 @@ from hunter.research_backtest_comparison.models import (
 )
 from hunter.research_backtest_comparison.comparison import compare_backtest_results
 from hunter.research_backtest_comparison.export_parser import parse_real_export
+from hunter.research_backtest_comparison.fixture_models import (
+    ExternalFixtureManifest,
+    FixtureFileRecord,
+)
 from decimal import Decimal
+import hashlib
+import json
 
 
 def _make_fake_executable(tmp_path: Path, *, version: str = "freqtrade 2024.1") -> Path:
-    """Create a fake freqtrade executable that prints version and runs backtesting."""
+    """Create a fake freqtrade executable that prints version and runs backtesting.
+
+    Writes results using the modern Freqtrade contract: a ``.zip`` archive
+    plus a ``.last_result.json`` pointer inside ``--backtest-directory``
+    (``--export-filename`` is ignored by real Freqtrade for backtesting).
+    """
     exe = tmp_path / "freqtrade"
     script = f"""#!/usr/bin/env python3
 import json
+import os
 import sys
+import zipfile
 
 if len(sys.argv) > 1 and sys.argv[1] == "--version":
     print("{version}")
     sys.exit(0)
 
 if len(sys.argv) > 1 and sys.argv[1] == "backtesting":
-    out_file = None
+    out_dir = None
     for i, arg in enumerate(sys.argv):
-        if arg == "--export-filename" and i + 1 < len(sys.argv):
-            out_file = sys.argv[i + 1]
-    if out_file:
+        if arg == "--backtest-directory" and i + 1 < len(sys.argv):
+            out_dir = sys.argv[i + 1]
+    if out_dir:
+        os.makedirs(out_dir, exist_ok=True)
+        stem = "backtest-result-test"
         payload = {{
             "strategy": {{
                 "TestStrategy": {{
@@ -62,8 +77,11 @@ if len(sys.argv) > 1 and sys.argv[1] == "backtesting":
                 }}
             }}
         }}
-        with open(out_file, "w") as f:
-            json.dump(payload, f)
+        zip_path = os.path.join(out_dir, stem + ".zip")
+        with zipfile.ZipFile(zip_path, "w") as zf:
+            zf.writestr(stem + ".json", json.dumps(payload))
+        with open(os.path.join(out_dir, ".last_result.json"), "w") as f:
+            json.dump({{"latest_backtest": stem + ".zip"}}, f)
     sys.exit(0)
 
 print("Unknown command:", sys.argv[1] if len(sys.argv) > 1 else "")
@@ -200,21 +218,28 @@ class TestCompatibilitySmokeTest:
     def test_executed_zero_trades(self, tmp_path: Path) -> None:
         exe = tmp_path / "freqtrade"
         exe.write_text(
-            """#!/bin/sh
-if [ "$1" = "--version" ]; then echo "freqtrade 2024.1"; exit 0; fi
-if [ "$1" = "backtesting" ]; then
-    out_file=""
-    while [ "$#" -gt 0 ]; do
-        if [ "$1" = "--export-filename" ]; then
-            out_file="$2"
-            break
-        fi
-        shift
-    done
-    echo '{"strategy": {"TestStrategy": {"total_trades": 0, "trade_count": 0}}}' > "$out_file"
-    exit 0
-fi
-exit 1
+            """#!/usr/bin/env python3
+import json
+import os
+import sys
+import zipfile
+
+if len(sys.argv) > 1 and sys.argv[1] == "--version":
+    print("freqtrade 2024.1")
+    sys.exit(0)
+
+if len(sys.argv) > 1 and sys.argv[1] == "backtesting":
+    out_dir = sys.argv[sys.argv.index("--backtest-directory") + 1]
+    os.makedirs(out_dir, exist_ok=True)
+    stem = "backtest-result-test"
+    payload = {"strategy": {"TestStrategy": {"total_trades": 0, "trade_count": 0}}}
+    with zipfile.ZipFile(os.path.join(out_dir, stem + ".zip"), "w") as zf:
+        zf.writestr(stem + ".json", json.dumps(payload))
+    with open(os.path.join(out_dir, ".last_result.json"), "w") as f:
+        json.dump({"latest_backtest": stem + ".zip"}, f)
+    sys.exit(0)
+
+sys.exit(1)
 """
         )
         exe.chmod(0o755)
@@ -232,21 +257,27 @@ exit 1
     def test_unsupported_export_schema(self, tmp_path: Path) -> None:
         exe = tmp_path / "freqtrade"
         exe.write_text(
-            """#!/bin/sh
-if [ "$1" = "--version" ]; then echo "freqtrade 2024.1"; exit 0; fi
-if [ "$1" = "backtesting" ]; then
-    out_file=""
-    while [ "$#" -gt 0 ]; do
-        if [ "$1" = "--export-filename" ]; then
-            out_file="$2"
-            break
-        fi
-        shift
-    done
-    echo "not a valid json" > "$out_file"
-    exit 0
-fi
-exit 1
+            """#!/usr/bin/env python3
+import json
+import os
+import sys
+import zipfile
+
+if len(sys.argv) > 1 and sys.argv[1] == "--version":
+    print("freqtrade 2024.1")
+    sys.exit(0)
+
+if len(sys.argv) > 1 and sys.argv[1] == "backtesting":
+    out_dir = sys.argv[sys.argv.index("--backtest-directory") + 1]
+    os.makedirs(out_dir, exist_ok=True)
+    stem = "backtest-result-test"
+    with zipfile.ZipFile(os.path.join(out_dir, stem + ".zip"), "w") as zf:
+        zf.writestr(stem + ".json", "not a valid json")
+    with open(os.path.join(out_dir, ".last_result.json"), "w") as f:
+        json.dump({"latest_backtest": stem + ".zip"}, f)
+    sys.exit(0)
+
+sys.exit(1)
 """
         )
         exe.chmod(0o755)
@@ -269,6 +300,108 @@ exit 1
         assert report.status == CompatibilityStatus.EXECUTED_FAIL
         assert report.result is not None
         assert report.result.exit_code == 1
+
+
+class TestFixtureManifestWiring:
+    """Prove the two verified MVP-65 defects are fixed: a real exchange
+    identifier reaches the Freqtrade config, and validated fixture data
+    reaches the backtest command/config (not silently ignored)."""
+
+    def _make_recording_executable(self, tmp_path: Path) -> Path:
+        """A fake freqtrade that records its argv/config and asserts datadir
+        contains the materialized fixture file before reporting zero trades."""
+        exe = tmp_path / "freqtrade"
+        script = """#!/usr/bin/env python3
+import json
+import os
+import sys
+import zipfile
+from pathlib import Path
+
+if len(sys.argv) > 1 and sys.argv[1] == "--version":
+    print("freqtrade 2024.1")
+    sys.exit(0)
+
+if len(sys.argv) > 1 and sys.argv[1] == "backtesting":
+    args = sys.argv
+    config_path = args[args.index("--config") + 1]
+    datadir = args[args.index("--datadir") + 1]
+    config = json.loads(Path(config_path).read_text())
+
+    # The materialized datadir must contain exactly the manifest-declared file.
+    candle_file = Path(datadir) / "futures" / "btc.json"
+    assert candle_file.exists(), f"materialized candle file missing: {candle_file}"
+
+    # The config must carry the real exchange identifier, not a placeholder.
+    assert config["exchange"]["name"] == "binance", config["exchange"]["name"]
+    assert config.get("trading_mode") == "futures"
+
+    out_dir = args[args.index("--backtest-directory") + 1]
+    os.makedirs(out_dir, exist_ok=True)
+    stem = "backtest-result-test"
+    payload = {"strategy": {"TestStrategy": {"total_trades": 0, "trade_count": 0}}}
+    with zipfile.ZipFile(os.path.join(out_dir, stem + ".zip"), "w") as zf:
+        zf.writestr(stem + ".json", json.dumps(payload))
+    with open(os.path.join(out_dir, ".last_result.json"), "w") as f:
+        json.dump({"latest_backtest": stem + ".zip"}, f)
+    sys.exit(0)
+
+sys.exit(1)
+"""
+        exe.write_text(script)
+        exe.chmod(0o755)
+        return exe
+
+    def test_manifest_exchange_and_data_wired_into_real_run(self, tmp_path: Path) -> None:
+        exe = self._make_recording_executable(tmp_path)
+        strategy = _make_strategy_file(tmp_path)
+
+        fixture_root = tmp_path / "fixture"
+        (fixture_root / "futures").mkdir(parents=True)
+        content = b"candle data"
+        (fixture_root / "futures" / "btc.json").write_bytes(content)
+
+        manifest = ExternalFixtureManifest(
+            fixture_schema_version="fixture-schema-v1",
+            exchange_identifier="binance",
+            trading_mode="futures",
+            timeframe="1h",
+            pair_list=("BTC/USDT:USDT",),
+            timerange="20240101-20240201",
+            expected_strategy_class="TestStrategy",
+            provenance_note="test",
+            files=(
+                FixtureFileRecord(
+                    relative_path="futures/btc.json",
+                    sha256=hashlib.sha256(content).hexdigest(),
+                ),
+            ),
+        )
+
+        out = tmp_path / "out"
+        out.mkdir()
+        input = FreqtradeCompatibilityInput(
+            executable_path=exe,
+            strategy_path=strategy,
+            data_path=fixture_root,
+            output_dir=out,
+            strategy_name="TestStrategy",
+            pairs=("BTC/USDT:USDT",),
+            timeframe="1h",
+            timerange="20240101-20240201",
+            starting_balance="1000",
+            stake="100",
+            max_open_trades=1,
+            fee="0.001",
+            exchange_identifier="binance",
+            trading_mode="futures",
+        )
+
+        report = run_freqtrade_compatibility_smoke_test(input, fixture_manifest=manifest)
+        assert report.status == CompatibilityStatus.EXECUTED_PASS
+        assert report.result.exit_code == 0
+        assert report.result.parsed_metrics is not None
+        assert report.result.parsed_metrics.trade_count == 0
 
 
 class TestSafetyInvariants:

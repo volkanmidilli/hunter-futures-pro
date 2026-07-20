@@ -6,7 +6,10 @@ import shutil
 import tempfile
 from pathlib import Path
 from types import TracebackType
-from typing import Any
+from typing import TYPE_CHECKING, Any
+
+if TYPE_CHECKING:
+    from hunter.research_backtest_comparison.fixture_models import ExternalFixtureManifest
 
 
 class BacktestWorkspace:
@@ -51,8 +54,19 @@ class BacktestWorkspace:
 
     @property
     def result_path(self) -> Path:
-        """Return the temporary result export path."""
+        """Return the temporary result export path (legacy, unused by the
+        command builder — retained for any external caller compatibility)."""
         return self.path / "backtest_result.json"
+
+    @property
+    def backtest_results_dir(self) -> Path:
+        """Return the isolated directory Freqtrade writes backtest results to.
+
+        Modern Freqtrade ignores ``--export-filename`` for backtesting and
+        instead writes a timestamped ``.zip`` (plus a ``.last_result.json``
+        pointer) into the directory passed via ``--backtest-directory``.
+        """
+        return self.path / "backtest_results"
 
     @property
     def strategy_path(self) -> Path:
@@ -69,6 +83,17 @@ class BacktestWorkspace:
         """Return the evidence directory path inside the workspace."""
         return self.path / "evidence"
 
+    @property
+    def data_dir(self) -> Path:
+        """Return the materialized OHLCV data directory inside the workspace.
+
+        This is the isolated, workspace-local copy of manifest-validated
+        fixture files (see ``materialize_fixture_data``) — Freqtrade is
+        always pointed at this directory, never at a caller-controlled
+        external path directly.
+        """
+        return self.userdir / "data"
+
     def create(self) -> Path:
         """Create the workspace directory and subdirectories."""
         if self._path is not None:
@@ -80,6 +105,10 @@ class BacktestWorkspace:
         (self.userdir / "strategies").mkdir(parents=True, exist_ok=True)
         (self.userdir / "data").mkdir(parents=True, exist_ok=True)
         (self.path / "evidence").mkdir(parents=True, exist_ok=True)
+        # Must exist beforehand: Freqtrade's --backtest-directory only nests
+        # output inside it when it already exists as a directory — otherwise
+        # it treats the path as a filename prefix and writes into its parent.
+        self.backtest_results_dir.mkdir(parents=True, exist_ok=True)
         return self._path
 
     def stage_strategy(self, source_path: str | Path) -> Path:
@@ -96,6 +125,49 @@ class BacktestWorkspace:
         shutil.copy2(source, dest)
         self._staged_strategy_path = dest
         return dest
+
+    def materialize_fixture_data(
+        self,
+        fixture_root: str | Path,
+        manifest: "ExternalFixtureManifest",
+    ) -> Path:
+        """Copy only manifest-validated fixture files into the workspace.
+
+        Re-validates root containment, symlink safety, and per-file SHA-256
+        hashes against *fixture_root* (defense in depth — the caller may
+        already have validated the manifest, but this method never trusts a
+        path it has not itself verified). Only files that pass validation are
+        copied (never symlinked) into ``self.data_dir``, preserving each
+        file's declared relative path so Freqtrade's exchange-data layout
+        (e.g. ``futures/<pair>-<tf>-futures.json``) is preserved.
+
+        Returns ``self.data_dir``, the isolated materialized data directory
+        that Freqtrade should be pointed at — never the raw external
+        *fixture_root* itself.
+
+        Raises:
+            RuntimeError: if any declared file fails containment or hash
+                validation (fail-closed; no partial silent materialization).
+        """
+        from hunter.research_backtest_comparison.fixture_validator import (
+            validate_external_fixture,
+        )
+
+        result = validate_external_fixture(fixture_root, manifest, strict=False)
+        if not result.valid:
+            raise RuntimeError(
+                f"fixture failed validation, refusing to materialize: {result.reason_codes}"
+            )
+
+        root = Path(fixture_root).resolve()
+        self.data_dir.mkdir(parents=True, exist_ok=True)
+        for record in manifest.files:
+            source = root / record.relative_path
+            dest = self.data_dir / record.relative_path
+            dest.parent.mkdir(parents=True, exist_ok=True)
+            shutil.copy2(source, dest)
+
+        return self.data_dir
 
     def cleanup(self, force: bool = True) -> None:
         """Remove the workspace directory if it exists and retention is not set.

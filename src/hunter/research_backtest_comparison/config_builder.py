@@ -28,7 +28,6 @@ _FORBIDDEN_EXCHANGE_FIELDS: frozenset[str] = frozenset(
         "webhook",
         "force_entry_enable",
         "force_exit_enable",
-        "trading_mode",
         "margin",
         "liquidation_buffer",
         "max_entry_position_adjustment",
@@ -43,9 +42,37 @@ _FORBIDDEN_EXCHANGE_CREDENTIALS: frozenset[str] = frozenset(
 )
 
 
-def _json_decimal(value: Decimal) -> str:
-    """Return a deterministic JSON-safe string representation."""
-    return format(value, "f")
+def validate_exchange_identifier(exchange_identifier: str) -> None:
+    """Validate that ``exchange_identifier`` is a real, ccxt-recognized exchange.
+
+    Rejects empty/blank values and any name ccxt does not recognize. This
+    replaces a hardcoded placeholder exchange name with a real one that the
+    caller (ultimately the validated external fixture manifest) supplies, so
+    the value must come from a genuine exchange registry rather than a
+    project-invented sentinel.
+    """
+    if not isinstance(exchange_identifier, str) or not exchange_identifier.strip():
+        raise ResearchBacktestComparisonConfigError(
+            "exchange_identifier must be a non-empty string"
+        )
+
+    import ccxt
+
+    if exchange_identifier not in ccxt.exchanges:
+        raise ResearchBacktestComparisonConfigError(
+            f"exchange_identifier is not a known ccxt exchange: {exchange_identifier!r}"
+        )
+
+
+def _json_number(value: Decimal) -> float:
+    """Return a JSON-safe numeric representation.
+
+    Freqtrade's config schema requires a true JSON number (not a numeric
+    string) for stake_amount / tradable_balance_ratio / dry_run_wallet / fee.
+    Decimal precision loss here is immaterial: these values only parameterize
+    a synthetic backtest simulation, never a real order.
+    """
+    return float(value)
 
 
 def enforce_forbidden_exchange_fields(config_dict: dict[str, Any]) -> None:
@@ -91,7 +118,10 @@ def build_freqtrade_config(
             f"arm must be BacktestArmInput, got {arm!r}"
         )
 
-    # Derive stake currency from the first pair (e.g. BTC/USDT -> USDT).
+    # Derive stake currency from the first pair. Supports both spot notation
+    # (BASE/QUOTE, e.g. BTC/USDT) and futures contract notation
+    # (BASE/QUOTE:SETTLE, e.g. BTC/USDT:USDT) — the quote asset is the segment
+    # between "/" and ":" (or to the end of the string when there is no ":").
     if not arm.pairlist:
         raise ResearchBacktestComparisonConfigError("pairlist must be non-empty")
     first_pair = arm.pairlist[0]
@@ -99,7 +129,8 @@ def build_freqtrade_config(
         raise ResearchBacktestComparisonConfigError(
             f"pair must be in base/quote format: {first_pair}"
         )
-    stake_currency = first_pair.split("/")[-1]
+    quote_and_settle = first_pair.split("/", 1)[-1]
+    stake_currency = quote_and_settle.split(":", 1)[0]
 
     # Pairlist in Freqtrade format (e.g. BTC/USDT -> BTC/USDT:USDT for futures).
     # Keep spot notation for simplicity and safety; caller-provided pairs are authoritative.
@@ -109,15 +140,22 @@ def build_freqtrade_config(
     for protection in config.protections:
         protections.append({"method": protection})
 
+    validate_exchange_identifier(config.exchange_identifier)
+
     freqtrade_config: dict[str, Any] = {
         "max_open_trades": config.max_open_trades,
         "stake_currency": stake_currency,
-        "stake_amount": _json_decimal(config.stake),
-        "tradable_balance_ratio": _json_decimal(Decimal("1.0")),
-        "dry_run_wallet": _json_decimal(config.balance),
-        "fee": _json_decimal(config.fee),
+        "stake_amount": _json_number(config.stake),
+        "tradable_balance_ratio": _json_number(Decimal("1.0")),
+        "dry_run_wallet": _json_number(config.balance),
+        "fee": _json_number(config.fee),
         "timeframe": config.timeframe,
         "data_dir_verbosity": "info",
+        # Fixture candle files are always materialized/staged as ".json"
+        # (see fixture_validator.py / workspace.materialize_fixture_data).
+        # Without this, Freqtrade defaults to "feather" and silently finds
+        # no data even when the correctly named JSON file is present.
+        "dataformat_ohlcv": "json",
         "pairlists": [
             {
                 "method": "StaticPairList",
@@ -126,7 +164,7 @@ def build_freqtrade_config(
             }
         ],
         "exchange": {
-            "name": "research-only",
+            "name": config.exchange_identifier,
             "key": "",
             "secret": "",
             "password": "",
@@ -134,24 +172,38 @@ def build_freqtrade_config(
             "ccxt_config": {},
             "ccxt_async_config": {},
         },
-        "protections": protections,
         "user_data_dir": str(workspace.userdir),
         "strategy": config.strategy_name,
         "strategy_path": str(workspace.strategy_path),
     }
 
+    # The installed Freqtrade version hard-rejects a top-level "protections"
+    # key as deprecated configuration when present at all — even an empty
+    # list. Only emit it when the caller actually declared protections.
+    if protections:
+        freqtrade_config["protections"] = protections
+
+    if config.trading_mode != "spot":
+        freqtrade_config["trading_mode"] = config.trading_mode
+        freqtrade_config["margin_mode"] = "isolated"
+
     # Explicitly disable live trading and signal-related features.
     freqtrade_config["dry_run"] = True
-    freqtrade_config["dry_run_wallet"] = _json_decimal(config.balance)
+    freqtrade_config["dry_run_wallet"] = _json_number(config.balance)
     freqtrade_config["cancel_open_orders_on_exit"] = False
     freqtrade_config["unfilledtimeout"] = {"entry": 10, "exit": 10}
+    # use_order_book=True avoids Freqtrade's ticker-pricing capability check
+    # (validate_pricing), which some exchange/market-type combinations (e.g.
+    # Binance futures) fail when use_order_book=False. Order-book usage is a
+    # config declaration only here — backtesting reads candles, never a live
+    # order book.
     freqtrade_config["entry_pricing"] = {
         "price_side": "other",
-        "use_order_book": False,
+        "use_order_book": True,
     }
     freqtrade_config["exit_pricing"] = {
         "price_side": "other",
-        "use_order_book": False,
+        "use_order_book": True,
     }
     freqtrade_config["disable_dataframe_checks"] = False
     freqtrade_config["internals"] = {"process_throttle_secs": 0}

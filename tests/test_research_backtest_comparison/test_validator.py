@@ -20,6 +20,7 @@ from hunter.research_backtest_comparison.validator import (
     validate_command_args,
     validate_config,
     validate_pairlist,
+    validate_strategy_class_name,
 )
 
 
@@ -215,3 +216,28 @@ class TestValidateCommandArgs:
     def test_non_string_arg(self) -> None:
         with pytest.raises(ResearchBacktestComparisonValidationError):
             validate_command_args(["freqtrade", "backtesting", 123])
+
+
+class TestValidateStrategyClassName:
+    def test_matching_class_accepted(self, tmp_path: Path) -> None:
+        strategy = tmp_path / "HunterCompatibilityCandidate.py"
+        strategy.write_text("class HunterCompatibilityCandidate:\n    pass\n")
+        validate_strategy_class_name(strategy, "HunterCompatibilityCandidate")
+
+    def test_mismatched_class_rejected(self, tmp_path: Path) -> None:
+        # Candidate/Baseline class mismatch: a Baseline strategy_name must
+        # never be silently accepted against a Candidate strategy file.
+        strategy = tmp_path / "HunterCompatibilityCandidate.py"
+        strategy.write_text("class HunterCompatibilityCandidate:\n    pass\n")
+        with pytest.raises(ResearchBacktestComparisonValidationError):
+            validate_strategy_class_name(strategy, "HunterCompatibilityBaseline")
+
+    def test_missing_file_rejected(self, tmp_path: Path) -> None:
+        with pytest.raises(ResearchBacktestComparisonValidationError):
+            validate_strategy_class_name(tmp_path / "missing.py", "AnyStrategy")
+
+    def test_invalid_identifier_rejected(self, tmp_path: Path) -> None:
+        strategy = tmp_path / "strategy.py"
+        strategy.write_text("class Foo:\n    pass\n")
+        with pytest.raises(ResearchBacktestComparisonValidationError):
+            validate_strategy_class_name(strategy, "not a valid identifier")

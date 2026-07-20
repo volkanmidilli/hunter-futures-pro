@@ -2,6 +2,25 @@
 
 All important project changes will be recorded in this file.
 
+## v0.71.0-rc.1 — Phase B.2 Real Freqtrade Compatibility (COMPATIBLE)
+
+- **Real compatibility achieved.** Both Candidate (`HunterCompatibilityCandidate`) and Baseline (`HunterCompatibilityBaseline`) — deterministic, no-op, no-trade compatibility-only strategies — ran real `freqtrade backtesting` (freqtrade 2026.6-dev-3c293b78e) against the real, previously downloaded external fixture (BTC/USDT:USDT futures, 5m, binance, 2024-01-01–2024-01-31; SHA-256-validated per Phase B.1 manifest). Both exited successfully and both real exports parsed (`freqtrade_nested_strategy` schema, zero trades — plumbing compatibility only, no profitability claim).
+- **Two originally verified MVP-65 defects fixed:**
+  - `config_builder.py` no longer hardcodes `exchange.name = "research-only"`; it uses the caller/manifest-supplied `exchange_identifier`, validated against the real `ccxt.exchanges` registry (`validate_exchange_identifier`).
+  - The caller-supplied fixture `data_path` is no longer silently unused: `BacktestWorkspace.materialize_fixture_data()` re-validates (containment, symlink rejection, SHA-256) and copies only manifest-declared files into an isolated workspace directory, which is passed to Freqtrade via `--datadir` (Freqtrade only honors `--datadir` via the CLI, not a config key).
+- **Additional real, in-scope defects discovered and fixed while pursuing an actual compatible run against the installed Freqtrade build:**
+  - A top-level `"protections"` key (even empty) is now deprecated-and-rejected by Freqtrade; emitted only when the caller declares protections.
+  - `stake_amount` / `tradable_balance_ratio` / `dry_run_wallet` / `fee` are now emitted as true JSON numbers, not numeric strings (schema now requires `type: number`).
+  - `entry_pricing` / `exit_pricing` now set `use_order_book: true` — `use_order_book: false` failed Freqtrade's ticker-pricing capability check for Binance futures (`validate_pricing`).
+  - `--export-filename` is deprecated and silently ignored by this Freqtrade build for backtesting; the command now uses `--backtest-directory` (an isolated per-arm directory, pre-created so Freqtrade nests output inside it rather than using it as a filename prefix), and result discovery reads Freqtrade's `.last_result.json` pointer to locate the timestamped `.zip` export. `export_parser.py` and `parser.py` now transparently extract the JSON stats member from the zip.
+  - `stake_currency` derivation now correctly handles futures contract pair notation (`BASE/QUOTE:SETTLE`), not just spot (`BASE/QUOTE`).
+  - `dataformat_ohlcv: "json"` is now set explicitly — fixture candle files are always materialized as `.json`; without this Freqtrade defaulted to `feather` and silently found no data.
+- **New tests:** exchange-identifier validation (valid/empty/blank/placeholder/unknown), manifest exchange_identifier reflected in config, futures `trading_mode`/`margin_mode` wiring, no config-level `datadir`, Hunter safety keys absent from Freqtrade config, `--datadir` passed and matches `config.data_path`, fixture materialization (valid/hash-mismatch/symlink-rejected/path-escape-rejected/fingerprint-deterministic), Candidate/Baseline strategy-class-mismatch rejection (`validate_strategy_class_name`, previously untested), sole-subprocess-boundary source scan (`runner.py` + `executable.py` only), end-to-end fixture-manifest-wiring integration test. All pre-existing fake-Freqtrade test fixtures updated from the flat-JSON `--export-filename` contract to the zip + `.last_result.json` `--backtest-directory` contract.
+- **Immutability verified:** strategy files, fixture candle files, and both manifests are byte-identical (SHA-256) before and after both real runs.
+- **Tests:** targeted suite 336 passed, 1 skipped; full repository suite 10,233 passed, 2 skipped, 9 pre-existing unrelated warnings; `py_compile` clean.
+- **Scope verification (unchanged):** MVP-65 remains the sole subprocess boundary; only `freqtrade backtesting` permitted; no live/dry-run trading, no repository `data/`/`reports/` access; no push; MVP-71 not started.
+- Version bumped from `0.70.2-dev` to `0.71.0-rc.1`. Local annotated tag `v0.71.0-rc.1` created. No push.
+
 ## v0.70.2-dev — Phase B.1 External Fixture Manifest and Hash Validation (Complete)
 
 - **Stage 1–4 (verified):** Baseline, frozen fixture models (16 reason codes), strict JSON manifest loading, fixture-root/path containment/symlink safety — inherited from prior sessions.

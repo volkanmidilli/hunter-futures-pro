@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import re
 from decimal import Decimal
 from pathlib import Path
 
@@ -234,6 +235,29 @@ class TestStrategyMutation:
             baseline=baseline,
         )
         assert not (report.candidate.success and report.baseline.success)
+
+
+class TestSoleSubprocessBoundary:
+    """Source scan: only runner.py (``freqtrade backtesting``) and
+    executable.py (``freqtrade --version``) may spawn subprocesses in this
+    package. No alternate subprocess path may be introduced."""
+
+    _SUBPROCESS_CALL_RE = re.compile(
+        r"\bsubprocess\.(run|Popen|call|check_call|check_output)\b|\bos\.(system|popen|spawn\w*|exec\w*)\b"
+    )
+    _ALLOWED_SUBPROCESS_MODULES = frozenset({"runner.py", "executable.py"})
+
+    def test_only_allowlisted_modules_spawn_subprocesses(self) -> None:
+        package_dir = Path(__file__).resolve().parents[2] / "src" / "hunter" / "research_backtest_comparison"
+        assert package_dir.is_dir()
+
+        offending_modules: list[str] = []
+        for path in sorted(package_dir.glob("*.py")):
+            text = path.read_text(encoding="utf-8")
+            if self._SUBPROCESS_CALL_RE.search(text):
+                offending_modules.append(path.name)
+
+        assert set(offending_modules) == self._ALLOWED_SUBPROCESS_MODULES
 
 
 class TestDeterminism:

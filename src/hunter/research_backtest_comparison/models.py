@@ -392,6 +392,8 @@ class BacktestComparisonConfig:
     retain_workspace_on_failure: bool = True
     env_allowlist: tuple[str, ...] | None = None
     extra_env: dict[str, str] | None = None
+    exchange_identifier: str = "binance"
+    trading_mode: str = "spot"
     metadata: Any = field(default_factory=dict)
 
     def __post_init__(self) -> None:
@@ -430,6 +432,12 @@ class BacktestComparisonConfig:
             raise ValueError("fee must be a non-negative Decimal")
         if not isinstance(self.timeout_seconds, int) or self.timeout_seconds < 1:
             raise ValueError("timeout_seconds must be a positive integer")
+        if not isinstance(self.exchange_identifier, str) or not self.exchange_identifier.strip():
+            raise ValueError("exchange_identifier must be a non-empty string")
+        if self.trading_mode not in ("spot", "margin", "futures"):
+            raise ValueError(
+                f"trading_mode must be one of 'spot', 'margin', 'futures', got {self.trading_mode!r}"
+            )
 
 
 # ---------------------------------------------------------------------------
@@ -763,6 +771,8 @@ class FreqtradeCompatibilityInput:
     fee: Decimal
     protections: tuple[str, ...] = ()
     timeout_seconds: int = 300
+    exchange_identifier: str = "binance"
+    trading_mode: str = "spot"
 
     def __post_init__(self) -> None:
         object.__setattr__(self, "executable_path", Path(self.executable_path))
@@ -792,6 +802,12 @@ class FreqtradeCompatibilityInput:
             raise ValueError("fee must be a non-negative Decimal")
         if not isinstance(self.timeout_seconds, int) or self.timeout_seconds < 1:
             raise ValueError("timeout_seconds must be a positive integer")
+        if not isinstance(self.exchange_identifier, str) or not self.exchange_identifier.strip():
+            raise ValueError("exchange_identifier must be a non-empty string")
+        if self.trading_mode not in ("spot", "margin", "futures"):
+            raise ValueError(
+                f"trading_mode must be one of 'spot', 'margin', 'futures', got {self.trading_mode!r}"
+            )
 
     def fingerprint(self) -> str:
         """Return a deterministic SHA-256 fingerprint of the semantic input.
@@ -814,6 +830,8 @@ class FreqtradeCompatibilityInput:
             "pairs": sorted(self.pairs),
             "starting_balance": str(self.starting_balance),
             "stake": str(self.stake),
+            "exchange_identifier": self.exchange_identifier,
+            "trading_mode": self.trading_mode,
             "max_open_trades": self.max_open_trades,
             "fee": str(self.fee),
             "protections": sorted(self.protections),

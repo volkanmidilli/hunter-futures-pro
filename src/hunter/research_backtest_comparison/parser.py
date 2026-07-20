@@ -10,6 +10,7 @@ from typing import Any
 from hunter.research_backtest_comparison.errors import (
     ResearchBacktestComparisonParserError,
 )
+from hunter.research_backtest_comparison.export_parser import _read_export_json_text
 from hunter.research_backtest_comparison.models import (
     MISSING_METRIC,
     NO_TRADES,
@@ -149,7 +150,7 @@ def parse_backtest_result(
         )
 
     try:
-        raw_text = result_path.read_text(encoding="utf-8")
+        raw_text = _read_export_json_text(result_path)
         data = json.loads(raw_text)
     except json.JSONDecodeError as exc:
         raise ResearchBacktestComparisonParserError(

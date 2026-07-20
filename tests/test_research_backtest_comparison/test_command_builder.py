@@ -54,7 +54,19 @@ class TestBuildBacktestCommand:
             assert "--timerange" in args
             assert "--export" in args
             assert "trades" in args
-            assert "--export-filename" in args
+            assert "--backtest-directory" in args
+        finally:
+            ws.cleanup()
+
+    def test_datadir_passed_and_matches_config_data_path(self, tmp_path: Path) -> None:
+        config = self._make_config(tmp_path)
+        ws = create_workspace(prefix="test_cmd_datadir_")
+        ws.create()
+        try:
+            args = build_backtest_command(config, ws)
+            assert "--datadir" in args
+            idx = args.index("--datadir")
+            assert args[idx + 1] == str(config.data_path)
         finally:
             ws.cleanup()
 

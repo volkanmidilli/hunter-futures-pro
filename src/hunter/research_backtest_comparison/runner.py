@@ -25,7 +25,7 @@ from hunter.research_backtest_comparison.models import (
     BacktestRunResult,
 )
 from hunter.research_backtest_comparison.redaction import redact_text
-from hunter.research_backtest_comparison.result_locator import locate_result_file
+from hunter.research_backtest_comparison.result_locator import locate_latest_backtest_result
 from hunter.research_backtest_comparison.validator import validate_pairlist
 from hunter.research_backtest_comparison.workspace import BacktestWorkspace
 
@@ -223,7 +223,7 @@ def _run_single_backtest(
 
     # Locate and validate result file.
     try:
-        result_file = locate_result_file(workspace.result_path, workspace.path)
+        result_file = locate_latest_backtest_result(workspace.backtest_results_dir, workspace.path)
     except Exception as exc:
         workspace_path = workspace.path
         if not workspace.retain_on_failure:
