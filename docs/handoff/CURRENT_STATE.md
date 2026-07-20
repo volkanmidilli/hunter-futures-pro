@@ -4,11 +4,15 @@ Hunter Futures Pro
 
 ## Version
 
-0.61.0-dev (MVP-61 finalization + tag complete; version bumped to 0.61.0-dev; tagged `v0.61.0-dev` pending)
+0.71.0-rc.2 (Phase B.2 real Freqtrade compatibility established; ZIP safety hardening applied; release candidate)
 
 ## Current Phase
 
-The functional MVP chain now runs through **MVP-61 / v0.61.0-dev**, which is complete with a pending local tag. **MVP-61 — Governance Decision Summary Aggregator** is finalized: `SPEC-062` has been approved and Steps 1–6 (models, validator, policy, engine, writer, integration tests, and documentation/version finalization) are all committed. Source code changes in `src/hunter/governance_summary/models.py`, `src/hunter/governance_summary/validator.py`, `src/hunter/governance_summary/policy.py`, `src/hunter/governance_summary/engine.py`, `src/hunter/governance_summary/writer.py`, `src/hunter/governance_summary/__init__.py`, and `tests/test_governance_summary/`. Tag `v0.61.0-dev` pending (local-only; no push).
+**v0.71.0-rc.2** — Research-only, deterministic, reproducible, human-auditable quantitative research framework with real Freqtrade backtesting compatibility. Phase A (conformance and safety closure, v0.70.1-dev) and Phase B (fixture validation, v0.70.2-dev; real Freqtrade compatibility, v0.71.0-rc.1; ZIP safety hardening + documentation, v0.71.0-rc.2) are complete. The functional MVP chain runs through MVP-70.
+
+**Real Freqtrade compatibility:** Two compatibility-only no-op strategies (`HunterCompatibilityCandidate`, `HunterCompatibilityBaseline`) ran real `freqtrade backtesting` against a real external Binance futures fixture. Both exports parsed via `freqtrade_nested_strategy` schema. Zero trades — plumbing compatibility only, no profitability claim. ZIP safety hardening (v0.71.0-rc.2) added defense-in-depth ZIP member validation.
+
+**MVP-71 is NOT started.** The declared research target is met.
 
 ## Background
 

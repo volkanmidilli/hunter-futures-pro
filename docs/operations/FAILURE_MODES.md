@@ -10,7 +10,7 @@ This file defines known failure modes and the expected safe behavior.
 
 ## Current Phase
 
-The original master plan (MVP-0 through MVP-4) is complete. The expanded MVP chain has reached MVP-46 / v0.46.0-dev. Current active work is MVP-47 — Cross-Artifact Consistency Engine (complete, finalization pending).
+v0.71.0-rc.2 — Research-only quantitative research framework. All MVPs 0–70 complete, Phase B (real Freqtrade compatibility) established, ZIP safety hardening applied. MVP-71 not started.
 
 ## General Rule
 

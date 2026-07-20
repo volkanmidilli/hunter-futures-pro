@@ -2,6 +2,19 @@
 
 All important project changes will be recorded in this file.
 
+## v0.71.0-rc.2 — RC Closure: ZIP Safety Hardening and Documentation
+
+- **ZIP safety hardening:** MVP-65 export parser now performs comprehensive ZIP member-level validation before reading any content.
+  - Rejects encrypted members, duplicate member names, absolute paths, `..` traversal, backslash traversal variants, symlink members (Unix external attributes), and non-regular/special-file members.
+  - Rejects excessive member count (>32), oversized individual members (>16 MiB), excessive total uncompressed size (>64 MiB), and suspicious compression ratios (>50:1 — ZIP-bomb detection).
+  - Rejects ambiguous JSON members (more than one `.json` member) and missing expected result members.
+  - Preserves legacy plain JSON support; never extracts ZIP contents; reads only one validated member.
+  - New reason codes (13): `ZIP_ENCRYPTED_MEMBER`, `ZIP_DUPLICATE_MEMBER`, `ZIP_ABSOLUTE_PATH`, `ZIP_PATH_TRAVERSAL`, `ZIP_BACKSLASH_TRAVERSAL`, `ZIP_SYMLINK_MEMBER`, `ZIP_SPECIAL_FILE_MEMBER`, `ZIP_EXCESSIVE_MEMBER_COUNT`, `ZIP_OVERSIZED_MEMBER`, `ZIP_EXCESSIVE_TOTAL_SIZE`, `ZIP_BOMB_SUSPECTED`, `ZIP_MISSING_EXPECTED_MEMBER`, `ZIP_AMBIGUOUS_JSON_MEMBERS`.
+  - 28 new adversarial tests covering every rejection case and one valid Freqtrade-style ZIP layout.
+- **Documentation:** Updated `CURRENT_STATE.md`, `RUNBOOK.md`, `FAILURE_MODES.md`, `TROUBLESHOOTING.md` (all were stale at MVP-47/MVP-61). Updated `freqtrade_compatibility.md` with ZIP safety table and current Phase B.2 state. Created `docs/architecture/THREAT_MODEL.md` covering protected assets, trust boundaries, subprocess isolation, ZIP threats, resource exhaustion, secret leakage, immutable safety flags, and operator responsibilities.
+- **No push. No remote changes. MVP-71 not started.**
+- Version bumped from `0.71.0-rc.1` to `0.71.0-rc.2`.
+
 ## v0.71.0-rc.1 — Phase B.2 Real Freqtrade Compatibility (COMPATIBLE)
 
 - **Real compatibility achieved.** Both Candidate (`HunterCompatibilityCandidate`) and Baseline (`HunterCompatibilityBaseline`) — deterministic, no-op, no-trade compatibility-only strategies — ran real `freqtrade backtesting` (freqtrade 2026.6-dev-3c293b78e) against the real, previously downloaded external fixture (BTC/USDT:USDT futures, 5m, binance, 2024-01-01–2024-01-31; SHA-256-validated per Phase B.1 manifest). Both exited successfully and both real exports parsed (`freqtrade_nested_strategy` schema, zero trades — plumbing compatibility only, no profitability claim).

@@ -10,9 +10,9 @@ This runbook explains how a human or AI agent should operate the project safely.
 
 ## Current Phase
 
-The original master plan (MVP-0 through MVP-4) is complete. The functional MVP chain has expanded to MVP-46 / v0.46.0-dev. The current active work is MVP-47 — Cross-Artifact Consistency Engine (complete, finalization pending).
+v0.71.0-rc.2 — Research-only, deterministic, reproducible quantitative research framework with real Freqtrade backtesting compatibility (Phase B.2 complete). The original master plan (MVP-0 through MVP-4) and expanded MVP chain (MVP-5 through MVP-70) are complete. Phase A (conformance/safety) and Phase B (fixture validation, real compatibility, ZIP safety) are tagged.
 
-No live trading is enabled. No exchange connections are active.
+No live trading is enabled. No exchange connections are active. MVP-71 not started.
 
 ## Safe Startup Checklist
 

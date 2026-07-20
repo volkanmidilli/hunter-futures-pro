@@ -114,8 +114,32 @@ The compatibility layer is designed against the Freqtrade backtesting export sha
 - Real compatibility result: `REAL_FREQTRADE_COMPATIBILITY_NOT_EXECUTED`
 - Synthetic-fixture deterministic contracts: implemented and tested
 - Methodology policies: implemented, tested, and enforced
-- Final tag `v0.71.0-rc.1`: not created (deferred until real compatibility PASS)
-- Scoped development patch `v0.70.2-dev`: **not created** — a Medium finding (unimplemented fixture manifest/hash validation) remains, so the version was not bumped and no tag was created
+- External fixture manifest and hash validation: implemented (Phase B.1, v0.70.2-dev)
+- Real Freqtrade compatibility: established (Phase B.2, v0.71.0-rc.1) — both Candidate and Baseline no-op strategies ran real `freqtrade backtesting` against a real external Binance futures fixture; both exports parsed via `freqtrade_nested_strategy` schema
+- ZIP safety hardening: implemented (v0.71.0-rc.2) — comprehensive ZIP member-level validation for encrypted members, duplicates, path traversal, symlinks, special files, excessive member count, oversized members, excessive total size, ZIP-bomb compression ratios, ambiguous JSON members, and missing expected members. See `export_parser.py:_validate_zip_and_read_member`.
+- MVP-71: not started — research target met
+
+## ZIP export safety (v0.71.0-rc.2)
+
+The export parser validates every ZIP member before reading content:
+
+| Check | Reason code |
+|---|---|
+| Encrypted member | `ZIP_ENCRYPTED_MEMBER` |
+| Duplicate member name | `ZIP_DUPLICATE_MEMBER` |
+| Absolute path member | `ZIP_ABSOLUTE_PATH` |
+| `..` traversal | `ZIP_PATH_TRAVERSAL` |
+| Backslash traversal | `ZIP_BACKSLASH_TRAVERSAL` |
+| Symlink member (Unix attr) | `ZIP_SYMLINK_MEMBER` |
+| Non-regular file member | `ZIP_SPECIAL_FILE_MEMBER` |
+| Excessive member count (>32) | `ZIP_EXCESSIVE_MEMBER_COUNT` |
+| Oversized member (>16 MiB) | `ZIP_OVERSIZED_MEMBER` |
+| Excessive total size (>64 MiB) | `ZIP_EXCESSIVE_TOTAL_SIZE` |
+| Suspicious compression (>50:1) | `ZIP_BOMB_SUSPECTED` |
+| Missing expected member | `ZIP_MISSING_EXPECTED_MEMBER` |
+| Multiple `.json` members | `ZIP_AMBIGUOUS_JSON_MEMBERS` |
+
+The ZIP is never extracted to disk — only `zipfile.ZipFile.read()` is used to read the single validated JSON member.
 
 ## Mandatory notice
 
