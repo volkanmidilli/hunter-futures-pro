@@ -1,6 +1,6 @@
 [project]
 name = "hunter-futures-pro"
-version = "0.70.1-dev"
+version = "0.70.2-dev"
 description = "Agent-first crypto futures research and execution-control platform"
 requires-python = ">=3.11"
 dependencies = [

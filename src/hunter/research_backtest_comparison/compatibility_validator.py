@@ -8,6 +8,9 @@ from hunter.research_backtest_comparison.errors import (
     ResearchBacktestComparisonValidationError,
 )
 from hunter.research_backtest_comparison.executable import validate_executable
+from hunter.research_backtest_comparison.fixture_validator import (
+    validate_external_fixture as _validate_fixture,
+)
 from hunter.research_backtest_comparison.models import (
     COMPATIBILITY_INVALID_EXTERNAL_FIXTURE,
     COMPATIBILITY_NOT_EXECUTED,

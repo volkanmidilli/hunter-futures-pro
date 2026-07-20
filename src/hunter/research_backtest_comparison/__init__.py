@@ -41,6 +41,17 @@ from hunter.research_backtest_comparison.fingerprint import (
     safety_flags_fingerprint,
     strategy_fingerprint,
 )
+from hunter.research_backtest_comparison.fixture_models import (
+    ExternalFixtureManifest,
+    FixtureFileRecord,
+    FixtureValidationResult,
+    FIXTURE_VALIDATION_REASON_CODES,
+)
+from hunter.research_backtest_comparison.fixture_validator import (
+    check_undeclared_files,
+    compute_fixture_fingerprint,
+    validate_external_fixture,
+)
 from hunter.research_backtest_comparison.models import (
     RESEARCH_BACKTEST_COMPARISON_VERSION,
     SPEC_VERSION,
@@ -89,6 +100,13 @@ __all__ = [
     "BacktestRunResult",
     "CompatibilityStatus",
     "EvidenceAvailability",
+    "ExternalFixtureManifest",
+    "FixtureFileRecord",
+    "FixtureValidationResult",
+    "FIXTURE_VALIDATION_REASON_CODES",
+    "check_undeclared_files",
+    "compute_fixture_fingerprint",
+    "validate_external_fixture",
     "FreqtradeCompatibilityInput",
     "FreqtradeCompatibilityManifest",
     "FreqtradeCompatibilityReport",

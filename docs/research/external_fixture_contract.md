@@ -69,15 +69,17 @@ IMMUTABILITY_VERIFIED → COMPATIBLE
 
 `CompatibilityEvidence` records every fingerprint (executable, config, strategy before / after, candidate result, baseline result, raw exports, parsed reports) and the Freqtrade version string.
 
-> **Note:** The dataclasses and state machine above (`ExternalFreqtradeExecutable`, `ExternalFixtureManifest`, `FixtureFileRecord`, `CompatibilityExecutionConfig`, `CompatibilityState`, `CompatibilityEvidence`) are **contract specifications** describing the intended fixture-validation pipeline. As of this Phase B Stage 10 closure, the implemented compatibility layer provides basic external-resource path validation (`validate_external_resources` in `compatibility_validator.py`) and the `FreqtradeCompatibilityInput` dataclass, but the full manifest model with per-file SHA-256 candle-file hash verification has **not** been implemented yet. The contract above documents the target design for when a real external fixture is supplied.
+> **Note:** The external fixture manifest with per-file SHA-256 hash verification is now **fully implemented** in Phase B.1 (Stages 1–7): `src/hunter/research_backtest_comparison/fixture_models.py` (frozen models, 16 reason codes), `fixture_manifest.py` (strict JSON loading), `fixture_validator.py` (root validation, path containment, symlink safety, bounded SHA-256 verification, undeclared-file policy, deterministic fingerprinting). All functions are exported from the `research_backtest_comparison` public API. 127 dedicated fixture tests; full suite 10,212 passing. The contract below documents the complete design.
 
-## Current Phase B state
+## Current Phase B.1 state
 
-- External offline fixture root: **not provided**
-- External-resource path validation (`validate_external_resources`): implemented and tested
-- Full fixture manifest with per-file SHA-256 candle-file hash verification: **not implemented** — documented contract only; deferred until an external fixture root is supplied
-- Real-fixture validation: deferred until an external fixture root is supplied
-- Compatibility result: `REAL_FREQTRADE_COMPATIBILITY_NOT_EXECUTED`
+- External offline fixture validation: **fully implemented and tested**
+- Per-file SHA-256 hash verification: **implemented** (bounded 64 KiB chunk read, 256 MiB max)
+- Path containment, symlink detection, escape prevention: **implemented**
+- Strict/non-strict undeclared-file policy: **implemented**
+- Canonical deterministic fixture fingerprinting: **implemented**
+- Real-fixture validation: deferred until an external fixture root is supplied by user
+- Compatibility result: `REAL_FREQTRADE_COMPATIBILITY_NOT_EXECUTED` (valid — no real Freqtrade inputs provided)
 
 ## Mandatory notice
 

@@ -2,6 +2,25 @@
 
 All important project changes will be recorded in this file.
 
+## v0.70.2-dev — Phase B.1 External Fixture Manifest and Hash Validation (Complete)
+
+- **Stage 1–4 (verified):** Baseline, frozen fixture models (16 reason codes), strict JSON manifest loading, fixture-root/path containment/symlink safety — inherited from prior sessions.
+- **Stage 5 — Bounded SHA-256 verification:** `verify_file_hash()`, `validate_fixture_hashes()`, `_hash_file_bytes()` with 64 KiB chunk reads and 256 MiB max file size.
+- **Stage 6 — Strict/non-strict undeclared-file policy:** `check_undeclared_files()` with strict (default) and non-strict modes. Extra files in fixture root are violations in strict mode; silently ignored in non-strict.
+- **Stage 7 — Canonical deterministic fixture fingerprinting:** `compute_fixture_fingerprint()` produces a stable SHA-256 digest of the `ExternalFixtureManifest.canonical_fingerprint_payload()`. Input ordering is irrelevant due to deterministic canonicalization.
+- **Stage 8 — Compatibility harness integration:** All fixture validation functions exported from `research_backtest_comparison` public API (`__init__.py`). Integration tests prove end-to-end wire-up.
+- **Stage 9 — Full regression and source scans:** Full suite 10,212 passed, 2 skipped, 9 warnings. Source scan (38 tests) confirms no network/subprocess/retry/scheduler violations.
+- **Stage 10 — Documentation, version bump, and tag:**
+  - `docs/research/external_fixture_contract.md` updated: fixture validation now documented as fully implemented.
+  - `CHANGELOG.md` updated with honest closure state.
+  - Version bumped from `0.70.1-dev` to `0.70.2-dev`.
+  - Local annotated tag `v0.70.2-dev` created.
+- **New files:** `fixture_validator.py` (451 lines), `test_fixture_validator.py` (1011 lines, 52 tests), `test_fixture_integration.py` (212 lines, 9 tests), `src/hunter/core/cli.py` (31 lines).
+- **Existing files updated:** `fixture_manifest.py`, `fixture_models.py`, `__init__.py` (imports/exports), `models.py` (reason code union), `compatibility_validator.py` (fixture validator import), `external_fixture_contract.md`.
+- **Total fixture tests:** 127 (33 fixture_models + 33 fixture_manifest + 52 fixture_validator + 9 fixture_integration).
+- **No push. No real Freqtrade compatibility execution. No v0.71.0-rc.1.**
+- **MVP-71 NOT started.**
+
 ## Unreleased — Phase B Methodology Implementation (SPEC-072)
 
 - **Real Freqtrade compatibility:** External executable and external offline fixture were not provided; real compatibility was not executed. The system reports `REAL_FREQTRADE_COMPATIBILITY_NOT_EXECUTED`. The compatibility states `COMPATIBLE` / `INCOMPATIBLE` require an explicit external executable + fixture and are deferred until both are supplied. The `v0.71.0-rc.1` tag is NOT created.
