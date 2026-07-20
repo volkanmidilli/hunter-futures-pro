@@ -195,3 +195,35 @@ def validate_command_args(args: list[str]) -> None:
             raise ResearchBacktestComparisonValidationError(
                 f"forbidden subcommand: {token}"
             )
+
+
+def validate_strategy_class_name(strategy_path: str | Path, strategy_name: str) -> None:
+    """Validate that the requested strategy class name appears in the source file.
+
+    Raises:
+        ResearchBacktestComparisonValidationError: on missing or invalid class name.
+    """
+    path = Path(strategy_path)
+    if not path.exists() or not path.is_file():
+        raise ResearchBacktestComparisonValidationError(
+            f"strategy_path is not a regular file: {path}"
+        )
+    try:
+        text = path.read_text(encoding="utf-8")
+    except OSError as exc:
+        raise ResearchBacktestComparisonValidationError(
+            f"failed to read strategy file: {exc}"
+        ) from exc
+
+    # Simple lexical check: class definition with the requested name.
+    import re
+
+    if not re.search(rf"^class\s+{re.escape(strategy_name)}\b", text, re.MULTILINE):
+        raise ResearchBacktestComparisonValidationError(
+            f"strategy class {strategy_name!r} not found in {path}"
+        )
+
+    if not isinstance(strategy_name, str) or not strategy_name.isidentifier():
+        raise ResearchBacktestComparisonValidationError(
+            f"strategy_name must be a valid Python identifier: {strategy_name!r}"
+        )

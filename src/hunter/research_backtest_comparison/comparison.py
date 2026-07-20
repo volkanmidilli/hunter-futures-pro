@@ -9,6 +9,11 @@ from decimal import Decimal
 from hunter.research_backtest_comparison.models import (
     INSUFFICIENT_TRADES,
     MISSING_METRIC,
+    NO_TRADES,
+    NO_TRADES_BASELINE,
+    NO_TRADES_BOTH_ARMS,
+    NO_TRADES_CANDIDATE,
+    ONE_SIDED_ZERO_TRADES,
     UNAVAILABLE,
     BacktestComparisonResult,
     BacktestMetrics,
@@ -123,19 +128,47 @@ def comparison_fingerprint(
 def compare_backtest_results(
     candidate: BacktestRunResult,
     baseline: BacktestRunResult,
+    *,
+    min_trades: int = _MIN_TRADES_FOR_SUFFICIENCY,
 ) -> BacktestComparisonResult:
     """Compare candidate and baseline backtest results.
 
     Zero-trade results are valid but marked as insufficient evidence.
+
+    Args:
+        candidate: Candidate arm run result.
+        baseline: Baseline arm run result.
+        min_trades: Explicit, configurable minimum trade count per arm for
+            sufficiency (SPEC-072 Stage 6). Defaults to
+            ``_MIN_TRADES_FOR_SUFFICIENCY`` (1). Must be a positive int.
+
+    Raises:
+        ValueError: if ``min_trades`` is not a positive integer.
     """
+    if not isinstance(min_trades, int) or min_trades < 1:
+        raise ValueError("min_trades must be a positive int (>=1)")
+
     deltas, interpretations = compare_backtest_metrics(candidate.metrics, baseline.metrics)
     trade_sufficiency = (
-        candidate.metrics.trade_count >= _MIN_TRADES_FOR_SUFFICIENCY
-        and baseline.metrics.trade_count >= _MIN_TRADES_FOR_SUFFICIENCY
+        candidate.metrics.trade_count >= min_trades
+        and baseline.metrics.trade_count >= min_trades
     )
     reason_codes: list[str] = []
     if not trade_sufficiency:
         reason_codes.append(INSUFFICIENT_TRADES)
+    cand_zero = candidate.metrics.trade_count == 0
+    base_zero = baseline.metrics.trade_count == 0
+    if cand_zero and base_zero:
+        reason_codes.append(NO_TRADES_BOTH_ARMS)
+    elif cand_zero or base_zero:
+        # One-sided zero trades: only one arm produced zero trades.
+        # SPEC-072 Stage 6: one-sided zero trades is not silently comparable.
+        reason_codes.append(NO_TRADES)
+        reason_codes.append(ONE_SIDED_ZERO_TRADES)
+        if cand_zero:
+            reason_codes.append(NO_TRADES_CANDIDATE)
+        if base_zero:
+            reason_codes.append(NO_TRADES_BASELINE)
     if any(v is None for v in deltas.values()):
         reason_codes.append(MISSING_METRIC)
 

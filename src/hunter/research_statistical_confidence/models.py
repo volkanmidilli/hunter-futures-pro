@@ -37,6 +37,15 @@ INSUFFICIENT_DATA = "INSUFFICIENT_DATA"
 INSUFFICIENT_SIGN_SHARE = "INSUFFICIENT_SIGN_SHARE"
 CONSISTENT_DIRECTION = "CONSISTENT_DIRECTION"
 ROBUSTNESS_FAILED = "ROBUSTNESS_FAILED"
+NO_TRADES_BOTH_ARMS = "NO_TRADES_BOTH_ARMS"
+NO_TRADES_CANDIDATE = "NO_TRADES_CANDIDATE"
+NO_TRADES_BASELINE = "NO_TRADES_BASELINE"
+ZERO_OBSERVED_DISPERSION = "ZERO_OBSERVED_DISPERSION"
+INSUFFICIENT_DISTINCT_VALUES = "INSUFFICIENT_DISTINCT_VALUES"
+OVERLAPPING_WINDOWS = "OVERLAPPING_WINDOWS"
+NON_OVERLAPPING = "NON_OVERLAPPING"
+OVERLAPPING = "OVERLAPPING"
+UNKNOWN_DEPENDENCE = "UNKNOWN_DEPENDENCE"
 
 STATISTICAL_CONFIDENCE_REASON_CODES: frozenset[str] = frozenset({
     INVALID_CONFIG,
@@ -56,6 +65,15 @@ STATISTICAL_CONFIDENCE_REASON_CODES: frozenset[str] = frozenset({
     CONSISTENT_DIRECTION,
     INSUFFICIENT_SIGN_SHARE,
     ROBUSTNESS_FAILED,
+    NO_TRADES_BOTH_ARMS,
+    NO_TRADES_CANDIDATE,
+    NO_TRADES_BASELINE,
+    ZERO_OBSERVED_DISPERSION,
+    INSUFFICIENT_DISTINCT_VALUES,
+    OVERLAPPING_WINDOWS,
+    NON_OVERLAPPING,
+    OVERLAPPING,
+    UNKNOWN_DEPENDENCE,
 })
 
 # -----------------------------------------------------------------------------
@@ -72,6 +90,19 @@ class ConfidenceState(str, Enum):
     DIRECTIONALLY_STABLE_BASELINE = "DIRECTIONALLY_STABLE_BASELINE"
     ROBUST_CANDIDATE = "ROBUST_CANDIDATE"
     ROBUST_BASELINE = "ROBUST_BASELINE"
+
+
+class DependenceStatus(str, Enum):
+    """Window-overlap dependence status for walk-forward experiments.
+
+    - NON_OVERLAPPING: no pair of evaluation windows overlaps.
+    - OVERLAPPING: at least one pair of evaluation windows overlaps.
+    - UNKNOWN: insufficient or unparseable boundary information.
+    """
+
+    NON_OVERLAPPING = "NON_OVERLAPPING"
+    OVERLAPPING = "OVERLAPPING"
+    UNKNOWN = "UNKNOWN"
 
 
 # -----------------------------------------------------------------------------
@@ -171,16 +202,35 @@ class StatisticalConfidenceSafetyFlags:
 
 @dataclass(frozen=True)
 class BootstrapConfig:
-    """Configuration for deterministic bootstrap resampling."""
+    """Configuration for deterministic bootstrap resampling.
+
+    Attributes:
+        seed: Deterministic seed for the bootstrap PRNG.
+        iterations: Number of bootstrap resamples to draw.
+        min_distinct_values_for_bootstrap: Minimum number of distinct sample
+            values required for the bootstrap exchangeability assumption.
+            Samples with fewer distinct values are flagged with
+            ``INSUFFICIENT_DISTINCT_VALUES`` and are not eligible for
+            ``ROBUST_CANDIDATE`` / ``ROBUST_BASELINE`` classification.
+            Defaults to 2 (any constant non-zero sample is flagged).
+    """
 
     seed: int
     iterations: int
+    min_distinct_values_for_bootstrap: int = 2
 
     def __post_init__(self) -> None:
         if not isinstance(self.seed, int):
             raise ValueError(f"seed must be an int, got {self.seed!r}")
         if not isinstance(self.iterations, int) or self.iterations < 1:
             raise ValueError(f"iterations must be a positive int, got {self.iterations}")
+        if (
+            not isinstance(self.min_distinct_values_for_bootstrap, int)
+            or self.min_distinct_values_for_bootstrap < 1
+        ):
+            raise ValueError(
+                "min_distinct_values_for_bootstrap must be a positive int (>=1)"
+            )
 
 
 @dataclass(frozen=True)

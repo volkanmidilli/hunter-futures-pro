@@ -43,21 +43,30 @@ def _median(values: list[Decimal]) -> Decimal | None:
 
 
 def _quartiles(values: list[Decimal]) -> tuple[Decimal | None, Decimal | None, Decimal | None]:
-    """Return (q1, q3, iqr) using the median-of-halves method."""
+    """Return (q1, q3, iqr) using the median-of-halves method (inclusive for odd n).
+
+    This implementation aligns with research_statistical_confidence.descriptive._quartiles
+    so that MVP-66 and MVP-67 produce identical quartiles for the same delta list.
+    """
     if not values:
         return None, None, None
     sorted_values = sorted(values)
     n = len(sorted_values)
 
-    if n % 2 == 1:
-        lower = sorted_values[: n // 2]
-        upper = sorted_values[n // 2 + 1 :]
+    if n == 1:
+        q1 = sorted_values[0]
+        q3 = sorted_values[0]
     else:
-        lower = sorted_values[: n // 2]
-        upper = sorted_values[n // 2 :]
+        # Include median in both halves for odd n (Tukey's hinges).
+        if n % 2 == 0:
+            lower = sorted_values[: n // 2]
+            upper = sorted_values[n // 2 :]
+        else:
+            lower = sorted_values[: n // 2 + 1]
+            upper = sorted_values[n // 2 :]
+        q1 = _median(lower)
+        q3 = _median(upper)
 
-    q1 = _median(lower)
-    q3 = _median(upper)
     iqr = None if q1 is None or q3 is None else q3 - q1
     return q1, q3, iqr
 

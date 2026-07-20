@@ -2,6 +2,13 @@
 
 from __future__ import annotations
 
+from hunter.research_backtest_comparison.compatibility_harness import (
+    run_freqtrade_compatibility_smoke_test,
+)
+from hunter.research_backtest_comparison.compatibility_writer import (
+    FreqtradeCompatibilityWriter,
+    write_all_compatibility_artifacts,
+)
 from hunter.research_backtest_comparison.comparison import (
     compare_backtest_metrics,
     compare_backtest_results,
@@ -47,10 +54,17 @@ from hunter.research_backtest_comparison.models import (
     BacktestFairnessManifest,
     BacktestMetrics,
     BacktestRunResult,
+    CompatibilityStatus,
+    EvidenceAvailability,
+    FreqtradeCompatibilityInput,
+    FreqtradeCompatibilityManifest,
+    FreqtradeCompatibilityReport,
+    FreqtradeCompatibilityResult,
     FreqtradeExecutableInfo,
     MetricInterpretation,
     ResearchBacktestSafetyFlags,
     RESEARCH_BACKTEST_COMPARISON_REASON_CODES,
+    classify_evidence_availability,
 )
 from hunter.research_backtest_comparison.writer import (
     BacktestComparisonWriter,
@@ -73,6 +87,12 @@ __all__ = [
     "BacktestFairnessManifest",
     "BacktestMetrics",
     "BacktestRunResult",
+    "CompatibilityStatus",
+    "EvidenceAvailability",
+    "FreqtradeCompatibilityInput",
+    "FreqtradeCompatibilityManifest",
+    "FreqtradeCompatibilityReport",
+    "FreqtradeCompatibilityResult",
     "FreqtradeExecutableInfo",
     "MetricInterpretation",
     "ResearchBacktestSafetyFlags",
@@ -84,6 +104,10 @@ __all__ = [
     "ResearchBacktestComparisonRunnerError",
     "ResearchBacktestComparisonValidationError",
     "RESEARCH_BACKTEST_COMPARISON_REASON_CODES",
+    "run_freqtrade_compatibility_smoke_test",
+    "FreqtradeCompatibilityWriter",
+    "write_all_compatibility_artifacts",
+    "classify_evidence_availability",
     "build_backtest_comparison_report",
     "command_fingerprint",
     "compare_backtest_metrics",

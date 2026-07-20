@@ -134,6 +134,14 @@ Excluded from evidence:
 | MVP-69 | Research Campaign Compiler | `SPEC-070` | `v0.69.0-dev` | `research_campaign` | `test_research_campaign` | tagged | Cartesian-product compilation, filters, deterministic fingerprints |
 | MVP-70 | Research Campaign Batch Orchestrator | `SPEC-070` | `v0.70.0-dev` | `research_campaign` | `test_research_campaign` | tagged | Sequential runner, resume/reuse, checkpoints, dossier writer |
 
+## Phase Index
+
+| Phase | Spec | Version | Status | Notes |
+|---|---|---|---|---|
+| Phase A | `SPEC-047`–`SPEC-070` | `v0.70.1-dev` | tagged | Research Pipeline Conformance and Safety Closure. Tagged `v0.70.1-dev` at `0303dcd` (local-only; no push). Closed conformance, safety, writer, resume, ledger-integrity, and checkpoint defects across MVP-63 through MVP-70. |
+| Phase B | `SPEC-072` | `0.70.1-dev` (unchanged) | blocked — methodology complete, compatibility not executed | Real Freqtrade Compatibility and Research Methodology Validation. Methodology implementation (stages 6-8) complete and tested; real compatibility NOT executed (`REAL_FREQTRADE_COMPATIBILITY_NOT_EXECUTED`) because external executable + fixture were not provided. Stage 10 found a Medium finding: external fixture manifest with per-file SHA-256 hash validation is documented but not implemented. Version NOT bumped; `v0.70.2-dev` tag NOT created; `v0.71.0-rc.1` NOT created. Full suite 10085 passed, 2 skipped, 9 warnings. Local-only; no push. |
+| MVP-71 | (not started) | — | not started | Not started by Phase B policy. |
+
 ## Package Mapping
 
 ### Legacy / utility packages with no clear spec mapping

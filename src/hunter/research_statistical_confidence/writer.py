@@ -422,6 +422,22 @@ class StatisticalConfidenceWriter:
         else:
             lines.append("- None")
 
+        lines.extend([
+            "",
+            "## Exchangeability Assumption",
+            "",
+            (
+                "Bootstrap confidence intervals assume the available window "
+                "deltas are exchangeable (i.i.d.-like under the null). "
+                "Independent-replication claims exclude windows flagged as "
+                "overlapping or dependent by the window-dependence policy. "
+                "Constant non-zero samples (zero observed dispersion) and "
+                "samples with insufficient distinct values are not classified "
+                "as ROBUST solely because the bootstrap interval is a "
+                "non-zero point."
+            ),
+            "",
+        ])
         lines.extend(["", "## Mandatory Notice", "", _MANDATORY_NOTICE, ""])
         return "\n".join(lines)
 

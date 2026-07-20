@@ -123,6 +123,23 @@ def run_statistical_confidence(
             maximum_influence_ratio=config.robustness.maximum_influence_ratio,
         )
 
+        # Stage 7 / SPEC-072: detect zero observed dispersion and
+        # insufficient distinct values to block ROBUST_* classification
+        # when the bootstrap CI is a non-zero point.
+        available_count_for_policy = desc["available_count"]
+        if available_count_for_policy > 0:
+            distinct_count = len({d for d in deltas if d is not None})
+            zero_observed_dispersion = (
+                desc["std_dev"] is not None
+                and desc["std_dev"] == Decimal("0")
+            )
+            insufficient_distinct_values = (
+                distinct_count < config.bootstrap.min_distinct_values_for_bootstrap
+            )
+        else:
+            zero_observed_dispersion = False
+            insufficient_distinct_values = False
+
         # Classification
         confidence_state, cls_reason_codes = classify_metric_confidence(
             available_count=desc["available_count"],
@@ -132,6 +149,8 @@ def run_statistical_confidence(
             mean_ci=mean_ci,
             median_ci=median_ci,
             config=config,
+            zero_observed_dispersion=zero_observed_dispersion,
+            insufficient_distinct_values=insufficient_distinct_values,
         )
 
         reason_codes: list[str] = list(cls_reason_codes)

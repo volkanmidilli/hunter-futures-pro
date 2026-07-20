@@ -2,7 +2,56 @@
 
 All important project changes will be recorded in this file.
 
-## Unreleased
+## Unreleased — Phase B Methodology Implementation (SPEC-072)
+
+- **Real Freqtrade compatibility:** External executable and external offline fixture were not provided; real compatibility was not executed. The system reports `REAL_FREQTRADE_COMPATIBILITY_NOT_EXECUTED`. The compatibility states `COMPATIBLE` / `INCOMPATIBLE` require an explicit external executable + fixture and are deferred until both are supplied. The `v0.71.0-rc.1` tag is NOT created.
+- **Stage 6 — Zero-trade and evidence-availability policy:**
+  - New `EvidenceAvailability` enum (`AVAILABLE`, `ZERO_TRADES`, `INSUFFICIENT_TRADES`, `ONE_SIDED_ZERO_TRADES`, `MISSING_METRIC`, `PARSER_FAILED`, `BLOCKED`, `TIMED_OUT`, `UNSUPPORTED_SCHEMA`).
+  - New `classify_evidence_availability` precedence ladder.
+  - `compare_backtest_results(min_trades=...)` now makes the minimum trade threshold explicit and configurable (default 1).
+  - One-sided zero trades now emits `ONE_SIDED_ZERO_TRADES`, `NO_TRADES_CANDIDATE` or `NO_TRADES_BASELINE`.
+  - Valid numeric zero with executed trades remains numeric zero (not fabricated as `UNAVAILABLE`).
+  - Zero-trade exports parsed by `parser._compute_metrics_from_trades` now surface `NO_TRADES` and leave numeric fields `None` (serialized as `UNAVAILABLE`) instead of fabricating zeros.
+- **Stage 7 — Canonical quartiles and constant-delta policy:**
+  - `research_walk_forward.aggregation._quartiles` and `research_statistical_confidence.descriptive._quartiles` now use the same median-of-halves (Tukey's hinges) method, including for the singleton and odd-count cases.
+  - `ConstantDeltaPolicy` now detects both `ZERO_OBSERVED_DISPERSION` and `INSUFFICIENT_DISTINCT_VALUES` with a configurable `min_distinct_values` (default 2).
+  - `classify_metric_confidence` accepts `zero_observed_dispersion` and `insufficient_distinct_values` keyword flags; a constant non-zero sample no longer classifies as `ROBUST_CANDIDATE` / `ROBUST_BASELINE` solely because the bootstrap CI is a non-zero point. Directional stability is preserved when justified.
+  - `BootstrapConfig.min_distinct_values_for_bootstrap` (default 2) is the explicit exchangeability threshold.
+  - Classification remains symmetric for candidate and baseline directions.
+- **Stage 8 — Window dependence:**
+  - New `DependenceStatus` enum (`NON_OVERLAPPING`, `OVERLAPPING`, `UNKNOWN`).
+  - `WindowDependencePolicy` now reports `status`, `overlapping_eval_pair_count`, and `max_overlap_seconds` (closed-interval overlap of `YYYYMMDD` boundaries, in seconds).
+  - Independent-replication claims exclude overlapping / dependent windows by default.
+  - The statistical confidence writer now emits an `## Exchangeability Assumption` section stating that bootstrap intervals assume exchangeable deltas and that overlapping / dependent windows are excluded from independent-replication claims.
+  - No automatic regime inference; no block bootstrap unless separately justified.
+- **Stage 9 — Tests and migration:**
+  - New tests: `tests/test_research_statistical_confidence/test_methodology.py` (31 tests covering ConstantDeltaPolicy, QuartilePolicy, WindowDependencePolicy, NoTradeWindowPolicy, InsufficientEvidencePolicy, ResearchMethodologyPolicy).
+  - New tests: `tests/test_research_statistical_confidence/test_evidence_and_constant_delta.py` (15 tests covering `classify_evidence_availability` precedence ladder and constant-delta/insufficient-distinct blocks on `ROBUST_*` classification).
+  - New tests: `tests/test_research_backtest_comparison/test_stage6_comparison.py` (16 tests covering one-sided zero trades, configurable `min_trades`, numeric-zero-stays-numeric-zero, missing-metric propagation).
+  - New tests: `tests/test_phase_b_scope_scan.py` (38 source-scan tests proving MVP-65 is the sole subprocess boundary, no `download-data` / `hyperopt` / `trade` / `webserver` subcommand construction, no network / retry / parallel / scheduler / database / queue tokens, safety-flag immutability, no `data/` / `reports/` references, MVP-71 not started).
+  - Focused suites: `tests/test_research_backtest_comparison/`, `tests/test_research_walk_forward/`, `tests/test_research_statistical_confidence/`, `tests/test_research_evidence_ledger/`, `tests/test_research_campaign/` — 997 passed, 1 skipped.
+  - Full suite: `python -m pytest tests/ -q` — **10085 passed, 2 skipped, 9 warnings** (warnings are pre-existing `datetime.utcnow` deprecations unrelated to Phase B).
+  - `python -m py_compile src/hunter/research_backtest_comparison/*.py src/hunter/research_walk_forward/*.py src/hunter/research_statistical_confidence/*.py` — OK.
+- **Stage 10 — Documentation and closure:**
+  - New `specs/SPEC-072-Real-Freqtrade-Compatibility-And-Methodology-Validation.md`.
+  - New `docs/research/methodology.md`.
+  - New `docs/research/freqtrade_compatibility.md`.
+  - New `docs/research/external_fixture_contract.md`.
+  - Updated `docs/MVP_INDEX.md` with Phase A and Phase B rows.
+  - Updated `CHANGELOG.md` with honest Phase B closure state.
+- **Scope verification:**
+  - MVP-65 remains the sole subprocess boundary (verified via source scan).
+  - Only `freqtrade backtesting` is permitted at runtime (verified via `validate_command_args`).
+  - No live/dry-run trading, exchange/network, data download, retry, parallel execution, scheduler, database, or queue (verified via source scan).
+  - Repository `data/` and `reports/` never inspected or modified by Phase B modules.
+  - No push or remote changes.
+  - MVP-71 not started.
+- **Findings (Stage 10 independent verification):**
+  - **Medium:** The external fixture manifest with per-file SHA-256 candle-file hash verification (SPEC-072 Must Have) is documented in `docs/research/external_fixture_contract.md` but **not implemented** in source. The documentation previously claimed it was "implemented and tested with deterministic SHA-256 fixtures" — this was false and has been corrected. The implemented `validate_external_resources` provides basic path validation only; the full `ExternalFixtureManifest` / `FixtureFileRecord` dataclasses do not exist in source.
+  - Because a Medium finding remains, the version was **not** bumped to `0.70.2-dev` and the `v0.70.2-dev` tag was **not** created. The repository version remains `0.70.1-dev`.
+- Historical tags `v0.69.0-dev`, `v0.70.0-dev`, `v0.70.1-dev` preserved. No push.
+- Final tag `v0.71.0-rc.1` NOT created because real Freqtrade compatibility was not executed.
+- Final verdict: `BLOCKED — REAL COMPATIBILITY INPUTS NOT PROVIDED`.
 
 ## v0.70.0-dev — MVP-70 Controlled Batch Experiment Orchestrator (SPEC-070)
 

@@ -8,10 +8,12 @@ from hunter.research_statistical_confidence.models import (
     BOOTSTRAP_CONFIDENCE_EXCLUDES_ZERO,
     BOOTSTRAP_CONFIDENCE_INCLUDES_ZERO,
     DIRECTION_CONFLICT_CODE,
+    INSUFFICIENT_DISTINCT_VALUES,
     INSUFFICIENT_SIGN_SHARE,
     NO_BOOTSTRAP,
     ROBUSTNESS_FAILED,
     ROBUSTNESS_PASSED,
+    ZERO_OBSERVED_DISPERSION,
     BootstrapInterval,
     ConfidenceState,
     LeaveOneOutResult,
@@ -34,6 +36,9 @@ def classify_metric_confidence(
     mean_ci: BootstrapInterval | None,
     median_ci: BootstrapInterval | None,  # noqa: ARG001
     config: StatisticalConfidenceConfig,
+    *,
+    zero_observed_dispersion: bool = False,
+    insufficient_distinct_values: bool = False,
 ) -> tuple[ConfidenceState, tuple[str, ...]]:
     """Classify a metric into a ConfidenceState based on statistical evidence.
 
@@ -45,6 +50,16 @@ def classify_metric_confidence(
         mean_ci: Bootstrap confidence interval for the mean (or None).
         median_ci: Bootstrap confidence interval for the median (or None).
         config: Statistical confidence configuration.
+        zero_observed_dispersion: True when all available deltas are identical
+            (std_dev == 0). When True, the classifier never returns
+            ``ROBUST_CANDIDATE`` / ``ROBUST_BASELINE`` because a constant
+            non-zero sample must not pass robustness simply because the
+            bootstrap interval is a non-zero point. Directional stability
+            is still preserved when the sign-share / LOO conditions hold.
+        insufficient_distinct_values: True when the number of distinct
+            available delta values is below the configured bootstrap
+            exchangeability threshold. When True, the classifier never
+            returns ``ROBUST_CANDIDATE`` / ``ROBUST_BASELINE``.
 
     Returns:
         Tuple of (ConfidenceState, tuple of reason codes).
@@ -100,7 +115,17 @@ def classify_metric_confidence(
     # 5. Check bootstrap CI and robustness
     bootstrap_excludes = _bootstrap_excludes_zero(mean_ci)
 
-    if bootstrap_excludes and loo.max_influence_ratio <= mir:
+    # Stage 7 / SPEC-072: a constant non-zero sample produces a non-zero
+    # point bootstrap interval; that alone must not classify as ROBUST_*.
+    # Either zero observed dispersion OR insufficient distinct values
+    # blocks the ROBUST branch and falls through to directional stability.
+    blocks_robust = zero_observed_dispersion or insufficient_distinct_values
+    if zero_observed_dispersion:
+        reason_codes.append(ZERO_OBSERVED_DISPERSION)
+    if insufficient_distinct_values:
+        reason_codes.append(INSUFFICIENT_DISTINCT_VALUES)
+
+    if bootstrap_excludes and loo.max_influence_ratio <= mir and not blocks_robust:
         reason_codes.append(BOOTSTRAP_CONFIDENCE_EXCLUDES_ZERO)
         reason_codes.append(ROBUSTNESS_PASSED)
         if is_candidate:

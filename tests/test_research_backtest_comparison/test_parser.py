@@ -11,6 +11,7 @@ from hunter.research_backtest_comparison.errors import (
     ResearchBacktestComparisonParserError,
 )
 from hunter.research_backtest_comparison.models import (
+    NO_TRADES,
     RESEARCH_BACKTEST_COMPARISON_VERSION,
     BacktestMetrics,
 )
@@ -61,7 +62,10 @@ class TestParseBacktestResult:
         result.write_text('{"trades": []}')
         metrics = parse_backtest_result(result)
         assert metrics.trade_count == 0
-        assert metrics.total_return_pct == Decimal("0")
+        assert metrics.total_return_pct is None
+        assert metrics.absolute_profit is None
+        assert metrics.final_balance is None
+        assert metrics.reason_codes == (NO_TRADES,)
 
     def test_missing_file(self, tmp_path: Path) -> None:
         with pytest.raises(ResearchBacktestComparisonParserError):

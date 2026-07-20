@@ -30,6 +30,7 @@ class BacktestWorkspace:
         self.retain_on_failure = retain_on_failure
         self._path: Path | None = None
         self._retain: bool = False
+        self._staged_strategy_path: Path | None = None
 
     @property
     def path(self) -> Path:
@@ -55,8 +56,18 @@ class BacktestWorkspace:
 
     @property
     def strategy_path(self) -> Path:
-        """Return the strategy symlink/copy path inside the workspace."""
+        """Return the legacy strategy symlink/copy path inside the workspace."""
         return self.path / "strategy.py"
+
+    @property
+    def staged_strategy_path(self) -> Path:
+        """Return the staged strategy path, falling back to the legacy path."""
+        return self._staged_strategy_path if self._staged_strategy_path is not None else self.strategy_path
+
+    @property
+    def evidence_path(self) -> Path:
+        """Return the evidence directory path inside the workspace."""
+        return self.path / "evidence"
 
     def create(self) -> Path:
         """Create the workspace directory and subdirectories."""
@@ -68,7 +79,23 @@ class BacktestWorkspace:
         self.userdir.mkdir(parents=True, exist_ok=True)
         (self.userdir / "strategies").mkdir(parents=True, exist_ok=True)
         (self.userdir / "data").mkdir(parents=True, exist_ok=True)
+        (self.path / "evidence").mkdir(parents=True, exist_ok=True)
         return self._path
+
+    def stage_strategy(self, source_path: str | Path) -> Path:
+        """Copy the caller-provided strategy file into the workspace.
+
+        Returns the staged path. The strategy file is copied (not symlinked) so
+        the workspace is self-contained and immutable after creation.
+        """
+        source = Path(source_path)
+        if not source.exists() or not source.is_file():
+            raise RuntimeError(f"strategy source does not exist or is not a file: {source}")
+        # Preserve the basename so Freqtrade's strategy loader can resolve it.
+        dest = self.userdir / "strategies" / source.name
+        shutil.copy2(source, dest)
+        self._staged_strategy_path = dest
+        return dest
 
     def cleanup(self, force: bool = True) -> None:
         """Remove the workspace directory if it exists and retention is not set.

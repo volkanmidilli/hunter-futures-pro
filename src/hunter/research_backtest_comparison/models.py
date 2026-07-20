@@ -58,6 +58,28 @@ NO_AUTOMATIC_CONFIG_MUTATION = "NO_AUTOMATIC_CONFIG_MUTATION"
 NO_ACTION_COMMANDS_EMITTED = "NO_ACTION_COMMANDS_EMITTED"
 NO_OPEN_INTEREST_SYNTHESIS = "NO_OPEN_INTEREST_SYNTHESIS"
 INSUFFICIENT_TRADES = "INSUFFICIENT_TRADES"
+NO_TRADES = "NO_TRADES"
+NO_TRADES_BOTH_ARMS = "NO_TRADES_BOTH_ARMS"
+NO_TRADES_CANDIDATE = "NO_TRADES_CANDIDATE"
+NO_TRADES_BASELINE = "NO_TRADES_BASELINE"
+ONE_SIDED_ZERO_TRADES = "ONE_SIDED_ZERO_TRADES"
+EVIDENCE_AVAILABLE = "AVAILABLE"
+EVIDENCE_ZERO_TRADES = "ZERO_TRADES"
+EVIDENCE_INSUFFICIENT_TRADES = "INSUFFICIENT_TRADES"
+EVIDENCE_ONE_SIDED_ZERO_TRADES = "ONE_SIDED_ZERO_TRADES"
+EVIDENCE_MISSING_METRIC = "MISSING_METRIC"
+EVIDENCE_PARSER_FAILED = "PARSER_FAILED"
+EVIDENCE_BLOCKED = "BLOCKED"
+EVIDENCE_TIMED_OUT = "TIMED_OUT"
+EVIDENCE_UNSUPPORTED_SCHEMA = "UNSUPPORTED_SCHEMA"
+
+COMPATIBILITY_NOT_EXECUTED = "NOT_EXECUTED"
+COMPATIBILITY_EXECUTED_PASS = "EXECUTED_PASS"
+COMPATIBILITY_EXECUTED_FAIL = "EXECUTED_FAIL"
+COMPATIBILITY_UNSUPPORTED_VERSION = "UNSUPPORTED_VERSION"
+COMPATIBILITY_UNSUPPORTED_EXPORT_SCHEMA = "UNSUPPORTED_EXPORT_SCHEMA"
+COMPATIBILITY_INVALID_EXTERNAL_FIXTURE = "INVALID_EXTERNAL_FIXTURE"
+REAL_FREQTRADE_COMPATIBILITY_NOT_EXECUTED = "REAL_FREQTRADE_COMPATIBILITY_NOT_EXECUTED"
 
 RESEARCH_BACKTEST_COMPARISON_REASON_CODES: frozenset[str] = frozenset(
     {
@@ -100,6 +122,38 @@ RESEARCH_BACKTEST_COMPARISON_REASON_CODES: frozenset[str] = frozenset(
         NO_ACTION_COMMANDS_EMITTED,
         NO_OPEN_INTEREST_SYNTHESIS,
         INSUFFICIENT_TRADES,
+        NO_TRADES,
+        NO_TRADES_BOTH_ARMS,
+        NO_TRADES_CANDIDATE,
+        NO_TRADES_BASELINE,
+        ONE_SIDED_ZERO_TRADES,
+        EVIDENCE_AVAILABLE,
+        EVIDENCE_ZERO_TRADES,
+        EVIDENCE_INSUFFICIENT_TRADES,
+        EVIDENCE_ONE_SIDED_ZERO_TRADES,
+        EVIDENCE_MISSING_METRIC,
+        EVIDENCE_PARSER_FAILED,
+        EVIDENCE_BLOCKED,
+        EVIDENCE_TIMED_OUT,
+        EVIDENCE_UNSUPPORTED_SCHEMA,
+        COMPATIBILITY_NOT_EXECUTED,
+        COMPATIBILITY_EXECUTED_PASS,
+        COMPATIBILITY_EXECUTED_FAIL,
+        COMPATIBILITY_UNSUPPORTED_VERSION,
+        COMPATIBILITY_UNSUPPORTED_EXPORT_SCHEMA,
+        COMPATIBILITY_INVALID_EXTERNAL_FIXTURE,
+        REAL_FREQTRADE_COMPATIBILITY_NOT_EXECUTED,
+    }
+)
+
+COMPATIBILITY_STATUS_CODES: frozenset[str] = frozenset(
+    {
+        COMPATIBILITY_NOT_EXECUTED,
+        COMPATIBILITY_EXECUTED_PASS,
+        COMPATIBILITY_EXECUTED_FAIL,
+        COMPATIBILITY_UNSUPPORTED_VERSION,
+        COMPATIBILITY_UNSUPPORTED_EXPORT_SCHEMA,
+        COMPATIBILITY_INVALID_EXTERNAL_FIXTURE,
     }
 )
 
@@ -123,6 +177,77 @@ class BacktestArmLabel(str, Enum):
 
     CANDIDATE = "CANDIDATE"
     BASELINE = "BASELINE"
+
+
+class CompatibilityStatus(str, Enum):
+    """Terminal status for a real Freqtrade compatibility smoke test."""
+
+    NOT_EXECUTED = COMPATIBILITY_NOT_EXECUTED
+    EXECUTED_PASS = COMPATIBILITY_EXECUTED_PASS
+    EXECUTED_FAIL = COMPATIBILITY_EXECUTED_FAIL
+    UNSUPPORTED_VERSION = COMPATIBILITY_UNSUPPORTED_VERSION
+    UNSUPPORTED_EXPORT_SCHEMA = COMPATIBILITY_UNSUPPORTED_EXPORT_SCHEMA
+    INVALID_EXTERNAL_FIXTURE = COMPATIBILITY_INVALID_EXTERNAL_FIXTURE
+
+
+class EvidenceAvailability(str, Enum):
+    """Evidence availability status for a backtest arm or metric (SPEC-072 Stage 6).
+
+    Only ``AVAILABLE`` deltas enter default bootstrap / confidence samples.
+    All other states are excluded from default statistical samples but the
+    excluded count and reason code are preserved on the report.
+    """
+
+    AVAILABLE = EVIDENCE_AVAILABLE
+    ZERO_TRADES = EVIDENCE_ZERO_TRADES
+    INSUFFICIENT_TRADES = EVIDENCE_INSUFFICIENT_TRADES
+    ONE_SIDED_ZERO_TRADES = EVIDENCE_ONE_SIDED_ZERO_TRADES
+    MISSING_METRIC = EVIDENCE_MISSING_METRIC
+    PARSER_FAILED = EVIDENCE_PARSER_FAILED
+    BLOCKED = EVIDENCE_BLOCKED
+    TIMED_OUT = EVIDENCE_TIMED_OUT
+    UNSUPPORTED_SCHEMA = EVIDENCE_UNSUPPORTED_SCHEMA
+
+
+def classify_evidence_availability(
+    *,
+    trade_count: int | None,
+    min_trades: int,
+    has_metric: bool,
+    parser_failed: bool = False,
+    blocked: bool = False,
+    timed_out: bool = False,
+    unsupported_schema: bool = False,
+) -> EvidenceAvailability:
+    """Classify evidence availability for a single arm / metric (SPEC-072 Stage 6).
+
+    Precedence (highest first):
+        BLOCKED → TIMED_OUT → UNSUPPORTED_SCHEMA → PARSER_FAILED →
+        ZERO_TRADES (trade_count == 0) → INSUFFICIENT_TRADES
+        (trade_count < min_trades) → MISSING_METRIC → AVAILABLE.
+
+    A valid numeric zero return WITH executed trades is NOT evidence
+    unavailability: trade_count > 0 with a numeric-zero metric is AVAILABLE.
+    One-sided zero trades (caller-supplied context) is handled by the
+    comparison layer, not here.
+    """
+    if blocked:
+        return EvidenceAvailability.BLOCKED
+    if timed_out:
+        return EvidenceAvailability.TIMED_OUT
+    if unsupported_schema:
+        return EvidenceAvailability.UNSUPPORTED_SCHEMA
+    if parser_failed:
+        return EvidenceAvailability.PARSER_FAILED
+    if trade_count is None:
+        return EvidenceAvailability.MISSING_METRIC
+    if trade_count == 0:
+        return EvidenceAvailability.ZERO_TRADES
+    if trade_count < min_trades:
+        return EvidenceAvailability.INSUFFICIENT_TRADES
+    if not has_metric:
+        return EvidenceAvailability.MISSING_METRIC
+    return EvidenceAvailability.AVAILABLE
 
 
 # ---------------------------------------------------------------------------
@@ -425,6 +550,7 @@ class BacktestRunResult:
             raise ValueError("strategy_sha_after must be a string")
         if not isinstance(self.fingerprint, str) or not self.fingerprint.strip():
             raise ValueError("fingerprint must be a non-empty string")
+
         if not isinstance(self.metrics, BacktestMetrics):
             raise ValueError(f"metrics must be BacktestMetrics, got {self.metrics!r}")
 
@@ -570,6 +696,7 @@ class BacktestComparisonReport:
             raise ValueError("research_backtest_comparison_version must be a non-empty string")
         if not isinstance(self.fingerprint, str) or not self.fingerprint.strip():
             raise ValueError("fingerprint must be a non-empty string")
+
         if not isinstance(self.human_approval_required, bool):
             raise ValueError("human_approval_required must be a boolean")
         if not isinstance(self.research_only, bool):
@@ -588,6 +715,233 @@ class BacktestComparisonReport:
             raise ValueError(f"comparison must be BacktestComparisonResult, got {self.comparison!r}")
         if not isinstance(self.fairness, BacktestFairnessManifest):
             raise ValueError(f"fairness must be BacktestFairnessManifest, got {self.fairness!r}")
+
+
+# ---------------------------------------------------------------------------
+# Real Freqtrade compatibility models
+# ---------------------------------------------------------------------------
+
+
+@dataclass(frozen=True)
+class FreqtradeCompatibilityInput:
+    """Caller-provided external resources for a compatibility smoke test."""
+
+    executable_path: str | Path
+    strategy_path: str | Path
+    data_path: str | Path
+    output_dir: str | Path
+    strategy_name: str
+    timeframe: str
+    timerange: str
+    pairs: tuple[str, ...]
+    starting_balance: Decimal
+    stake: Decimal
+    max_open_trades: int
+    fee: Decimal
+    protections: tuple[str, ...] = ()
+    timeout_seconds: int = 300
+
+    def __post_init__(self) -> None:
+        object.__setattr__(self, "executable_path", Path(self.executable_path))
+        object.__setattr__(self, "strategy_path", Path(self.strategy_path))
+        object.__setattr__(self, "data_path", Path(self.data_path))
+        object.__setattr__(self, "output_dir", Path(self.output_dir))
+        object.__setattr__(self, "pairs", _coerce_tuple_strs(self.pairs))
+        object.__setattr__(self, "starting_balance", _coerce_decimal(self.starting_balance))
+        object.__setattr__(self, "stake", _coerce_decimal(self.stake))
+        object.__setattr__(self, "fee", _coerce_decimal(self.fee))
+        object.__setattr__(self, "protections", _coerce_tuple_strs(self.protections))
+        if not isinstance(self.strategy_name, str) or not self.strategy_name.strip():
+            raise ValueError("strategy_name must be a non-empty string")
+        if not isinstance(self.timeframe, str) or not self.timeframe.strip():
+            raise ValueError("timeframe must be a non-empty string")
+        if not isinstance(self.timerange, str) or not self.timerange.strip():
+            raise ValueError("timerange must be a non-empty string")
+        if not self.pairs:
+            raise ValueError("pairs must be non-empty")
+        if self.starting_balance is None or self.starting_balance <= Decimal("0"):
+            raise ValueError("starting_balance must be a positive Decimal")
+        if self.stake is None or self.stake <= Decimal("0"):
+            raise ValueError("stake must be a positive Decimal")
+        if not isinstance(self.max_open_trades, int) or self.max_open_trades < 1:
+            raise ValueError("max_open_trades must be a positive integer")
+        if self.fee is None or self.fee < Decimal("0"):
+            raise ValueError("fee must be a non-negative Decimal")
+        if not isinstance(self.timeout_seconds, int) or self.timeout_seconds < 1:
+            raise ValueError("timeout_seconds must be a positive integer")
+
+    def fingerprint(self) -> str:
+        """Return a deterministic SHA-256 fingerprint of the semantic input.
+
+        Protections are normalized with sorted() to match the canonical
+        repository contract (see fairness.py). Runtime-only values
+        (output_dir, timeout_seconds) are excluded so equivalent inputs
+        produce identical fingerprints.
+        """
+        import hashlib
+        import json
+
+        payload = {
+            "executable_path": str(self.executable_path),
+            "strategy_path": str(self.strategy_path),
+            "data_path": str(self.data_path),
+            "strategy_name": self.strategy_name,
+            "timeframe": self.timeframe,
+            "timerange": self.timerange,
+            "pairs": sorted(self.pairs),
+            "starting_balance": str(self.starting_balance),
+            "stake": str(self.stake),
+            "max_open_trades": self.max_open_trades,
+            "fee": str(self.fee),
+            "protections": sorted(self.protections),
+        }
+        text = json.dumps(payload, sort_keys=True, separators=(",", ":"), ensure_ascii=True)
+        return hashlib.sha256(text.encode("utf-8")).hexdigest()
+
+
+@dataclass(frozen=True)
+class FreqtradeCompatibilityResult:
+    """Result of a single real Freqtrade compatibility smoke test."""
+
+    status: CompatibilityStatus
+    executable_info: FreqtradeExecutableInfo | None
+    strategy_fingerprint: str | None
+    data_fingerprint: str | None
+    command: tuple[str, ...]
+    command_fingerprint: str
+    runtime_config: dict[str, Any] | None
+    export_schema: str | None
+    parsed_metrics: BacktestMetrics | None
+    raw_export_fingerprint: str | None
+    stdout: str
+    stderr: str
+    exit_code: int
+    reason_codes: tuple[str, ...]
+    metadata: Any = field(default_factory=dict)
+
+    def __post_init__(self) -> None:
+        object.__setattr__(self, "command", _coerce_tuple_strs(self.command))
+        object.__setattr__(self, "reason_codes", _coerce_tuple_strs(self.reason_codes))
+        object.__setattr__(self, "metadata", _coerce_mapping_strs(self.metadata))
+        if not isinstance(self.status, CompatibilityStatus):
+            raise ValueError(f"status must be CompatibilityStatus, got {self.status!r}")
+        if self.executable_info is not None and not isinstance(self.executable_info, FreqtradeExecutableInfo):
+            raise ValueError(f"executable_info must be FreqtradeExecutableInfo or None, got {self.executable_info!r}")
+        if self.strategy_fingerprint is not None and (not isinstance(self.strategy_fingerprint, str) or not self.strategy_fingerprint.strip()):
+            raise ValueError("strategy_fingerprint must be a non-empty string or None")
+        if self.data_fingerprint is not None and (not isinstance(self.data_fingerprint, str) or not self.data_fingerprint.strip()):
+            raise ValueError("data_fingerprint must be a non-empty string or None")
+        if not isinstance(self.command_fingerprint, str) or not self.command_fingerprint.strip():
+            raise ValueError("command_fingerprint must be a non-empty string")
+        if self.runtime_config is not None and not isinstance(self.runtime_config, dict):
+            raise ValueError(f"runtime_config must be a dict or None, got {self.runtime_config!r}")
+        if self.export_schema is not None and not isinstance(self.export_schema, str):
+            raise ValueError(f"export_schema must be a string or None, got {self.export_schema!r}")
+        if self.parsed_metrics is not None and not isinstance(self.parsed_metrics, BacktestMetrics):
+            raise ValueError(f"parsed_metrics must be BacktestMetrics or None, got {self.parsed_metrics!r}")
+        if self.raw_export_fingerprint is not None and (not isinstance(self.raw_export_fingerprint, str) or not self.raw_export_fingerprint.strip()):
+            raise ValueError("raw_export_fingerprint must be a non-empty string or None")
+        if not isinstance(self.stdout, str):
+            raise ValueError("stdout must be a string")
+        if not isinstance(self.stderr, str):
+            raise ValueError("stderr must be a string")
+        if not isinstance(self.exit_code, int):
+            raise ValueError("exit_code must be an int")
+
+
+@dataclass(frozen=True)
+class FreqtradeCompatibilityManifest:
+    """Lightweight manifest for a real Freqtrade compatibility smoke test."""
+
+    version: str
+    spec_version: str
+    research_backtest_comparison_version: str
+    generated_at: datetime
+    compatibility_status: CompatibilityStatus
+    executable_version: str | None
+    executable_fingerprint: str | None
+    strategy_fingerprint: str | None
+    data_fingerprint: str | None
+    command_fingerprint: str
+    raw_export_fingerprint: str | None
+    parsed_metrics_fingerprint: str | None
+    safety_flags: ResearchBacktestSafetyFlags
+    reason_codes: tuple[str, ...]
+    metadata: Any = field(default_factory=dict)
+
+    def __post_init__(self) -> None:
+        if not isinstance(self.generated_at, datetime) or self.generated_at.tzinfo is None:
+            raise ValueError("generated_at must be a timezone-aware datetime")
+        if not isinstance(self.compatibility_status, CompatibilityStatus):
+            raise ValueError(f"compatibility_status must be CompatibilityStatus, got {self.compatibility_status!r}")
+        if not isinstance(self.command_fingerprint, str) or not self.command_fingerprint.strip():
+            raise ValueError("command_fingerprint must be a non-empty string")
+        if not isinstance(self.safety_flags, ResearchBacktestSafetyFlags):
+            raise ValueError(f"safety_flags must be ResearchBacktestSafetyFlags, got {self.safety_flags!r}")
+        if self.executable_version is not None and not isinstance(self.executable_version, str):
+            raise ValueError(f"executable_version must be a string or None, got {self.executable_version!r}")
+        if self.executable_fingerprint is not None and not isinstance(self.executable_fingerprint, str):
+            raise ValueError(f"executable_fingerprint must be a string or None, got {self.executable_fingerprint!r}")
+        if self.strategy_fingerprint is not None and not isinstance(self.strategy_fingerprint, str):
+            raise ValueError(f"strategy_fingerprint must be a string or None, got {self.strategy_fingerprint!r}")
+        if self.data_fingerprint is not None and not isinstance(self.data_fingerprint, str):
+            raise ValueError(f"data_fingerprint must be a string or None, got {self.data_fingerprint!r}")
+        if self.raw_export_fingerprint is not None and not isinstance(self.raw_export_fingerprint, str):
+            raise ValueError(f"raw_export_fingerprint must be a string or None, got {self.raw_export_fingerprint!r}")
+        if self.parsed_metrics_fingerprint is not None and not isinstance(self.parsed_metrics_fingerprint, str):
+            raise ValueError(f"parsed_metrics_fingerprint must be a string or None, got {self.parsed_metrics_fingerprint!r}")
+        object.__setattr__(self, "reason_codes", _coerce_tuple_strs(self.reason_codes))
+        object.__setattr__(self, "metadata", _coerce_mapping_strs(self.metadata))
+
+
+@dataclass(frozen=True)
+class FreqtradeCompatibilityReport:
+    """Top-level real Freqtrade compatibility report."""
+
+    version: str
+    spec_version: str
+    research_backtest_comparison_version: str
+    created_at: str
+    input: FreqtradeCompatibilityInput
+    result: FreqtradeCompatibilityResult
+    manifest: FreqtradeCompatibilityManifest
+    safety_flags: ResearchBacktestSafetyFlags
+    fingerprint: str
+    human_approval_required: bool = True
+    research_only: bool = True
+    reason_codes: tuple[str, ...] = ()
+    metadata: Any = field(default_factory=dict)
+
+    def __post_init__(self) -> None:
+        object.__setattr__(self, "reason_codes", _coerce_tuple_strs(self.reason_codes))
+        object.__setattr__(self, "metadata", _coerce_mapping_strs(self.metadata))
+        if not isinstance(self.version, str) or not self.version.strip():
+            raise ValueError("version must be a non-empty string")
+        if not isinstance(self.spec_version, str) or not self.spec_version.strip():
+            raise ValueError("spec_version must be a non-empty string")
+        if not isinstance(self.research_backtest_comparison_version, str) or not self.research_backtest_comparison_version.strip():
+            raise ValueError("research_backtest_comparison_version must be a non-empty string")
+        if not isinstance(self.created_at, str) or not self.created_at.strip():
+            raise ValueError("created_at must be a non-empty string")
+        if not isinstance(self.input, FreqtradeCompatibilityInput):
+            raise ValueError(f"input must be FreqtradeCompatibilityInput, got {self.input!r}")
+        if not isinstance(self.result, FreqtradeCompatibilityResult):
+            raise ValueError(f"result must be FreqtradeCompatibilityResult, got {self.result!r}")
+        if not isinstance(self.manifest, FreqtradeCompatibilityManifest):
+            raise ValueError(f"manifest must be FreqtradeCompatibilityManifest, got {self.manifest!r}")
+        if not isinstance(self.safety_flags, ResearchBacktestSafetyFlags):
+            raise ValueError(f"safety_flags must be ResearchBacktestSafetyFlags, got {self.safety_flags!r}")
+        if not isinstance(self.fingerprint, str) or not self.fingerprint.strip():
+            raise ValueError("fingerprint must be a non-empty string")
+        if not isinstance(self.human_approval_required, bool):
+            raise ValueError("human_approval_required must be a boolean")
+        if not isinstance(self.research_only, bool):
+            raise ValueError("research_only must be a boolean")
+
+    @property
+    def status(self) -> CompatibilityStatus:
+        """Return the terminal compatibility status from the embedded result."""
+        return self.result.status
 
 
 # ---------------------------------------------------------------------------

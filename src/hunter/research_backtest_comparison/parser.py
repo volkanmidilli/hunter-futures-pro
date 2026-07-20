@@ -12,6 +12,7 @@ from hunter.research_backtest_comparison.errors import (
 )
 from hunter.research_backtest_comparison.models import (
     MISSING_METRIC,
+    NO_TRADES,
     PARSER_ERROR,
     PARSER_VERSION_MISMATCH,
     BacktestMetrics,
@@ -60,20 +61,11 @@ def _compute_metrics_from_trades(
     This is a fallback for raw Freqtrade exports that contain only trades.
     """
     if not trades:
+        # Zero-trade exports are valid evidence; performance metrics
+        # remain unavailable instead of being fabricated as zeros.
         return BacktestMetrics(
-            total_return_pct=Decimal("0"),
-            absolute_profit=Decimal("0"),
-            final_balance=start_balance,
-            max_drawdown_pct=Decimal("0"),
-            sharpe_ratio=None,
-            sortino_ratio=None,
-            calmar_ratio=None,
-            profit_factor=None,
-            win_rate_pct=Decimal("0"),
             trade_count=0,
-            avg_trade_duration=Decimal("0"),
-            fees_paid=Decimal("0"),
-            reason_codes=(MISSING_METRIC,),
+            reason_codes=(NO_TRADES,),
         )
 
     profits: list[Decimal] = []

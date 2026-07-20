@@ -11,6 +11,22 @@ from hunter.research_statistical_confidence.errors import (
     StatisticalConfidenceValidationError,
     StatisticalConfidenceWriterError,
 )
+from hunter.research_statistical_confidence.methodology import (
+    ConstantDeltaPolicy,
+    InsufficientEvidencePolicy,
+    NoTradeWindowPolicy,
+    PolicyResult,
+    QuartilePolicy,
+    ResearchMethodologyPolicy,
+    WindowDependencePolicy,
+)
+from hunter.research_statistical_confidence.methodology_engine import (
+    MethodologyPolicyArtifact,
+    MethodologyValidationReport,
+    MethodologyValidationWriter,
+    build_methodology_validation_report,
+    write_all_methodology_artifacts,
+)
 from hunter.research_statistical_confidence.models import (
     SPEC_VERSION,
     STATISTICAL_CONFIDENCE_VERSION,
@@ -26,6 +42,7 @@ from hunter.research_statistical_confidence.models import (
     StatisticalConfidenceConfig,
     StatisticalConfidenceManifest,
     StatisticalConfidenceSafetyFlags,
+    DependenceStatus,
 )
 from hunter.research_statistical_confidence.writer import (
     StatisticalConfidenceWriter,
@@ -56,4 +73,17 @@ __all__ = [
     "StatisticalConfidenceWriter",
     "write_experiment_confidence_report",
     "write_all_statistical_confidence_artifacts",
+    "DependenceStatus",
+    "PolicyResult",
+    "NoTradeWindowPolicy",
+    "InsufficientEvidencePolicy",
+    "QuartilePolicy",
+    "ConstantDeltaPolicy",
+    "WindowDependencePolicy",
+    "ResearchMethodologyPolicy",
+    "MethodologyPolicyArtifact",
+    "MethodologyValidationReport",
+    "MethodologyValidationWriter",
+    "build_methodology_validation_report",
+    "write_all_methodology_artifacts",
 ]

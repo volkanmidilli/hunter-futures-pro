@@ -106,9 +106,11 @@ class TestQuartiles:
     def test_quartiles_odd(self) -> None:
         values = [Decimal("1"), Decimal("2"), Decimal("3"), Decimal("4"), Decimal("5")]
         q1, q3, iqr = _quartiles(values)
-        assert q1 == Decimal("1.5")
-        assert q3 == Decimal("4.5")
-        assert iqr == Decimal("3")
+        # Inclusive median-of-halves (aligned with MVP-67 descriptive._quartiles):
+        # lower=[1,2,3] -> q1=2, upper=[3,4,5] -> q3=4
+        assert q1 == Decimal("2")
+        assert q3 == Decimal("4")
+        assert iqr == Decimal("2")
 
     def test_quartiles_empty(self) -> None:
         q1, q3, iqr = _quartiles([])
