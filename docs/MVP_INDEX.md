@@ -57,6 +57,7 @@ Excluded from evidence:
 - `SPEC-068` exists for MVP-67 Walk-Forward Statistical Confidence and Stability Evaluation. Complete; tagged `v0.67.0-dev` at `201044a` (local-only; no push).
 - `SPEC-069` exists for MVP-68 Research Experiment Ledger, Replication and Multiple-Testing Control. Complete; tagged `v0.68.0-dev` at `3fb2819` (local-only; no push). Patch `v0.68.1-dev` adds writer silent-overwrite protection and failed-write cleanup.
 - `SPEC-070` exists for MVP-69 Research Campaign Compiler and MVP-70 Research Campaign Batch Orchestrator. Complete; tagged `v0.70.0-dev` (local-only; no push). MVP-69 tagged `v0.69.0-dev` at `e826936`.
+- `SPEC-074` exists for MVP-71 Daily Coin Universe Ranking and Native Freqtrade RemotePairList Export. Complete; tagged `v0.72.0-dev` (local-only; no push). Deterministic ranking adapter, publish gate, atomic writer with previous-good preservation, dated static snapshots, CLI (`universe`/`coins`/`pairlist`/`daily-pairlist`), native+container `file:///` deployment profiles.
 
 ## MVP Index Table
 
@@ -133,6 +134,7 @@ Excluded from evidence:
 | MVP-68 | Research Experiment Ledger, Replication and Multiple-Testing Control | `SPEC-069` | `v0.68.0-dev` | `research_evidence_ledger` | `test_research_evidence_ledger` | tagged | Tagged `v0.68.0-dev` at `3fb2819`; patch `v0.68.1-dev` adds writer overwrite protection (local-only; no push) |
 | MVP-69 | Research Campaign Compiler | `SPEC-070` | `v0.69.0-dev` | `research_campaign` | `test_research_campaign` | tagged | Cartesian-product compilation, filters, deterministic fingerprints |
 | MVP-70 | Research Campaign Batch Orchestrator | `SPEC-070` | `v0.70.0-dev` | `research_campaign` | `test_research_campaign` | tagged | Sequential runner, resume/reuse, checkpoints, dossier writer |
+| MVP-71 | Daily Coin Universe Ranking and Native Freqtrade RemotePairList Export | `SPEC-074` | `v0.72.0-dev` | `pairlist_export` | `test_pairlist_export` | tagged | Deterministic ranking adapter, publish gate (incl. independent evidence-completeness re-check), atomic writer with previous-good preservation, dated static snapshots, CLI (`universe`/`coins`/`pairlist`/`daily-pairlist`), native+container `file:///` deployment profiles. `hunter.core.cli` routes to it; `reporting_cli`'s command set unchanged. Local-only; no push. |
 
 ## Phase Index
 
@@ -141,7 +143,7 @@ Excluded from evidence:
 | Phase A | `SPEC-047`–`SPEC-070` | `v0.70.1-dev` | tagged | Research Pipeline Conformance and Safety Closure. Tagged `v0.70.1-dev` at `0303dcd` (local-only; no push). Closed conformance, safety, writer, resume, ledger-integrity, and checkpoint defects across MVP-63 through MVP-70. |
 | Phase B.1 | `SPEC-073` | `v0.70.2-dev` | tagged | External Fixture Manifest and Hash Validation. `ExternalFixtureManifest` / `FixtureFileRecord`, bounded SHA-256 verification, strict/non-strict undeclared-file policy, deterministic fingerprinting. Tagged `v0.70.2-dev` (local-only; no push). |
 | Phase B.2 | `SPEC-072` | `v0.71.0-rc.2` | tagged — COMPATIBLE | Real Freqtrade Compatibility. Real external fixture (BTC/USDT:USDT futures, 5m, binance) used; two compatibility-only no-op strategies (`HunterCompatibilityCandidate`, `HunterCompatibilityBaseline`) ran real `freqtrade backtesting`; real exports parsed (`freqtrade_nested_strategy` schema, zero trades — plumbing only, no profitability claim). v0.71.0-rc.2 adds comprehensive ZIP safety hardening (13 reason codes, 28 adversarial tests) and updates all stale operational docs. Tagged `v0.71.0-rc.2` (local-only; no push). |
-| MVP-71 | (not started) | — | not started | Not started by Phase B policy. Research target met. |
+| MVP-71 | `SPEC-074` | `v0.72.0-dev` | tagged | Daily Coin Universe Ranking and Native Freqtrade RemotePairList Export. See the MVP Index Table above for the full row; listed here because prior sessions marked this phase slot "not started" pending Phase B closure. |
 
 ## Package Mapping
 

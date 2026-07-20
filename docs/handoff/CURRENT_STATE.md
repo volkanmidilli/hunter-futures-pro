@@ -4,15 +4,15 @@ Hunter Futures Pro
 
 ## Version
 
-0.71.0-rc.2 (Phase B.2 real Freqtrade compatibility established; ZIP safety hardening applied; release candidate)
+0.72.0-dev (SPEC-074 Daily Coin Universe Ranking and Native Freqtrade RemotePairList Export closed)
 
 ## Current Phase
 
-**v0.71.0-rc.2** — Research-only, deterministic, reproducible, human-auditable quantitative research framework with real Freqtrade backtesting compatibility. Phase A (conformance and safety closure, v0.70.1-dev) and Phase B (fixture validation, v0.70.2-dev; real Freqtrade compatibility, v0.71.0-rc.1; ZIP safety hardening + documentation, v0.71.0-rc.2) are complete. The functional MVP chain runs through MVP-70.
+**v0.72.0-dev** — Research-only, deterministic, reproducible, human-auditable quantitative research framework with real Freqtrade backtesting compatibility, plus a daily operational pairlist-publishing pipeline. Phase A (conformance and safety closure, v0.70.1-dev), Phase B (fixture validation, v0.70.2-dev; real Freqtrade compatibility, v0.71.0-rc.1; ZIP safety hardening + documentation, v0.71.0-rc.2), and MVP-71 (SPEC-074, v0.72.0-dev) are complete. The functional MVP chain runs through MVP-71.
 
 **Real Freqtrade compatibility:** Two compatibility-only no-op strategies (`HunterCompatibilityCandidate`, `HunterCompatibilityBaseline`) ran real `freqtrade backtesting` against a real external Binance futures fixture. Both exports parsed via `freqtrade_nested_strategy` schema. Zero trades — plumbing compatibility only, no profitability claim. ZIP safety hardening (v0.71.0-rc.2) added defense-in-depth ZIP member validation.
 
-**MVP-71 is NOT started.** The declared research target is met.
+**MVP-71 — SPEC-074 (Daily Coin Universe Ranking and Native Freqtrade RemotePairList Export) is complete**, tagged `v0.72.0-dev`. `src/hunter/pairlist_export/` transforms existing relative-strength/open-interest/research-universe outputs into a deterministic, gated, atomically-published native `RemotePairList` JSON plus a separate audit/explain artifact and dated static snapshots. New CLI commands: `hunter universe refresh`, `hunter coins rank`, `hunter pairlist build/validate/explain/deployment-profile`, `hunter daily-pairlist`. See `docs/research/pairlist_export.md`.
 
 ## Background
 
@@ -58,9 +58,11 @@ The repository now contains 62 specs (SPEC-001 through SPEC-062). MVPs beyond th
 
 ## Next
 
-MVP-61 — Governance Decision Summary Aggregator is complete and version-bumped to `v0.61.0-dev`. The local annotated tag `v0.61.0-dev` is pending. No next MVP is selected. No push has occurred.
+MVP-71 (SPEC-074) is complete and tagged `v0.72.0-dev`. No next MVP is selected. No push has occurred.
 
 ## Current Status
+
+MVP-71 — Daily Coin Universe Ranking and Native Freqtrade RemotePairList Export is complete and tagged `v0.72.0-dev`. SPEC-074 approved and implemented. Package `src/hunter/pairlist_export/` with `models.py`, `fingerprint.py`, `ranking_adapter.py`, `audit.py`, `validator.py`, `publisher.py`, `snapshot.py`, `deployment_profiles.py`, `cli.py`, `__init__.py`. Reuses `relative_strength`/`open_interest` scores via an explicit local JSON ranking-input contract (no algorithm duplication); does not fetch Binance data directly. Atomic writer (tempfile + fsync + `os.replace`) with previous-good preservation and fail-closed rollback; publish gate rejects empty/below-min/above-max/duplicate/invalid-format/incomplete-evidence shortlists; dated static snapshots (`hunter-pairs-YYYYMMDD(.json|-audit.json)`) are immutable once written. `hunter.core.cli` now routes `universe`/`coins`/`pairlist`/`daily-pairlist` tokens to this package, falling back to the existing reporting CLI otherwise. 73 pairlist_export/core-cli tests added. Full suite: 10,334 tests passing, 2 skipped. Version bumped to `0.72.0-dev`. Tagged `v0.72.0-dev` (local-only; no push).
 
 MVP-61 — Governance Decision Summary Aggregator is complete and version-bumped to `v0.61.0-dev`. SPEC-062 approved; Steps 1–6 (models, validator, policy, engine, writer, integration tests, docs/version finalization) completed. Package `src/hunter/governance_summary/` with `models.py`, `validator.py`, `policy.py`, `engine.py`, `writer.py`, `__init__.py`. 97 governance_summary tests in `tests/test_governance_summary/`. Version bumped to `0.61.0-dev` in `VERSION`, `pyproject.toml`, `src/hunter/__init__.py`. Full suite: 8815 tests passing, 1 skipped. Tag `v0.61.0-dev` pending (local-only; no push).
 

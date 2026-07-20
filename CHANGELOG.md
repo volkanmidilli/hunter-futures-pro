@@ -2,6 +2,26 @@
 
 All important project changes will be recorded in this file.
 
+## v0.72.0-dev — MVP-71: Daily Coin Universe Ranking and Native Freqtrade RemotePairList Export (SPEC-074)
+
+- **New package `src/hunter/pairlist_export/`:** transforms existing `relative_strength`/`open_interest`/`research_universe` outputs into a deterministic, explainable, atomically-published native Freqtrade `RemotePairList` JSON, with a separate audit/explain artifact.
+  - `models.py` — frozen dataclasses, reason-code catalog, fail-closed safety flags (pre-existing scaffold; unused-import and stale-docstring cleanups applied).
+  - `fingerprint.py` — deterministic, wall-clock-free SHA-256 fingerprinting (canonical JSON, Decimal-safe).
+  - `ranking_adapter.py` — deterministic tie-break ranking (RS desc → OI desc → data-quality desc → pair asc); now sets a per-pair fingerprint on every `RankedPair`.
+  - `audit.py` — builds the audit/explain `AuditRecord` (selected/rejected, reason-code summary, fingerprint) with JSON/text renderers.
+  - `validator.py` — the publish gate (empty / below-min / above-max / duplicate / invalid-format / **incomplete-evidence** rejection, the last independently re-verified rather than trusted from the ranking adapter) plus `validate_published_pairlist` for already-written files.
+  - `publisher.py` — atomic writer (tempfile → flush → fsync → `os.replace` → parent-dir fsync), previous-good preservation with fail-closed rollback (including on a first-ever publish), and a guard rejecting any output path inside this repository's `data/`/`reports/` trees.
+  - `snapshot.py` — dated `hunter-pairs-YYYYMMDD(.json|-audit.json)` snapshots, immutable (rejects silent overwrite with different content; idempotent on identical reruns).
+  - `deployment_profiles.py` — native-host and container `file:///` RemotePairList profiles.
+  - `cli.py` — `universe refresh`, `coins rank`, `pairlist build/validate/explain/deployment-profile`, `daily-pairlist`.
+- **CLI wiring:** `hunter.core.cli` now routes `universe`/`coins`/`pairlist`/`daily-pairlist` tokens to the new CLI, falling back to the existing `reporting_cli` otherwise — no changes to `reporting_cli`'s closed command set.
+- **Defaults:** `min_pairs=5`, `target_final_pairs=20`, `publish_candidates=30`, `max_pairs=50`, `refresh_period=3600`.
+- **Scope discipline:** no custom PairList plugin, no HTTP server, no hourly Hunter job, no trading/signal/order/position/leverage code, no repository `data/`/`reports/` access (enforced, not just documented), no push. Verified via source scan (network/HTTP, trading/execution, scheduler, custom-PairList-class, subprocess tokens — none found).
+- **Reviews:** architect, code, and security reviews performed. One Medium finding (publish gate not independently re-verifying evidence completeness) and several Low findings (an `or`-operator bug silently discarding an explicit `universe_total: 0`, unwrapped exceptions on malformed input / previous-good backup failure, a stale docstring, two unused imports) were found and fixed; all re-verified with the full suite. Zero Critical/High findings. Security review: no exploitable vulnerabilities (path traversal, deserialization, injection, ReDoS, and DoS vectors specifically checked).
+- **Tests:** 73 new focused tests (`tests/test_pairlist_export/`, `tests/test_core/test_cli.py`) covering models, fingerprint, ranking adapter, audit, validator (incl. the independent evidence-completeness gate check), publisher (incl. failure/rollback and backup-failure wrapping), snapshot (incl. immutability), deployment profiles, CLI, and end-to-end integration. Full suite: **10,334 passed, 2 skipped** (up from 10,330; no regressions). `py_compile` clean.
+- **`file:///` compatibility evidence:** manual smoke test of `hunter pairlist build` → `validate` → `explain` → `deployment-profile` against a real filesystem path confirmed correct native `RemotePairList` JSON shape, audit rendering, and both native-host/container profile JSON.
+- Version bumped from `0.71.0-rc.2` to `0.72.0-dev`. Local annotated tag `v0.72.0-dev` created. No push.
+
 ## v0.71.0-rc.2 — RC Closure: ZIP Safety Hardening and Documentation
 
 - **ZIP safety hardening:** MVP-65 export parser now performs comprehensive ZIP member-level validation before reading any content.

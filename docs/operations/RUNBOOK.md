@@ -10,9 +10,9 @@ This runbook explains how a human or AI agent should operate the project safely.
 
 ## Current Phase
 
-v0.71.0-rc.2 — Research-only, deterministic, reproducible quantitative research framework with real Freqtrade backtesting compatibility (Phase B.2 complete). The original master plan (MVP-0 through MVP-4) and expanded MVP chain (MVP-5 through MVP-70) are complete. Phase A (conformance/safety) and Phase B (fixture validation, real compatibility, ZIP safety) are tagged.
+v0.72.0-dev — Research-only, deterministic, reproducible quantitative research framework with real Freqtrade backtesting compatibility (Phase B.2 complete) and a daily pairlist-publishing pipeline (MVP-71, SPEC-074). The original master plan (MVP-0 through MVP-4) and expanded MVP chain (MVP-5 through MVP-71) are complete. Phase A (conformance/safety) and Phase B (fixture validation, real compatibility, ZIP safety) are tagged.
 
-No live trading is enabled. No exchange connections are active. MVP-71 not started.
+No live trading is enabled. No exchange connections are active. MVP-71 (SPEC-074) is complete: Hunter now publishes native Freqtrade `RemotePairList` JSON via `hunter pairlist build` / `hunter daily-pairlist` — see `docs/research/pairlist_export.md`. This is a research-artifact publish step only; it does not run Freqtrade, place orders, or manage positions.
 
 ## Safe Startup Checklist
 
@@ -53,6 +53,10 @@ Never:
 - create production trading rules
 - inspect `data/` or `reports/`
 - claim production readiness, trading readiness, approval, certification, recommendation, or suitability
+
+## Daily Pairlist Publish (SPEC-074)
+
+`hunter pairlist build --as-of YYYY-MM-DD --input <ranking_input.json> --output-dir <deploy-dir>` ranks, gates, atomically publishes, and snapshots the daily Freqtrade `RemotePairList` artifact. `<deploy-dir>` must never be a path inside this repository's `data/` or `reports/` trees (enforced by the publisher; see `docs/research/pairlist_export.md` for the full contract, publish-gate matrix, and native/container deployment profiles). This step only produces a research artifact for Freqtrade's own `RemotePairList` to consume; it does not start Freqtrade, place orders, or manage positions.
 
 ## Future Runtime Safety
 
