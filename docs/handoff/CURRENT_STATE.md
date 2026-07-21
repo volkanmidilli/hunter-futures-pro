@@ -6,6 +6,8 @@ Hunter Futures Pro
 
 0.72.0-dev (SPEC-074 Daily Coin Universe Ranking and Native Freqtrade RemotePairList Export closed)
 
+**Unreleased on top of 0.72.0-dev:** SPEC-075 (Freqtrade Feather Ranking-Input Automation) is implemented — `hunter pairlist feather-input`/`from-feather` convert local `BASE_USDT_USDT-1h-futures.feather` files into a `ranking-input.json` v2 artifact (`ranking_profile: V2_RS_LIQUIDITY` by default), reusing the existing `relative_strength` engine unmodified and adding a new liquidity dimension. `oi_scores` stays `{}`/`oi_available: false` under this profile — genuine Open Interest is still not sourced from anywhere locally. See `docs/planning/SPEC-075-Freqtrade-Feather-Ranking-Input-Automation.md` and the "SPEC-075" section of `docs/research/pairlist_export.md`. No version/tag bump has been applied for this change (not yet separately authorized); no commit; no push. Full suite: 10,418 passed, 2 skipped (up from 10,344 pre-SPEC-075).
+
 ## Current Phase
 
 **v0.72.0-dev** — Research-only, deterministic, reproducible, human-auditable quantitative research framework with real Freqtrade backtesting compatibility, plus a daily operational pairlist-publishing pipeline. Phase A (conformance and safety closure, v0.70.1-dev), Phase B (fixture validation, v0.70.2-dev; real Freqtrade compatibility, v0.71.0-rc.1; ZIP safety hardening + documentation, v0.71.0-rc.2), and MVP-71 (SPEC-074, v0.72.0-dev) are complete. The functional MVP chain runs through MVP-71.

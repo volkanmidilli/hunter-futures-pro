@@ -11,8 +11,9 @@ pair format -- matching the SPEC-074 daily gate exactly.
 from __future__ import annotations
 
 import re
+from typing import Any, Mapping
 
-from hunter.pairlist_export.audit import build_audit_record
+from hunter.pairlist_export.audit import build_audit_record, build_audit_record_v2
 from hunter.pairlist_export.fingerprint import compute_pairlist_fingerprint
 from hunter.pairlist_export.models import (
     REASON_ABOVE_MAX_PAIRS,
@@ -28,6 +29,7 @@ from hunter.pairlist_export.models import (
     PublishGateResult,
     RankedPair,
 )
+from hunter.pairlist_export.ranking_input_v2 import RankingProfile
 
 # BASE/USDT:USDT -- Binance USDT-M linear futures pair shape (SPEC-074).
 _PAIR_FORMAT_RE = re.compile(r"^[A-Z0-9]{2,20}/USDT:USDT$")
@@ -124,6 +126,89 @@ def run_publish_gate(
     pairlist_fingerprint = compute_pairlist_fingerprint(
         pairs=pair_strings, refresh_period=config.refresh_period
     )
+
+    output = PairlistOutput(
+        pairs=pair_strings,
+        refresh_period=config.refresh_period,
+        audit=audit,
+        fingerprint=pairlist_fingerprint,
+        audit_fingerprint=audit.fingerprint,
+        safety_flags=PairlistExportSafetyFlags(),
+    )
+
+    return PublishGateResult(
+        allow_publish=True,
+        reason_codes=("OK",),
+        pairlist_output=output,
+        error_message=None,
+    )
+
+
+def run_publish_gate_v2(
+    config: PairlistRankingConfig,
+    as_of_date: str,
+    universe_total: int,
+    ranked_pairs: tuple[RankedPair, ...],
+    *,
+    ranking_profile: RankingProfile,
+    universe_size_at_scoring: int,
+    universe_fingerprint: str,
+    oi_available: bool,
+    source_metadata: Mapping[str, Any] | None = None,
+    per_pair_evidence: Mapping[str, tuple[str, ...]] | None = None,
+) -> PublishGateResult:
+    """Run the SPEC-075 v2 publish gate over a profile-ranked pair set.
+
+    Identical empty/evidence/format/duplicate/count checks to
+    :func:`run_publish_gate` -- a single-pair ranking input still passes
+    ranking-input generation, but the default ``min_pairs=5`` config
+    rejects it here with ``BELOW_MIN_PAIRS``, exactly as under v1.
+    """
+    selected = tuple(p for p in ranked_pairs if p.selected)
+    reason_codes: list[str] = []
+
+    if not selected:
+        reason_codes.append(REASON_EMPTY_UNIVERSE)
+
+    incomplete_evidence = [p.pair for p in selected if REASON_INSUFFICIENT_EVIDENCE in p.reason_codes]
+    if incomplete_evidence:
+        reason_codes.append(REASON_INSUFFICIENT_EVIDENCE)
+
+    pair_strings = tuple(p.pair for p in selected)
+
+    invalid = [p for p in pair_strings if not validate_pair_format(p)]
+    if invalid:
+        reason_codes.append(REASON_INVALID_PAIR_FORMAT)
+
+    if find_duplicate_pairs(pair_strings):
+        reason_codes.append(REASON_DUPLICATE_PAIR)
+
+    if selected and len(selected) < config.min_pairs:
+        reason_codes.append(REASON_BELOW_MIN_PAIRS)
+    if len(selected) > config.max_pairs:
+        reason_codes.append(REASON_ABOVE_MAX_PAIRS)
+
+    if reason_codes:
+        return PublishGateResult(
+            allow_publish=False,
+            reason_codes=tuple(reason_codes),
+            pairlist_output=None,
+            error_message="Publish gate rejected pairlist: " + ", ".join(reason_codes),
+        )
+
+    audit = build_audit_record_v2(
+        as_of_date=as_of_date,
+        universe_total=universe_total,
+        ranked_pairs=ranked_pairs,
+        ranking_profile=ranking_profile,
+        universe_size_at_scoring=universe_size_at_scoring,
+        universe_fingerprint=universe_fingerprint,
+        oi_available=oi_available,
+        source_metadata=source_metadata,
+        per_pair_evidence=per_pair_evidence,
+    )
+
+    pairlist_fingerprint = compute_pairlist_fingerprint(pairs=pair_strings, refresh_period=config.refresh_period)
 
     output = PairlistOutput(
         pairs=pair_strings,

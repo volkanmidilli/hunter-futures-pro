@@ -43,6 +43,8 @@ Pairlist-export commands (SPEC-074):
   pairlist validate             Validate a published pairlist JSON.
   pairlist explain              Render an audit JSON as human-readable text.
   pairlist deployment-profile   Emit a native/container Freqtrade RemotePairList profile.
+  pairlist feather-input         Build a SPEC-075 v2 ranking-input from local 1h-futures Feather files.
+  pairlist from-feather          Feather files -> ranking input -> rank, gate, publish, and snapshot.
   daily-pairlist                Rank, gate, publish, and snapshot (single cron-friendly command).
 
 Run `hunter <group> --help` (e.g. `hunter pairlist build --help`) for full per-command options.
@@ -243,13 +245,61 @@ Emits a native-host or container Freqtrade `RemotePairList` config fragment.
   CLI itself since `--target` is `choices`-constrained by argparse, which would instead print its own usage
   error and exit 2 before reaching this code path).
 
+## `hunter pairlist feather-input` (SPEC-075)
+
+```text
+usage: hunter pairlist feather-input [-h] --data-dir DATA_DIR --output OUTPUT
+                                     --as-of AS_OF
+```
+
+Reads only local `BASE_USDT_USDT-1h-futures.feather` files under `--data-dir` (no network, no exchange
+access, no writes to the source directory) and writes a `schema_version: hunter-ranking-input-v2` /
+`ranking_profile: V2_RS_LIQUIDITY` ranking-input JSON. Reuses the existing relative-strength engine
+unchanged for the RS dimension; liquidity is `close × volume → daily total → 30-day average → log1p →
+cross-sectional average-rank percentile`; `oi_scores` is always `{}` and `oi_available` is always `false`
+under this profile. A missing `BTC_USDT_USDT-1h-futures.feather` benchmark file is a hard error (relative
+strength cannot be computed without it).
+
+- **Required**: `--data-dir <dir>`, `--output <path>`, `--as-of YYYY-MM-DD`.
+- **Verified example** (synthetic 90-day fixtures, BTC + 5 candidates): `Wrote ranking-input
+  hunter-ranking-input-v2 (V2_RS_LIQUIDITY, 5 eligible pairs) to <output>`, exit 0.
+- **Exit codes**: `0` on success. `1` with `Error: <message>` if no BTC benchmark file is found, or any
+  other `FeatherAdapterError`/`RankingInputV2Error` (e.g. a directory that does not exist).
+
+## `hunter pairlist from-feather` (SPEC-075)
+
+```text
+usage: hunter pairlist from-feather [-h] --data-dir DATA_DIR
+                                    --output-dir OUTPUT_DIR
+                                    [--snapshot-dir SNAPSHOT_DIR]
+                                    --as-of AS_OF
+```
+
+Runs `feather-input`'s exact same Feather-adapter implementation, then the existing SPEC-074 profile-aware
+rank/gate/publish/snapshot pipeline (`rank_pairs_v2` → `run_publish_gate_v2` → `publish_pairlist` →
+`write_snapshot`) — nothing about the publish/snapshot mechanics differs from `hunter pairlist build`.
+
+- **Required**: `--data-dir <dir>`, `--output-dir <dir>`, `--as-of YYYY-MM-DD`.
+- **Optional**: `--snapshot-dir <dir>` (defaults to `--output-dir`).
+- **Verified example** (synthetic 90-day fixtures, BTC + 5 candidates): `Published 5 pairs
+  (V2_RS_LIQUIDITY):` followed by the four output paths, exit 0. A single-candidate fixture (BTC + 1) fails
+  the default `min_pairs=5` gate with `Publish gate rejected pairlist: BELOW_MIN_PAIRS`, exit 1 — the
+  ranking-input itself still generates successfully via `feather-input` for the same fixture.
+- **Audit fields** (`hunter-pairs-audit.json`): includes the v1 fields plus `schema_version:
+  "hunter-ranking-input-v2"`, `ranking_profile: "V2_RS_LIQUIDITY"`, `active_score_dimensions: ["rs",
+  "liquidity"]`, `ignored_score_dimensions: []`, `universe_size_at_scoring`, `universe_fingerprint`,
+  `oi_available: false`, `source_metadata`, and `per_pair_evidence`.
+- **Exit codes**: same family as `hunter pairlist build` (`BELOW_MIN_PAIRS`, `ABOVE_MAX_PAIRS`,
+  `DUPLICATE_PAIR`, `INVALID_PAIR_FORMAT`, `EMPTY_UNIVERSE`), plus `PROFILE_FIELD_MISMATCH` if the
+  underlying ranking-input violates its own declared profile's field rules.
+
 ## Invalid Command / Argument Behavior (verified)
 
 | Input | Output | Exit |
 |---|---|---|
 | `hunter notacommand` | `Unknown command: notacommand` | 2 |
 | `hunter pairlist` (no action) | argparse usage + `hunter pairlist: error: the following arguments are required: action` | 2 |
-| `hunter pairlist badaction` | argparse usage + `hunter pairlist: error: argument action: invalid choice: 'badaction' (choose from 'build', 'validate', 'explain', 'deployment-profile')` | 2 |
+| `hunter pairlist badaction` | argparse usage + `hunter pairlist: error: argument action: invalid choice: 'badaction' (choose from 'build', 'validate', 'explain', 'deployment-profile', 'feather-input', 'from-feather')` | 2 |
 | `hunter coins` (no action) | argparse usage + `hunter coins: error: the following arguments are required: action` | 2 |
 | `hunter daily-pairlist` (missing required flags) | argparse usage + `hunter daily-pairlist: error: the following arguments are required: --as-of, --input, --output-dir` | 2 |
 | `hunter` (no args) | unified top-level help (stderr) + `Error: No command provided.` | 2 |

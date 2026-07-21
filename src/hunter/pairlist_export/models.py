@@ -14,6 +14,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass, field
 from decimal import Decimal
+from typing import Any, Mapping
 
 # ---------------------------------------------------------------------------
 # Package version and spec identifier
@@ -30,6 +31,10 @@ SPEC_074: str = "SPEC-074"
 REASON_RS_SCORE = "RS_SCORE"
 REASON_OI_LIQUIDITY = "OI_LIQUIDITY"
 REASON_DATA_SUFFICIENCY = "DATA_SUFFICIENCY"
+REASON_LIQUIDITY_SCORE = "LIQUIDITY_SCORE"
+
+# SPEC-075 profile validation
+REASON_PROFILE_FIELD_MISMATCH = "PROFILE_FIELD_MISMATCH"
 
 # Ineligibility / exclusion reason codes
 REASON_INELIGIBLE_STABLECOIN = "INELIGIBLE_STABLECOIN"
@@ -55,6 +60,8 @@ PAIRLIST_REASON_CODES: frozenset[str] = frozenset(
         REASON_RS_SCORE,
         REASON_OI_LIQUIDITY,
         REASON_DATA_SUFFICIENCY,
+        REASON_LIQUIDITY_SCORE,
+        REASON_PROFILE_FIELD_MISMATCH,
         REASON_INELIGIBLE_STABLECOIN,
         REASON_INELIGIBLE_LEVERAGED,
         REASON_INELIGIBLE_BENCHMARK,
@@ -175,6 +182,7 @@ class PairScore:
     data_quality_pct: Decimal | None = None
     rank: int | None = None
     reason_codes: tuple[str, ...] = ()
+    liquidity_score: Decimal | None = None
 
 
 @dataclass(frozen=True)
@@ -188,6 +196,7 @@ class RankedPair:
     oi_score: Decimal | None = None
     reason_codes: tuple[str, ...] = ()
     fingerprint: str = ""
+    liquidity_score: Decimal | None = None
 
 
 @dataclass(frozen=True)
@@ -235,6 +244,17 @@ class AuditRecord:
         "universe mutation, or position changes. "
         "Human review is required."
     )
+    # SPEC-075 v2 audit fields. Defaults preserve exact SPEC-074 v1 behavior
+    # for every caller that does not pass them.
+    schema_version: str = "hunter-ranking-input-v1"
+    ranking_profile: str = "V1_RS_OI"
+    active_score_dimensions: tuple[str, ...] = ("rs", "oi")
+    ignored_score_dimensions: tuple[str, ...] = ()
+    universe_size_at_scoring: int | None = None
+    universe_fingerprint: str | None = None
+    oi_available: bool | None = None
+    source_metadata: Mapping[str, Any] = field(default_factory=dict)
+    per_pair_evidence: Mapping[str, tuple[str, ...]] = field(default_factory=dict)
 
 
 @dataclass(frozen=True)

@@ -2,7 +2,9 @@
 
 ## Current Task
 
-No active MVP selected.
+SPEC-075 — Freqtrade Feather Ranking-Input Automation. Implemented per `docs/planning/SPEC-075-Freqtrade-Feather-Ranking-Input-Automation.md`: `hunter pairlist feather-input`/`from-feather` convert local `BASE_USDT_USDT-1h-futures.feather` files into a `ranking-input.json` v2 artifact, reusing the existing `relative_strength` engine and SPEC-074 rank/gate/publish pipeline unmodified. Full suite: 10,418 passed, 2 skipped (up from 10,344). No version/tag bump, no commit, no push — stopped before commit per `AGENTS.md` policy; awaiting human review/commit decision. See `tasks/agent-log.md` for the full entry.
+
+No active MVP selected (SPEC-075 was implemented as a standalone spec, not tied to an MVP number).
 
 MVP-61 — Governance Decision Summary Aggregator. SPEC-062 approved. Steps 1–6 (models, validator, policy, engine, writer, integration tests, and documentation/version finalization) complete. Version bumped to `0.61.0-dev`; tag `v0.61.0-dev` pending. No push yet.
 

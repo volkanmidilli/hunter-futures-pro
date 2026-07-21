@@ -1,0 +1,71 @@
+SPEC-075 — Freqtrade Feather Ranking-Input Automation
+
+PROJECT:
+/home/volkan/Apps/hunter-futures-pro
+
+SOURCE OF TRUTH:
+- docs/planning/SPEC-075-Freqtrade-Feather-Ranking-Input-Automation.md
+- CLAUDE.md safety/ownership rules
+- current SPEC-074 implementation and tests
+
+FIRST:
+Verify branch, HEAD, version, tag, tracked/untracked state, installed pandas/pyarrow, and current full-suite baseline.
+Read the actual APIs of relative_strength, open_interest, pairlist_export, and core CLI.
+Do not assume the relative-strength engine contract; report it before coding.
+
+GOAL:
+Implement SPEC-075 exactly as written.
+
+RULES:
+- Read only local `*-1h-futures.feather` files from an explicit external root.
+- No network, downloads, trading, scheduler, server, queue, database, or source-data mutation.
+- Never call volume OI or write volume-derived data to `oi_scores`.
+- Default v2 profile: `V2_RS_LIQUIDITY`.
+- Liquidity: close×volume → daily total → 30-day average → log1p → average-rank percentile.
+- Use completed UTC candles only in `[as_of-90d, as_of)`.
+- Reuse existing RS and SPEC-074 rank/build/publish logic; do not duplicate algorithms.
+- Missing schema_version means v1; existing SPEC-074 tests and behavior remain unchanged.
+- One ranking profile per artifact; never downgrade per pair.
+- Under `V2_RS_LIQUIDITY`, `oi_scores={}` and `oi_available=false`.
+- Any profile-field mismatch fails with `PROFILE_FIELD_MISMATCH`.
+- Add `feather-input` and `from-feather`.
+- Single-pair input generation passes; default publish fails `BELOW_MIN_PAIRS`.
+- Do not inspect or modify repository data/ or reports/.
+- Do not touch unrelated untracked files.
+- No push.
+
+STAGES:
+1. Baseline and engine-contract assessment.
+2. Safe discovery, containment, filename parser.
+3. Feather schema/timestamp/value validation.
+4. RS adapter, liquidity scorer, data-quality scorer.
+5. Ranking-input v2, canonical JSON, universe fingerprint.
+6. Profile-aware ranking/gate/audit with v1 compatibility.
+7. CLI integration reusing SPEC-074 functions.
+8. Focused/adversarial/full tests, py_compile, source scans, docs.
+9. Real server acceptance against the external Feather root.
+10. One local closure commit only if all Critical/High/Medium findings close; no version/tag change unless separately authorized; no push.
+
+MANDATORY TESTS:
+- filename parsing and exclusions
+- symlink/path containment/duplicate source
+- missing columns
+- duplicate/out-of-order timestamps
+- null/non-finite/invalid close or volume
+- as-of cutoff/no lookahead
+- full/partial 90-day coverage
+- verified RS-engine integration
+- exact tied-liquidity behavior
+- schema-less v1 unchanged regression
+- all profiles and profile-field mismatch
+- deterministic JSON/fingerprint
+- Feather→ranking input
+- Feather→pairlist publish
+- one pair→BELOW_MIN_PAIRS
+- source hashes unchanged
+- full suite without repo pollution
+
+FINAL REPORT:
+Baseline, changed files, verified RS contract, dependency decisions, schema/profile contracts, exact tests/counts, server acceptance evidence, audit fields, findings by severity, commit hash, version/tag status, Git status, and explicit confirmation of no network, source mutation, trading, or push.
+
+Final verdict: PASS, FAIL, or BLOCKED.

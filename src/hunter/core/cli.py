@@ -30,6 +30,8 @@ _PAIRLIST_EXPORT_HELP_TEXT = """Pairlist-export commands (SPEC-074):
   pairlist validate             Validate a published pairlist JSON.
   pairlist explain              Render an audit JSON as human-readable text.
   pairlist deployment-profile   Emit a native/container Freqtrade RemotePairList profile.
+  pairlist feather-input         Build a SPEC-075 v2 ranking-input from local 1h-futures Feather files.
+  pairlist from-feather          Feather files -> ranking input -> rank, gate, publish, and snapshot.
   daily-pairlist                Rank, gate, publish, and snapshot (single cron-friendly command).
 
 Run `hunter <group> --help` (e.g. `hunter pairlist build --help`) for full per-command options.

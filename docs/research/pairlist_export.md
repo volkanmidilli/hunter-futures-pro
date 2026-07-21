@@ -14,9 +14,12 @@ Hunter does **not**: implement a custom PairList plugin, run an HTTP server, run
 src/hunter/pairlist_export/
 ├── models.py               # frozen dataclasses, reason-code catalog, safety flags
 ├── fingerprint.py           # deterministic, wall-clock-free SHA-256 fingerprinting
-├── ranking_adapter.py       # deterministic tie-break ranking over score maps
-├── audit.py                 # audit/explain record builder + renderers
-├── validator.py             # publish gate + published-artifact validator
+├── ranking_adapter.py       # deterministic tie-break ranking over score maps (v1 + v2 profiles)
+├── ranking_input_v2.py      # SPEC-075 v2 schema, profile enum, profile-field-mismatch validation
+├── feather_models.py        # SPEC-075 Feather reason codes, discovery/evidence dataclasses
+├── feather_adapter.py       # SPEC-075 read-only Feather discovery, validation, RS/liquidity/data-quality
+├── audit.py                 # audit/explain record builder + renderers (v1 + v2 fields)
+├── validator.py             # publish gate + published-artifact validator (v1 + v2)
 ├── publisher.py             # atomic writer, previous-good preservation, repo-tree guard
 ├── snapshot.py               # dated, immutable static snapshots
 ├── deployment_profiles.py   # native-host and container file:/// Freqtrade profiles
@@ -24,11 +27,13 @@ src/hunter/pairlist_export/
 └── __init__.py               # public API
 ```
 
-Dependency direction is a DAG: `models`/`fingerprint` are leaves; `audit` depends on both; `validator`/`publisher` depend on `audit`; `snapshot` depends on `publisher`+`audit`; `cli` depends on all of the above. No circular imports.
+Dependency direction is a DAG: `models`/`fingerprint` are leaves; `ranking_input_v2` depends on both; `audit` depends on `models`/`fingerprint`/`ranking_input_v2`; `ranking_adapter`/`validator` depend on `audit`+`ranking_input_v2`; `feather_adapter` depends on `feather_models`/`ranking_input_v2`/the existing `relative_strength` engine; `publisher`/`snapshot` are unchanged; `cli` depends on all of the above. No circular imports.
 
 ## Reuse boundary
 
-`ranking_adapter.rank_pairs` consumes pre-computed `rs_scores` / `oi_scores` / `data_quality` maps (`dict[str, Decimal | None]`) rather than importing `relative_strength`/`open_interest` engine internals directly. This is a deliberate seam: it reuses those engines' *output* without duplicating their scoring algorithms, and keeps `pairlist_export` decoupled from their internal report shapes. The CLI's ranking-input JSON (below) is the concrete contract at that seam. Producing that JSON from live `relative_strength`/`open_interest`/`research_universe` reports is a separate, not-yet-built glue step — out of SPEC-074's implement-only scope, since it doesn't touch ranking, gating, publishing, or CLI wiring.
+`ranking_adapter.rank_pairs` consumes pre-computed `rs_scores` / `oi_scores` / `data_quality` maps (`dict[str, Decimal | None]`) rather than importing `relative_strength`/`open_interest` engine internals directly. This is a deliberate seam: it reuses those engines' *output* without duplicating their scoring algorithms, and keeps `pairlist_export` decoupled from their internal report shapes. The CLI's ranking-input JSON (below) is the concrete contract at that seam.
+
+**SPEC-075 (`hunter pairlist feather-input` / `from-feather`) closes this gap for one concrete source**: local Freqtrade `BASE_USDT_USDT-1h-futures.feather` files. It reuses `relative_strength.build_relative_strength_report` verbatim (no algorithm reimplementation) by resampling completed hourly candles into daily closes, and adds a new `liquidity` dimension (`close × volume → daily total → 30-day average → log1p → cross-sectional average-rank percentile`) plus a `data_quality` dimension based on expected-1h-slot coverage. Open Interest is still not produced from any local source — `oi_scores` is always `{}` under the resulting `V2_RS_LIQUIDITY` profile (volume/liquidity is never represented as open interest; genuine OI would require a separate, not-yet-built adapter, per SPEC-075's "Could"/"Won't" scope). See `docs/planning/SPEC-075-Freqtrade-Feather-Ranking-Input-Automation.md` for the full spec.
 
 ## Ranking-input JSON contract
 
@@ -103,10 +108,63 @@ hunter pairlist build --as-of YYYY-MM-DD --input <ranking_input.json> --output-d
 hunter pairlist validate <pairlist.json>
 hunter pairlist explain <audit.json>
 hunter pairlist deployment-profile --target native|container [--output <path>]
+hunter pairlist feather-input --data-dir <dir> --output <path> --as-of YYYY-MM-DD
+hunter pairlist from-feather --data-dir <dir> --output-dir <dir> [--snapshot-dir <dir>] --as-of YYYY-MM-DD
 hunter daily-pairlist --as-of YYYY-MM-DD --input <ranking_input.json> --output-dir <dir> [--snapshot-dir <dir>]
 ```
 
 All commands are local-file-only: no network calls, no Binance/exchange access, no Freqtrade process interaction. `universe refresh` canonicalizes (sorts, dedupes, format-checks) a locally supplied pairs file; it does not fetch data from Binance. `hunter.core.cli` routes the `universe`/`coins`/`pairlist`/`daily-pairlist` top-level tokens to this package's CLI; every other command still goes to the pre-existing `reporting_cli`.
+
+## SPEC-075: ranking-input v2 and ranking profiles
+
+`feather-input`/`from-feather` produce (and `rank_pairs_v2`/`run_publish_gate_v2` consume) a v2 ranking-input artifact:
+
+```json
+{
+  "schema_version": "hunter-ranking-input-v2",
+  "ranking_profile": "V2_RS_LIQUIDITY",
+  "as_of_date": "2026-07-21",
+  "universe_total": 28,
+  "eligible_pairs": ["BTC/USDT:USDT"],
+  "rs_scores": {"BTC/USDT:USDT": "92.1"},
+  "liquidity_scores": {"BTC/USDT:USDT": "88.0"},
+  "oi_scores": {},
+  "data_quality": {"BTC/USDT:USDT": "100"},
+  "source_metadata": {
+    "source": "freqtrade-feather", "timeframe": "1h", "rs_lookback_days": 90,
+    "liquidity_lookback_days": 30, "oi_available": false,
+    "universe_size_at_scoring": 28, "universe_fingerprint": "..."
+  }
+}
+```
+
+A **missing `schema_version`** in any hand-authored or externally supplied ranking-input file always resolves to `V1_RS_OI` — every existing SPEC-074 behavior, test, and tie-break rule is completely unaffected by anything below.
+
+Three ranking profiles are supported (`hunter.pairlist_export.ranking_input_v2.RankingProfile`), each with its own tie-break order and required-evidence rule — one profile applies to the whole artifact and is never switched or downgraded per pair:
+
+| Profile | Tie-break order (after `rs` desc) | Required for every eligible pair |
+|---|---|---|
+| `V1_RS_OI` (default when `schema_version` is absent) | `oi` desc → `data_quality` desc → `pair` asc | `rs` **or** `oi` (either alone is sufficient) |
+| `V2_RS_LIQUIDITY` (feather-adapter default) | `liquidity` desc → `data_quality` desc → `pair` asc | `rs`, `liquidity`, and `data_quality` (all required) |
+| `V2_RS_OI_LIQUIDITY` | `oi` desc → `liquidity` desc → `data_quality` desc → `pair` asc | `rs`, genuine `oi`, `liquidity`, and `data_quality` (all required) |
+
+Profile-field rules (`ranking_input_v2.validate_profile_fields`, called by both `rank_pairs_v2` and `RankingProfile`-aware CLI paths) reject a mismatched payload with `PROFILE_FIELD_MISMATCH` instead of silently ignoring the offending field:
+
+- `V2_RS_LIQUIDITY` requires `oi_scores == {}` and `oi_available == false`.
+- `oi_available == true` requires at least one populated `oi_scores` entry, and vice versa.
+- `V2_RS_OI_LIQUIDITY` requires a genuine (non-null) `oi_scores` entry for every eligible pair.
+- Both v2 profiles require a non-null `liquidity_scores`/`rs_scores` entry for every eligible pair.
+- `V1_RS_OI` rejects a populated `liquidity_scores` map (v1 payloads have no liquidity dimension at all).
+
+Volume is never represented as open interest: `oi_scores` under `V2_RS_LIQUIDITY` is always `{}`, and the feather adapter never computes or writes to it.
+
+### Feather adapter (`feather_adapter.build_ranking_input_v2_from_feather`)
+
+Reads only local files matching `^(?P<base>[A-Z0-9]+)_USDT_USDT-1h-futures\.feather$` under an operator-supplied `--data-dir` (non-recursive scan). Spot, mark-price, funding-rate, other-timeframe, hidden/temp, symlinked, and malformed files are excluded deterministically (`FILENAME_NOT_MATCHED`, `SYMLINK_REJECTED`, `HIDDEN_OR_TEMP_FILE`, `PATH_ESCAPE_REJECTED`); a file sharing a base symbol or underlying inode with an already-included file is excluded as `DUPLICATE_PAIR_SOURCE`. Only `date`, `close`, `volume` are read; timestamps are normalized to UTC; duplicate/out-of-order timestamps, future candles, non-finite/`<=0` close, and negative volume reject the whole pair's series (`DUPLICATE_CANDLES`, `OUT_OF_ORDER_CANDLES`, `FUTURE_CANDLE`, `INVALID_CLOSE`, `INVALID_VOLUME`). Only completed candles in `[as_of_date - 90d, as_of_date)` are used; a pair with zero candles in that window is `INSUFFICIENT_LOOKBACK`-excluded before ever reaching relative strength.
+
+For eligible pairs, completed hourly candles are resampled to one close per UTC day (the only bridge into `relative_strength.build_relative_strength_report`, called unmodified — the RS engine's own `lookback_days` are row-offsets, so daily-close rows make its unmodified 7/14/30-"day" windows behave correctly against 90 days of hourly source data). `data_quality` is the percentage of the 2160 expected hourly slots (90 × 24) actually present; `liquidity_scores` is the cross-sectional average-rank percentile (ties get identical percentiles) of `log1p(mean(daily close × volume))` over the last 30 window days. A pair is `eligible` only if `rs`, `liquidity`, and `data_quality` are all present — matching `V2_RS_LIQUIDITY`'s required-evidence rule above.
+
+`universe_fingerprint` (in `source_metadata`, and echoed into the v2 audit record) is a deterministic SHA-256 over the sorted eligible-pair list only — no timestamp, PID, hostname, or temp path enters it, so identical `--as-of` + identical Feather content always produce byte-identical `feather-input` output.
 
 ## Native and container `file:///` deployment profiles
 

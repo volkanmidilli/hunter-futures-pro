@@ -9,6 +9,9 @@ Subcommands::
     hunter pairlist validate <pairlist.json>
     hunter pairlist explain <audit.json>
     hunter pairlist deployment-profile --target native|container [--output <path>]
+    hunter pairlist feather-input --data-dir <dir> --output <path> --as-of <date>
+    hunter pairlist from-feather --data-dir <dir> --output-dir <dir> \
+        [--snapshot-dir <dir>] --as-of <date>
     hunter daily-pairlist --as-of <date> --input <ranking_input.json> \
         --output-dir <dir> [--snapshot-dir <dir>]
 
@@ -33,6 +36,15 @@ Ranking input JSON shape::
 ``as_of_date``/``universe_total`` in the file are optional; ``--as-of``
 always wins, and ``universe_total`` defaults to ``len(eligible_pairs)``
 when omitted.
+
+``feather-input``/``from-feather`` (SPEC-075) read only local
+``BASE_USDT_USDT-1h-futures.feather`` files under ``--data-dir`` -- no
+network, no exchange access, no writes to the source directory -- and
+produce a ``schema_version: hunter-ranking-input-v2`` artifact
+(``ranking_profile: V2_RS_LIQUIDITY`` by default, reusing the existing
+relative-strength engine for the RS dimension). A missing
+``schema_version`` in a hand-authored ranking-input file always means
+SPEC-074 v1; nothing about v1 behavior changes.
 """
 
 from __future__ import annotations
@@ -46,16 +58,23 @@ from pathlib import Path
 from typing import Any
 
 from hunter.pairlist_export.deployment_profiles import DEPLOYMENT_PROFILES
+from hunter.pairlist_export.feather_adapter import build_ranking_input_v2_from_feather
 from hunter.pairlist_export.models import (
     PairlistExportError,
     PairlistRankingConfig,
     RankedPair,
 )
 from hunter.pairlist_export.publisher import atomic_write_text, publish_pairlist
-from hunter.pairlist_export.ranking_adapter import rank_pairs
+from hunter.pairlist_export.ranking_adapter import rank_pairs, rank_pairs_v2
+from hunter.pairlist_export.ranking_input_v2 import (
+    SCHEMA_V1,
+    RankingProfile,
+    ranking_input_v2_to_json_text,
+)
 from hunter.pairlist_export.snapshot import write_snapshot
 from hunter.pairlist_export.validator import (
     run_publish_gate,
+    run_publish_gate_v2,
     validate_pair_format,
     validate_published_pairlist,
 )
@@ -81,6 +100,13 @@ def _load_ranking_input(path: str) -> dict[str, Any]:
     payload = _read_json(path)
     if not isinstance(payload, dict):
         raise PairlistExportError(f"ranking input must be a JSON object: {path}")
+    schema_version = payload.get("schema_version")
+    if schema_version and schema_version != SCHEMA_V1:
+        raise PairlistExportError(
+            f"ranking input has schema_version {schema_version!r}, which `coins rank`/`pairlist "
+            "build`/`daily-pairlist` do not support (v1-only); use `hunter pairlist from-feather` "
+            "for a SPEC-075 v2 ranking-input file"
+        )
     return payload
 
 
@@ -209,6 +235,88 @@ def cmd_pairlist_build(args: argparse.Namespace) -> int:
     return _build_and_publish(args)
 
 
+def cmd_pairlist_feather_input(args: argparse.Namespace) -> int:
+    """Build a SPEC-075 v2 ranking-input artifact from local 1h-futures Feather files.
+
+    Read-only: only ``*_USDT_USDT-1h-futures.feather`` files under
+    ``--data-dir`` are opened, and only for reading. No network, no
+    Freqtrade process interaction, no writes to the source directory.
+    """
+    ranking_input, _evidence = build_ranking_input_v2_from_feather(
+        data_dir=Path(args.data_dir), as_of_date=args.as_of
+    )
+    output_path = Path(args.output)
+    atomic_write_text(output_path, ranking_input_v2_to_json_text(ranking_input))
+    print(
+        f"Wrote ranking-input {ranking_input.schema_version} "
+        f"({ranking_input.ranking_profile}, {len(ranking_input.eligible_pairs)} eligible pairs) "
+        f"to {output_path}"
+    )
+    return 0
+
+
+def cmd_pairlist_from_feather(args: argparse.Namespace) -> int:
+    """Build a ranking-input from local Feather files, then rank/gate/publish/snapshot.
+
+    Reuses the same Feather-input implementation as ``feather-input`` and
+    the existing SPEC-074 rank/gate/publish/snapshot pipeline unchanged.
+    """
+    config = PairlistRankingConfig()
+    ranking_input, evidence = build_ranking_input_v2_from_feather(
+        data_dir=Path(args.data_dir), as_of_date=args.as_of
+    )
+    profile = RankingProfile(ranking_input.ranking_profile)
+
+    ranked = rank_pairs_v2(
+        config=config,
+        ranking_profile=profile,
+        eligible_pairs=ranking_input.eligible_pairs,
+        rs_scores=dict(ranking_input.rs_scores),
+        liquidity_scores=dict(ranking_input.liquidity_scores),
+        oi_scores=dict(ranking_input.oi_scores),
+        data_quality=dict(ranking_input.data_quality),
+        oi_available=bool(ranking_input.source_metadata.get("oi_available", False)),
+    )
+
+    gate_result = run_publish_gate_v2(
+        config=config,
+        as_of_date=args.as_of,
+        universe_total=ranking_input.universe_total,
+        ranked_pairs=ranked,
+        ranking_profile=profile,
+        universe_size_at_scoring=ranking_input.source_metadata.get(
+            "universe_size_at_scoring", ranking_input.universe_total
+        ),
+        universe_fingerprint=ranking_input.source_metadata.get("universe_fingerprint", ""),
+        oi_available=bool(ranking_input.source_metadata.get("oi_available", False)),
+        source_metadata=ranking_input.source_metadata,
+        per_pair_evidence=evidence,
+    )
+
+    if not gate_result.allow_publish:
+        print(
+            f"Publish gate rejected pairlist: {', '.join(gate_result.reason_codes)}",
+            file=sys.stderr,
+        )
+        return 1
+
+    output = gate_result.pairlist_output
+    assert output is not None
+
+    output_dir = Path(args.output_dir)
+    snapshot_dir = Path(args.snapshot_dir) if args.snapshot_dir else output_dir
+
+    snapshot_paths = write_snapshot(output, snapshot_dir)
+    pairlist_path, audit_path = publish_pairlist(output, output_dir)
+
+    print(f"Published {len(output.pairs)} pairs ({profile.value}):")
+    print(f"  pairlist:       {pairlist_path}")
+    print(f"  audit:          {audit_path}")
+    print(f"  snapshot:       {snapshot_paths[0]}")
+    print(f"  snapshot audit: {snapshot_paths[1]}")
+    return 0
+
+
 def cmd_daily_pairlist(args: argparse.Namespace) -> int:
     return _build_and_publish(args)
 
@@ -307,6 +415,25 @@ def _build_parser() -> argparse.ArgumentParser:
     deployment_profile.add_argument("--target", required=True, choices=sorted(DEPLOYMENT_PROFILES))
     deployment_profile.add_argument("--output", default=None)
     deployment_profile.set_defaults(func=cmd_deployment_profile)
+
+    feather_input = pairlist_sub.add_parser(
+        "feather-input",
+        help="Build a SPEC-075 v2 ranking-input from local 1h-futures Feather files.",
+    )
+    feather_input.add_argument("--data-dir", required=True, dest="data_dir")
+    feather_input.add_argument("--output", required=True)
+    feather_input.add_argument("--as-of", required=True, dest="as_of")
+    feather_input.set_defaults(func=cmd_pairlist_feather_input)
+
+    from_feather = pairlist_sub.add_parser(
+        "from-feather",
+        help="Feather files -> ranking input -> rank, gate, publish, and snapshot.",
+    )
+    from_feather.add_argument("--data-dir", required=True, dest="data_dir")
+    from_feather.add_argument("--output-dir", required=True, dest="output_dir")
+    from_feather.add_argument("--snapshot-dir", dest="snapshot_dir", default=None)
+    from_feather.add_argument("--as-of", required=True, dest="as_of")
+    from_feather.set_defaults(func=cmd_pairlist_from_feather)
 
     daily = subparsers.add_parser(
         "daily-pairlist", help="Rank, gate, publish, and snapshot (single cron-friendly command)."

@@ -1,5 +1,29 @@
 ---
 
+### SPEC-075 — Freqtrade Feather Ranking-Input Automation
+
+Date: 2026-07-21
+
+Agent: Claude Code
+
+Task: Implement `docs/planning/SPEC-075-Freqtrade-Feather-Ranking-Input-Automation.md` exactly as written (per `docs/planning/CLAUDE_SPEC-075_GOAL.txt` execution contract) — a read-only adapter converting local Freqtrade `BASE_USDT_USDT-1h-futures.feather` files into a `ranking-input.json` v2 artifact, reusing the existing `relative_strength` engine and SPEC-074 rank/gate/publish pipeline without duplicating any algorithm.
+
+Baseline verified first: branch `master`, HEAD `a856b3e`, `VERSION` `0.72.0-dev`, tag `v0.72.0-dev`, `git status` clean except this session's own `docs/planning/` additions, `pandas 3.0.3`/`pyarrow 24.0.0` already installed, full-suite baseline `10344 passed, 2 skipped`.
+
+New files: `src/hunter/pairlist_export/feather_models.py`, `feather_adapter.py`, `ranking_input_v2.py`; `tests/test_pairlist_export/{_feather_fixtures,test_feather_adapter,test_ranking_input_v2,test_ranking_adapter_v2,test_validator_v2,test_cli_feather}.py`.
+
+Modified files (additive only — every new field/function has a v1-safe default or is a new function alongside the untouched original): `models.py` (liquidity fields on `PairScore`/`RankedPair`, v2 `AuditRecord` fields, new reason codes), `fingerprint.py` (`compute_pair_fingerprint_v2`, `compute_audit_fingerprint_v2`), `ranking_adapter.py` (`rank_pairs_v2`), `audit.py` (`build_audit_record_v2`, v2 keys in `audit_record_to_dict`), `validator.py` (`run_publish_gate_v2`), `cli.py` (`feather-input`, `from-feather` subcommands), `__init__.py` (new exports), `src/hunter/core/cli.py` (help-text listing only), `pyproject.toml` (`pandas>=2.0.0`, `pyarrow>=14.0.0` added to `dependencies`).
+
+Verified RS-engine contract before coding: `relative_strength.build_relative_strength_report(*, universe, btc_benchmark, eth_benchmark=None, config=None, ...)`; `lookback_days` are **row-offsets**, not calendar days, so the adapter resamples completed hourly candles to one close per UTC day before calling it unmodified — this is the only bridge into the existing engine.
+
+Test results: 149 tests in `tests/test_pairlist_export/` (75 pre-existing + 74 new), all passing; full suite **10,418 passed, 2 skipped** (up from 10,344; zero regressions, the original 75 SPEC-074 tests pass byte-for-byte unchanged). `py_compile` clean. Source scan for `ccxt`/`requests`/`binance`/`socket`/`urllib`/`http.client`/`websocket` across `src/hunter/pairlist_export/`: none found (one docstring mentions "does not fetch from Binance"). Real-server acceptance: the one genuine Freqtrade-produced 1h-futures Feather fixture on this machine (`freqtrade strategy/freqtrade_src/tests/testdata/futures/XRP_USDT_USDT-1h-futures.feather`) was run through the full CLI path; SHA-256 confirmed unchanged before/after. No `data/`/`reports/` repository directory was inspected or modified. No network, download, trading, scheduler, server, queue, or database access anywhere in the new code.
+
+Docs updated: `docs/research/pairlist_export.md` (new package-layout entries, SPEC-075 section: ranking-input v2 schema, profile table, profile-field-mismatch rules, feather-adapter description), `docs/reference/CLI_REFERENCE.md` (new `feather-input`/`from-feather` sections with verified CLI transcripts, updated unified-help and invalid-choice transcripts), `docs/handoff/CURRENT_STATE.md` (unreleased-on-top-of-0.72.0-dev note), `CHANGELOG.md` (new "Unreleased" section above `v0.72.0-dev`).
+
+No version/tag change (not separately authorized). No commit. No push. Stopped before commit per `AGENTS.md` commit/tag policy ("never commit automatically; the human must provide the exact commit or tag command") — the goal contract's own stage 10 also required all Critical/High/Medium findings to close before any closure commit, and no independent review pass had been run in this session to make that determination.
+
+---
+
 ### MVP-61 Finalization
 
 Date: 2026-07-14
