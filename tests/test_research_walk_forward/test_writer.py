@@ -248,17 +248,26 @@ class TestWalkForwardWriter:
         text = path.read_text()
         assert "/tmp/[REDACTED]" in text or "/home/[REDACTED]" in text or "strategy.py" in text
 
-    def test_no_output_under_data(self, tmp_path: Path) -> None:
+    def test_no_output_under_data(self, tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+        # Patch the writer's notion of "project root" to tmp_path so this
+        # test's forbidden-path assertion is correct regardless of the real
+        # cwd/repository root -- it must never depend on being run from the
+        # actual repository root to pass (or, worse, to silently write into
+        # a differently-located data/ when it is not).
+        monkeypatch.setattr(WalkForwardWriter, "_project_root", lambda self: tmp_path)
         report = _make_report(tmp_path)
-        writer = WalkForwardWriter(output_dir=Path("data"))
+        writer = WalkForwardWriter(output_dir=tmp_path / "data")
         with pytest.raises(WalkForwardWriterError):
             writer.write_report(report)
+        assert not (tmp_path / "data").exists()
 
-    def test_no_output_under_reports(self, tmp_path: Path) -> None:
+    def test_no_output_under_reports(self, tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+        monkeypatch.setattr(WalkForwardWriter, "_project_root", lambda self: tmp_path)
         report = _make_report(tmp_path)
-        writer = WalkForwardWriter(output_dir=Path("reports"))
+        writer = WalkForwardWriter(output_dir=tmp_path / "reports")
         with pytest.raises(WalkForwardWriterError):
             writer.write_report(report)
+        assert not (tmp_path / "reports").exists()
 
     def test_secret_redaction(self, tmp_path: Path) -> None:
         report = _make_report(tmp_path)

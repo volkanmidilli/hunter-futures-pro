@@ -519,7 +519,9 @@ class TestNestedDataclassSerialization:
     ) -> None:
         # The writer must treat the path-like string in inputs as opaque.
         result = _make_result_for_step(backtest_dataclass_step, fixed_generated_at, "r-opaque")
-        write_research_run_result(result, json_path=tmp_path / "out.json")
+        write_research_run_result(
+            result, json_path=tmp_path / "out.json", csv_path=None, md_path=None
+        )
 
 
 # ---------------------------------------------------------------------------
@@ -635,4 +637,6 @@ class TestNoMutation:
         text = research_run_result_to_markdown_text(result)
         assert str(nonexistent_path) in text
         # No attempt to read the nonexistent file means this completes without error.
-        write_research_run_result(result, json_path=tmp_path / "out.json")
+        write_research_run_result(
+            result, json_path=tmp_path / "out.json", csv_path=None, md_path=None
+        )

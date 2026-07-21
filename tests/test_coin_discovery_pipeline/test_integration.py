@@ -422,6 +422,11 @@ class TestNoDirectFileReads:
         monkeypatch.setattr("pathlib.Path.read_text", _raising_read_text)
         result = run_coin_discovery_pipeline(base_config)
         monkeypatch.undo()
+        # monkeypatch.undo() reverts every patch applied via this fixture
+        # instance, including the initial chdir(tmp_path) -- re-apply it so
+        # the write below (base_config.output_dir is a relative path) stays
+        # contained under tmp_path instead of escaping into the real cwd.
+        monkeypatch.chdir(tmp_path)
         # Writer is allowed to read/write; run engine should not have read any file.
         assert len(reads) == 0, f"Unexpected file reads during pipeline run: {reads}"
         # Now write artifacts normally

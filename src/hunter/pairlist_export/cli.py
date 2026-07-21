@@ -187,8 +187,15 @@ def _build_and_publish(args: argparse.Namespace) -> int:
     output_dir = Path(args.output_dir)
     snapshot_dir = Path(args.snapshot_dir) if args.snapshot_dir else output_dir
 
-    pairlist_path, audit_path = publish_pairlist(output, output_dir)
+    # Snapshot is written (or its immutability conflict is detected) before
+    # the live pairlist/audit are touched. Snapshot writes do not depend on
+    # publish having happened, and are otherwise a no-op for an identical
+    # same-date rerun -- so validating/committing the snapshot first means a
+    # same-date-different-content conflict is rejected with exit 1 and the
+    # live pairlist/audit are left completely untouched, exactly like any
+    # other publish-gate rejection. See docs/technical/PAIRLIST_PIPELINE.md.
     snapshot_paths = write_snapshot(output, snapshot_dir)
+    pairlist_path, audit_path = publish_pairlist(output, output_dir)
 
     print(f"Published {len(output.pairs)} pairs:")
     print(f"  pairlist:       {pairlist_path}")

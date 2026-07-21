@@ -229,7 +229,9 @@ class TestWriteReport:
     def test_does_not_mutate_report(self, tmp_path) -> None:
         report = _simple_report()
         before = portfolio_construction_report_to_json_text(report)
-        write_portfolio_construction_report(report, json_path=tmp_path / "r.json")
+        write_portfolio_construction_report(
+            report, json_path=tmp_path / "r.json", csv_path=None, md_path=None
+        )
         after = portfolio_construction_report_to_json_text(report)
         assert before == after
 

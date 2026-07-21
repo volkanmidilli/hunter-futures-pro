@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from datetime import datetime, timezone
+from pathlib import Path
 from typing import Any
 
 import pytest
@@ -45,6 +46,15 @@ from hunter.run_orchestrator.models import (
     ResearchRunStepResult,
     ResearchRunStepState,
 )
+
+
+@pytest.fixture(autouse=True)
+def _isolate_cwd(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    """Contain relative default output paths (e.g. the export step's
+    hardcoded ``data/``/``reports/`` defaults) inside an isolated tmp_path
+    for every test in this module, regardless of write_artifacts/export_config.
+    """
+    monkeypatch.chdir(tmp_path)
 
 
 def _dt() -> datetime:

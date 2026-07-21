@@ -374,8 +374,15 @@ class TestEngineStubs:
         assert INVALID_PIPELINE_CONFIG in result.reason_codes
 
     def test_run_coin_discovery_pipeline_runs_with_valid_config(
-        self, discovery_input: DiscoveryInput, execution_context: ExecutionContext
+        self,
+        discovery_input: DiscoveryInput,
+        execution_context: ExecutionContext,
+        tmp_path,
+        monkeypatch: pytest.MonkeyPatch,
     ) -> None:
+        # Contain the engine's relative default output paths (data/, reports/)
+        # inside tmp_path rather than the real repository tree.
+        monkeypatch.chdir(tmp_path)
         config = CoinDiscoveryPipelineConfig(
             run_id="test",
             discovery_inputs=(discovery_input,),

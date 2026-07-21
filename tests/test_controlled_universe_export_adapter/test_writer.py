@@ -174,7 +174,9 @@ class TestWriteControlledUniverseExport:
 
     def test_uses_explicit_output_dir(self, tmp_path: Path) -> None:
         result = _make_result()
-        config = ControlledUniverseExportConfig.default()
+        config = ControlledUniverseExportConfig(
+            markdown_output_dir=str(tmp_path / "reports"),
+        )
         json_path, md_path = write_controlled_universe_export(
             result, output_dir=str(tmp_path / "out"), config=config
         )

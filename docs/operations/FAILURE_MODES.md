@@ -10,7 +10,7 @@ This file defines known failure modes and the expected safe behavior.
 
 ## Current Phase
 
-v0.71.0-rc.2 — Research-only quantitative research framework. All MVPs 0–70 complete, Phase B (real Freqtrade compatibility) established, ZIP safety hardening applied. MVP-71 not started.
+v0.72.0-dev — Research-only quantitative research framework. All MVPs 0–70 complete, Phase B (real Freqtrade compatibility) established, ZIP safety hardening applied. MVP-71 (SPEC-074, daily pairlist ranking and native Freqtrade RemotePairList export) complete — see `docs/research/pairlist_export.md` and `docs/technical/PAIRLIST_PIPELINE.md`.
 
 ## General Rule
 

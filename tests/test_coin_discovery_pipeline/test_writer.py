@@ -380,7 +380,16 @@ class TestAtomicWriteMarkdown:
 
 
 class TestWriteCoinDiscoveryPipelineResult:
-    def test_writes_both_artifacts(self, tmp_path: Path) -> None:
+    def test_writes_both_artifacts(
+        self, tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        # write_coin_discovery_pipeline_result's markdown path is always
+        # "reports/<pkg_name>/..." relative to cwd (by design, mirroring
+        # config.output_dir's own "data/..." convention) regardless of
+        # whether config.output_dir itself is absolute -- chdir into
+        # tmp_path so that relative "reports" prefix resolves there instead
+        # of the real repository root.
+        monkeypatch.chdir(tmp_path)
         result = _make_result(
             run_result=_make_run_result(),
             export_result=_make_export_result(),
@@ -410,7 +419,10 @@ class TestWriteCoinDiscoveryPipelineResult:
 
 
 class TestWriteDeterminism:
-    def test_repeated_identical_input_produces_identical_files(self, tmp_path: Path) -> None:
+    def test_repeated_identical_input_produces_identical_files(
+        self, tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        monkeypatch.chdir(tmp_path)
         result = _make_result(
             run_result=_make_run_result(),
             export_result=_make_export_result(),

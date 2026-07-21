@@ -109,9 +109,17 @@ from hunter.run_orchestrator import (
 # ---------------------------------------------------------------------------
 
 
-@pytest.fixture
+@pytest.fixture(autouse=True)
 def monkeypatch_cwd(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> Path:
-    """Set cwd to a directory under tmp_path for safe absolute path handling."""
+    """Set cwd to a directory under tmp_path for safe absolute path handling.
+
+    autouse: several tests in this module construct a bare/near-bare
+    ResearchRunConfig() (default write_artifacts=True, default relative
+    output_dir="data/run_orchestrator/latest_run") without an explicit
+    tmp_path override. Applying this fixture to every test enforces the
+    module's own documented invariant ("All tests use in-memory fixtures
+    and tmp_path only") regardless of which cwd pytest is invoked from.
+    """
     cwd = tmp_path / "cwd"
     cwd.mkdir()
     monkeypatch.chdir(str(cwd))

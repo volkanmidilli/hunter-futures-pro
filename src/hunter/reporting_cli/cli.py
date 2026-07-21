@@ -37,6 +37,11 @@ Options:
   --dry-run               For render-sample: report paths without writing.
 """
 
+# Public alias so hunter.core.cli can compose a unified top-level help text
+# without reaching into this module's private constant. reporting_cli's own
+# `main()` behavior (and this text, standalone) is unchanged.
+REPORTING_CLI_HELP_TEXT = _HELP_TEXT
+
 
 class _UsageError(Exception):
     """Raised when CLI arguments are invalid (expected usage error)."""

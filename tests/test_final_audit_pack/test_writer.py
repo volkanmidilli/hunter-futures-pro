@@ -342,7 +342,9 @@ class TestAtomicWrites:
     def test_does_not_mutate_report(self, tmp_path) -> None:
         report = _make_report(sections=(_make_section(),))
         before = final_audit_pack_report_to_json_text(report)
-        write_final_audit_pack_report(report, json_path=tmp_path / "r.json")
+        write_final_audit_pack_report(
+            report, json_path=tmp_path / "r.json", csv_path=None, md_path=None
+        )
         after = final_audit_pack_report_to_json_text(report)
         assert before == after
 

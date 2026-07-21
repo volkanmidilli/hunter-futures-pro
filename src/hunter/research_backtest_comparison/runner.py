@@ -130,6 +130,7 @@ def _run_single_backtest(
             timeout=config.timeout_seconds,
             env=env,
             check=False,
+            cwd=str(workspace.path),
         )
     except subprocess.TimeoutExpired as exc:
         stdout = redact_text((exc.stdout or "")[:_MAX_OUTPUT_BYTES])
