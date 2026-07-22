@@ -1,0 +1,31 @@
+{
+  "as_of_date": "2026-07-21",
+  "eligible_pairs": [
+    "BTC/USDT:USDT",
+    "ETH/USDT:USDT",
+    "SOL/USDT:USDT",
+    "XRP/USDT:USDT",
+    "ADA/USDT:USDT"
+  ],
+  "rs_scores": {
+    "BTC/USDT:USDT": "88.2",
+    "ETH/USDT:USDT": "81.4",
+    "SOL/USDT:USDT": "76.0",
+    "XRP/USDT:USDT": "65.5",
+    "ADA/USDT:USDT": "60.1"
+  },
+  "oi_scores": {
+    "BTC/USDT:USDT": "90.0",
+    "ETH/USDT:USDT": "85.0",
+    "SOL/USDT:USDT": "70.0",
+    "XRP/USDT:USDT": "60.0",
+    "ADA/USDT:USDT": "58.0"
+  },
+  "data_quality": {
+    "BTC/USDT:USDT": "100",
+    "ETH/USDT:USDT": "100",
+    "SOL/USDT:USDT": "95",
+    "XRP/USDT:USDT": "90",
+    "ADA/USDT:USDT": "88"
+  }
+}

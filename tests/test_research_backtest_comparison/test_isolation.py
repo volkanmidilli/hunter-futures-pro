@@ -18,6 +18,8 @@ from hunter.research_backtest_comparison.workspace import (
     create_workspace,
 )
 
+_REPO_ROOT = Path(__file__).resolve().parents[2]
+
 
 def _write_fake_executable(tmp_path: Path) -> Path:
     exe = tmp_path / "freqtrade"
@@ -100,7 +102,7 @@ class TestWorkspaceIsolation:
         try:
             assert ws.path.is_absolute()
             # Project root is not a parent of the workspace.
-            assert not str(ws.path).startswith("/home/volkan/Apps/hunter-futures-pro")
+            assert not str(ws.path).startswith(str(_REPO_ROOT))
         finally:
             ws.cleanup(force=True)
 

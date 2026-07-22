@@ -21,7 +21,7 @@ AS_OF = "2026-07-21"
 # ~100 hourly rows from 2021-11-17 to 2021-11-21). Used for a genuine
 # real-file acceptance smoke test in addition to synthetic fixtures.
 _REAL_XRP_FIXTURE = Path(
-    "/home/volkan/Apps/freqtrade strategy/freqtrade_src/tests/testdata/futures/"
+    "/home/YOUR_USER/freqtrade/tests/testdata/futures/"
     "XRP_USDT_USDT-1h-futures.feather"
 )
 

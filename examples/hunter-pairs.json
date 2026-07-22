@@ -1,0 +1,10 @@
+{
+  "pairs": [
+    "BTC/USDT:USDT",
+    "ETH/USDT:USDT",
+    "SOL/USDT:USDT",
+    "XRP/USDT:USDT",
+    "ADA/USDT:USDT"
+  ],
+  "refresh_period": 3600
+}

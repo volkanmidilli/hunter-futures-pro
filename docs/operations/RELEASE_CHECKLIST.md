@@ -21,7 +21,7 @@ egg-info is stale; re-run `pip install -e .` (cosmetic, but fix before tagging t
 ## Full Tests
 
 ```bash
-/home/volkan/.local/bin/pytest tests/ -q
+pytest tests/ -q
 ```
 
 Must show `N passed` with the expected skip count (2, both with named reasons — see

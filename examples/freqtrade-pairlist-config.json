@@ -1,0 +1,19 @@
+{
+  "exchange": {
+    "pair_blacklist": [".*(UP|DOWN|BULL|BEAR)/USDT:USDT"]
+  },
+  "pairlists": [
+    {
+      "method": "RemotePairList",
+      "mode": "whitelist",
+      "pairlist_url": "file:///home/YOUR_USER/freqtrade/user_data/pairlists/hunter-pairs.json",
+      "number_assets": 30,
+      "refresh_period": 3600,
+      "keep_pairlist_on_failure": true,
+      "save_to_file": "user_data/pairlists/hunter-pairs-snapshot.json"
+    },
+    {"method": "AgeFilter", "min_days_listed": 30},
+    {"method": "DelistFilter"},
+    {"method": "SpreadFilter", "max_spread_ratio": 0.005}
+  ]
+}

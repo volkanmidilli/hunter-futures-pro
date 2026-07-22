@@ -1,0 +1,44 @@
+{
+  "schema_version": "hunter-ranking-input-v2",
+  "ranking_profile": "V2_RS_LIQUIDITY",
+  "as_of_date": "2026-07-21",
+  "universe_total": 5,
+  "eligible_pairs": [
+    "BTC/USDT:USDT",
+    "ETH/USDT:USDT",
+    "SOL/USDT:USDT",
+    "XRP/USDT:USDT",
+    "ADA/USDT:USDT"
+  ],
+  "rs_scores": {
+    "BTC/USDT:USDT": "88.1",
+    "ETH/USDT:USDT": "60.0",
+    "SOL/USDT:USDT": "55.4",
+    "XRP/USDT:USDT": "48.2",
+    "ADA/USDT:USDT": "40.9"
+  },
+  "liquidity_scores": {
+    "BTC/USDT:USDT": "88.0",
+    "ETH/USDT:USDT": "50.0",
+    "SOL/USDT:USDT": "44.1",
+    "XRP/USDT:USDT": "38.7",
+    "ADA/USDT:USDT": "30.2"
+  },
+  "oi_scores": {},
+  "data_quality": {
+    "BTC/USDT:USDT": "100",
+    "ETH/USDT:USDT": "90",
+    "SOL/USDT:USDT": "88",
+    "XRP/USDT:USDT": "85",
+    "ADA/USDT:USDT": "80"
+  },
+  "source_metadata": {
+    "source": "freqtrade-feather",
+    "timeframe": "1h",
+    "rs_lookback_days": 90,
+    "liquidity_lookback_days": 30,
+    "oi_available": false,
+    "universe_size_at_scoring": 5,
+    "universe_fingerprint": "example-fingerprint-0000000000000000"
+  }
+}

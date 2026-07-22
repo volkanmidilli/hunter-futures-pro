@@ -1,7 +1,7 @@
 SPEC-075 — Freqtrade Feather Ranking-Input Automation
 
 PROJECT:
-/home/volkan/Apps/hunter-futures-pro
+/home/YOUR_USER/hunter-futures-pro
 
 SOURCE OF TRUTH:
 - docs/planning/SPEC-075-Freqtrade-Feather-Ranking-Input-Automation.md

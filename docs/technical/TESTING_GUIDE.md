@@ -9,12 +9,12 @@ per-command log (exact command, exit code, duration, pass/fail/skip counts).
 
 ## Test Runner: Verified Fallback
 
-This repo's `.venv` does **not** have `pytest` installed — `.venv/bin/python -m pytest` fails with `No module
-named pytest`, and there is no `.venv/bin/pytest` binary. A working `pytest 9.1.0` was found at
-`/home/volkan/.local/bin/pytest` (user-level pip install, outside the project venv) and is used throughout
-this guide. It correctly picks up this repo's `pyproject.toml` `[tool.pytest.ini_options]`
-(`pythonpath = ["src"]`, `testpaths = ["tests"]`) with no extra flags, as long as you invoke it **from the
-repository root**.
+This repo's `.venv` does **not** have `pytest` installed by default — `.venv/bin/python -m pytest` fails with
+`No module named pytest`, and there is no `.venv/bin/pytest` binary until you install the `dev` extra. A
+user-level `pytest` install (outside the project venv, e.g. `pip install --user pytest`) also works and is
+used throughout this guide as `pytest`. It correctly picks up this repo's `pyproject.toml`
+`[tool.pytest.ini_options]` (`pythonpath = ["src"]`, `testpaths = ["tests"]`) with no extra flags, as long as
+you invoke it **from the repository root**.
 
 If your environment differs, install the `dev` extra into `.venv` instead
 (`.venv/bin/pip install -e ".[dev]"`) and use `.venv/bin/pytest`.
@@ -41,18 +41,18 @@ in `tests/test_pairlist_export/` (11 files: `test_audit.py`, `test_cli.py`, `tes
 Run from the repository root:
 
 ```bash
-/home/volkan/.local/bin/pytest tests/test_pairlist_export -q
-/home/volkan/.local/bin/pytest tests/test_core -q
-/home/volkan/.local/bin/pytest tests/test_reporting_cli -q
-/home/volkan/.local/bin/pytest tests/test_relative_strength -q
-/home/volkan/.local/bin/pytest tests/test_open_interest -q
-/home/volkan/.local/bin/pytest tests/test_research_market_data -q
-/home/volkan/.local/bin/pytest tests/test_research_universe -q
-/home/volkan/.local/bin/pytest tests/test_research_backtest_comparison -q
-/home/volkan/.local/bin/pytest tests/test_research_walk_forward -q
-/home/volkan/.local/bin/pytest tests/test_research_statistical_confidence -q
-/home/volkan/.local/bin/pytest tests/test_research_evidence_ledger -q
-/home/volkan/.local/bin/pytest tests/test_research_campaign -q
+pytest tests/test_pairlist_export -q
+pytest tests/test_core -q
+pytest tests/test_reporting_cli -q
+pytest tests/test_relative_strength -q
+pytest tests/test_open_interest -q
+pytest tests/test_research_market_data -q
+pytest tests/test_research_universe -q
+pytest tests/test_research_backtest_comparison -q
+pytest tests/test_research_walk_forward -q
+pytest tests/test_research_statistical_confidence -q
+pytest tests/test_research_evidence_ledger -q
+pytest tests/test_research_campaign -q
 ```
 
 All 12 passed cleanly at commit `08a78d9` (70, 19, 106, 129, 207, 91, 61, 364+1 skipped, 131, 180, 192, 268
@@ -61,18 +61,25 @@ tests respectively — see the validation report's Test Results table for exact 
 ## Full-Suite Command
 
 ```bash
-/home/volkan/.local/bin/pytest tests/ -q
+pytest tests/ -q
 ```
 
 Result at commit `08a78d9`: **10,334 passed, 2 skipped, 10–11 warnings, exit code 0**, ~11.4s wall time. This
 matches the count recorded in the MVP-71 commit message (`be854db`) exactly, confirming no regression across
 the two trailing docs/test-`__init__.py` commits.
 
-The 2 skips are explicit and pre-existing, not environment failures:
+Two skips are explicit and always present, not environment failures:
 
 - `tests/test_research_backtest_comparison/test_stage6_comparison.py:177` — `"placeholder row"`
 - `tests/test_review_index/test_engine.py:917` — `"INDEX_ERROR for orphan reviews requires source
   modification"`
+
+A third, conditional skip appears on most machines:
+
+- `tests/test_pairlist_export/test_cli_feather.py:172` — `"real external Feather fixture not present on
+  this machine"`. This test only runs if you point `_REAL_XRP_FIXTURE` at a real Freqtrade-produced
+  `XRP_USDT_USDT-1h-futures.feather` file on your own machine; it is a local, opt-in smoke test, not part of
+  the guaranteed suite.
 
 The warnings are all either Python 3.14 `datetime.datetime.utcnow()` deprecation warnings inside test code
 (not production `src/` code), one `ResourceWarning` for an unclosed file handle in a test's tmp-path fixture,
@@ -93,7 +100,7 @@ Identified by name/content grep for path-traversal, symlink, ZIP-safety, overwri
 failed-write-cleanup, secret-redaction, subprocess-boundary, no-retry, and no-parallelism assertions:
 
 ```bash
-/home/volkan/.local/bin/pytest -q \
+pytest -q \
   tests/test_audit_scorecard/test_integration.py \
   tests/test_cross_pack_consistency/test_writer.py \
   tests/test_human_review_audit_bundle_export/test_engine.py \
@@ -140,9 +147,9 @@ byte-identical `hunter-pairs.json` and identical audit `fingerprint` field.
 
 `tests/test_research_backtest_comparison/` (the MVP-65 suite, 364 passed + 1 skipped) exercises the
 subprocess boundary against mocked/fixture executables — it does not require a real `freqtrade` install to
-pass. Separately, this validation pass confirmed a real `freqtrade` executable exists at
-`/home/volkan/.local/bin/freqtrade` (version `2026.6-dev-3c293b78e`, verified via `freqtrade --version`,
-read-only). Running `freqtrade test-pairlist` against Hunter's deployment profile was **NOT EXECUTED**: it
+pass. Separately, this validation pass confirmed a real `freqtrade` executable on `PATH` (version
+`2026.6-dev-3c293b78e`, verified via `freqtrade --version`, read-only). Running `freqtrade test-pairlist`
+against Hunter's deployment profile was **NOT EXECUTED**: it
 requires querying live exchange market data (even with a `RemotePairList` + native filters config, Freqtrade
 needs real market/pair-listing data to evaluate `AgeFilter`/`DelistFilter`), which is prohibited by this
 task's safety rules (no network, no exchange access). Treat `freqtrade test-pairlist` as a manual,
@@ -165,7 +172,7 @@ operator-run acceptance step outside this repo's automated test scope — see
 1. `find src/hunter src/freqtrade_strategies -name "*.py" -not -path "*/__pycache__/*" -print0 | xargs -0
    .venv/bin/python -m py_compile` — must exit 0.
 2. Focused suite(s) touching your change — must show `N passed` with no `failed`.
-3. `/home/volkan/.local/bin/pytest tests/ -q` — must show `passed`/`skipped` only, no `failed`, exit 0.
+3. `pytest tests/ -q` — must show `passed`/`skipped` only, no `failed`, exit 0.
 4. If you touched `pairlist_export/`, re-run the manual smoke sequence in
    `docs/technical/PAIRLIST_PIPELINE.md` §"Manual verification" against a scratch directory outside `data/`
    and `reports/`.

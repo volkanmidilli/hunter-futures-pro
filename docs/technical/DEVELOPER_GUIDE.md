@@ -13,7 +13,7 @@ here under Python `3.14.6`.
 - `pytest` (dev dependency, declared in `pyproject.toml` `[project.optional-dependencies].dev` as
   `pytest>=7.0.0`). **Verified gap**: this repo's `.venv` does not have `pytest` installed
   (`.venv/bin/python -m pytest` → `No module named pytest`; no `.venv/bin/pytest` binary exists). A working
-  `pytest 9.1.0` was found at `/home/volkan/.local/bin/pytest` (user-level) and is what this validation used.
+  `pytest 9.1.0` was found via a user-level pip install (outside `.venv`) and is what this validation used.
   If you hit the same gap, either install the `dev` extra into `.venv` (`.venv/bin/pip install -e ".[dev]"`)
   or use an equivalent externally-available `pytest`.
 

@@ -71,9 +71,9 @@ class TestRedactText:
         assert "2024-01-15T10:00:00Z" not in redacted  # timestamp still redacted
 
     def test_home_path(self) -> None:
-        text = "error at /home/volkan/project/file.py"
+        text = "error at /home/YOUR_USER/project/file.py"
         redacted = redact_text(text)
-        assert "/home/volkan" not in redacted
+        assert "/home/YOUR_USER" not in redacted
 
     def test_absolute_tmp_path(self) -> None:
         text = "wrote to /tmp/hunter_backtest_abc123/result.json"
@@ -99,6 +99,6 @@ class TestRedactText:
 
 class TestRedactPath:
     def test_redact_path(self) -> None:
-        path = Path("/home/volkan/project/file.py")
+        path = Path("/home/YOUR_USER/project/file.py")
         redacted = redact_path(path)
-        assert "/home/volkan" not in redacted
+        assert "/home/YOUR_USER" not in redacted

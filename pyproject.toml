@@ -1,13 +1,38 @@
+[build-system]
+requires = ["setuptools>=68.0"]
+build-backend = "setuptools.build_meta"
+
 [project]
 name = "hunter-futures-pro"
 version = "0.72.0-dev"
-description = "Agent-first crypto futures research and execution-control platform"
+description = "Agent-first crypto futures research and pairlist-publishing tool for Freqtrade"
+readme = "README.md"
 requires-python = ">=3.11"
+license = {text = "MIT"}
+authors = [
+    {name = "Volkan Midilli"},
+]
+keywords = ["freqtrade", "crypto", "futures", "trading", "research", "pairlist"]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Developers",
+    "Intended Audience :: Financial and Insurance Industry",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
+    "Topic :: Office/Business :: Financial :: Investment",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+]
 dependencies = [
     "pydantic>=2.0.0",
     "pyyaml>=6.0",
     "pandas>=2.0.0",
     "pyarrow>=14.0.0",
+    "numpy>=1.24.0",
 ]
 
 [project.optional-dependencies]
@@ -17,8 +42,18 @@ dev = [
     "factory-boy>=3.3.0",
 ]
 
+[project.urls]
+Homepage = "https://github.com/volkanmidilli/hunter-futures-pro"
+Repository = "https://github.com/volkanmidilli/hunter-futures-pro"
+Issues = "https://github.com/volkanmidilli/hunter-futures-pro/issues"
+Documentation = "https://github.com/volkanmidilli/hunter-futures-pro/tree/master/docs"
+
 [project.scripts]
 hunter = "hunter.core.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+include = ["hunter*"]
 
 [tool.pytest.ini_options]
 pythonpath = ["src"]

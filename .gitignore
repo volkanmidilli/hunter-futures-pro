@@ -7,6 +7,7 @@ __pycache__/
 *.egg-info/
 dist/
 build/
+.venv/
 
 # Secrets and local config
 configs/local.yaml
@@ -14,12 +15,22 @@ configs/local.yaml
 *.key
 *.pem
 *.secret
+.claude/settings.local.json
 
 # Runtime data and logs
 logs/
 *.db
 *.sqlite
 *.sqlite3
+data/
+reports/
+backtest_result.json
+hunter-pairs*.json
+!examples/hunter-pairs.json
+
+# Node (accidental/local tooling only — this is a Python project)
+node_modules/
+package-lock.json
 
 # IDE
 .vscode/
@@ -31,3 +42,4 @@ logs/
 .DS_Store
 Thumbs.db
 .wrongstack/
+.pytest_cache/
