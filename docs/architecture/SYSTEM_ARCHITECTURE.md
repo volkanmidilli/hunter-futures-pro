@@ -28,7 +28,7 @@ Freqtrade consumes the published pairlist, applies its own native market filters
 **Hunter does not become a trading engine.**
 
 This boundary is codified in three independent, mutually consistent places, all verified during this pass:
-`CLAUDE_SPEC-074_Guardrails.md` (repo root), `docs/research/pairlist_export.md`, and the
+`AGENTS.md`/`PROJECT.md` (repo root), `docs/research/pairlist_export.md`, and the
 `PairlistExportSafetyFlags` frozen dataclass (`src/hunter/pairlist_export/models.py:88-115`), which raises
 `ValueError` at construction time if any of `research_only`, `human_approval_required` is falsified or if any
 of `execution_approval_granted` / `production_approval_granted` / `live_trading_allowed` /
@@ -322,7 +322,7 @@ unified-help regression tests.
 
 ## 11. Explicit Non-Goals
 
-Verified against `CLAUDE_SPEC-074_Guardrails.md` and confirmed clean by source scan (§3.6, §6):
+Verified against `AGENTS.md`/`PROJECT.md` and confirmed clean by source scan (§3.6, §6):
 
 - Hunter does not place orders, manage positions, or emit entry/exit signals.
 - Hunter does not decide leverage.

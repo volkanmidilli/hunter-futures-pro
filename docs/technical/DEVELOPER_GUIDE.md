@@ -146,7 +146,7 @@ computed from a `_canonicalize`d, wall-clock-free payload. Prefer `json.dumps(..
   and `pairlist_export`. Adding optional fields is backward compatible; changing the meaning of an existing
   field (e.g. `None` semantics) is not.
 - `PairlistRankingConfig` defaults (`min_pairs=5`, `target_final_pairs=20`, `publish_candidates=30`,
-  `max_pairs=50`, `refresh_period=3600`) are SPEC-074 decisions recorded in `CLAUDE_SPEC-074_Guardrails.md`;
+  `max_pairs=50`, `refresh_period=3600`) are SPEC-074 decisions recorded in `docs/technical/PAIRLIST_PIPELINE.md`;
   changing them changes published pairlist size and Freqtrade `refresh_period` — treat as a deployment-facing
   change, not a routine tuning knob.
 - Snapshot filenames (`hunter-pairs-YYYYMMDD.json` / `-audit.json`) and live filenames (`hunter-pairs.json` /

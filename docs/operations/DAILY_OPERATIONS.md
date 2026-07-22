@@ -7,7 +7,7 @@
 
 ## Recommended Cadence
 
-Per `CLAUDE_SPEC-074_Guardrails.md`: Hunter ranking is intended to run **daily at 08:05 UTC**; Freqtrade
+Hunter ranking is intended to run **daily at 08:05 UTC**; Freqtrade
 rereads the published file on its own `refresh_period` (default hourly, set in the deployment profile).
 Nothing in Hunter enforces this cadence — it's a recommendation for your external scheduler, not a runtime
 constraint.
