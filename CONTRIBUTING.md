@@ -7,7 +7,7 @@ pipeline, and every rejection must carry a reason code.
 ## Setup
 
 ```bash
-git clone <your fork>
+git clone https://github.com/volkanmidilli/hunter-futures-pro.git
 cd hunter-futures-pro
 python3 -m venv .venv
 source .venv/bin/activate   # or .venv/bin/activate.fish

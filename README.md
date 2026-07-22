@@ -74,7 +74,7 @@ See `docs/architecture/SYSTEM_ARCHITECTURE.md` for the fully verified component 
 Requires Python 3.11+.
 
 ```bash
-git clone <your fork or this repo's URL>
+git clone https://github.com/volkanmidilli/hunter-futures-pro.git
 cd hunter-futures-pro
 python3 -m venv .venv
 source .venv/bin/activate          # fish: source .venv/bin/activate.fish
@@ -194,6 +194,14 @@ See `docs/technical/TESTING_GUIDE.md` for focused per-package commands and how t
 ## Contributing
 
 See `CONTRIBUTING.md`.
+
+## Acknowledgements
+
+This project was developed with AI-assisted engineering:
+
+- **[Claude Code](https://claude.ai/code)** — implementation, testing, code review
+- **[Claude](https://claude.ai)** — architecture decisions, SPEC design, deployment planning
+- **[WrongStack](https://github.com/WrongStack)** — SPEC review and methodology corrections
 
 ## License
 

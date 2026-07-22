@@ -33,6 +33,7 @@ dependencies = [
     "pandas>=2.0.0",
     "pyarrow>=14.0.0",
     "numpy>=1.24.0",
+    "ccxt>=4.0.0",
 ]
 
 [project.optional-dependencies]
@@ -46,7 +47,7 @@ dev = [
 Homepage = "https://github.com/volkanmidilli/hunter-futures-pro"
 Repository = "https://github.com/volkanmidilli/hunter-futures-pro"
 Issues = "https://github.com/volkanmidilli/hunter-futures-pro/issues"
-Documentation = "https://github.com/volkanmidilli/hunter-futures-pro/tree/master/docs"
+Documentation = "https://github.com/volkanmidilli/hunter-futures-pro/tree/main/docs"
 
 [project.scripts]
 hunter = "hunter.core.cli:main"
