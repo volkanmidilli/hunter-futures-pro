@@ -213,7 +213,8 @@ def _read_raw_dataframe(path: Path) -> pd.DataFrame:
         )
 
     try:
-        table = feather.read_table(str(path), columns=list(REQUIRED_FEATHER_COLUMNS))
+        reader = pa.ipc.open_file(str(path))
+        table = reader.read_all().select(list(REQUIRED_FEATHER_COLUMNS))
         df = table.to_pandas()
     except Exception as exc:
         raise _SeriesRejected((UNREADABLE_FEATHER_FILE,), f"unreadable feather file: {path}") from exc
