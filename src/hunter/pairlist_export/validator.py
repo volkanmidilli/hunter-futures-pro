@@ -22,6 +22,8 @@ from hunter.pairlist_export.models import (
     REASON_EMPTY_UNIVERSE,
     REASON_INSUFFICIENT_EVIDENCE,
     REASON_INVALID_PAIR_FORMAT,
+    REASON_PROFILE_EVIDENCE_INCOMPLETE,
+    REASON_PROFILE_FIELD_MISMATCH,
     REASON_VALIDATION_FAILED,
     PairlistExportSafetyFlags,
     PairlistOutput,
@@ -173,6 +175,17 @@ def run_publish_gate_v2(
     incomplete_evidence = [p.pair for p in selected if REASON_INSUFFICIENT_EVIDENCE in p.reason_codes]
     if incomplete_evidence:
         reason_codes.append(REASON_INSUFFICIENT_EVIDENCE)
+
+    # SPEC-075 M1 remediation: independently validate data_quality_pct on every
+    # selected pair. Do not trust reason_codes alone -- an externally constructed
+    # RankedPair could claim valid reasons while carrying a missing, malformed,
+    # non-finite, or out-of-range data_quality_pct.
+    for pair in selected:
+        dq = pair.data_quality_pct
+        if dq is None:
+            reason_codes.append(REASON_PROFILE_EVIDENCE_INCOMPLETE)
+        elif dq.is_nan() or dq.is_infinite() or dq < 0 or dq > 100:
+            reason_codes.append(REASON_PROFILE_FIELD_MISMATCH)
 
     pair_strings = tuple(p.pair for p in selected)
 

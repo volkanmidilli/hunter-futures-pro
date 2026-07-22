@@ -110,6 +110,8 @@ def _pair_to_dict(pair: RankedPair) -> dict:
     }
     if pair.liquidity_score is not None:
         payload["liquidity_score"] = str(pair.liquidity_score)
+    if pair.data_quality_pct is not None:
+        payload["data_quality_pct"] = str(pair.data_quality_pct)
     return payload
 
 

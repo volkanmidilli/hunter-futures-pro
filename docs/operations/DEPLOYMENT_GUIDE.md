@@ -4,7 +4,7 @@
 > consume. It does not cover, authorize, or configure live trading, dry-run trading, or Freqtrade execution
 > itself — those remain entirely Freqtrade's and the operator's responsibility.
 
-Verified against commit `08a78d9`, version `0.72.0-dev`, `src/hunter/pairlist_export/deployment_profiles.py`.
+Verified against commit `58aeb20`, version `0.72.0-dev`, `src/hunter/pairlist_export/deployment_profiles.py`.
 
 ## Native Host Deployment
 
@@ -62,6 +62,19 @@ services:
 
 Hunter itself runs **outside** the container (it has no network/exchange dependency, so it doesn't need to
 run inside Freqtrade's environment) and writes to `/srv/hunter/pairlists` on the host.
+
+## Feather Input Root (SPEC-075)
+
+If using `hunter pairlist feather-input` / `from-feather`, Hunter needs read access to the local Freqtrade
+Feather data root (e.g. `user_data/data/binance/futures`). The directory must contain `*-1h-futures.feather`
+files and be readable by the Hunter process. **Read-only permission is sufficient and recommended** — Hunter
+never modifies source Feather files (verified via SHA-256 before/after in tests). Do not point `--data-dir`
+at this repository's `data/` or `reports/` trees; use the actual Freqtrade user-data directory or a dedicated
+mirror.
+
+The pairlist output mapping is unchanged: `--output-dir` still controls where `hunter-pairs.json` and
+`hunter-pairs-audit.json` are published, and the `file:///` `pairlist_url` must match that host/container
+path exactly (see the summary table below).
 
 ## Directory Ownership and Permissions
 

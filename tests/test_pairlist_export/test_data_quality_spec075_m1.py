@@ -1,4 +1,4 @@
-"""SPEC-075 M1 remediation: profile-aware data_quality validation."""
+"""SPEC-075 M1 remediation: profile-aware data_quality validation tests."""
 
 from __future__ import annotations
 
@@ -8,301 +8,327 @@ import pytest
 
 from hunter.pairlist_export.models import (
     REASON_DATA_SUFFICIENCY,
+    REASON_PROFILE_EVIDENCE_INCOMPLETE,
     REASON_PROFILE_FIELD_MISMATCH,
     PairlistRankingConfig,
     RankedPair,
 )
+from hunter.pairlist_export.ranking_adapter import rank_pairs_v2
+from hunter.pairlist_export.ranking_input_v2 import (
+    ProfileEvidenceIncompleteError,
+    ProfileFieldMismatchError,
+    RankingProfile,
+    validate_profile_fields,
+)
 from hunter.pairlist_export.validator import run_publish_gate_v2
-from hunter.pairlist_export.ranking_input_v2 import RankingProfile, resolve_ranking_profile
 
 
-class TestDataQualitySpec075M1:
-    """Test SPEC-075 M1 data_quality validation enforcement."""
-
-    def test_data_quality_missing_for_v2_profile_is_insufficient_evidence(self):
-        """data_quality missing for eligible pair under v2 profile -> PROFILE_EVIDENCE_INCOMPLETE."""
-        config = PairlistRankingConfig(min_pairs=1)
-        ranking_profile = RankingProfile.V2_RS_LIQUIDITY
-        eligible_pairs = ("BTC/USDT:USDT", "ETH/USDT:USDT")
-
-        # Note: We need to supply required dimensions per profile
-        # For V2_RS_LIQUIDITY, we need rs, liquidity, data_quality for all eligible pairs
-        # When data_quality is missing, the ranking adapter should mark it with INSUFFICIENT_EVIDENCE
-
-        # For this test, we'll simulate what the ranking adapter would do
-        # The key is that data_quality is now required for v2 profiles
-        import json
-        payload = {
-            "as_of_date": "2026-07-21",
-            "universe_total": 2,
-            "eligible_pairs": list(eligible_pairs),
-            "schema_version": "hunter-ranking-input-v2",
-            "ranking_profile": "V2_RS_LIQUIDITY",
-            "rs_scores": {pair: Decimal("80") for pair in eligible_pairs},
-            "liquidity_scores": {pair: Decimal("70") for pair in eligible_pairs},
-            "oi_scores": {},
-            "data_quality": {pair: Decimal("100") for pair in eligible_pairs[:1]},  # Missing ETH
-            "source_metadata": {"oi_available": False},
-        }
-
-        # Verify that resolve_ranking_profile correctly identifies v2
-        profile = resolve_ranking_profile(payload)
-        assert profile is RankingProfile.V2_RS_LIQUIDITY
-
-        # The fact that we supplied a profile with missing data_quality
-        # means the spec requires validation to catch this
-        # In the actual implementation, this would be caught in validate_profile_fields
-        # or rank_pairs_v2 when it checks for missing required dimensions
-
-    def test_data_quality_nan_and_infinity_raise_profile_field_mismatch(self):
-        """NaN and Infinity values -> PROFILE_FIELD_MISMATCH."""
-        import json
-        payload = {
-            "as_of_date": "2026-07-21",
-            "universe_total": 1,
-            "eligible_pairs": ["BTC/USDT:USDT"],
-            "schema_version": "hunter-ranking-input-v2",
-            "ranking_profile": "V2_RS_OI_LIQUIDITY",
-            "rs_scores": {"BTC/USDT:USDT": Decimal("80")},
-            "liquidity_scores": {"BTC/USDT:USDT": Decimal("70")},
-            "oi_scores": {"BTC/USDT:USDT": Decimal("50")},
-            "data_quality": {"BTC/USDT:USDT": Decimal("NaN")},  # NaN
-            "source_metadata": {"oi_available": True},
-        }
-
-        profile = resolve_ranking_profile(payload)
-        assert profile is RankingProfile.V2_RS_OI_LIQUIDITY
-
-        # With actual implementation, validate_profile_fields would raise ProfileFieldMismatchError
-        # for NaN data_quality values
-
-    def test_data_quality_below_zero_raises_profile_field_mismatch(self):
-        """data_quality below 0 -> PROFILE_FIELD_MISMATCH."""
-        import json
-        payload = {
-            "as_of_date": "2026-07-21",
-            "universe_total": 1,
-            "eligible_pairs": ["BTC/USDT:USDT"],
-            "schema_version": "hunter-ranking-input-v2",
-            "ranking_profile": "V1_RS_OI",  # V1 also requires data_quality when present
-            "rs_scores": {"BTC/USDT:USDT": Decimal("80")},
-            "liquidity_scores": {},
-            "oi_scores": {"BTC/USDT:USDT": Decimal("50")},
-            "data_quality": {"BTC/USDT:USDT": Decimal("-5")},  # Below 0
-            "source_metadata": {"oi_available": True},
-        }
-
-        profile = resolve_ranking_profile(payload)
-        assert profile is RankingProfile.V1_RS_OI
-
-        # With actual implementation, validate_profile_fields would raise ProfileFieldMismatchError
-        # for negative data_quality values
-
-    def test_data_quality_above_100_raises_profile_field_mismatch(self):
-        """data_quality above 100 -> PROFILE_FIELD_MISMATCH."""
-        import json
-        payload = {
-            "as_of_date": "2026-07-21",
-            "universe_total": 1,
-            "eligible_pairs": ["BTC/USDT:USDT"],
-            "schema_version": "hunter-ranking-input-v2",
-            "ranking_profile": "V1_RS_OI",
-            "rs_scores": {"BTC/USDT:USDT": Decimal("80")},
-            "liquidity_scores": {},
-            "oi_scores": {"BTC/USDT:USDT": Decimal("50")},
-            "data_quality": {"BTC/USDT:USDT": Decimal("105")},  # Above 100
-            "source_metadata": {"oi_available": True},
-        }
-
-        profile = resolve_ranking_profile(payload)
-        assert profile is RankingProfile.V1_RS_OI
-
-        # With actual implementation, validate_profile_fields would raise ProfileFieldMismatchError
-        # for data_quality values above 100
-
-    def test_valid_data_quality_passes_validation(self):
-        """Valid data_quality (0-100 inclusive) passes validation."""
-        import json
-        payload = {
-            "as_of_date": "2026-07-21",
-            "universe_total": 1,
-            "eligible_pairs": ["BTC/USDT:USDT"],
-            "schema_version": "hunter-ranking-input-v2",
-            "ranking_profile": "V1_RS_OI",
-            "rs_scores": {"BTC/USDT:USDT": Decimal("80")},
-            "liquidity_scores": {},
-            "oi_scores": {"BTC/USDT:USDT": Decimal("50")},
-            "data_quality": {"BTC/USDT:USDT": Decimal("100")},  # Valid boundary value
-            "source_metadata": {"oi_available": True},
-        }
-
-        profile = resolve_ranking_profile(payload)
-        assert profile is RankingProfile.V1_RS_OI
-
-        # With actual implementation, validate_profile_fields would accept
-        # data_quality values in the valid range 0-100 inclusive
-
-    def test_data_quality_exact_zero_and_100_are_valid(self):
-        """data_quality values 0 and 100 (boundary values) are valid."""
-        import json
-
-        # Test 0
-        payload_zero = {
-            "as_of_date": "2026-07-21",
-            "universe_total": 1,
-            "eligible_pairs": ["BTC/USDT:USDT"],
-            "schema_version": "hunter-ranking-input-v2",
-            "ranking_profile": "V2_RS_LIQUIDITY",
-            "rs_scores": {"BTC/USDT:USDT": Decimal("80")},
-            "liquidity_scores": {"BTC/USDT:USDT": Decimal("70")},
-            "oi_scores": {},
-            "data_quality": {"BTC/USDT:USDT": Decimal("0")},  # Valid boundary value
-            "source_metadata": {"oi_available": False},
-        }
-
-        # Test 100
-        payload_hundred = {
-            "as_of_date": "2026-07-21",
-            "universe_total": 1,
-            "eligible_pairs": ["BTC/USDT:USDT"],
-            "schema_version": "hunter-ranking-input-v2",
-            "ranking_profile": "V2_RS_OI_LIQUIDITY",
-            "rs_scores": {"BTC/USDT:USDT": Decimal("80")},
-            "liquidity_scores": {"BTC/USDT:USDT": Decimal("70")},
-            "oi_scores": {"BTC/USDT:USDT": Decimal("50")},
-            "data_quality": {"BTC/USDT:USDT": Decimal("100")},  # Valid boundary value
-            "source_metadata": {"oi_available": True},
-        }
-
-    def test_v1_compatibility_maintains_backward_compliance(self):
-        """SPEC-074 v1 behavior remains unchanged."""
-        import json
-
-        # V1 payload (no schema_version or schema_version='hunter-ranking-input-v1')
-        v1_payload = {
-            "as_of_date": "2026-07-21",
-            "universe_total": 1,
-            "eligible_pairs": ["BTC/USDT:USDT"],
-            # No schema_version field (defaults to V1)
-            "rs_scores": {"BTC/USDT:USDT": Decimal("80")},
-            "liquidity_scores": {},
-            "oi_scores": {"BTC/USDT:USDT": Decimal("50")},
-            # No data_quality field (backward compatible)
-        }
-
-        profile = resolve_ranking_profile(v1_payload)
-        assert profile is RankingProfile.V1_RS_OI
-
-        # With actual implementation, validate_profile_fields should NOT be called
-        # for V1 (schema_version is V1), so data_quality missing is allowed
-        # This preserves the original SPEC-074 behavior
-
-    def test_v2_profiles_require_data_quality_for_all_eligible_pairs(self):
-        """All v2 profiles require data_quality for every eligible pair."""
-        # This tests the core requirement: data_quality is required for every eligible pair under all profiles
-        # For each v2 profile, we should test that missing data_quality is caught
-
-        profiles = [RankingProfile.V2_RS_LIQUIDITY, RankingProfile.V2_RS_OI_LIQUIDITY]
-
-        for profile in profiles:
-            # Test with missing data_quality
-            payload = {
-                "as_of_date": "2026-07-21",
-                "universe_total": 1,
-                "eligible_pairs": ["BTC/USDT:USDT"],
-                "schema_version": "hunter-ranking-input-v2",
-                "ranking_profile": profile.value,
-                "rs_scores": {"BTC/USDT:USDT": Decimal("80")},
-                "liquidity_scores": {"BTC/USDT:USDT": Decimal("70")},
-                "oi_scores": {"BTC/USDT:USDT": Decimal("50")},
-                "data_quality": {},  # Intentionally missing data_quality
-                "source_metadata": {"oi_available": True},
+def _v2_common(profile: RankingProfile) -> dict:
+    """Return a well-formed v2 payload for the given profile."""
+    base = {
+        "eligible_pairs": ("BTC/USDT:USDT", "ETH/USDT:USDT"),
+        "rs_scores": {"BTC/USDT:USDT": Decimal("80"), "ETH/USDT:USDT": Decimal("60")},
+        "liquidity_scores": {"BTC/USDT:USDT": Decimal("70"), "ETH/USDT:USDT": Decimal("50")},
+        "data_quality": {"BTC/USDT:USDT": Decimal("100"), "ETH/USDT:USDT": Decimal("90")},
+    }
+    if profile is RankingProfile.V2_RS_LIQUIDITY:
+        base.update({"oi_scores": {}, "oi_available": False})
+    else:
+        base.update(
+            {
+                "oi_scores": {"BTC/USDT:USDT": Decimal("60"), "ETH/USDT:USDT": Decimal("40")},
+                "oi_available": True,
             }
+        )
+    return base
 
-            profile_enum = resolve_ranking_profile(payload)
-            assert profile_enum is profile
 
-            # With actual implementation, validate_profile_fields would detect
-            # missing data_quality for this v2 profile and reject it
+class TestValidateProfileFieldsDataQuality:
+    """Direct tests for validate_profile_fields data_quality rules."""
 
-    def test_publish_gate_independently_revalidates_data_quality_contract(self):
-        """Publish gate independently revalidates data_quality contract."""
-        config = PairlistRankingConfig(min_pairs=1)
-        as_of_date = "2026-07-21"
-        universe_total = 1
-        ranking_profile = RankingProfile.V2_RS_LIQUIDITY
+    @pytest.mark.parametrize("profile", [RankingProfile.V2_RS_LIQUIDITY, RankingProfile.V2_RS_OI_LIQUIDITY])
+    def test_missing_data_quality_raises_profile_evidence_incomplete(self, profile: RankingProfile) -> None:
+        """Missing data_quality for an eligible v2 pair -> PROFILE_EVIDENCE_INCOMPLETE."""
+        payload = _v2_common(profile)
+        payload["data_quality"] = {"BTC/USDT:USDT": Decimal("100")}  # ETH missing
+        with pytest.raises(ProfileEvidenceIncompleteError) as exc_info:
+            validate_profile_fields(ranking_profile=profile, **payload)
+        assert exc_info.value.reason_code == REASON_PROFILE_EVIDENCE_INCOMPLETE
+        assert "ETH/USDT:USDT" in str(exc_info.value)
 
-        # Create ranked pairs with invalid data_quality (using reason codes to indicate)
-        # Note: RankedPair doesn't have data_quality_pct field, so we use reason_codes
-        # to indicate data_quality issues - the publish gate should validate this
-        ranked_pairs = (
-            RankedPair(
-                pair="BTC/USDT:USDT",
-                rank=1,
-                selected=True,
-                rs_score=Decimal("80"),
-                oi_score=None,
-                liquidity_score=Decimal("70"),
-                reason_codes=(REASON_DATA_SUFFICIENCY, "PROFILE_FIELD_MISMATCH"),
-            ),
+    @pytest.mark.parametrize("profile", [RankingProfile.V2_RS_LIQUIDITY, RankingProfile.V2_RS_OI_LIQUIDITY])
+    def test_empty_data_quality_map_raises_profile_evidence_incomplete(self, profile: RankingProfile) -> None:
+        """Completely missing data_quality map -> PROFILE_EVIDENCE_INCOMPLETE."""
+        payload = _v2_common(profile)
+        payload["data_quality"] = {}
+        with pytest.raises(ProfileEvidenceIncompleteError) as exc_info:
+            validate_profile_fields(ranking_profile=profile, **payload)
+        assert exc_info.value.reason_code == REASON_PROFILE_EVIDENCE_INCOMPLETE
+
+    @pytest.mark.parametrize("bad_value", ["not-a-decimal", 100.5, 42, Decimal("NaN"), Decimal("Infinity"), Decimal("-Infinity")])
+    @pytest.mark.parametrize("profile", [RankingProfile.V2_RS_LIQUIDITY, RankingProfile.V2_RS_OI_LIQUIDITY])
+    def test_malformed_or_non_finite_data_quality_raises_profile_field_mismatch(
+        self, profile: RankingProfile, bad_value: object
+    ) -> None:
+        """Malformed, NaN, or Infinity data_quality -> PROFILE_FIELD_MISMATCH."""
+        payload = _v2_common(profile)
+        payload["data_quality"] = {"BTC/USDT:USDT": bad_value, "ETH/USDT:USDT": Decimal("90")}
+        with pytest.raises(ProfileFieldMismatchError) as exc_info:
+            validate_profile_fields(ranking_profile=profile, **payload)
+        assert exc_info.value.reason_code == REASON_PROFILE_FIELD_MISMATCH
+
+    @pytest.mark.parametrize("bad_value", [Decimal("-1"), Decimal("101")])
+    @pytest.mark.parametrize("profile", [RankingProfile.V2_RS_LIQUIDITY, RankingProfile.V2_RS_OI_LIQUIDITY])
+    def test_out_of_range_data_quality_raises_profile_field_mismatch(
+        self, profile: RankingProfile, bad_value: Decimal
+    ) -> None:
+        """data_quality below 0 or above 100 -> PROFILE_FIELD_MISMATCH."""
+        payload = _v2_common(profile)
+        payload["data_quality"] = {"BTC/USDT:USDT": bad_value, "ETH/USDT:USDT": Decimal("90")}
+        with pytest.raises(ProfileFieldMismatchError) as exc_info:
+            validate_profile_fields(ranking_profile=profile, **payload)
+        assert exc_info.value.reason_code == REASON_PROFILE_FIELD_MISMATCH
+
+    @pytest.mark.parametrize("boundary", [Decimal("0"), Decimal("100")])
+    @pytest.mark.parametrize("profile", [RankingProfile.V2_RS_LIQUIDITY, RankingProfile.V2_RS_OI_LIQUIDITY])
+    def test_data_quality_boundaries_accepted(self, profile: RankingProfile, boundary: Decimal) -> None:
+        """Boundary values 0 and 100 are accepted."""
+        payload = _v2_common(profile)
+        payload["data_quality"] = {"BTC/USDT:USDT": boundary, "ETH/USDT:USDT": boundary}
+        validate_profile_fields(ranking_profile=profile, **payload)
+
+    @pytest.mark.parametrize("profile", [RankingProfile.V2_RS_LIQUIDITY, RankingProfile.V2_RS_OI_LIQUIDITY])
+    def test_valid_complete_map_accepted(self, profile: RankingProfile) -> None:
+        """Valid complete data_quality maps pass for both v2 profiles."""
+        payload = _v2_common(profile)
+        validate_profile_fields(ranking_profile=profile, **payload)
+
+    def test_v1_missing_data_quality_is_allowed(self) -> None:
+        """V1_RS_OI accepts missing data_quality for SPEC-074 backward compatibility."""
+        validate_profile_fields(
+            ranking_profile=RankingProfile.V1_RS_OI,
+            eligible_pairs=("BTC/USDT:USDT",),
+            rs_scores={"BTC/USDT:USDT": Decimal("80")},
+            liquidity_scores={},
+            oi_scores={"BTC/USDT:USDT": Decimal("60")},
+            oi_available=True,
+            data_quality={},
         )
 
-        # The publish gate should validate that the data_quality contract is met
-        # and reject pairs with invalid data_quality values
-        # Note: This test assumes the publish gate implementation includes
-        # data_quality validation as per SPEC-075 M1 requirements
 
-    def test_audit_active_score_dimensions_includes_data_quality(self):
-        """Audit active_score_dimensions must include data_quality."""
-        # This tests the requirement that audit records include data_quality in active_score_dimensions
-        # With the new implementation, data_quality should be included as a dimension
-        # when the ranking profile uses it (which all v2 profiles do)
+class TestRankPairsV2DataQuality:
+    """rank_pairs_v2 must enforce data_quality via validate_profile_fields."""
 
+    @pytest.mark.parametrize("profile", [RankingProfile.V2_RS_LIQUIDITY, RankingProfile.V2_RS_OI_LIQUIDITY])
+    def test_missing_data_quality_rejects_with_profile_evidence_incomplete(self, profile: RankingProfile) -> None:
+        """Missing data_quality causes rank_pairs_v2 to raise with the exact reason."""
         config = PairlistRankingConfig(min_pairs=1)
-        as_of_date = "2026-07-21"
-        universe_total = 1
+        payload = _v2_common(profile)
+        payload["data_quality"] = {"BTC/USDT:USDT": Decimal("100")}  # ETH missing
+        with pytest.raises(ProfileEvidenceIncompleteError) as exc_info:
+            rank_pairs_v2(config, profile, **payload)
+        assert exc_info.value.reason_code == REASON_PROFILE_EVIDENCE_INCOMPLETE
 
-        # Test with V2_RS_LIQUIDITY profile (includes data_quality as a tie-break dimension)
-        ranked_pairs = (
+    @pytest.mark.parametrize("bad_value", [Decimal("NaN"), Decimal("Infinity"), Decimal("-1"), Decimal("101")])
+    @pytest.mark.parametrize("profile", [RankingProfile.V2_RS_LIQUIDITY, RankingProfile.V2_RS_OI_LIQUIDITY])
+    def test_invalid_data_quality_rejects_with_profile_field_mismatch(
+        self, profile: RankingProfile, bad_value: Decimal
+    ) -> None:
+        """Malformed/non-finite/out-of-range data_quality fails with PROFILE_FIELD_MISMATCH."""
+        config = PairlistRankingConfig(min_pairs=1)
+        payload = _v2_common(profile)
+        payload["data_quality"] = {"BTC/USDT:USDT": bad_value, "ETH/USDT:USDT": Decimal("90")}
+        with pytest.raises(ProfileFieldMismatchError) as exc_info:
+            rank_pairs_v2(config, profile, **payload)
+        assert exc_info.value.reason_code == REASON_PROFILE_FIELD_MISMATCH
+
+    @pytest.mark.parametrize("profile", [RankingProfile.V2_RS_LIQUIDITY, RankingProfile.V2_RS_OI_LIQUIDITY])
+    def test_valid_complete_payload_ranks_successfully(self, profile: RankingProfile) -> None:
+        """A valid complete payload produces deterministic ranking."""
+        config = PairlistRankingConfig(min_pairs=1)
+        payload = _v2_common(profile)
+        ranked = rank_pairs_v2(config, profile, **payload)
+        assert len(ranked) == 2
+        assert all(p.data_quality_pct is not None for p in ranked)
+        assert all(REASON_DATA_SUFFICIENCY in p.reason_codes for p in ranked)
+
+    def test_v2_rs_liquidity_tie_break_order_preserved(self) -> None:
+        """Tie-break: -rs, -liquidity, -data_quality, pair_asc."""
+        config = PairlistRankingConfig(min_pairs=1, publish_candidates=10)
+        ranked = rank_pairs_v2(
+            config,
+            RankingProfile.V2_RS_LIQUIDITY,
+            ("AAA/USDT:USDT", "BBB/USDT:USDT", "CCC/USDT:USDT"),
+            {"AAA/USDT:USDT": Decimal("80"), "BBB/USDT:USDT": Decimal("80"), "CCC/USDT:USDT": Decimal("80")},
+            {"AAA/USDT:USDT": Decimal("70"), "BBB/USDT:USDT": Decimal("70"), "CCC/USDT:USDT": Decimal("60")},
+            {},
+            {"AAA/USDT:USDT": Decimal("100"), "BBB/USDT:USDT": Decimal("90"), "CCC/USDT:USDT": Decimal("100")},
+        )
+        # AAA beats BBB on data_quality; both beat CCC on liquidity
+        assert [p.pair for p in ranked] == ["AAA/USDT:USDT", "BBB/USDT:USDT", "CCC/USDT:USDT"]
+
+    def test_v2_rs_oi_liquidity_tie_break_order_preserved(self) -> None:
+        """Tie-break: -rs, -oi, -liquidity, -data_quality, pair_asc."""
+        config = PairlistRankingConfig(min_pairs=1, publish_candidates=10)
+        ranked = rank_pairs_v2(
+            config,
+            RankingProfile.V2_RS_OI_LIQUIDITY,
+            ("AAA/USDT:USDT", "BBB/USDT:USDT", "CCC/USDT:USDT", "DDD/USDT:USDT"),
+            {p: Decimal("80") for p in ("AAA/USDT:USDT", "BBB/USDT:USDT", "CCC/USDT:USDT", "DDD/USDT:USDT")},
+            {p: Decimal("70") for p in ("AAA/USDT:USDT", "BBB/USDT:USDT", "CCC/USDT:USDT", "DDD/USDT:USDT")},
+            {"AAA/USDT:USDT": Decimal("60"), "BBB/USDT:USDT": Decimal("60"), "CCC/USDT:USDT": Decimal("50"), "DDD/USDT:USDT": Decimal("60")},
+            {"AAA/USDT:USDT": Decimal("100"), "BBB/USDT:USDT": Decimal("90"), "CCC/USDT:USDT": Decimal("100"), "DDD/USDT:USDT": Decimal("100")},
+            oi_available=True,
+        )
+        # AAA/BBB/DDD tie on rs/oi/liquidity -> data_quality decides BBB vs {AAA,DDD};
+        # AAA/DDD tie on every dimension -> pair_asc decides. CCC loses on oi.
+        assert [p.pair for p in ranked] == ["AAA/USDT:USDT", "DDD/USDT:USDT", "BBB/USDT:USDT", "CCC/USDT:USDT"]
+
+
+class TestPublishGateV2DataQuality:
+    """run_publish_gate_v2 independently validates data_quality_pct on selected pairs."""
+
+    def _gate_args(self, ranked: tuple[RankedPair, ...], profile: RankingProfile) -> dict:
+        return {
+            "config": PairlistRankingConfig(min_pairs=1, publish_candidates=10),
+            "as_of_date": "2026-07-21",
+            "universe_total": len(ranked),
+            "ranked_pairs": ranked,
+            "ranking_profile": profile,
+            "universe_size_at_scoring": len(ranked),
+            "universe_fingerprint": "fp",
+            "oi_available": profile is RankingProfile.V2_RS_OI_LIQUIDITY,
+        }
+
+    @pytest.mark.parametrize("profile", [RankingProfile.V2_RS_LIQUIDITY, RankingProfile.V2_RS_OI_LIQUIDITY])
+    def test_missing_data_quality_pct_is_rejected(self, profile: RankingProfile) -> None:
+        """Externally constructed selected pair with data_quality_pct=None -> PROFILE_EVIDENCE_INCOMPLETE."""
+        ranked = (
             RankedPair(
                 pair="BTC/USDT:USDT",
                 rank=1,
                 selected=True,
                 rs_score=Decimal("80"),
-                oi_score=None,
+                oi_score=Decimal("60") if profile is RankingProfile.V2_RS_OI_LIQUIDITY else None,
                 liquidity_score=Decimal("70"),
+                data_quality_pct=None,
                 reason_codes=(),
             ),
         )
+        result = run_publish_gate_v2(**self._gate_args(ranked, profile))
+        assert result.allow_publish is False
+        assert REASON_PROFILE_EVIDENCE_INCOMPLETE in result.reason_codes
 
-        # The audit record should include data_quality in active_score_dimensions
-        # This depends on the audit implementation
-        # Note: The audit record's active_score_dimensions is based on
-        # PROFILE_ACTIVE_DIMENSIONS mapping in ranking_input_v2.py
+    @pytest.mark.parametrize("bad_value", [Decimal("NaN"), Decimal("Infinity"), Decimal("-Infinity"), Decimal("-1"), Decimal("101")])
+    @pytest.mark.parametrize("profile", [RankingProfile.V2_RS_LIQUIDITY, RankingProfile.V2_RS_OI_LIQUIDITY])
+    def test_invalid_data_quality_pct_is_rejected(self, profile: RankingProfile, bad_value: Decimal) -> None:
+        """Externally constructed selected pair with invalid data_quality_pct -> PROFILE_FIELD_MISMATCH."""
+        ranked = (
+            RankedPair(
+                pair="BTC/USDT:USDT",
+                rank=1,
+                selected=True,
+                rs_score=Decimal("80"),
+                oi_score=Decimal("60") if profile is RankingProfile.V2_RS_OI_LIQUIDITY else None,
+                liquidity_score=Decimal("70"),
+                data_quality_pct=bad_value,
+                reason_codes=(),  # no mismatch reason -- gate must not rely on reason_codes
+            ),
+        )
+        result = run_publish_gate_v2(**self._gate_args(ranked, profile))
+        assert result.allow_publish is False
+        assert REASON_PROFILE_FIELD_MISMATCH in result.reason_codes
 
-    def test_ignored_score_dimensions_remain_empty(self):
-        """ignored_score_dimensions must remain empty (no silent ignores)."""
-        # This tests the requirement that all profile-mismatched dimensions are rejected
-        # rather than silently ignored, ensuring data_quality validation is strict
+    @pytest.mark.parametrize("boundary", [Decimal("0"), Decimal("100")])
+    @pytest.mark.parametrize("profile", [RankingProfile.V2_RS_LIQUIDITY, RankingProfile.V2_RS_OI_LIQUIDITY])
+    def test_data_quality_boundaries_pass(self, profile: RankingProfile, boundary: Decimal) -> None:
+        """Boundary values 0 and 100 pass the gate."""
+        ranked = (
+            RankedPair(
+                pair="BTC/USDT:USDT",
+                rank=1,
+                selected=True,
+                rs_score=Decimal("80"),
+                oi_score=Decimal("60") if profile is RankingProfile.V2_RS_OI_LIQUIDITY else None,
+                liquidity_score=Decimal("70"),
+                data_quality_pct=boundary,
+                reason_codes=(REASON_DATA_SUFFICIENCY,),
+            ),
+        )
+        result = run_publish_gate_v2(**self._gate_args(ranked, profile))
+        assert result.allow_publish is True
+        assert result.pairlist_output is not None
 
-        # This should be tested by attempting to supply invalid data_quality
-        # and verifying PROFILE_FIELD_MISMATCH is raised rather than ignoring it
+    @pytest.mark.parametrize("profile", [RankingProfile.V2_RS_LIQUIDITY, RankingProfile.V2_RS_OI_LIQUIDITY])
+    def test_gate_does_not_rely_on_reason_codes_alone(self, profile: RankingProfile) -> None:
+        """A selected pair with clean reason_codes but NaN data_quality_pct is still rejected."""
+        ranked = (
+            RankedPair(
+                pair="BTC/USDT:USDT",
+                rank=1,
+                selected=True,
+                rs_score=Decimal("80"),
+                oi_score=Decimal("60") if profile is RankingProfile.V2_RS_OI_LIQUIDITY else None,
+                liquidity_score=Decimal("70"),
+                data_quality_pct=Decimal("NaN"),
+                reason_codes=(),  # gate must validate the value, not trust reason_codes
+            ),
+        )
+        result = run_publish_gate_v2(**self._gate_args(ranked, profile))
+        assert result.allow_publish is False
+        assert REASON_PROFILE_FIELD_MISMATCH in result.reason_codes
 
-        # Example test case:
-        import json
-        payload = {
-            "as_of_date": "2026-07-21",
-            "universe_total": 1,
-            "eligible_pairs": ["BTC/USDT:USDT"],
-            "schema_version": "hunter-ranking-input-v2",
-            "ranking_profile": "V2_RS_LIQUIDITY",
-            "rs_scores": {"BTC/USDT:USDT": Decimal("80")},
-            "liquidity_scores": {"BTC/USDT:USDT": Decimal("70")},
-            "oi_scores": {},  # This profile says oi_scores should be empty
-            "data_quality": {"BTC/USDT:USDT": Decimal("100")},
-            "source_metadata": {"oi_available": False},
-        }
 
-        # The validate_profile_fields should accept this because we're following
-        # the profile rules, but any deviation (e.g., oi_available=True when should be False)
-        # should be rejected with PROFILE_FIELD_MISMATCH
+class TestAuditDimensions:
+    """Audit active_score_dimensions must reflect every ranking/evidence dimension."""
+
+    def test_v2_rs_liquidity_active_dimensions_exact(self) -> None:
+        config = PairlistRankingConfig(min_pairs=1, publish_candidates=1, max_pairs=10)
+        ranked = rank_pairs_v2(
+            config,
+            RankingProfile.V2_RS_LIQUIDITY,
+            ("BTC/USDT:USDT",),
+            {"BTC/USDT:USDT": Decimal("80")},
+            {"BTC/USDT:USDT": Decimal("70")},
+            {},
+            {"BTC/USDT:USDT": Decimal("100")},
+        )
+        result = run_publish_gate_v2(
+            config=config,
+            as_of_date="2026-07-21",
+            universe_total=1,
+            ranked_pairs=ranked,
+            ranking_profile=RankingProfile.V2_RS_LIQUIDITY,
+            universe_size_at_scoring=1,
+            universe_fingerprint="fp",
+            oi_available=False,
+        )
+        assert result.allow_publish is True
+        assert result.pairlist_output.audit.active_score_dimensions == ("rs", "liquidity", "data_quality")
+        assert result.pairlist_output.audit.ignored_score_dimensions == ()
+
+    def test_v2_rs_oi_liquidity_active_dimensions_exact(self) -> None:
+        config = PairlistRankingConfig(min_pairs=1, publish_candidates=1, max_pairs=10)
+        ranked = rank_pairs_v2(
+            config,
+            RankingProfile.V2_RS_OI_LIQUIDITY,
+            ("BTC/USDT:USDT",),
+            {"BTC/USDT:USDT": Decimal("80")},
+            {"BTC/USDT:USDT": Decimal("70")},
+            {"BTC/USDT:USDT": Decimal("60")},
+            {"BTC/USDT:USDT": Decimal("100")},
+            oi_available=True,
+        )
+        result = run_publish_gate_v2(
+            config=config,
+            as_of_date="2026-07-21",
+            universe_total=1,
+            ranked_pairs=ranked,
+            ranking_profile=RankingProfile.V2_RS_OI_LIQUIDITY,
+            universe_size_at_scoring=1,
+            universe_fingerprint="fp",
+            oi_available=True,
+        )
+        assert result.allow_publish is True
+        assert result.pairlist_output.audit.active_score_dimensions == ("rs", "oi", "liquidity", "data_quality")
+        assert result.pairlist_output.audit.ignored_score_dimensions == ()

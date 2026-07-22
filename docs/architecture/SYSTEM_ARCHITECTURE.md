@@ -5,7 +5,7 @@
 > universe selection, order placement, signal generation, strategy mutation, universe mutation, or position
 > changes. Human review remains required.
 
-Verified against source at commit `08a78d9` (branch `master`), version `0.72.0-dev`. Every claim below traces
+Verified against source at commit `58aeb20` (branch `master`), version `0.72.0-dev`. Every claim below traces
 to a specific file read, test run, or CLI invocation performed during this validation pass — see
 `docs/technical/TESTING_GUIDE.md` for the exact commands.
 
@@ -78,18 +78,18 @@ prior-MVP research/audit infrastructure (MVP-0 through MVP-70) that predates SPE
 the pairlist-publishing product surface. This split is real, not a doc simplification — verified by dependency
 grep (§4).
 
-### 3.1 Current product surface (SPEC-074 / MVP-71)
+### 3.1 Current product surface (SPEC-074 / MVP-71 + SPEC-075)
 
 | Package | Responsibility |
 |---|---|
-| `pairlist_export` | Ranking, publish gate, atomic writer, snapshots, audit, fingerprinting, deployment profiles, CLI. Self-contained — zero imports from any other `src/hunter` package. |
+| `pairlist_export` | Ranking, publish gate, atomic writer, snapshots, audit, fingerprinting, deployment profiles, CLI. **SPEC-075 (MVP-72):** also includes a read-only Feather input adapter (`feather_adapter.py`) that converts local Freqtrade 1h-futures Feather files into a ranking-input v2 artifact. The adapter imports `hunter.relative_strength.engine`/`models` to reuse the existing RS engine unmodified — the only cross-package dependency in `pairlist_export`. |
 | `core` (`core/cli.py`) | Console-script entry point (`hunter`). Dispatches `universe`/`coins`/`pairlist`/`daily-pairlist` tokens to `pairlist_export.cli`; everything else to `reporting_cli.cli`. |
 
-### 3.2 Research computation (consumed as pre-existing reports, not imported directly by `pairlist_export`)
+### 3.2 Research computation (consumed as pre-existing reports, except `relative_strength` which is imported by the SPEC-075 Feather adapter)
 
 | Package | Responsibility |
 |---|---|
-| `relative_strength` | RS scoring engine (MVP-24). |
+| `relative_strength` | RS scoring engine (MVP-24). Reused verbatim by `pairlist_export.feather_adapter` via a daily-close resampling bridge. |
 | `open_interest` | OI/liquidity scoring engine (MVP-25). |
 | `research_universe`, `research_market_data` | Universe and market-data ingestion/adapters (MVP-63/64). |
 
@@ -148,11 +148,9 @@ hunter\.`). **No cycles were found** — every dependency chain, including the d
 `research_universe → freqtrade_universe_adapter → strategy_contract → freqtrade_bridge → execution`),
 terminates in a leaf package.
 
-### 4.2 `pairlist_export` is self-contained
+### 4.2 `pairlist_export` depends only on `relative_strength`
 
-`pairlist_export` imports zero other `src/hunter` packages. Its internal module DAG (leaf → root):
-`models`/`fingerprint` → `audit` → `validator`/`publisher` → `snapshot` → `cli`. No circular imports within
-the package either (verified by direct read of all 9 module files).
+`pairlist_export` imports `hunter.relative_strength.engine` and `hunter.relative_strength.models` for the SPEC-075 Feather adapter. All other modules in the package are internally self-contained (`models`/`fingerprint` → `audit` → `validator`/`publisher` → `snapshot` → `cli`). No circular imports within the package or across the `relative_strength` boundary (verified by direct read of all module files and import-graph grep).
 
 ### 4.3 `core` sits at the top of the DAG
 
@@ -163,11 +161,7 @@ contains no ranking, gating, or I/O logic of its own (see excerpt in §7).
 
 ### 4.4 No duplicated domain algorithms in orchestration/CLI
 
-`pairlist_export.ranking_adapter.rank_pairs` implements tie-break ranking directly over caller-supplied score
-maps; it does not reimplement `relative_strength`/`open_interest` scoring, and those engines are not imported
-by `pairlist_export` at all — the ranking-input JSON is the sole seam between them (see
-`docs/technical/PAIRLIST_PIPELINE.md` §"Reuse boundary"). No lower-level logic is duplicated in `core/cli.py`
-or `pairlist_export/cli.py` beyond argument parsing and I/O orchestration.
+`pairlist_export.ranking_adapter.rank_pairs` implements tie-break ranking directly over caller-supplied score maps; it does not reimplement `relative_strength`/`open_interest` scoring. The SPEC-075 Feather adapter imports `relative_strength` unmodified (§3.1, §4.2); the ranking-input JSON remains the sole seam for manually supplied inputs. No lower-level logic is duplicated in `core/cli.py` or `pairlist_export/cli.py` beyond argument parsing and I/O orchestration.
 
 ## 5. Research and Pairlist Pipeline (verified data flow)
 
@@ -204,6 +198,33 @@ endif
 stop
 @enduml
 ```
+
+### 5.1 SPEC-075 Feather Input Adapter Flow
+
+```plantuml
+@startuml
+title Feather -> Ranking Input v2 (verified against src/hunter/pairlist_export/feather_adapter.py)
+
+start
+:Operator points hunter pairlist feather-input\n(or from-feather) at external Feather root;
+:discover local *-1h-futures.feather files\n(symlink/hidden/temp/duplicate-source rejected);
+:read only date/close/volume columns\n(path containment enforced);
+:validate candles (UTC, no duplicates,\nno future candles, close>0, volume>=0,\n90-day lookback sufficient);
+:resample hourly closes to daily closes;
+:reuse relative_strength.build_relative_strength_report\nunmodified (RS dimension);
+:compute liquidity = close*volume -> daily total\n-> 30-day average -> log1p -> average-rank percentile;
+:compute data_quality = expected 1h slot coverage;
+:build RankingInputV2 artifact\n(schema_version=hunter-ranking-input-v2);
+if (from-feather?) then (yes)
+  :rank_pairs_v2 -> run_publish_gate_v2 -> publish/snapshot;
+else (feather-input)
+  :write ranking-input.json only;
+endif
+stop
+@enduml
+```
+
+The adapter is an **input adapter, not a second research engine**: it reuses the existing RS engine verbatim and delegates all ranking/gating/publishing to the unmodified SPEC-074 pipeline. Source Feather files are read-only (SHA-256 verified before/after in tests). No network, scheduler, server, queue, or database boundary is introduced.
 
 ## 6. Freqtrade Integration Boundary
 
@@ -297,9 +318,7 @@ unified-help regression tests.
 - **New CLI command**: add a subparser in `pairlist_export/cli.py::_build_parser` (for pairlist-surface
   commands) or `reporting_cli/cli.py` (for everything else), following the existing `func`-dispatch pattern.
 - **New deployment profile**: add an entry to `deployment_profiles.DEPLOYMENT_PROFILES`.
-- **Ranking-input production glue**: the seam from `relative_strength`/`open_interest`/`research_universe`
-  report output to the ranking-input JSON contract does not exist as a CLI command today (§2) — a natural,
-  explicitly out-of-current-scope extension point.
+- **Ranking-input production glue**: for local Freqtrade Feather files, the glue now exists as `hunter pairlist feather-input` / `from-feather` (SPEC-075). Glue from live `relative_strength`/`open_interest`/`research_universe` report output to the ranking-input JSON contract remains a natural, explicitly out-of-current-scope extension point.
 
 ## 11. Explicit Non-Goals
 

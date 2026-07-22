@@ -62,7 +62,9 @@ ExecStart=/path/to/.venv/bin/hunter daily-pairlist --as-of %Y-%m-%d \
 ## Pre-Run Checks
 
 1. Confirm today's ranking-input JSON exists and is fresh (whatever process produces it upstream of Hunter —
-   out of Hunter's own scope, see `docs/architecture/SYSTEM_ARCHITECTURE.md` §2).
+   out of Hunter's own scope, see `docs/architecture/SYSTEM_ARCHITECTURE.md` §2). **Feather path:** if using
+   `feather-input`/`from-feather`, confirm the external Feather root contains current `*-1h-futures.feather`
+   files and is readable (read-only permission is sufficient and recommended).
 2. Confirm `--output-dir`/`--snapshot-dir` are writable and are **not** under this repository's `data/` or
    `reports/` trees (Hunter rejects those unconditionally regardless of what you intend).
 3. If rerunning a date you've already published today, confirm the input hasn't changed unless you intend
@@ -70,11 +72,33 @@ ExecStart=/path/to/.venv/bin/hunter daily-pairlist --as-of %Y-%m-%d \
 
 ## Run
 
+### From a manually prepared ranking-input JSON
+
 ```bash
 hunter daily-pairlist --as-of $(date -u +%Y-%m-%d) \
   --input /path/to/ranking_input.json \
   --output-dir /srv/freqtrade/user_data/pairlists \
   --snapshot-dir /srv/hunter/snapshots
+```
+
+### From local Freqtrade Feather files (SPEC-075)
+
+```bash
+hunter pairlist from-feather \
+  --data-dir /path/to/freqtrade/user_data/data/binance/futures \
+  --output-dir /srv/freqtrade/user_data/pairlists \
+  --as-of $(date -u +%Y-%m-%d)
+```
+
+`from-feather` discovers local `*-1h-futures.feather` files, builds a ranking-input v2 artifact (RS,
+liquidity, data-quality), then runs the existing rank/gate/publish/snapshot pipeline. To produce the
+artifact without publishing, use `feather-input`:
+
+```bash
+hunter pairlist feather-input \
+  --data-dir /path/to/freqtrade/user_data/data/binance/futures \
+  --output /path/to/ranking-input.json \
+  --as-of $(date -u +%Y-%m-%d)
 ```
 
 Check the exit code (`0` = published; non-zero = rejected or errored — see
@@ -96,6 +120,12 @@ hunter pairlist explain /srv/freqtrade/user_data/pairlists/hunter-pairs-audit.js
 
 Review selected/rejected pairs and reason codes as the human-review step — every audit record states human
 review is required.
+
+**Feather path (SPEC-075):** the audit also reports `schema_version`, `ranking_profile`,
+`active_score_dimensions` (e.g. `rs, liquidity, data_quality` for `V2_RS_LIQUIDITY`),
+`ignored_score_dimensions` (always empty), `universe_size_at_scoring`, `universe_fingerprint`,
+`oi_available`, and `source_metadata` (source timeframe, RS/liquidity lookbacks). Confirm these match the
+expected profile before approving.
 
 ## Publish (already done by `daily-pairlist`)
 

@@ -21,6 +21,7 @@ SCHEMA_V1 = "hunter-ranking-input-v1"
 SCHEMA_V2 = "hunter-ranking-input-v2"
 
 PROFILE_FIELD_MISMATCH = "PROFILE_FIELD_MISMATCH"
+PROFILE_EVIDENCE_INCOMPLETE = "PROFILE_EVIDENCE_INCOMPLETE"
 
 
 class RankingProfile(Enum):
@@ -40,10 +41,12 @@ PROFILE_TIE_BREAK_DIMENSIONS: dict[RankingProfile, tuple[str, ...]] = {
 }
 
 # Score dimensions a profile actively uses (for `active_score_dimensions`).
+# data_quality is always active: it gates v2 eligibility and participates
+# in every profile's tie-break order.
 PROFILE_ACTIVE_DIMENSIONS: dict[RankingProfile, tuple[str, ...]] = {
     RankingProfile.V1_RS_OI: ("rs", "oi"),
-    RankingProfile.V2_RS_LIQUIDITY: ("rs", "liquidity"),
-    RankingProfile.V2_RS_OI_LIQUIDITY: ("rs", "oi", "liquidity"),
+    RankingProfile.V2_RS_LIQUIDITY: ("rs", "liquidity", "data_quality"),
+    RankingProfile.V2_RS_OI_LIQUIDITY: ("rs", "oi", "liquidity", "data_quality"),
 }
 
 
@@ -58,6 +61,14 @@ class ProfileFieldMismatchError(RankingInputV2Error):
     def __init__(self, message: str) -> None:
         super().__init__(message)
         self.reason_code = PROFILE_FIELD_MISMATCH
+
+
+class ProfileEvidenceIncompleteError(RankingInputV2Error):
+    """Raised when a profile requires evidence that is absent."""
+
+    def __init__(self, message: str) -> None:
+        super().__init__(message)
+        self.reason_code = PROFILE_EVIDENCE_INCOMPLETE
 
 
 @dataclass(frozen=True)
@@ -139,13 +150,16 @@ def validate_profile_fields(
     """Validate a ranking-input payload against its declared profile's rules.
 
     Raises :class:`ProfileFieldMismatchError` (reason code
-    ``PROFILE_FIELD_MISMATCH``) on any violation. No profile-irrelevant
+    ``PROFILE_FIELD_MISMATCH``) for malformed or out-of-range values.
+    Raises :class:`ProfileEvidenceIncompleteError` (reason code
+    ``PROFILE_EVIDENCE_INCOMPLETE``) when a v2 profile is missing required
+    ``data_quality`` evidence for an eligible pair. No profile-irrelevant
     field is silently ignored -- every rule below is checked unconditionally.
 
     SPEC-075 M1 remediation: profile-aware validation now fully enforces data_quality.
-    - data_quality is required for every eligible pair under all profiles
+    - data_quality is required for every eligible pair under all v2 profiles
     - values must be Decimal-compatible, finite, and within 0–100 inclusive
-    - missing value -> PROFILE_EVIDENCE_INCOMPLETE (handled in ranking adapter)
+    - missing value for a v2 profile -> PROFILE_EVIDENCE_INCOMPLETE
     - malformed, NaN, Infinity, below 0, or above 100 -> PROFILE_FIELD_MISMATCH
     """
     non_empty_oi = {p: v for p, v in oi_scores.items() if v is not None}
@@ -200,26 +214,24 @@ def validate_profile_fields(
                 f"{len(non_empty_liquidity)} populated entries"
             )
 
-    # SPEC-075 M1 remediation: data_quality validation is now profile-aware
-    # data_quality is required for every eligible pair under ALL profiles (except v1 compatibility)
+    # SPEC-075 M1 remediation: data_quality validation is profile-aware.
+    # data_quality is required for every eligible pair under v2 profiles.
+    # V1_RS_OI accepts missing data_quality for SPEC-074 backward compatibility.
     for pair in eligible_pairs:
         dq = data_quality.get(pair)
 
-        # SPEC-074 schema-less v1 behavior: if schema_version is V1, we maintain backward compatibility
-        # and skip data_quality validation (it's allowed to be missing/empty)
-        # The caller (resolve_ranking_profile) will handle this by not calling validate_profile_fields
-        # when schema_version is SCHEMA_V1, preserving v1 behavior unchanged.
-
-        # However, for v2 profiles (V2_RS_LIQUIDITY, V2_RS_OI_LIQUIDITY),
-        # data_quality is REQUIRED for every eligible pair
-        # For V1_RS_OI, data_quality is also required when explicitly provided
-
         if dq is None:
-            # If data_quality mapping doesn't have this pair, it's considered missing
-            # This is expected for v1 when data_quality wasn't part of the original spec
-            # For v2 profiles, this would be an error, but that validation is done elsewhere
-            # (in ranking_adapter.rank_pairs_v2 we check for REASON_INSUFFICIENT_EVIDENCE)
+            if ranking_profile is not RankingProfile.V1_RS_OI:
+                raise ProfileEvidenceIncompleteError(
+                    f"{ranking_profile.value} requires data_quality for every eligible pair; "
+                    f"missing for: {pair}"
+                )
             continue
+
+        if not isinstance(dq, Decimal):
+            raise ProfileFieldMismatchError(
+                f"data_quality for pair {pair} must be a Decimal, got {type(dq).__name__}: {dq!r}"
+            )
 
         # Validate data_quality value constraints for all present data_quality values
         if dq.is_nan() or dq.is_infinite():

@@ -35,6 +35,7 @@ REASON_LIQUIDITY_SCORE = "LIQUIDITY_SCORE"
 
 # SPEC-075 profile validation
 REASON_PROFILE_FIELD_MISMATCH = "PROFILE_FIELD_MISMATCH"
+REASON_PROFILE_EVIDENCE_INCOMPLETE = "PROFILE_EVIDENCE_INCOMPLETE"
 
 # Ineligibility / exclusion reason codes
 REASON_INELIGIBLE_STABLECOIN = "INELIGIBLE_STABLECOIN"
@@ -62,6 +63,7 @@ PAIRLIST_REASON_CODES: frozenset[str] = frozenset(
         REASON_DATA_SUFFICIENCY,
         REASON_LIQUIDITY_SCORE,
         REASON_PROFILE_FIELD_MISMATCH,
+        REASON_PROFILE_EVIDENCE_INCOMPLETE,
         REASON_INELIGIBLE_STABLECOIN,
         REASON_INELIGIBLE_LEVERAGED,
         REASON_INELIGIBLE_BENCHMARK,
@@ -197,6 +199,7 @@ class RankedPair:
     reason_codes: tuple[str, ...] = ()
     fingerprint: str = ""
     liquidity_score: Decimal | None = None
+    data_quality_pct: Decimal | None = None
 
 
 @dataclass(frozen=True)

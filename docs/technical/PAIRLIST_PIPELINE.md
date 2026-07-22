@@ -27,6 +27,37 @@ the snapshot-before-publish ordering fix (§"Snapshot-Before-Publish Ordering") 
 preserved). Full field-by-field contract, types, and invalid-input error messages: `docs/user/INPUT_FORMAT.md`
 (verified by direct CLI testing, not just source reading).
 
+## Ranking-Input v2 Schema (SPEC-075)
+
+```json
+{
+  "schema_version": "hunter-ranking-input-v2",
+  "ranking_profile": "V2_RS_LIQUIDITY",
+  "as_of_date": "2026-07-21",
+  "universe_total": 5,
+  "eligible_pairs": ["BTC/USDT:USDT", "ETH/USDT:USDT"],
+  "rs_scores": {"BTC/USDT:USDT": "88.1", "ETH/USDT:USDT": "60.0"},
+  "liquidity_scores": {"BTC/USDT:USDT": "88.0", "ETH/USDT:USDT": "50.0"},
+  "oi_scores": {},
+  "data_quality": {"BTC/USDT:USDT": "100", "ETH/USDT:USDT": "90"},
+  "source_metadata": {
+    "source": "freqtrade-feather",
+    "timeframe": "1h",
+    "rs_lookback_days": 90,
+    "liquidity_lookback_days": 30,
+    "oi_available": false,
+    "universe_size_at_scoring": 5,
+    "universe_fingerprint": "..."
+  }
+}
+```
+
+Profiles: `V1_RS_OI` (schema-less SPEC-074 behavior), `V2_RS_LIQUIDITY` (requires RS, liquidity, data_quality
+for every eligible pair; `oi_scores` must be empty, `oi_available=false`), and `V2_RS_OI_LIQUIDITY`
+(additionally requires genuine OI for every eligible pair). Profile-field mismatches are rejected with
+`PROFILE_FIELD_MISMATCH`; missing required `data_quality` under a v2 profile is rejected with
+`PROFILE_EVIDENCE_INCOMPLETE`.
+
 ## Ranking Algorithm and Tie-Breaks
 
 `ranking_adapter.rank_pairs` (verified, `ranking_adapter.py:31-155`):
@@ -143,6 +174,15 @@ scores serialized as strings, never floats), `reason_code_summary` (a `Counter` 
 fixed `research_notice` string. This is a **separate JSON file** (`hunter-pairs-audit.json`) from the native
 pairlist JSON, by design (module docstring: "kept as a JSON contract fully separate from the native
 RemotePairList JSON payload").
+
+**SPEC-075 v2 audit fields** (present with v1-safe defaults for schema-less inputs):
+`schema_version` (`hunter-ranking-input-v1` or `-v2`), `ranking_profile`,
+`active_score_dimensions` (exact ordered tuple per profile: `("rs", "oi")` for `V1_RS_OI`;
+`("rs", "liquidity", "data_quality")` for `V2_RS_LIQUIDITY`;
+`("rs", "oi", "liquidity", "data_quality")` for `V2_RS_OI_LIQUIDITY`),
+`ignored_score_dimensions` (always `()`), `universe_size_at_scoring`, `universe_fingerprint`,
+`oi_available`, `source_metadata` (source, timeframe, lookbacks, fingerprint), and `per_pair_evidence`.
+Selected v2 pairs additionally serialize `liquidity_score` and `data_quality_pct` when non-`None`.
 
 ## Static Snapshots
 

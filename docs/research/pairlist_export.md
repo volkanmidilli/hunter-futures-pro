@@ -156,6 +156,13 @@ Profile-field rules (`ranking_input_v2.validate_profile_fields`, called by both 
 - Both v2 profiles require a non-null `liquidity_scores`/`rs_scores` entry for every eligible pair.
 - `V1_RS_OI` rejects a populated `liquidity_scores` map (v1 payloads have no liquidity dimension at all).
 
+**M1 remediation:** both v2 profiles additionally require a non-null `data_quality` entry for every eligible
+pair. Missing `data_quality` under a v2 profile is rejected with `PROFILE_EVIDENCE_INCOMPLETE`; malformed,
+non-Decimal, NaN, Infinity, below-0, or above-100 values are rejected with `PROFILE_FIELD_MISMATCH`.
+`run_publish_gate_v2` independently revalidates every selected pair's `data_quality_pct` (it does not trust
+`reason_codes` alone), and the v2 audit's `active_score_dimensions` is `("rs", "liquidity", "data_quality")`
+for `V2_RS_LIQUIDITY` and `("rs", "oi", "liquidity", "data_quality")` for `V2_RS_OI_LIQUIDITY`.
+
 Volume is never represented as open interest: `oi_scores` under `V2_RS_LIQUIDITY` is always `{}`, and the feather adapter never computes or writes to it.
 
 ### Feather adapter (`feather_adapter.build_ranking_input_v2_from_feather`)

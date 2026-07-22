@@ -15,7 +15,7 @@ grep '__version__' src/hunter/__init__.py
 .venv/bin/python -c "import hunter; print(hunter.__version__)"
 ```
 
-At commit `08a78d9` these all read `0.72.0-dev`. Also check `pip show hunter-futures-pro` — if it disagrees,
+At commit `58aeb20` these all read `0.72.0-dev`. Also check `pip show hunter-futures-pro` — if it disagrees,
 egg-info is stale; re-run `pip install -e .` (cosmetic, but fix before tagging to avoid confusion).
 
 ## Full Tests
@@ -56,6 +56,22 @@ particularly:
 Per `docs/operations/DEPLOYMENT_GUIDE.md`'s acceptance checklist: synthetic-fixture `pairlist build` →
 `validate` → `explain` all succeed; deployment profiles emit correctly for both `native` and `container`
 targets; forbidden-path rejection (`data/`/`reports/`) still enforced.
+
+## Feather Acceptance (SPEC-075)
+
+Before tagging a release that ships the Feather adapter:
+
+1. **Broad multi-pair production Feather acceptance** — run `hunter pairlist from-feather` against the actual
+   production Feather root (multi-pair, real BTC benchmark), not only synthetic fixtures. Record the exit
+   code, published pair count, and audit `ranking_profile`/`active_score_dimensions`. This has **not yet**
+   been executed as of `58aeb20`; do not mark it complete until it has actually run.
+2. **Source hash immutability** — confirm SHA-256 of every source `*-1h-futures.feather` file is unchanged
+   before and after the run (automated in `tests/test_pairlist_export/test_feather_adapter.py`, but verify
+   against the production root manually).
+3. **Audit profile/dimension checks** — confirm the audit reports the expected `ranking_profile`,
+   `active_score_dimensions` (e.g. `rs, liquidity, data_quality` for `V2_RS_LIQUIDITY`),
+   `ignored_score_dimensions` empty, `universe_size_at_scoring`, deterministic `universe_fingerprint`, and
+   `oi_available` consistent with the profile.
 
 ## Tag Checks
 

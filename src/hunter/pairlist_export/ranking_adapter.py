@@ -21,6 +21,7 @@ from hunter.pairlist_export.models import (
     REASON_INSUFFICIENT_EVIDENCE,
     REASON_LIQUIDITY_SCORE,
     REASON_OI_LIQUIDITY,
+    REASON_PROFILE_EVIDENCE_INCOMPLETE,
     REASON_RS_SCORE,
     PairScore,
     PairlistRankingConfig,
@@ -239,7 +240,7 @@ def rank_pairs_v2(
             for dim in required
         )
         if not have_required:
-            reasons.append(REASON_INSUFFICIENT_EVIDENCE)
+            reasons.append(REASON_PROFILE_EVIDENCE_INCOMPLETE)
 
         candidates.append(
             PairScore(
@@ -269,14 +270,14 @@ def rank_pairs_v2(
 
     sorted_candidates = sorted(candidates, key=_compound_key)
 
-    have_sufficient = [c for c in sorted_candidates if REASON_INSUFFICIENT_EVIDENCE not in c.reason_codes]
+    have_sufficient = [c for c in sorted_candidates if REASON_PROFILE_EVIDENCE_INCOMPLETE not in c.reason_codes]
     if not have_sufficient:
         raise PairlistRankingError("no eligible pairs have sufficient evidence for this ranking profile")
 
     ranked: list[RankedPair] = []
     for idx, score in enumerate(sorted_candidates):
         rank = idx + 1
-        selected = rank <= config.publish_candidates and REASON_INSUFFICIENT_EVIDENCE not in score.reason_codes
+        selected = rank <= config.publish_candidates and REASON_PROFILE_EVIDENCE_INCOMPLETE not in score.reason_codes
 
         fingerprint = compute_pair_fingerprint_v2(
             pair=score.pair,
@@ -297,6 +298,7 @@ def rank_pairs_v2(
                 rs_score=score.rs_score,
                 oi_score=score.oi_score,
                 liquidity_score=score.liquidity_score,
+                data_quality_pct=score.data_quality_pct,
                 reason_codes=score.reason_codes,
                 fingerprint=fingerprint,
             )

@@ -39,6 +39,7 @@ from hunter.pairlist_export.ranking_adapter import rank_pairs, rank_pairs_v2
 from hunter.pairlist_export.ranking_input_v2 import (
     SCHEMA_V1,
     SCHEMA_V2,
+    ProfileEvidenceIncompleteError,
     ProfileFieldMismatchError,
     RankingInputV2,
     RankingInputV2Error,
@@ -76,6 +77,7 @@ __all__ = [
     "RankingInputV2",
     "RankingInputV2Error",
     "RankingProfile",
+    "ProfileEvidenceIncompleteError",
     "ProfileFieldMismatchError",
     "FeatherAdapterError",
     "audit_record_to_dict",

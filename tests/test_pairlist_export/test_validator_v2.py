@@ -66,7 +66,7 @@ def test_single_pair_passes_with_relaxed_min_pairs() -> None:
     assert output is not None
     assert output.audit.schema_version == "hunter-ranking-input-v2"
     assert output.audit.ranking_profile == "V2_RS_LIQUIDITY"
-    assert output.audit.active_score_dimensions == ("rs", "liquidity")
+    assert output.audit.active_score_dimensions == ("rs", "liquidity", "data_quality")
     assert output.audit.ignored_score_dimensions == ()
     assert output.audit.oi_available is False
     assert output.audit.universe_fingerprint == "fp"
