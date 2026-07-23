@@ -36,9 +36,13 @@ _CALIBRATION_RECOMMENDED: int = 60
 
 _SUMMARY_METRIC_FIELDS: tuple[str, ...] = (
     "top_5_return_pct",
+    "top_5_available_count",
     "top_10_return_pct",
+    "top_10_available_count",
     "top_20_return_pct",
+    "top_20_available_count",
     "top_30_return_pct",
+    "top_30_available_count",
     "spearman_rank_return",
     "spearman_relative_strength_return",
     "spearman_liquidity_return",
@@ -47,6 +51,35 @@ _SUMMARY_METRIC_FIELDS: tuple[str, ...] = (
     "mfe_pct_mean",
     "realized_volatility_pct_mean",
 )
+
+
+def _is_invalid_summary(summary: Mapping[str, Any]) -> bool:
+    """Classify a persisted summary as an invalid cohort.
+
+    Priority:
+    1. Persisted invalid-snapshot/rejection metadata.
+    2. Summary terminal_state_counts (all SNAPSHOT_INVALID).
+    3. Fail-closed missing/UNKNOWN ranking_profile.
+    """
+    metadata = summary.get("metadata") or {}
+    if metadata.get("invalid_snapshot") is True:
+        return True
+    counts = metadata.get("terminal_state_counts") or {}
+    if counts and set(counts.keys()) == {"SNAPSHOT_INVALID"}:
+        return True
+    profile = summary.get("ranking_profile")
+    if not profile or profile == "UNKNOWN":
+        return True
+    return False
+
+
+def _snapshot_identity(summary: Mapping[str, Any]) -> str:
+    """Return snapshot_id from metadata or a safe fallback derived from the summary."""
+    metadata = summary.get("metadata") or {}
+    snapshot_id = metadata.get("snapshot_id")
+    if snapshot_id:
+        return str(snapshot_id)
+    return f"{summary.get('snapshot_date', '')}__{summary.get('outcome_horizon', '')}"
 
 OUTCOME_CLI_HELP_TEXT = """Outcome-evaluation commands (SPEC-076):
   outcome evaluate             Evaluate matured snapshot cohorts and persist records.
@@ -144,6 +177,8 @@ def _calibration_gate(summaries: list[dict[str, Any]]) -> dict[str, dict[str, An
     """Matured-cohort counts and eligibility per (ranking_profile, outcome_horizon)."""
     counts: dict[tuple[str, str], int] = {}
     for s in summaries:
+        if _is_invalid_summary(s):
+            continue
         profile = s.get("ranking_profile", "")
         horizon = s.get("outcome_horizon", "")
         counts[(profile, horizon)] = counts.get((profile, horizon), 0) + 1
@@ -237,6 +272,16 @@ def _run_evaluate(args: argparse.Namespace) -> int:
         "schema_version": REPORT_SCHEMA_VERSION,
         "command": "evaluate",
         "cohorts_evaluated": len(report.cohorts),
+        "invalid_cohorts": [
+            {
+                "snapshot_date": c.snapshot_date,
+                "ranking_profile": c.ranking_profile,
+                "outcome_horizon": c.outcome_horizon,
+                "terminal_state_counts": c.summary.metadata.get("terminal_state_counts", {}),
+                "invalid_reason": c.summary.metadata.get("invalid_reason"),
+            }
+            for c in report.invalid_cohorts
+        ],
         "pending_cohorts": list(report.pending_cohorts),
         "invalid_snapshots": [list(item) for item in report.invalid_snapshots],
         "terminal_state_counts": dict(report.terminal_state_counts),
@@ -302,15 +347,30 @@ def _run_report(args: argparse.Namespace) -> int:
         )
     )
 
+    valid_summaries = [s for s in summaries if not _is_invalid_summary(s)]
+    invalid_summaries = [s for s in summaries if _is_invalid_summary(s)]
+
     if args.format == "markdown":
-        print(_render_markdown(summaries))
+        print(_render_markdown(valid_summaries, invalid_summaries))
         return 0
 
     payload = {
         "schema_version": REPORT_SCHEMA_VERSION,
         "command": "report",
-        "cohort_count": len(summaries),
-        "calibration_gate": _calibration_gate(summaries),
+        "cohort_count": len(valid_summaries),
+        "invalid_cohort_count": len(invalid_summaries),
+        "calibration_gate": _calibration_gate(valid_summaries),
+        "invalid_cohorts": [
+            {
+                "snapshot_id": _snapshot_identity(s),
+                "snapshot_date": s.get("snapshot_date"),
+                "ranking_profile": None,
+                "outcome_horizon": s.get("outcome_horizon"),
+                "terminal_state_counts": (s.get("metadata") or {}).get("terminal_state_counts", {}),
+                "invalid_reason": (s.get("metadata") or {}).get("invalid_reason"),
+            }
+            for s in invalid_summaries
+        ],
         "cohorts": [
             {
                 "snapshot_date": s.get("snapshot_date"),
@@ -327,7 +387,7 @@ def _run_report(args: argparse.Namespace) -> int:
                 "metrics": _flatten_metrics(s),
                 "fingerprint": s.get("fingerprint"),
             }
-            for s in summaries
+            for s in valid_summaries
         ],
         "_safety_notice": RESEARCH_NOTICE,
     }
@@ -335,12 +395,15 @@ def _run_report(args: argparse.Namespace) -> int:
     return 0
 
 
-def _render_markdown(summaries: list[dict[str, Any]]) -> str:
+def _render_markdown(
+    valid_summaries: list[dict[str, Any]], invalid_summaries: list[dict[str, Any]]
+) -> str:
     header = (
         "| snapshot_date | ranking_profile | horizon | cohort | available | "
-        "top_5 | top_10 | top_20 | top_30 | spearman_rank | benchmark_relative | turnover | retention |"
+        "top_5 | top_5_count | top_10 | top_10_count | top_20 | top_20_count | "
+        "top_30 | top_30_count | spearman_rank | benchmark_relative | turnover | retention |"
     )
-    separator = "|" + "---|" * 13
+    separator = "|" + "---|" * 17
     lines = [
         "# SPEC-076 Outcome Evaluation Report",
         "",
@@ -349,9 +412,9 @@ def _render_markdown(summaries: list[dict[str, Any]]) -> str:
         "## Calibration gate",
         "",
     ]
-    gate = _calibration_gate(summaries)
+    gate = _calibration_gate(valid_summaries)
     if not gate:
-        lines.append("_(no persisted summaries matched the selection)_")
+        lines.append("_(no valid persisted summaries matched the selection)_")
     else:
         lines.append(
             "| ranking_profile | horizon | matured_cohorts | threshold | eligible | recommended | eligible_recommended |"
@@ -369,8 +432,10 @@ def _render_markdown(summaries: list[dict[str, Any]]) -> str:
                     str(info["eligible_recommended"]),
                 ]
                 lines.append("| " + " | ".join(row) + " |")
-    lines.extend(["", header, separator])
-    for summary in summaries:
+    lines.extend(["", "## Cohorts", "", header, separator])
+    if not valid_summaries:
+        lines.append("| (no valid persisted summaries matched the selection) |" + " |" * 16)
+    for summary in valid_summaries:
         horizon = summary.get("outcome_horizon", "")
         row = [
             str(summary.get("snapshot_date", "")),
@@ -379,17 +444,35 @@ def _render_markdown(summaries: list[dict[str, Any]]) -> str:
             str(summary.get("cohort_size", "")),
             str(summary.get("available_count", "")),
             str(summary.get("top_5_return_pct")),
+            str(summary.get("top_5_available_count")),
             str(summary.get("top_10_return_pct")),
+            str(summary.get("top_10_available_count")),
             str(summary.get("top_20_return_pct")),
+            str(summary.get("top_20_available_count")),
             str(summary.get("top_30_return_pct")),
+            str(summary.get("top_30_available_count")),
             str(summary.get("spearman_rank_return")),
             str(summary.get("benchmark_relative_return_pct")),
             str(summary.get("turnover")),
             str(summary.get("retention")),
         ]
         lines.append("| " + " | ".join(row) + " |")
-    if not summaries:
-        lines.append("| (no persisted summaries matched the selection) |" + " |" * 12)
+    if invalid_summaries:
+        lines.extend(["", "## Invalid cohorts", "", "| snapshot_id | snapshot_date | horizon | terminal_state_counts | invalid_reason |", "|" + "---|" * 5])
+        for summary in invalid_summaries:
+            lines.append(
+                "| "
+                + " | ".join(
+                    [
+                        _snapshot_identity(summary),
+                        str(summary.get("snapshot_date", "")),
+                        str(summary.get("outcome_horizon", "")),
+                        str((summary.get("metadata") or {}).get("terminal_state_counts", "")),
+                        str((summary.get("metadata") or {}).get("invalid_reason", "")),
+                    ]
+                )
+                + " |"
+            )
     return "\n".join(lines)
 
 

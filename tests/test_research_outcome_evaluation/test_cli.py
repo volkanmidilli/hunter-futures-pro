@@ -661,3 +661,232 @@ def test_top_level_dispatch_routes_known_commands(
     text = capsys.readouterr().out
     assert "outcome evaluate" in text
     assert "outcome report" in text
+
+
+def test_report_separates_invalid_cohorts(
+    tmp_path: Path, capsys: pytest.CaptureFixture[str]
+) -> None:
+    snapshot_dir = tmp_path / "snapshots"
+    data_dir = tmp_path / "prices"
+    store_dir = tmp_path / "store"
+    snapshot_dir.mkdir()
+    data_dir.mkdir()
+    store_dir.mkdir()
+    _write_snapshot(snapshot_dir, ["SOL/USDT:USDT"], day="2026-01-10")
+    payload = {
+        "as_of_date": "2026-01-11",
+        "ranking_profile": "V2_RS_LIQUIDITY",
+        "schema_version": "hunter-ranking-input-v2",
+        "selected": [
+            {"pair": "SOL/USDT:USDT", "rank": 1, "selected": True, "rs_score": "90", "liquidity_score": "80", "reason_codes": [], "fingerprint": "fp"},
+            {"pair": "SOL/USDT:USDT", "rank": 1, "selected": True, "rs_score": "90", "liquidity_score": "80", "reason_codes": [], "fingerprint": "fp"},
+        ],
+        "fingerprint": "audit-duplicate",
+    }
+    (snapshot_dir / "hunter-pairs-20260111-audit.json").write_text(
+        json.dumps(payload), encoding="utf-8"
+    )
+    start = datetime(2026, 1, 5, 0, 0, tzinfo=timezone.utc)
+    _write_feather(data_dir / "BTC_USDT_USDT-1h-futures.feather", start, 400, 100.0)
+    _write_feather(data_dir / "SOL_USDT_USDT-1h-futures.feather", start, 400, 200.0)
+
+    assert outcome_cli_main(
+        [
+            "evaluate",
+            "--snapshot-dir", str(snapshot_dir),
+            "--data-dir", str(data_dir),
+            "--store-dir", str(store_dir),
+            "--all-matured",
+            "--horizons", "1d",
+        ]
+    ) == 0
+    capsys.readouterr()
+
+    rc = outcome_cli_main(
+        ["report", "--store-dir", str(store_dir), "--all-matured", "--horizons", "1d"]
+    )
+    assert rc == 0
+    payload = json.loads(capsys.readouterr().out)
+    assert payload["cohort_count"] == 1
+    assert payload["invalid_cohort_count"] == 1
+    assert len(payload["cohorts"]) == 1
+    assert payload["cohorts"][0]["ranking_profile"] == "V2_RS_LIQUIDITY"
+    assert payload["invalid_cohorts"][0]["ranking_profile"] is None
+    assert "SNAPSHOT_INVALID" in payload["invalid_cohorts"][0]["terminal_state_counts"]
+    # Calibration gate must only count the valid cohort.
+    assert payload["calibration_gate"]["V2_RS_LIQUIDITY"]["1d"]["matured_cohort_count"] == 1
+
+
+def test_report_legacy_summary_missing_counts_show_null(
+    tmp_path: Path, capsys: pytest.CaptureFixture[str]
+) -> None:
+    store_dir = tmp_path / "store"
+    summaries_dir = store_dir / "summaries"
+    summaries_dir.mkdir(parents=True)
+    legacy = {
+        "schema_version": "spec-076-store-v1",
+        "snapshot_date": "2026-01-10",
+        "ranking_profile": "V2_RS_LIQUIDITY",
+        "outcome_horizon": "1d",
+        "cohort_size": 1,
+        "available_count": 1,
+        "unavailable_count": 0,
+        "top_5_return_pct": None,
+        "top_10_return_pct": None,
+        "top_20_return_pct": None,
+        "top_30_return_pct": None,
+        "metadata": {"terminal_state_counts": {"OUTCOME_AVAILABLE": 1}},
+        "fingerprint": "legacy-fp",
+    }
+    (summaries_dir / "2026-01-10__V2_RS_LIQUIDITY__1d.json").write_text(
+        json.dumps(legacy), encoding="utf-8"
+    )
+
+    rc = outcome_cli_main(
+        ["report", "--store-dir", str(store_dir), "--all-matured", "--horizons", "1d"]
+    )
+    assert rc == 0
+    payload = json.loads(capsys.readouterr().out)
+    assert payload["cohort_count"] == 1
+    metrics = payload["cohorts"][0]["metrics"]
+    assert metrics["top_5_available_count_1d"] is None
+    assert metrics["top_10_available_count_1d"] is None
+    assert metrics["top_20_available_count_1d"] is None
+    assert metrics["top_30_available_count_1d"] is None
+
+
+
+def test_report_markdown_shows_top_n_counts(
+    workspace: tuple[Path, Path, Path], capsys: pytest.CaptureFixture[str]
+) -> None:
+    snapshot_dir, data_dir, store_dir = workspace
+    assert (
+        outcome_cli_main(
+            [
+                "evaluate",
+                "--snapshot-dir",
+                str(snapshot_dir),
+                "--data-dir",
+                str(data_dir),
+                "--store-dir",
+                str(store_dir),
+                "--all-matured",
+                "--horizons",
+                "1d",
+            ]
+        )
+        == 0
+    )
+    capsys.readouterr()
+    rc = outcome_cli_main(
+        [
+            "report",
+            "--store-dir",
+            str(store_dir),
+            "--all-matured",
+            "--horizons",
+            "1d",
+            "--format",
+            "markdown",
+        ]
+    )
+    assert rc == 0
+    text = capsys.readouterr().out
+    assert "top_5_count" in text
+    assert "top_10_count" in text
+    assert "top_20_count" in text
+    assert "top_30_count" in text
+
+
+def test_report_json_and_markdown_share_same_top_n_counts(
+    workspace: tuple[Path, Path, Path], capsys: pytest.CaptureFixture[str]
+) -> None:
+    snapshot_dir, data_dir, store_dir = workspace
+    args = [
+        "evaluate",
+        "--snapshot-dir",
+        str(snapshot_dir),
+        "--data-dir",
+        str(data_dir),
+        "--store-dir",
+        str(store_dir),
+        "--all-matured",
+        "--horizons",
+        "1d",
+    ]
+    assert outcome_cli_main(args) == 0
+    capsys.readouterr()
+
+    rc = outcome_cli_main(
+        ["report", "--store-dir", str(store_dir), "--all-matured", "--horizons", "1d"]
+    )
+    assert rc == 0
+    json_payload = json.loads(capsys.readouterr().out)
+    json_counts = json_payload["cohorts"][0]["metrics"]
+
+    rc = outcome_cli_main(
+        [
+            "report",
+            "--store-dir",
+            str(store_dir),
+            "--all-matured",
+            "--horizons",
+            "1d",
+            "--format",
+            "markdown",
+        ]
+    )
+    assert rc == 0
+    markdown = capsys.readouterr().out
+
+    for cut in (5, 10, 20, 30):
+        count = json_counts[f"top_{cut}_available_count_1d"]
+        # Markdown uses str(count), so None is represented as "None".
+        assert str(count) in markdown
+
+
+def test_report_markdown_partial_top_five_count(
+    tmp_path: Path, capsys: pytest.CaptureFixture[str]
+) -> None:
+    store_dir = tmp_path / "store"
+    summaries_dir = store_dir / "summaries"
+    summaries_dir.mkdir(parents=True)
+    summary = {
+        "schema_version": "spec-076-store-v1",
+        "snapshot_date": "2026-01-10",
+        "ranking_profile": "V2_RS_LIQUIDITY",
+        "outcome_horizon": "1d",
+        "cohort_size": 4,
+        "available_count": 2,
+        "unavailable_count": 2,
+        "top_5_return_pct": "2.5",
+        "top_5_available_count": 2,
+        "top_10_return_pct": "2.5",
+        "top_10_available_count": 2,
+        "top_20_return_pct": "2.5",
+        "top_20_available_count": 2,
+        "top_30_return_pct": "2.5",
+        "top_30_available_count": 2,
+        "metadata": {"terminal_state_counts": {"OUTCOME_AVAILABLE": 2, "OUTCOME_UNAVAILABLE_GAP": 2}},
+        "fingerprint": "partial-fp",
+    }
+    (summaries_dir / "2026-01-10__V2_RS_LIQUIDITY__1d.json").write_text(
+        json.dumps(summary), encoding="utf-8"
+    )
+
+    rc = outcome_cli_main(
+        [
+            "report",
+            "--store-dir",
+            str(store_dir),
+            "--all-matured",
+            "--horizons",
+            "1d",
+            "--format",
+            "markdown",
+        ]
+    )
+    assert rc == 0
+    text = capsys.readouterr().out
+    # Verify the top_5 return and its count appear adjacent in the markdown row.
+    assert "| 2.5 | 2 |" in text

@@ -129,10 +129,18 @@ def spearman(xs: list[float], ys: list[float]) -> Decimal | None:
     return _q(cov / math.sqrt(var_x * var_y))
 
 
+def top_n_return_and_count(ranked_returns: list[tuple[int, Decimal]], n: int) -> tuple[Decimal | None, int]:
+    """Mean realized return and count over available pairs with ``rank <= n``.
+
+    Returns ``(None, 0)`` when no available pair falls within the cut.
+    """
+    selected = [ret for rank, ret in ranked_returns if rank <= n]
+    return _mean_dec(selected), len(selected)
+
+
 def top_n_return_pct(ranked_returns: list[tuple[int, Decimal]], n: int) -> Decimal | None:
     """Mean realized return over available pairs with ``rank <= n``."""
-    selected = [ret for rank, ret in ranked_returns if rank <= n]
-    return _mean_dec(selected)
+    return top_n_return_and_count(ranked_returns, n)[0]
 
 
 def mean_pct(values: list[Decimal]) -> Decimal | None:
@@ -148,5 +156,6 @@ __all__ = [
     "compute_realized_volatility_pct",
     "mean_pct",
     "spearman",
+    "top_n_return_and_count",
     "top_n_return_pct",
 ]

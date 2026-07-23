@@ -171,10 +171,13 @@ def test_invalid_snapshot_marks_all_members(tmp_path: Path) -> None:
 
     report = _run(snapshot_dir, data_dir, store_dir)
     assert len(report.invalid_snapshots) == 1
-    cohort = report.cohorts[0]
+    assert len(report.cohorts) == 0
+    cohort = report.invalid_cohorts[0]
     assert {obs.terminal_state for obs in cohort.observations} == {TerminalState.SNAPSHOT_INVALID}
     assert cohort.summary.available_count == 0
     assert cohort.summary.turnover_reason == "INSUFFICIENT_OBSERVATIONS"
+    assert cohort.summary.metadata.get("invalid_snapshot") is True
+    assert cohort.summary.metadata.get("invalid_reason")
 
 
 def test_pending_horizon_never_persisted(tmp_path: Path) -> None:
@@ -269,3 +272,65 @@ def test_no_observation_silently_discarded(tmp_path: Path) -> None:
     assert cohort.summary.cohort_size == 3
     total = sum(report.terminal_state_counts.values())
     assert total == 3
+
+
+def test_top_n_policy_counts_partial_availability(tmp_path: Path) -> None:
+    snapshot_dir, data_dir, store_dir = _setup_dirs(tmp_path)
+    pairs = ["SOL/USDT:USDT", "AVAX/USDT:USDT", "GHOST/USDT:USDT", "MISSING/USDT:USDT"]
+    _write_snapshot(snapshot_dir, pairs)
+    _full_data(data_dir, ["SOL/USDT:USDT", "AVAX/USDT:USDT"])
+
+    report = _run(snapshot_dir, data_dir, store_dir)
+    cohort = report.cohorts[0]
+    summary = cohort.summary
+    assert summary.available_count == 2
+    # All four cuts use the same policy and report available counts.
+    assert summary.top_5_available_count == 2
+    assert summary.top_10_available_count == 2
+    assert summary.top_20_available_count == 2
+    assert summary.top_30_available_count == 2
+    assert summary.top_5_return_pct is not None
+    assert summary.top_10_return_pct is not None
+    assert summary.top_20_return_pct is not None
+    assert summary.top_30_return_pct is not None
+
+
+def test_top_n_zero_available_is_null(tmp_path: Path) -> None:
+    snapshot_dir, data_dir, store_dir = _setup_dirs(tmp_path)
+    _write_snapshot(snapshot_dir, ["GHOST/USDT:USDT"])
+    # Only BTC data, no GHOST data.
+    _write_feather(data_dir / "BTC_USDT_USDT-1h-futures.feather", NOW - timedelta(hours=72), 72, 100.0)
+
+    report = _run(snapshot_dir, data_dir, store_dir)
+    summary = report.cohorts[0].summary
+    assert summary.top_5_return_pct is None
+    assert summary.top_5_available_count == 0
+    assert summary.top_10_available_count == 0
+
+
+def test_invalid_cohort_excluded_from_cohorts_and_gate(tmp_path: Path) -> None:
+    snapshot_dir, data_dir, store_dir = _setup_dirs(tmp_path)
+    _write_snapshot(snapshot_dir, ["SOL/USDT:USDT"], day="2026-01-10")
+    payload = _snapshot_payload(["AVAX/USDT:USDT"], day="2026-01-11", profile="V2_RS_LIQUIDITY")
+    payload["selected"].append(dict(payload["selected"][0]))  # duplicate -> invalid
+    path = snapshot_dir / "hunter-pairs-20260111-audit.json"
+    path.write_text(json.dumps(payload), encoding="utf-8")
+    _full_data(data_dir, ["SOL/USDT:USDT", "AVAX/USDT:USDT"])
+
+    report = _run(snapshot_dir, data_dir, store_dir)
+    assert len(report.cohorts) == 1
+    assert len(report.invalid_cohorts) == 1
+    assert report.cohorts[0].snapshot_date == "2026-01-10"
+    assert report.invalid_cohorts[0].snapshot_date == "2026-01-11"
+    assert report.invalid_cohorts[0].summary.metadata.get("invalid_snapshot") is True
+
+
+def test_identical_rerun_no_op(tmp_path: Path) -> None:
+    snapshot_dir, data_dir, store_dir = _setup_dirs(tmp_path)
+    _write_snapshot(snapshot_dir, ["SOL/USDT:USDT"])
+    _full_data(data_dir, ["SOL/USDT:USDT"])
+
+    report1 = _run(snapshot_dir, data_dir, store_dir)
+    report2 = _run(snapshot_dir, data_dir, store_dir)
+    assert report1.cohorts[0].summary.fingerprint == report2.cohorts[0].summary.fingerprint
+    assert report1.artifact_paths == report2.artifact_paths

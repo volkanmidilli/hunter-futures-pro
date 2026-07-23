@@ -225,6 +225,9 @@ def test_terminal_state_coverage_all_phase_a_codes(tmp_path: Path) -> None:
     for cohort in report.cohorts:
         for obs in cohort.observations:
             states.add(obs.terminal_state)
+    for cohort in report.invalid_cohorts:
+        for obs in cohort.observations:
+            states.add(obs.terminal_state)
     assert TerminalState.OUTCOME_AVAILABLE in states
     assert TerminalState.SNAPSHOT_INVALID in states
     assert TerminalState.OUTCOME_UNAVAILABLE_NO_SOURCE in states

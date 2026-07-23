@@ -22,6 +22,7 @@ from hunter.research_outcome_evaluation.models import (
     pair_observation_to_dict,
     parse_decimal,
     parse_horizon_hours,
+    snapshot_summary_from_dict,
     snapshot_summary_to_dict,
 )
 
@@ -298,6 +299,74 @@ def test_summary_zero_denominator_reason_accepted() -> None:
     summary = _summary(turnover=None, turnover_reason=REASON_ZERO_DENOMINATOR)
     assert summary.turnover_reason == REASON_ZERO_DENOMINATOR
     assert summary.turnover_reason in NULL_REASON_CODES
+
+
+def test_summary_legacy_missing_top_n_counts_default_to_none() -> None:
+    payload = {
+        "snapshot_date": "2026-01-10",
+        "ranking_profile": "V2_RS_LIQUIDITY",
+        "outcome_horizon": "1d",
+        "cohort_size": 2,
+        "available_count": 1,
+        "unavailable_count": 1,
+        "top_5_return_pct": "1.5",
+        "days_since_previous_snapshot": 0,
+        "turnover": "0.5",
+        "retention": "0.5",
+        "daily_data_availability": "1",
+        "metadata": {"terminal_state_counts": {"OUTCOME_AVAILABLE": 1}},
+    }
+    summary = snapshot_summary_from_dict(payload)
+    assert summary.top_5_available_count is None
+    assert summary.top_10_available_count is None
+    assert summary.top_20_available_count is None
+    assert summary.top_30_available_count is None
+
+
+def test_summary_persisted_zero_top_n_counts_are_zero() -> None:
+    payload = {
+        "snapshot_date": "2026-01-10",
+        "ranking_profile": "V2_RS_LIQUIDITY",
+        "outcome_horizon": "1d",
+        "cohort_size": 2,
+        "available_count": 1,
+        "unavailable_count": 1,
+        "top_5_return_pct": "1.5",
+        "top_5_available_count": 0,
+        "top_10_available_count": 0,
+        "top_20_available_count": 0,
+        "top_30_available_count": 0,
+        "days_since_previous_snapshot": 0,
+        "turnover": "0.5",
+        "retention": "0.5",
+        "daily_data_availability": "1",
+        "metadata": {"terminal_state_counts": {"OUTCOME_AVAILABLE": 1}},
+    }
+    summary = snapshot_summary_from_dict(payload)
+    assert summary.top_5_available_count == 0
+    assert summary.top_10_available_count == 0
+    assert summary.top_20_available_count == 0
+    assert summary.top_30_available_count == 0
+
+
+def test_summary_serialization_missing_counts_emitted_as_null() -> None:
+    summary = snapshot_summary_to_dict(snapshot_summary_from_dict({
+        "snapshot_date": "2026-01-10",
+        "ranking_profile": "V2_RS_LIQUIDITY",
+        "outcome_horizon": "1d",
+        "cohort_size": 2,
+        "available_count": 1,
+        "unavailable_count": 1,
+        "days_since_previous_snapshot": 0,
+        "turnover": "0.5",
+        "retention": "0.5",
+        "daily_data_availability": "1",
+        "metadata": {"terminal_state_counts": {"OUTCOME_AVAILABLE": 1}},
+    }))
+    assert summary["top_5_available_count"] is None
+    assert summary["top_10_available_count"] is None
+    assert summary["top_20_available_count"] is None
+    assert summary["top_30_available_count"] is None
 
 
 # ---------------------------------------------------------------------------

@@ -36,7 +36,7 @@ from hunter.research_outcome_evaluation.metrics import (
     compute_realized_volatility_pct,
     mean_pct,
     spearman,
-    top_n_return_pct,
+    top_n_return_and_count,
 )
 from hunter.research_outcome_evaluation.models import (
     BENCHMARK_PAIR,
@@ -85,6 +85,7 @@ class CohortEvaluation:
     outcome_horizon: str
     observations: tuple[PairObservationRecord, ...]
     summary: SnapshotSummaryRecord
+    is_invalid: bool = False
 
 
 @dataclass(frozen=True)
@@ -96,6 +97,7 @@ class RunReport:
     invalid_snapshots: tuple[tuple[str, str], ...]
     artifact_paths: tuple[Path, ...]
     terminal_state_counts: Mapping[str, int]
+    invalid_cohorts: tuple[CohortEvaluation, ...] = ()
 
 
 def _iso(value: datetime) -> str:
@@ -215,12 +217,16 @@ def _build_summary(
     previous: SnapshotCohort | None,
     snapshot_trusted: bool,
     snapshot_fingerprint: str,
+    invalid_reason: str | None = None,
 ) -> SnapshotSummaryRecord:
     counts = Counter(obs.terminal_state.value for obs in observations)
     available = [obs for obs in observations if obs.terminal_state is TerminalState.OUTCOME_AVAILABLE]
 
     ranked_returns = [(obs.rank_at_selection, obs.realized_return) for obs in available if obs.realized_return is not None]
-    top_metrics = {n: top_n_return_pct(ranked_returns, n) for n in TOP_N_CUTS}
+    top_returns = {}
+    top_counts = {}
+    for n in TOP_N_CUTS:
+        top_returns[n], top_counts[n] = top_n_return_and_count(ranked_returns, n)
 
     spearman_rank = spearman(
         [float(obs.rank_at_selection) for obs in available],
@@ -291,10 +297,14 @@ def _build_summary(
         retention_reason=retention_reason,
         daily_data_availability=availability,
         daily_data_availability_reason=availability_reason,
-        top_5_return_pct=top_metrics[5],
-        top_10_return_pct=top_metrics[10],
-        top_20_return_pct=top_metrics[20],
-        top_30_return_pct=top_metrics[30],
+        top_5_return_pct=top_returns[5],
+        top_5_available_count=top_counts[5],
+        top_10_return_pct=top_returns[10],
+        top_10_available_count=top_counts[10],
+        top_20_return_pct=top_returns[20],
+        top_20_available_count=top_counts[20],
+        top_30_return_pct=top_returns[30],
+        top_30_available_count=top_counts[30],
         spearman_rank_return=spearman_rank,
         spearman_relative_strength_return=spearman_rs,
         spearman_liquidity_return=spearman_liq,
@@ -310,6 +320,7 @@ def _build_summary(
             "min_window_coverage": str(config.min_window_coverage),
             "snapshot_fingerprint": snapshot_fingerprint,
             "snapshot_id": compute_snapshot_id(cohort.snapshot_date, cohort.ranking_profile),
+            **({"invalid_snapshot": True, "invalid_reason": invalid_reason} if invalid_reason else {}),
         },
     )
     return _finalize_summary(summary)
@@ -352,6 +363,7 @@ def _evaluate_invalid_snapshot(
         previous=None,
         snapshot_trusted=False,
         snapshot_fingerprint="",
+        invalid_reason=error,
     )
     return CohortEvaluation(
         snapshot_date=snapshot_date,
@@ -359,6 +371,7 @@ def _evaluate_invalid_snapshot(
         outcome_horizon=outcome_horizon,
         observations=observations,
         summary=summary,
+        is_invalid=True,
     )
 
 
@@ -409,6 +422,7 @@ def run_outcome_evaluation(
         return series_cache[pair]
 
     cohorts: list[CohortEvaluation] = []
+    invalid_cohorts: list[CohortEvaluation] = []
     pending: list[str] = []
     invalid: list[tuple[str, str]] = []
     artifact_paths: list[Path] = []
@@ -477,7 +491,10 @@ def run_outcome_evaluation(
             )
             sum_path = write_summary(store_dir=store_dir, summary=result.summary)
             artifact_paths.extend([obs_path, sum_path])
-            cohorts.append(result)
+            if result.is_invalid:
+                invalid_cohorts.append(result)
+            else:
+                cohorts.append(result)
             for obs in result.observations:
                 state_counts[obs.terminal_state.value] += 1
 
@@ -487,6 +504,7 @@ def run_outcome_evaluation(
         invalid_snapshots=tuple(invalid),
         artifact_paths=tuple(artifact_paths),
         terminal_state_counts=dict(sorted(state_counts.items())),
+        invalid_cohorts=tuple(invalid_cohorts),
     )
 
 

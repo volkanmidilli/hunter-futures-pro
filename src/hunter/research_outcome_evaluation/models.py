@@ -51,6 +51,7 @@ PENDING_HORIZON: str = "PENDING_HORIZON"
 REASON_FIRST_SNAPSHOT = "FIRST_SNAPSHOT"
 REASON_ZERO_DENOMINATOR = "ZERO_DENOMINATOR"
 REASON_INSUFFICIENT_OBSERVATIONS = "INSUFFICIENT_OBSERVATIONS"
+REASON_INVALID_SNAPSHOT = "INVALID_SNAPSHOT"
 
 NULL_REASON_CODES: frozenset[str] = frozenset(
     {REASON_FIRST_SNAPSHOT, REASON_ZERO_DENOMINATOR, REASON_INSUFFICIENT_OBSERVATIONS}
@@ -251,9 +252,13 @@ class SnapshotSummaryRecord:
     daily_data_availability: Decimal | None = None
     daily_data_availability_reason: str | None = None
     top_5_return_pct: Decimal | None = None
+    top_5_available_count: int | None = None
     top_10_return_pct: Decimal | None = None
+    top_10_available_count: int | None = None
     top_20_return_pct: Decimal | None = None
+    top_20_available_count: int | None = None
     top_30_return_pct: Decimal | None = None
+    top_30_available_count: int | None = None
     spearman_rank_return: Decimal | None = None
     spearman_relative_strength_return: Decimal | None = None
     spearman_liquidity_return: Decimal | None = None
@@ -275,6 +280,10 @@ class SnapshotSummaryRecord:
             raise ValueError("available_count and unavailable_count must be >= 0")
         if self.available_count + self.unavailable_count != self.cohort_size:
             raise ValueError("available_count + unavailable_count must equal cohort_size")
+        for cut in TOP_N_CUTS:
+            count = getattr(self, f"top_{cut}_available_count")
+            if count is not None and count < 0:
+                raise ValueError(f"top_{cut}_available_count must be >= 0")
         for reason in (
             self.previous_snapshot_reason,
             self.turnover_reason,
@@ -379,9 +388,13 @@ def snapshot_summary_to_dict(record: SnapshotSummaryRecord) -> dict[str, Any]:
         "daily_data_availability": _dec(record.daily_data_availability),
         "daily_data_availability_reason": record.daily_data_availability_reason,
         "top_5_return_pct": _dec(record.top_5_return_pct),
+        "top_5_available_count": record.top_5_available_count,
         "top_10_return_pct": _dec(record.top_10_return_pct),
+        "top_10_available_count": record.top_10_available_count,
         "top_20_return_pct": _dec(record.top_20_return_pct),
+        "top_20_available_count": record.top_20_available_count,
         "top_30_return_pct": _dec(record.top_30_return_pct),
+        "top_30_available_count": record.top_30_available_count,
         "spearman_rank_return": _dec(record.spearman_rank_return),
         "spearman_relative_strength_return": _dec(record.spearman_relative_strength_return),
         "spearman_liquidity_return": _dec(record.spearman_liquidity_return),
@@ -395,3 +408,48 @@ def snapshot_summary_to_dict(record: SnapshotSummaryRecord) -> dict[str, Any]:
         "safety_flags": _safety_payload(),
         "_safety_notice": RESEARCH_NOTICE,
     }
+
+
+def snapshot_summary_from_dict(payload: Mapping[str, Any]) -> SnapshotSummaryRecord:
+    """Parse a persisted summary dict, tolerating legacy missing fields.
+
+    Missing optional fields are defaulted to ``None`` so that legacy immutable
+    summaries can be loaded without recompute or silent zero-fill in report
+    output.
+    """
+    return SnapshotSummaryRecord(
+        snapshot_date=payload["snapshot_date"],
+        ranking_profile=payload["ranking_profile"],
+        outcome_horizon=payload["outcome_horizon"],
+        cohort_size=payload["cohort_size"],
+        available_count=payload["available_count"],
+        unavailable_count=payload["unavailable_count"],
+        days_since_previous_snapshot=payload.get("days_since_previous_snapshot"),
+        previous_snapshot_reason=payload.get("previous_snapshot_reason"),
+        turnover=parse_decimal(payload.get("turnover")),
+        turnover_reason=payload.get("turnover_reason"),
+        retention=parse_decimal(payload.get("retention")),
+        retention_reason=payload.get("retention_reason"),
+        daily_data_availability=parse_decimal(payload.get("daily_data_availability")),
+        daily_data_availability_reason=payload.get("daily_data_availability_reason"),
+        top_5_return_pct=parse_decimal(payload.get("top_5_return_pct")),
+        top_5_available_count=payload.get("top_5_available_count"),
+        top_10_return_pct=parse_decimal(payload.get("top_10_return_pct")),
+        top_10_available_count=payload.get("top_10_available_count"),
+        top_20_return_pct=parse_decimal(payload.get("top_20_return_pct")),
+        top_20_available_count=payload.get("top_20_available_count"),
+        top_30_return_pct=parse_decimal(payload.get("top_30_return_pct")),
+        top_30_available_count=payload.get("top_30_available_count"),
+        spearman_rank_return=parse_decimal(payload.get("spearman_rank_return")),
+        spearman_relative_strength_return=parse_decimal(
+            payload.get("spearman_relative_strength_return")
+        ),
+        spearman_liquidity_return=parse_decimal(payload.get("spearman_liquidity_return")),
+        benchmark_relative_return_pct=parse_decimal(payload.get("benchmark_relative_return_pct")),
+        mae_pct_mean=parse_decimal(payload.get("mae_pct_mean")),
+        mfe_pct_mean=parse_decimal(payload.get("mfe_pct_mean")),
+        realized_volatility_pct_mean=parse_decimal(payload.get("realized_volatility_pct_mean")),
+        benchmark_failure_reason=payload.get("benchmark_failure_reason"),
+        fingerprint=payload.get("fingerprint", ""),
+        metadata=dict(payload.get("metadata") or {}),
+    )
