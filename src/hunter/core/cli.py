@@ -13,10 +13,14 @@ from collections.abc import Sequence
 from hunter.pairlist_export.cli import main as pairlist_export_cli_main
 from hunter.reporting_cli.cli import REPORTING_CLI_HELP_TEXT
 from hunter.reporting_cli.cli import main as reporting_cli_main
+from hunter.research_outcome_evaluation.cli import OUTCOME_CLI_HELP_TEXT, outcome_cli_main
 
 # SPEC-074 pairlist-export commands live under these top-level tokens;
 # everything else stays on the pre-existing reporting CLI.
 _PAIRLIST_EXPORT_GROUPS = frozenset({"universe", "coins", "pairlist", "daily-pairlist"})
+
+# SPEC-076 outcome-evaluation commands live under this top-level token.
+_OUTCOME_GROUPS = frozenset({"outcome"})
 
 # Command summaries only -- not a reimplementation of pairlist_export's own
 # argparse parser. Kept in sync with the `help=` strings registered in
@@ -39,7 +43,13 @@ Run `hunter <group> --help` (e.g. `hunter pairlist build --help`) for full per-c
 
 # Unified top-level help: reuses reporting_cli's own help text verbatim (no
 # duplicated command implementation) and appends the pairlist-export summary.
-_UNIFIED_HELP_TEXT = REPORTING_CLI_HELP_TEXT.rstrip("\n") + "\n\n" + _PAIRLIST_EXPORT_HELP_TEXT
+_UNIFIED_HELP_TEXT = (
+    REPORTING_CLI_HELP_TEXT.rstrip("\n")
+    + "\n\n"
+    + _PAIRLIST_EXPORT_HELP_TEXT
+    + "\n"
+    + OUTCOME_CLI_HELP_TEXT
+)
 
 
 def main(argv: Sequence[str] | None = None) -> int:
@@ -73,6 +83,8 @@ def main(argv: Sequence[str] | None = None) -> int:
 
     if tokens[0] in _PAIRLIST_EXPORT_GROUPS:
         return pairlist_export_cli_main(tokens)
+    if tokens[0] in _OUTCOME_GROUPS:
+        return outcome_cli_main(tokens[1:])
     return reporting_cli_main(argv)
 
 

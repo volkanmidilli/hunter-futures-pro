@@ -2541,3 +2541,63 @@ Next step:
 
 SPEC-012 review / MVP-11 planning.
 
+
+---
+
+### SPEC-076 Phase A — Ranking Outcome Evaluation Implementation
+
+Date: 2026-07-23
+
+Agent: WrongStack (leader)
+
+Task: Implement SPEC-076 (`docs/planning/SPEC-076-DRAFT.md`, approved planning draft) — research-only Phase A evaluation of immutable JSON snapshot audit artifacts against local 1h Feather price series.
+
+Phase 0 inspection (before any code): verified snapshot audit field names from the SPEC-074 writer (`audit_record_to_dict` in `src/hunter/pairlist_export/audit.py`): `pair`, `rank`, `rs_score`, `liquidity_score` (Decimal-as-string, optional), `ranking_profile`, `as_of_date`; verified the SPEC-075 Feather discovery contract (`FEATHER_FILENAME_PATTERN` in `feather_models.py`). Findings recorded as a paragraph in the draft's Implementation Decisions section.
+
+Milestones (each gated on its own tests plus a green full suite):
+- M1 schemas (59 tests): frozen dataclasses, `TerminalState` (6 Phase A codes + reserved `DELISTED`), fail-closed safety flags (SPEC-074 pattern), Decimal-as-string serialization, extensible `<int>d` horizons.
+- M2 resolution (27 tests): snapshot reader, Feather price source (SPEC-075 contract, full OHLCV for MAE/MFE), mandated terminal-state order, transient `PENDING_HORIZON` never persisted.
+- M3 metrics (14 tests): realized return, MAE/MFE, realized volatility (population std of valid 1h log returns, not annualized), Spearman with average ranks, Top-5/10/20/30.
+- M4 summary + engine (18 tests): turnover/retention/`days_since_previous_snapshot` versus source-based `D_prev`, `FIRST_SNAPSHOT`, zero-denominator reason codes, benchmark gate shared per cohort, BTC special case, no silent discards.
+- M5 CLI (7 tests): `hunter outcome evaluate` / `hunter outcome report`, distinct `--snapshot-dir`/`--data-dir`/`--store-dir`, `--as-of` range or `--all-matured`, JSON + Markdown report with horizon-suffixed metric names, `hunter.core.cli` dispatch + unified help.
+- M6 determinism/immutability (8 tests): byte-identical artifacts across runs, stable fingerprints, rerun no-op, conflicting-content rejection, `data/`/`reports/` store rejection, multi-horizon integration, forbidden-import scan, all Phase A terminal codes exercised.
+
+New package: `src/hunter/research_outcome_evaluation/` (models, errors, snapshot_reader, price_source, resolution, metrics, fingerprint, summary, engine, writer, cli). New tests: `tests/test_research_outcome_evaluation/` (133 tests). Modified (additive only): `src/hunter/core/cli.py` (outcome dispatch + help), `docs/MVP_INDEX.md` (MVP-76 row), `docs/technical/TESTING_GUIDE.md` (new test package), `docs/planning/SPEC-076-DRAFT.md` (Phase 0 findings paragraph). `pairlist_export` and existing engines untouched (read-only imports of `discover_feather_files`, `atomic_write_text`, `reject_forbidden_output_dir`).
+
+Full suite: 10,649 passed, 3 skipped (baseline 10,519 collected; zero regressions). No commit, no tag, no push — pending independent review per AGENTS.md commit/tag policy.
+
+---
+
+### SPEC-076 Phase A — Independent Review Closure
+
+Date: 2026-07-23
+
+Closure commit: `b3d4f47`
+
+Version: `v0.76.0-dev`
+
+Agent: WrongStack (leader)
+
+Task: Independent review of the SPEC-076 Phase A implementation against `docs/planning/SPEC-076-DRAFT.md`; close all identified findings.
+
+Findings identified and resolved:
+
+1. **CLI directory separation was not enforced.** The `evaluate` command accepted `--snapshot-dir`, `--data-dir`, and `--store-dir` but did not validate that they are distinct. This violated the CLI contract's "distinct directories" requirement and the implementation step that expects smoke tests proving they are distinct. Fixed in `src/hunter/research_outcome_evaluation/cli.py` by resolving all three paths and returning exit code 2 with a clear error message if any are identical. Added `test_evaluate_rejects_non_distinct_store_dir` in `tests/test_research_outcome_evaluation/test_cli.py`.
+
+2. **Calibration gate was not reported.** The Calibration Gate section requires reporting eligibility status (30+ matured cohorts per horizon, 60 recommended) and the Gathering Results section requires "Calibration-gate evaluation: Eligibility status (30+ matured cohorts per horizon) is evaluated and reported; gate status is explicit." The original implementation tracked `cohorts_evaluated` only for the current run. Fixed in `src/hunter/research_outcome_evaluation/cli.py` by adding a `_calibration_gate` helper that counts persisted Snapshot Summary Records per `(ranking_profile, outcome_horizon)` and emits `matured_cohort_count`, `threshold`, `recommended`, `eligible`, and `eligible_recommended` in both JSON and Markdown report outputs. Added `test_report_includes_calibration_gate` and `test_report_markdown_includes_calibration_gate`.
+
+3. **`docs/technical/TESTING_GUIDE.md` contained stale validation numbers.** Commit hash, test count for `test_research_outcome_evaluation`, full-suite count, skip description, and baseline comparison text were all from the pre-SPEC-076 state. Updated to current values: commit `c7c11bb`, 136 tests for `test_research_outcome_evaluation`, 10,652 passed / 3 skipped / 10 warnings full-suite result, corrected skip description (two explicit + one conditional), and accurate MVP-71 baseline comparison.
+
+4. **`docs/MVP_INDEX.md` status was stale.** MVP-76 row listed status as "implemented — pending review". Updated to "implemented — independent review closed" and expanded the notes to include the calibration gate, distinct-directory validation, and current test/full-suite counts.
+
+Validation after fixes:
+- `pytest tests/test_research_outcome_evaluation/test_cli.py -q` → 38 passed.
+- `pytest tests/test_research_outcome_evaluation -q` → 164 passed.
+- `pytest tests/ -q` → 10,680 passed, 3 skipped, 10 warnings, exit code 0.
+- `python -m compileall src/hunter/research_outcome_evaluation tests/test_research_outcome_evaluation` → clean.
+- `python scripts/repository_hygiene_check.py` → `HYGIENE_OK`.
+- `git diff --check` → clean.
+
+Note: the full-suite count is 10,680 rather than the 10,649 reported in the implementation entry because 31 new CLI tests were added during this review closure (directory-separation, finite coverage, ISO date filtering, unknown-command, and input-directory validation tests). The earlier implementation entry was not modified so the historical note remains intact.
+
+Closure commit `129d307` created; tag and push not performed.

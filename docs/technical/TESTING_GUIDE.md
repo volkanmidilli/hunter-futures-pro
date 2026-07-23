@@ -3,7 +3,7 @@
 > **Research only.** All commands below exercise local, deterministic test code. None start Freqtrade, place
 > orders, or connect to any exchange/network.
 
-Verified against commit `08a78d9`, version `0.72.0-dev`. All results in this guide were produced by actually
+Verified against commit `c7c11bb`, version `0.72.0-dev`. All results in this guide were produced by actually
 running the listed commands during this validation pass — see the parent validation report for the full
 per-command log (exact command, exit code, duration, pass/fail/skip counts).
 
@@ -53,10 +53,11 @@ pytest tests/test_research_walk_forward -q
 pytest tests/test_research_statistical_confidence -q
 pytest tests/test_research_evidence_ledger -q
 pytest tests/test_research_campaign -q
+pytest tests/test_research_outcome_evaluation -q
 ```
 
-All 12 passed cleanly at commit `08a78d9` (70, 19, 106, 129, 207, 91, 61, 364+1 skipped, 131, 180, 192, 268
-tests respectively — see the validation report's Test Results table for exact durations/exit codes).
+All 13 passed cleanly at commit `b3d4f47` (70, 19, 106, 129, 207, 91, 61, 364+1 skipped, 131, 180, 192, 268,
+164 tests respectively — see the validation report's Test Results table for exact durations/exit codes).
 
 ## Full-Suite Command
 
@@ -64,9 +65,9 @@ tests respectively — see the validation report's Test Results table for exact 
 pytest tests/ -q
 ```
 
-Result at commit `08a78d9`: **10,334 passed, 2 skipped, 10–11 warnings, exit code 0**, ~11.4s wall time. This
-matches the count recorded in the MVP-71 commit message (`be854db`) exactly, confirming no regression across
-the two trailing docs/test-`__init__.py` commits.
+Result at commit `b3d4f47`: **10,680 passed, 3 skipped, 10 warnings, exit code 0**, ~20s wall time. The
+MVP-71 baseline was `10,334 passed, 2 skipped`; the current count reflects the SPEC-076 implementation plus
+no regressions across subsequent commits.
 
 Two skips are explicit and always present, not environment failures:
 

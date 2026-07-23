@@ -210,6 +210,8 @@ These decisions are closed for Phase A implementation.
 | Retention | `\|S_current ∩ S_previous\| / \|S_previous\|` |
 | Zero denominator | Persist `null` with an explicit reason code |
 
+**Phase 0 inspection findings (verified from code, not inferred):** The immutable snapshot audit artifact is `hunter-pairs-YYYYMMDD-audit.json`, written by `write_snapshot` (`src/hunter/pairlist_export/snapshot.py`) via `audit_record_to_dict` (`src/hunter/pairlist_export/audit.py:118-146`). Verified top-level keys: `as_of_date` (`YYYY-MM-DD`), `ranking_profile` (str, e.g. `V1_RS_OI` / `V2_RS_LIQUIDITY`), `schema_version`, `selected`, `rejected`, `fingerprint`. Verified per-pair keys inside `selected` entries (`_pair_to_dict`, `audit.py:101-115`): `pair` (str), `rank` (int — the rank-at-selection source), `selected` (bool), `rs_score` (Decimal serialized as JSON string, or `null` — the relative-strength-score source), `liquidity_score` (Decimal-as-string, key present only when non-null — the liquidity-score source), `oi_score` (string or null), `reason_codes` (list of str), `fingerprint` (str), and optional `data_quality_pct`. The SPEC-075 Feather price-source discovery contract is verified in `src/hunter/pairlist_export/feather_models.py:83`: filename regex `^(?P<base>[A-Z0-9]+)_USDT_USDT-1h-futures\.feather$`, non-recursive scan of the supplied data directory with symlink/hidden/temp/path-escape rejection, required columns `("date", "close", "volume")` (`feather_models.py:79`), pair form `{base}/USDT:USDT`, and the benchmark file `BTC_USDT_USDT-1h-futures.feather` (base symbol `BTC`).
+
 ## Implementation
 
 ### Step 1 — Module and CLI placement
