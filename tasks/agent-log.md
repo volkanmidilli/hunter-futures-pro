@@ -2572,9 +2572,13 @@ Full suite: 10,649 passed, 3 skipped (baseline 10,519 collected; zero regression
 
 Date: 2026-07-23
 
-Closure commit: `b3d4f47`
+Closure commit: `ce32a12`
 
 Version: `v0.76.0-dev`
+
+Tag status: pending
+
+Push status: pending
 
 Agent: WrongStack (leader)
 
@@ -2600,4 +2604,4 @@ Validation after fixes:
 
 Note: the full-suite count is 10,680 rather than the 10,649 reported in the implementation entry because 31 new CLI tests were added during this review closure (directory-separation, finite coverage, ISO date filtering, unknown-command, and input-directory validation tests). The earlier implementation entry was not modified so the historical note remains intact.
 
-Closure commit `129d307` created; tag and push not performed.
+Closure commit `ce32a12` created; tag and push not performed.

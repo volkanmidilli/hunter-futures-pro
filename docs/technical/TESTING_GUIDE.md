@@ -56,7 +56,7 @@ pytest tests/test_research_campaign -q
 pytest tests/test_research_outcome_evaluation -q
 ```
 
-All 13 passed cleanly at commit `b3d4f47` (70, 19, 106, 129, 207, 91, 61, 364+1 skipped, 131, 180, 192, 268,
+All 13 passed cleanly at commit `ce32a12` (70, 19, 106, 129, 207, 91, 61, 364+1 skipped, 131, 180, 192, 268,
 164 tests respectively — see the validation report's Test Results table for exact durations/exit codes).
 
 ## Full-Suite Command
@@ -65,7 +65,7 @@ All 13 passed cleanly at commit `b3d4f47` (70, 19, 106, 129, 207, 91, 61, 364+1 
 pytest tests/ -q
 ```
 
-Result at commit `b3d4f47`: **10,680 passed, 3 skipped, 10 warnings, exit code 0**, ~20s wall time. The
+Result at commit `ce32a12`: **10,680 passed, 3 skipped, 10 warnings, exit code 0**, ~20s wall time. The
 MVP-71 baseline was `10,334 passed, 2 skipped`; the current count reflects the SPEC-076 implementation plus
 no regressions across subsequent commits.
 
