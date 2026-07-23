@@ -12,6 +12,10 @@ build/
 # Secrets and local config
 configs/local.yaml
 .env
+.env.*
+!.env.example
+!.env.template
+!.env.sample
 *.key
 *.pem
 *.secret
@@ -41,6 +45,15 @@ package-lock.json
 # OS
 .DS_Store
 Thumbs.db
+
+# WrongStack local state
 .wrongstack/
 .pytest_cache/
-.wrongstack/
+
+# Root-local development workspaces (sibling directories are preferred; see docs/development/DEVELOPER_WORKFLOW.md)
+/.ai/
+/.dev/
+/.local-workspace/
+/.reviews/
+/.prompts/
+/.scratch/
