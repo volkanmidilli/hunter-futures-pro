@@ -6,7 +6,7 @@ import json
 from pathlib import Path
 
 from hunter.core.doctor.gitutil import GitResult
-from hunter.core.doctor.report import render_plan_json
+from hunter.core.doctor.report import render_plan_json, render_plan_text
 from hunter.core.doctor.update import (
     MigrationLevel,
     UpdateStatus,
@@ -212,6 +212,7 @@ def test_plan_never_recommends_a_downgrade() -> None:
     assert plan.recommended_commands == ()
     assert plan.breaking_changes == "NONE_DECLARED"
     assert plan.rollback_tag == current.tag
+    assert "beyond the target version" in render_plan_text(plan)
 
 
 def test_plan_prerelease_promotion_is_a_patch_level_update() -> None:

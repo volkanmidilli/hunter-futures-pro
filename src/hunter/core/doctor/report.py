@@ -15,7 +15,11 @@ from hunter.core.doctor.models import (
     CheckStatus,
     DoctorReport,
 )
-from hunter.core.doctor.update import UpdateCheckResult, UpdatePlan
+from hunter.core.doctor.update import (
+    UpdateCheckResult,
+    UpdatePlan,
+    UpdateStatus,
+)
 
 _STATUS_ORDER: tuple[CheckStatus, ...] = (
     CheckStatus.PASS,
@@ -112,7 +116,7 @@ def render_update_check_text(result: UpdateCheckResult) -> str:
     lines.append(f"  status:           {result.status.value}")
     if result.reason:
         lines.append(f"  reason:           {result.reason}")
-    if result.status.value == "UPDATE_AVAILABLE":
+    if result.status is UpdateStatus.UPDATE_AVAILABLE:
         lines.append("")
         lines.append(
             "Run `hunter update plan` for a deterministic, non-executing "
@@ -160,7 +164,7 @@ def render_plan_text(plan: UpdatePlan) -> str:
         lines.extend(f"  {index}. {command}" for index, command in
                      enumerate(plan.recommended_commands, start=1))
     else:
-        lines.append("No update commands recommended: already at the target version.")
+        lines.append("No update commands recommended: already at or beyond the target version.")
     return "\n".join(lines)
 
 

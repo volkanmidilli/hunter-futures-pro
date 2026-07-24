@@ -261,6 +261,38 @@ def test_safety_blocker_on_secret_keys(tmp_path: Path, monkeypatch) -> None:
     assert result.status is CheckStatus.BLOCKER
 
 
+def test_safety_anchors_to_project_root_not_cwd(tmp_path: Path, monkeypatch) -> None:
+    """Safety config is read from context.project_root, not the process cwd."""
+    project = tmp_path / "project"
+    project.mkdir()
+    (project / "configs").mkdir()
+    (project / "configs" / "data.yaml").write_text("trading:\n  enabled: false\n")
+
+    cwd = tmp_path / "cwd"
+    cwd.mkdir()
+    (cwd / "configs").mkdir()
+    (cwd / "configs" / "data.yaml").write_text("trading:\n  enabled: true\n")
+    monkeypatch.chdir(cwd)
+
+    result = check_safety(make_context(project))[0]
+    assert result.status is CheckStatus.PASS
+
+
+def test_safety_blocker_when_project_root_unsafe(tmp_path: Path, monkeypatch) -> None:
+    """Unsafe config in project_root is detected even when cwd is safe."""
+    project = tmp_path / "project"
+    project.mkdir()
+    (project / "configs").mkdir()
+    (project / "configs" / "data.yaml").write_text("trading:\n  enabled: true\n")
+
+    cwd = tmp_path / "cwd"
+    cwd.mkdir()
+    monkeypatch.chdir(cwd)
+
+    result = check_safety(make_context(project))[0]
+    assert result.status is CheckStatus.BLOCKER
+
+
 # --- Configuration ------------------------------------------------------------
 
 

@@ -7,6 +7,9 @@ trading disabled, no secret keys in configuration).
 
 from __future__ import annotations
 
+import os
+from contextlib import contextmanager
+
 from hunter.config import ConfigLoadError, load_config
 from hunter.core.doctor.models import (
     CheckCategory,
@@ -16,13 +19,24 @@ from hunter.core.doctor.models import (
 )
 
 
+@contextmanager
+def _cwd(path):
+    """Temporarily change the working directory and restore it on exit."""
+    original = os.getcwd()
+    os.chdir(path)
+    try:
+        yield
+    finally:
+        os.chdir(original)
+
+
 def check_safety(context: DoctorContext) -> tuple[CheckResult, ...]:
     """Verify research-only safety constraints hold (research_only=True)."""
-    del context  # Safety validation reads the standard config locations.
     check_id = "safety.research_only"
     category = CheckCategory.SAFETY
     try:
-        load_config()
+        with _cwd(context.project_root):
+            load_config()
     except ConfigLoadError as exc:
         return (
             CheckResult(
