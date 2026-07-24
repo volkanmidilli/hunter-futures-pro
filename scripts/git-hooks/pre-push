@@ -1,0 +1,14 @@
+#!/bin/sh
+# Repository hygiene pre-push guard.
+#
+# Installed via scripts/install_git_hooks.sh (core.hooksPath=scripts/git-hooks).
+# Reads the pushed refs from stdin (git pre-push protocol) and blocks the push
+# when the pushed tree contains development-environment or runtime-artifact
+# paths (.wrongstack/, .ai/, .dev/, .venv/, __pycache__/, .claude/, data/,
+# reports/, logs/, secrets, generated pairlists, OS artifacts, ...).
+set -eu
+
+repo_root=$(git rev-parse --show-toplevel)
+cd "$repo_root"
+
+exec python scripts/repository_hygiene_check.py --pre-push

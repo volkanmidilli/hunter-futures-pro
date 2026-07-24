@@ -89,14 +89,30 @@ Specs are created in `specs/` using the project naming convention and promoted t
 
 ## 7. Pre-commit and pre-push checklist
 
+A tracked pre-push hook guards every push: `scripts/git-hooks/pre-push` runs
+`python scripts/repository_hygiene_check.py --pre-push`, which inspects the
+tree of every ref being pushed and aborts the push when development-environment
+or runtime-artifact paths (e.g. `.wrongstack/`, `.ai/`, `.dev/`, `.venv/`,
+`__pycache__/`, `.pytest_cache/`, `.claude/`, `.vscode/`, `.idea/`, `.DS_Store`,
+`data/`, `reports/`, `logs/`, secrets, generated pairlists) would land on the
+remote. Install it once per clone:
+
+```sh
+bash scripts/install_git_hooks.sh
+```
+
+This sets `core.hooksPath=scripts/git-hooks` (local-only git configuration).
+Manual verification without pushing: `python scripts/repository_hygiene_check.py --tree HEAD`.
+
 Run the following before every commit and push:
 
 1. `git diff --check` — ensure no whitespace errors.
 2. `python scripts/repository_hygiene_check.py` — ensure only allowed paths are tracked/staged.
 3. `python -m compileall scripts/repository_hygiene_check.py` — ensure the script is syntactically valid.
 4. `pytest tests/test_scripts/test_repository_hygiene_check.py` — run the focused hygiene tests if they exist.
-5. `git check-ignore -v <path>` — verify new local-only files are ignored and new documentation/spec files are not ignored.
-6. Review the staged diff for accidental inclusions of runtime artifacts, secrets, or local workspace files.
+5. `python scripts/repository_hygiene_check.py --tree HEAD` — ensure the commit tree about to be pushed is clean (the pre-push hook enforces this automatically).
+6. `git check-ignore -v <path>` — verify new local-only files are ignored and new documentation/spec files are not ignored.
+7. Review the staged diff for accidental inclusions of runtime artifacts, secrets, or local workspace files.
 
 ## 8. Coordinator-owned Git operations
 
