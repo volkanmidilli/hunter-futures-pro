@@ -11,6 +11,7 @@ import sys
 from collections.abc import Sequence
 
 from hunter.pairlist_export.cli import main as pairlist_export_cli_main
+from hunter.core.doctor.cli import DOCTOR_CLI_HELP_TEXT, doctor_main, update_main
 from hunter.reporting_cli.cli import REPORTING_CLI_HELP_TEXT
 from hunter.reporting_cli.cli import main as reporting_cli_main
 from hunter.research_outcome_evaluation.cli import OUTCOME_CLI_HELP_TEXT, outcome_cli_main
@@ -21,6 +22,10 @@ _PAIRLIST_EXPORT_GROUPS = frozenset({"universe", "coins", "pairlist", "daily-pai
 
 # SPEC-076 outcome-evaluation commands live under this top-level token.
 _OUTCOME_GROUPS = frozenset({"outcome"})
+
+# SPEC-077 doctor/update commands live under these top-level tokens.
+_DOCTOR_GROUPS = frozenset({"doctor"})
+_UPDATE_GROUPS = frozenset({"update"})
 
 # Command summaries only -- not a reimplementation of pairlist_export's own
 # argparse parser. Kept in sync with the `help=` strings registered in
@@ -49,6 +54,8 @@ _UNIFIED_HELP_TEXT = (
     + _PAIRLIST_EXPORT_HELP_TEXT
     + "\n"
     + OUTCOME_CLI_HELP_TEXT
+    + "\n"
+    + DOCTOR_CLI_HELP_TEXT
 )
 
 
@@ -85,6 +92,10 @@ def main(argv: Sequence[str] | None = None) -> int:
         return pairlist_export_cli_main(tokens)
     if tokens[0] in _OUTCOME_GROUPS:
         return outcome_cli_main(tokens[1:])
+    if tokens[0] in _DOCTOR_GROUPS:
+        return doctor_main(tokens[1:])
+    if tokens[0] in _UPDATE_GROUPS:
+        return update_main(tokens[1:])
     return reporting_cli_main(argv)
 
 
