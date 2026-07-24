@@ -85,12 +85,16 @@ SPEC-077 defines a Phase A, strictly read-only framework — **Hunter Doctor** �
 | Venv | Process runs inside a virtual environment (`sys.prefix != sys.base_prefix`) | Inside venv | Outside venv | — | — |
 | Editable install | `hunter-futures-pro` is installed editable from this repository (PEP 610 direct-url `dir_info.editable` plus `file://` location match, or setuptools `__editable__` finder / egg-info artifacts) | Editable from this repo | Non-editable install, or editable from a *different* location | — | Undeterminable |
 | Package versions | Runtime dependencies (`pydantic>=2`, `pyyaml>=6`, `pandas>=2`, `pyarrow>=14`, `numpy>=1.24`) import and satisfy minimum versions; one result per dependency with check ids `packages.<name>` | All satisfied | — | Missing/below-minimum dependency | Version undeterminable for a package |
-| Git | `git` available, inside a work tree, current branch readable, worktree cleanliness | Clean worktree on a branch | Dirty worktree or detached HEAD | Not a git worktree | `git` binary absent |
+| Git | `git` available, inside a work tree, current branch readable, worktree cleanliness | Clean worktree on a branch | Dirty worktree, detached HEAD, **or not a Git work tree** (rsync/exported deployment) | — | `git` binary absent |
 | Snapshot | Resolved `snapshot_dir` exists and is a readable directory | Exists/readable | Missing or not readable | — | — |
 | Feather | Resolved `data_dir` exists and contains at least one SPEC-075 ranking-input Feather file (`*_USDT_USDT-1h-futures.feather`) | ≥1 matching file | Missing dir or no matching files | — | — |
 | Outcome Store | Resolved `store_dir` exists and is a readable directory | Exists/readable | Missing or not readable | — | — |
 | Safety | Existing config safety validation passes (`trading.enabled=False`, `trading.live_enabled=False`, no secret keys); `research_only=True` invariant holds | All constraints hold | — | Any safety constraint violated | Existing config not loadable for non-safety reasons |
 | Configuration | Config files parse as YAML mapping; supported keys resolve; resolved path values are non-empty strings; `snapshot_dir`/`data_dir`/`store_dir` are pairwise distinct when all explicitly configured | Clean resolution | Unparseable config file, unknown keys, non-distinct dirs | — | — |
+
+### Exported / rsync deployments
+
+Hunter is intentionally deployable without `.git` metadata (e.g. `rsync -av`, exported archive, read-only container image). In this model `hunter doctor` remains a valid runtime health check: the `git.repository` check reports a `WARNING` with the exact message "Not a Git work tree — update check and update plan are unavailable. Use a Git clone for full update functionality." and a remediation hint to deploy with `git clone` when update discovery is required. No other check is downgraded. A full-functionality deployment is still a `git clone`, which enables `hunter update check` and `hunter update plan`.
 
 ### Exit Code Contract
 
@@ -137,7 +141,7 @@ SPEC-077 defines a Phase A, strictly read-only framework — **Hunter Doctor** �
 ### CLI
 
 - **Commands:** `hunter doctor [--verbose] [--json] [--snapshot-dir …] [--data-dir …] [--store-dir …] [--pairlist-output-dir …]`, `hunter update check [--offline] [--json] [--remote NAME]`, `hunter update plan [--target VERSION] [--offline] [--json] [--remote NAME]`.
-- **Update exit codes:** `update check` always exits `0`, including `UNKNOWN` degradation (availability of the answer is part of the report). `update plan` exits `0` on success and `2` when the target cannot be determined or fails validation, with the reason on stderr.
+- **Update exit codes:** `update check` always exits `0`, including `UNKNOWN` degradation (availability of the answer is part of the report). `update plan` exits `0` on success and `2` when the target cannot be determined, fails validation, or no Git work tree is available; no target or rollback tag is invented.
 - **Style:** follows the existing argparse command style used by `hunter outcome` and `hunter pairlist`; dispatched as separate groups from `src/hunter/core/cli.py`.
 - **Help:** unified top-level help is extended with the new groups, following the SPEC-074/076 pattern.
 

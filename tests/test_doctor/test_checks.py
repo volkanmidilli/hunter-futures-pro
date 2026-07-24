@@ -160,7 +160,7 @@ def test_git_warning_on_detached_head(tmp_path: Path) -> None:
     assert result.status is CheckStatus.WARNING
 
 
-def test_git_blocker_outside_worktree(tmp_path: Path) -> None:
+def test_git_warning_outside_worktree(tmp_path: Path) -> None:
     responses = {
         ("rev-parse", "--is-inside-work-tree"): GitResult(
             ok=False, stderr="fatal: not a git repository", returncode=128
@@ -168,7 +168,10 @@ def test_git_blocker_outside_worktree(tmp_path: Path) -> None:
     }
     context = make_context(tmp_path, git=make_git(responses))
     result = check_git_repository(context)[0]
-    assert result.status is CheckStatus.BLOCKER
+    assert result.status is CheckStatus.WARNING
+    assert "Not a Git work tree" in result.summary
+    assert "Git clone" in result.summary
+    assert "git clone" in (result.remediation or "")
 
 
 def test_git_skipped_when_binary_missing(tmp_path: Path) -> None:

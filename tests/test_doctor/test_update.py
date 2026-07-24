@@ -35,6 +35,7 @@ hhhh\trefs/tags/v9.9.9
 def _remote_git(ls_remote: GitResult) -> object:
     return make_git(
         {
+            ("rev-parse", "--is-inside-work-tree"): GitResult(ok=True, stdout="true\n"),
             ("config", "--get", "remote.origin.url"): GitResult(
                 ok=True, stdout="https://example.invalid/repo.git\n"
             ),
@@ -48,7 +49,10 @@ def _remote_git(ls_remote: GitResult) -> object:
 
 def test_collect_tags_offline_uses_local_only() -> None:
     git = make_git(
-        {("tag", "--list"): GitResult(ok=True, stdout="v0.70.0-dev\nv0.72.0-dev\n")}
+        {
+            ("rev-parse", "--is-inside-work-tree"): GitResult(ok=True, stdout="true\n"),
+            ("tag", "--list"): GitResult(ok=True, stdout="v0.70.0-dev\nv0.72.0-dev\n"),
+        }
     )
     collection = collect_tags(git, offline=True)
     assert collection.source is UpdateSource.LOCAL
@@ -67,11 +71,27 @@ def test_collect_tags_remote_parses_ls_remote() -> None:
 
 def test_collect_tags_missing_remote_url() -> None:
     git = make_git(
-        {("config", "--get", "remote.origin.url"): GitResult(ok=True, stdout="")}
+        {
+            ("rev-parse", "--is-inside-work-tree"): GitResult(ok=True, stdout="true\n"),
+            ("config", "--get", "remote.origin.url"): GitResult(ok=True, stdout=""),
+        }
     )
     collection = collect_tags(git, offline=False)
     assert collection.error is not None
     assert "no URL" in collection.error
+
+
+def test_collect_tags_outside_worktree_returns_error() -> None:
+    git = make_git(
+        {
+            ("rev-parse", "--is-inside-work-tree"): GitResult(
+                ok=False, stderr="fatal: not a git repository", returncode=128
+            )
+        }
+    )
+    collection = collect_tags(git, offline=True)
+    assert collection.error is not None
+    assert "Git metadata is unavailable" in collection.error
 
 
 def test_collect_tags_remote_failure_is_graceful() -> None:
@@ -105,7 +125,10 @@ def test_update_check_remote_update_available() -> None:
 def test_update_check_offline_up_to_date() -> None:
     current = current_version()
     git = make_git(
-        {("tag", "--list"): GitResult(ok=True, stdout=f"{current.tag}\n")}
+        {
+            ("rev-parse", "--is-inside-work-tree"): GitResult(ok=True, stdout="true\n"),
+            ("tag", "--list"): GitResult(ok=True, stdout=f"{current.tag}\n"),
+        }
     )
     result = run_update_check(git, offline=True)
     assert result.status is UpdateStatus.UP_TO_DATE
@@ -120,9 +143,26 @@ def test_update_check_remote_failure_degrades_to_unknown() -> None:
     assert result.reason == "network down"
 
 
+def test_update_check_outside_worktree_is_unknown() -> None:
+    git = make_git(
+        {
+            ("rev-parse", "--is-inside-work-tree"): GitResult(
+                ok=False, stderr="fatal: not a git repository", returncode=128
+            )
+        }
+    )
+    result = run_update_check(git, offline=True)
+    assert result.status is UpdateStatus.UNKNOWN
+    assert result.latest_version is None
+    assert "Git metadata is unavailable" in (result.reason or "")
+
+
 def test_update_check_no_valid_tags_is_unknown() -> None:
     git = make_git(
-        {("tag", "--list"): GitResult(ok=True, stdout="latest\nnightly-1\n")}
+        {
+            ("rev-parse", "--is-inside-work-tree"): GitResult(ok=True, stdout="true\n"),
+            ("tag", "--list"): GitResult(ok=True, stdout="latest\nnightly-1\n"),
+        }
     )
     result = run_update_check(git, offline=True)
     assert result.status is UpdateStatus.UNKNOWN

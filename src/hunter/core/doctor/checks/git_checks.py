@@ -43,9 +43,12 @@ def check_git_repository(context: DoctorContext) -> tuple[CheckResult, ...]:
             CheckResult(
                 check_id=check_id,
                 category=category,
-                status=CheckStatus.BLOCKER,
-                summary="Project root is not inside a git work tree.",
-                remediation="Run Hunter from a clone of the repository.",
+                status=CheckStatus.WARNING,
+                summary=(
+                    "Not a Git work tree — update check and update plan are "
+                    "unavailable. Use a Git clone for full update functionality."
+                ),
+                remediation="Deploy with `git clone` when update discovery is required.",
             ),
         )
 

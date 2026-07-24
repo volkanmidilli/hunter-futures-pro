@@ -115,6 +115,18 @@ def collect_tags(
     URL and runs ``git ls-remote --tags``.  Every failure mode returns a
     :class:`TagCollection` with ``error`` set; nothing is raised.
     """
+    source = UpdateSource.LOCAL if offline else UpdateSource.REMOTE
+    inside = git.run("rev-parse", "--is-inside-work-tree")
+    if inside.error is not None:
+        return TagCollection(source=source, error=inside.error)
+    if not inside.ok or inside.stdout.strip() != "true":
+        return TagCollection(
+            source=source,
+            error=(
+                "Git metadata is unavailable (not a Git work tree); "
+                "update check requires a Git clone."
+            ),
+        )
     if offline:
         result = git.run("tag", "--list")
         if result.error is not None:

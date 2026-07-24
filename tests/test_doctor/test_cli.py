@@ -116,3 +116,34 @@ def test_update_plan_rejects_invalid_target(capsys) -> None:
     exit_code = update_main(["plan", "--offline", "--target", "bogus"])
     assert exit_code == 2
     assert "not a valid SemVer" in capsys.readouterr().err
+
+
+def test_doctor_outside_git_worktree_exits_1(capsys, monkeypatch, tmp_path) -> None:
+    """An rsync/exported deployment (no .git) is a valid doctor runtime but warns."""
+    from hunter.core.doctor import cli as doctor_cli
+
+    monkeypatch.setattr(doctor_cli, "find_project_root", lambda: tmp_path)
+    assert doctor_main([]) == 1
+    out = capsys.readouterr().out
+    assert "Not a Git work tree" in out
+    assert "Git clone" in out
+
+
+def test_update_check_outside_git_worktree_is_unknown_and_exits_0(
+    capsys, monkeypatch, tmp_path
+) -> None:
+    from hunter.core.doctor import cli as doctor_cli
+
+    monkeypatch.setattr(doctor_cli, "find_project_root", lambda: tmp_path)
+    assert update_main(["check", "--offline"]) == 0
+    out = capsys.readouterr().out
+    assert "UNKNOWN" in out
+    assert "Git metadata is unavailable" in out
+
+
+def test_update_plan_outside_git_worktree_exits_2(capsys, monkeypatch, tmp_path) -> None:
+    from hunter.core.doctor import cli as doctor_cli
+
+    monkeypatch.setattr(doctor_cli, "find_project_root", lambda: tmp_path)
+    assert update_main(["plan", "--offline"]) == 2
+    assert "Git metadata is unavailable" in capsys.readouterr().err
