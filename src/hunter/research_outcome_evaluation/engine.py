@@ -18,6 +18,8 @@ No network, no subprocess, no scheduler mutation, no source-data mutation.
 
 from __future__ import annotations
 
+import json
+import logging
 from collections import Counter
 from dataclasses import dataclass, replace
 from datetime import datetime, timezone
@@ -71,9 +73,19 @@ from hunter.research_outcome_evaluation.summary import (
     compute_previous_snapshot_metrics,
     find_previous_snapshot,
 )
-from hunter.research_outcome_evaluation.writer import write_observations, write_summary
+from hunter.research_outcome_evaluation.writer import (
+    OBSERVATIONS_DIRNAME,
+    SUMMARIES_DIRNAME,
+    artifact_stem,
+    write_observations,
+    write_summary,
+)
 
 ISO = "%Y-%m-%dT%H:%M:%S+00:00"
+
+logger = logging.getLogger(__name__)
+
+_TERMINAL_STATE_VALUES = frozenset(state.value for state in TerminalState)
 
 
 @dataclass(frozen=True)
@@ -98,6 +110,7 @@ class RunReport:
     artifact_paths: tuple[Path, ...]
     terminal_state_counts: Mapping[str, int]
     invalid_cohorts: tuple[CohortEvaluation, ...] = ()
+    skipped_cohorts: tuple[str, ...] = ()
 
 
 def _iso(value: datetime) -> str:
@@ -185,7 +198,7 @@ def _resolve_member(
     volatility = compute_realized_volatility_pct(evaluation)
 
     if entry.pair == BENCHMARK_PAIR:
-        pair_benchmark_return = realized
+        pair_benchmark_return: Decimal | None = realized
         benchmark_relative = Decimal("0").quantize(Decimal("0.000001"))
     else:
         pair_benchmark_return = benchmark_return
@@ -375,6 +388,109 @@ def _evaluate_invalid_snapshot(
     )
 
 
+def _cohort_artifact_paths(
+    store_dir: Path, snapshot_date: str, ranking_profile: str, outcome_horizon: str
+) -> tuple[Path, Path]:
+    stem = artifact_stem(snapshot_date, ranking_profile, outcome_horizon)
+    return (
+        store_dir / OBSERVATIONS_DIRNAME / f"{stem}.json",
+        store_dir / SUMMARIES_DIRNAME / f"{stem}.json",
+    )
+
+
+def _artifact_status(
+    path: Path, *, kind: str, expected_snapshot_fingerprint: str | None = None
+) -> str:
+    """Classify one persisted artifact: ``valid`` | ``corrupt`` | ``tampered``.
+
+    ``corrupt``  - unreadable, unparseable, or structurally invalid JSON
+                   (safe to discard and rewrite).
+    ``tampered`` - parseable and structurally valid, but the persisted record
+                   fingerprint no longer matches the content, or the persisted
+                   snapshot identity differs from the current snapshot (left in
+                   place so the writer-level immutability gate stays the
+                   backstop).
+    """
+    try:
+        payload = json.loads(path.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError):
+        return "corrupt"
+    if not isinstance(payload, dict):
+        return "corrupt"
+    if kind == "observations":
+        records = payload.get("records")
+        if not isinstance(records, list) or not records:
+            return "corrupt"
+        for record in records:
+            if not isinstance(record, dict):
+                return "corrupt"
+            if record.get("terminal_state") not in _TERMINAL_STATE_VALUES:
+                return "corrupt"
+            fingerprint = record.get("fingerprint")
+            if not isinstance(fingerprint, str) or not fingerprint:
+                return "corrupt"
+            if compute_record_fingerprint(record) != fingerprint:
+                return "tampered"
+        return "valid"
+    fingerprint = payload.get("fingerprint")
+    if not isinstance(fingerprint, str) or not fingerprint:
+        return "corrupt"
+    if compute_record_fingerprint(payload) != fingerprint:
+        return "tampered"
+    if expected_snapshot_fingerprint is not None:
+        metadata = payload.get("metadata")
+        if (
+            not isinstance(metadata, dict)
+            or metadata.get("snapshot_fingerprint") != expected_snapshot_fingerprint
+        ):
+            return "tampered"
+    return "valid"
+
+
+def _cohort_already_evaluated(
+    store_dir: Path,
+    *,
+    snapshot_date: str,
+    ranking_profile: str,
+    outcome_horizon: str,
+    snapshot_fingerprint: str | None = None,
+) -> bool:
+    """True iff both cohort artifacts already exist with verified content.
+
+    Beyond record-fingerprint integrity, the persisted summary must carry the
+    current snapshot's fingerprint so a swapped snapshot (same date/profile,
+    different content) is never silently skipped.  Corrupt artifacts are
+    discarded so the cohort is re-evaluated and rewritten cleanly; tampered
+    artifacts are kept so ``_write_immutable`` rejects the conflicting rewrite
+    (immutability backstop).
+    """
+    obs_path, sum_path = _cohort_artifact_paths(
+        store_dir, snapshot_date, ranking_profile, outcome_horizon
+    )
+    if not obs_path.exists() or not sum_path.exists():
+        return False
+    intact = True
+    statuses = (
+        (obs_path, _artifact_status(obs_path, kind="observations")),
+        (
+            sum_path,
+            _artifact_status(
+                sum_path,
+                kind="summary",
+                expected_snapshot_fingerprint=snapshot_fingerprint,
+            ),
+        ),
+    )
+    for path, status in statuses:
+        if status == "corrupt":
+            logger.warning("discarding corrupt artifact for re-evaluation: %s", path)
+            path.unlink()
+            intact = False
+        elif status == "tampered":
+            intact = False
+    return intact
+
+
 def run_outcome_evaluation(
     *,
     snapshot_dir: Path,
@@ -424,6 +540,7 @@ def run_outcome_evaluation(
     cohorts: list[CohortEvaluation] = []
     invalid_cohorts: list[CohortEvaluation] = []
     pending: list[str] = []
+    skipped: list[str] = []
     invalid: list[tuple[str, str]] = []
     artifact_paths: list[Path] = []
     state_counts: Counter[str] = Counter()
@@ -446,11 +563,40 @@ def run_outcome_evaluation(
             continue
 
         for horizon in horizons:
+            members: tuple[SnapshotPairEntry, ...] | None = None
+            source_fingerprint: str | None = None
             if cohort is not None:
                 anchors = compute_window_anchors(cohort.snapshot_date, horizon)
                 if not horizon_elapsed(anchors, now):
                     pending.append(f"{cohort.snapshot_date}|{cohort.ranking_profile}|{horizon}")
                     continue
+                snap_date = cohort.snapshot_date
+                profile = cohort.ranking_profile
+                source_fingerprint = cohort.source_fingerprint
+            else:
+                members, snap_date, profile = _best_effort_members(path)
+                if not members:
+                    # Cannot identify any member: nothing to resolve; the
+                    # invalid snapshot is still reported, never discarded.
+                    invalid.append((str(path), load_error or "unreadable snapshot"))
+                    break
+
+            # Idempotent skip: an already-persisted, content-verified cohort
+            # is never re-evaluated; the writer immutability gate is only a
+            # backstop and must not fire in the normal flow.
+            cohort_key = f"{snap_date}|{profile}|{horizon}"
+            if _cohort_already_evaluated(
+                Path(store_dir),
+                snapshot_date=snap_date,
+                ranking_profile=profile,
+                outcome_horizon=horizon,
+                snapshot_fingerprint=source_fingerprint,
+            ):
+                logger.info("skipping already-evaluated cohort: %s", cohort_key)
+                skipped.append(cohort_key)
+                continue
+
+            if cohort is not None:
                 result = _evaluate_valid_snapshot(
                     cohort=cohort,
                     horizon=horizon,
@@ -463,12 +609,7 @@ def run_outcome_evaluation(
                     valid_snapshots=tuple(valid_snapshots),
                 )
             else:
-                members, snap_date, profile = _best_effort_members(path)
-                if not members:
-                    # Cannot identify any member: nothing to resolve; the
-                    # invalid snapshot is still reported, never discarded.
-                    invalid.append((str(path), load_error or "unreadable snapshot"))
-                    break
+                assert members is not None
                 result = _evaluate_invalid_snapshot(
                     path=path,
                     error=load_error or "invalid snapshot",
@@ -505,6 +646,7 @@ def run_outcome_evaluation(
         artifact_paths=tuple(artifact_paths),
         terminal_state_counts=dict(sorted(state_counts.items())),
         invalid_cohorts=tuple(invalid_cohorts),
+        skipped_cohorts=tuple(skipped),
     )
 
 

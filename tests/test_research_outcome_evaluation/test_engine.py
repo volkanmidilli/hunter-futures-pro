@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+import logging
 from datetime import datetime, timedelta, timezone
 from decimal import Decimal
 from pathlib import Path
@@ -12,6 +13,7 @@ import pyarrow.feather as feather
 import pytest
 
 from hunter.research_outcome_evaluation.engine import run_outcome_evaluation
+from hunter.research_outcome_evaluation.errors import EvaluationStoreError
 from hunter.research_outcome_evaluation.models import (
     REASON_FIRST_SNAPSHOT,
     OutcomeEvaluationConfig,
@@ -331,6 +333,89 @@ def test_identical_rerun_no_op(tmp_path: Path) -> None:
     _full_data(data_dir, ["SOL/USDT:USDT"])
 
     report1 = _run(snapshot_dir, data_dir, store_dir)
+    before = {p.name: p.read_bytes() for p in sorted(store_dir.rglob("*.json"))}
     report2 = _run(snapshot_dir, data_dir, store_dir)
-    assert report1.cohorts[0].summary.fingerprint == report2.cohorts[0].summary.fingerprint
-    assert report1.artifact_paths == report2.artifact_paths
+    after = {p.name: p.read_bytes() for p in sorted(store_dir.rglob("*.json"))}
+    # Second run skips the already-evaluated cohort: no rewrite, no error.
+    assert before == after
+    assert len(report1.cohorts) == 1
+    assert report2.cohorts == ()
+    assert report2.artifact_paths == ()
+    assert report2.skipped_cohorts == ("2026-01-10|V2_RS_LIQUIDITY|1d",)
+
+
+def test_rerun_skips_already_evaluated_cohort(
+    tmp_path: Path, caplog: pytest.LogCaptureFixture
+) -> None:
+    snapshot_dir, data_dir, store_dir = _setup_dirs(tmp_path)
+    _write_snapshot(snapshot_dir, ["SOL/USDT:USDT"])
+    _full_data(data_dir, ["SOL/USDT:USDT"])
+
+    report1 = _run(snapshot_dir, data_dir, store_dir)
+    assert len(report1.cohorts) == 1
+
+    with caplog.at_level(logging.INFO, logger="hunter.research_outcome_evaluation.engine"):
+        report2 = _run(snapshot_dir, data_dir, store_dir)
+
+    assert "skipping already-evaluated cohort: 2026-01-10|V2_RS_LIQUIDITY|1d" in caplog.text
+    assert report2.cohorts == ()
+    assert report2.invalid_cohorts == ()
+    assert report2.skipped_cohorts == ("2026-01-10|V2_RS_LIQUIDITY|1d",)
+
+
+def test_corrupt_observations_file_triggers_reevaluation(tmp_path: Path) -> None:
+    snapshot_dir, data_dir, store_dir = _setup_dirs(tmp_path)
+    _write_snapshot(snapshot_dir, ["SOL/USDT:USDT"])
+    _full_data(data_dir, ["SOL/USDT:USDT"])
+
+    report1 = _run(snapshot_dir, data_dir, store_dir)
+    obs_path = next((store_dir / "observations").glob("*.json"))
+    obs_path.write_text("{ not valid json", encoding="utf-8")
+
+    report2 = _run(snapshot_dir, data_dir, store_dir)
+
+    # Corrupt artifact is discarded and the cohort is re-evaluated cleanly.
+    assert report2.skipped_cohorts == ()
+    assert len(report2.cohorts) == 1
+    assert report2.cohorts[0].summary.fingerprint == report1.cohorts[0].summary.fingerprint
+    payload = json.loads(obs_path.read_text(encoding="utf-8"))
+    assert [r["terminal_state"] for r in payload["records"]] == [
+        TerminalState.OUTCOME_AVAILABLE.value
+    ]
+
+
+def test_corrupt_summary_file_triggers_reevaluation(tmp_path: Path) -> None:
+    snapshot_dir, data_dir, store_dir = _setup_dirs(tmp_path)
+    _write_snapshot(snapshot_dir, ["SOL/USDT:USDT"])
+    _full_data(data_dir, ["SOL/USDT:USDT"])
+
+    report1 = _run(snapshot_dir, data_dir, store_dir)
+    sum_path = next((store_dir / "summaries").glob("*.json"))
+    sum_path.write_text('{"records": "garbage"}', encoding="utf-8")
+
+    report2 = _run(snapshot_dir, data_dir, store_dir)
+
+    assert report2.skipped_cohorts == ()
+    assert len(report2.cohorts) == 1
+    assert report2.cohorts[0].summary.fingerprint == report1.cohorts[0].summary.fingerprint
+    payload = json.loads(sum_path.read_text(encoding="utf-8"))
+    assert payload["fingerprint"] == report1.cohorts[0].summary.fingerprint
+
+
+def test_swapped_snapshot_is_not_skipped(tmp_path: Path) -> None:
+    snapshot_dir, data_dir, store_dir = _setup_dirs(tmp_path)
+    path = _write_snapshot(snapshot_dir, ["SOL/USDT:USDT"])
+    _full_data(data_dir, ["SOL/USDT:USDT", "AVAX/USDT:USDT"])
+
+    report1 = _run(snapshot_dir, data_dir, store_dir)
+    assert len(report1.cohorts) == 1
+
+    # Swap the snapshot for the same date/profile with different content.
+    payload = _snapshot_payload(["AVAX/USDT:USDT"])
+    payload["fingerprint"] = "audit-2026-01-10-swapped"
+    path.write_text(json.dumps(payload), encoding="utf-8")
+
+    # The persisted cohort belongs to a different snapshot identity: the skip
+    # must not fire and the immutability gate rejects the conflicting rewrite.
+    with pytest.raises(EvaluationStoreError):
+        _run(snapshot_dir, data_dir, store_dir)

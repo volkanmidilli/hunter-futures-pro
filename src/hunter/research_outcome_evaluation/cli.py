@@ -14,10 +14,11 @@ from __future__ import annotations
 import argparse
 import json
 import sys
+from collections.abc import Mapping, Sequence
 from datetime import date, datetime, timezone
 from decimal import Decimal, InvalidOperation
 from pathlib import Path
-from typing import Any, Sequence
+from typing import Any
 
 from hunter.research_outcome_evaluation.engine import run_outcome_evaluation
 from hunter.research_outcome_evaluation.models import (
@@ -272,6 +273,8 @@ def _run_evaluate(args: argparse.Namespace) -> int:
         "schema_version": REPORT_SCHEMA_VERSION,
         "command": "evaluate",
         "cohorts_evaluated": len(report.cohorts),
+        "cohorts_skipped": len(report.skipped_cohorts),
+        "skipped_cohorts": list(report.skipped_cohorts),
         "invalid_cohorts": [
             {
                 "snapshot_date": c.snapshot_date,

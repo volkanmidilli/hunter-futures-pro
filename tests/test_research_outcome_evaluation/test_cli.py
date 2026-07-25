@@ -103,6 +103,31 @@ def test_evaluate_and_report_roundtrip(workspace: tuple[Path, Path, Path], capsy
     assert "benchmark_relative_return_pct_1d" in cohort["metrics"]
 
 
+def test_evaluate_rerun_reports_skipped_cohorts(
+    workspace: tuple[Path, Path, Path], capsys: pytest.CaptureFixture[str]
+) -> None:
+    snapshot_dir, data_dir, store_dir = workspace
+    args = [
+        "evaluate",
+        "--snapshot-dir", str(snapshot_dir),
+        "--data-dir", str(data_dir),
+        "--store-dir", str(store_dir),
+        "--all-matured",
+        "--horizons", "1d",
+    ]
+    assert outcome_cli_main(args) == 0
+    first = json.loads(capsys.readouterr().out)
+    assert first["cohorts_evaluated"] == 1
+    assert first["cohorts_skipped"] == 0
+    assert first["skipped_cohorts"] == []
+
+    assert outcome_cli_main(args) == 0
+    second = json.loads(capsys.readouterr().out)
+    assert second["cohorts_evaluated"] == 0
+    assert second["cohorts_skipped"] == 1
+    assert second["skipped_cohorts"] == ["2026-01-10|V2_RS_LIQUIDITY|1d"]
+
+
 def test_report_markdown_format(workspace: tuple[Path, Path, Path], capsys: pytest.CaptureFixture[str]) -> None:
     snapshot_dir, data_dir, store_dir = workspace
     assert outcome_cli_main(
