@@ -24,7 +24,11 @@ def _profile(pairlist_url: str, save_to_file: str) -> dict[str, Any]:
                 "method": "RemotePairList",
                 "mode": "whitelist",
                 "pairlist_url": pairlist_url,
-                "number_assets": 30,
+                # Shared safety ceiling only — matches Hunter's max_pairs=50
+                # fail-closed gate. Hunter is the pair-count authority
+                # (publishes target_final_pairs=20); RemotePairList must not
+                # perform an independent ranking cutoff below Hunter's count.
+                "number_assets": 50,
                 "refresh_period": 3600,
                 "keep_pairlist_on_failure": True,
                 "save_to_file": save_to_file,

@@ -15,7 +15,7 @@ from hunter.pairlist_export.validator import run_publish_gate
 
 
 def _gate_output(as_of_date="2026-07-21", pairs=("BTC/USDT:USDT", "ETH/USDT:USDT")):
-    config = PairlistRankingConfig(min_pairs=1, publish_candidates=5, max_pairs=5)
+    config = PairlistRankingConfig(min_pairs=1, target_final_pairs=5, max_pairs=5)
     ranked = rank_pairs(
         config,
         pairs,

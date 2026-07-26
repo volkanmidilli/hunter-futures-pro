@@ -68,7 +68,7 @@ for every eligible pair; `oi_scores` must be empty, `oi_available=false`), and `
 2. Sort by compound key `(-rs_score, -oi_score, -data_quality_pct, pair_string)` — missing values substitute
    `Decimal("-Infinity")` so they sort last within their dimension; pair string is the deterministic
    final tie-break (ascending).
-3. Assign `rank = index + 1`. Mark `selected=True` for the top `publish_candidates` (default 30) pairs that
+3. Assign `rank = index + 1`. Mark `selected=True` for the top `target_final_pairs` (default 20) pairs that
    are **not** `INSUFFICIENT_EVIDENCE`.
 4. Compute a per-pair fingerprint (`fingerprint.compute_pair_fingerprint`) over `{pair, rank, rs_score,
    oi_score, data_quality_pct, reason_codes}`.
@@ -76,19 +76,27 @@ for every eligible pair; `oi_scores` must be empty, `oi_available=false`), and `
    `PairlistRankingError` directly — this happens *before* the publish gate runs at all, and is a distinct
    failure path from gate rejection (see below).
 
-## Thresholds (SPEC-074 defaults)
+## Thresholds (current defaults)
 
 ```text
 min_pairs = 5
 target_final_pairs = 20
-publish_candidates = 30
 max_pairs = 50
 refresh_period = 3600
 ```
 
+**Historical note (superseded SPEC-074 policy):** the original SPEC-074 defaults also included
+`publish_candidates = 30`, and the selection cutoff was `publish_candidates` — Hunter deliberately
+published a surplus (~30) and let Freqtrade's `RemotePairList.number_assets` (20) trim the list. That
+surplus-publication policy has been superseded by the exact-target policy: `target_final_pairs` (20) is
+now the single canonical selection cutoff, Hunter is the authority for the published pair count, and
+Freqtrade may apply eligibility filters but must not perform an independent ranking cutoff. The
+`publish_candidates` field no longer exists; `max_pairs = 50` is unchanged as an independent fail-closed
+safety gate.
+
 `PairlistRankingConfig.__post_init__` enforces `min_pairs >= 1`, `max_pairs >= min_pairs`,
-`min_pairs <= publish_candidates <= max_pairs`, `refresh_period >= 60` — so a config that could produce
-`ABOVE_MAX_PAIRS` through normal ranking (`publish_candidates > max_pairs`) cannot even be constructed. In
+`min_pairs <= target_final_pairs <= max_pairs`, `refresh_period >= 60` — so a config that could produce
+`ABOVE_MAX_PAIRS` through normal ranking (`target_final_pairs > max_pairs`) cannot even be constructed. In
 practice `ABOVE_MAX_PAIRS` is reachable only via `validate_published_pairlist` against an externally supplied
 (e.g. hand-edited or third-party) pairlist JSON — verified: `hunter pairlist validate` against a synthetic
 60-pair native JSON returned `valid: False` / `reason_codes: ABOVE_MAX_PAIRS` (exit 1).

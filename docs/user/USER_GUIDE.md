@@ -12,7 +12,7 @@ Verified against commit `08a78d9`, version `0.72.0-dev`.
 Hunter takes a research report you (or your own pipeline) already produced — which Binance USDT-M futures
 pairs are eligible, and how strong their relative-strength and open-interest scores are — and turns it into:
 
-1. A **ranked, deterministic shortlist**, up to 30 pairs by default.
+1. A **ranked, deterministic shortlist**, up to 20 pairs by default.
 2. A **published pairlist file** Freqtrade can read natively (`RemotePairList`, `file:///` transport).
 3. A **plain-language and machine-readable explanation** of every selected and rejected pair.
 4. An **immutable dated snapshot** of each day's publish, for backtests that need to replay history exactly.
@@ -51,13 +51,11 @@ selected or rejected and exactly why (a machine-readable reason code like `RS_SC
 `INVALID_PAIR_FORMAT`, etc. — full catalog in `docs/technical/PAIRLIST_PIPELINE.md`). Run `hunter pairlist
 explain <audit-file>` to read it as plain text.
 
-## Why Hunter Publishes 30 Candidates
+## Why Hunter Publishes Exactly 20 Pairs
 
-By default, Hunter publishes up to `publish_candidates = 30` ranked pairs — deliberately more than the
-`target_final_pairs = 20` you'll likely end up trading. This headroom exists because Freqtrade's own native
-filters (age, delisting, spread) run *after* Hunter's list and will legitimately remove some pairs. Hunter
-does not try to guess which 20 will survive those filters, and it never pads the list with lower-quality
-pairs just to hit an exact count.
+By default, Hunter publishes up to `target_final_pairs = 20` ranked pairs — Hunter is the single authority for the published pair count. Freqtrade's own native filters (age, delisting, spread) still run *after* Hunter's list and may legitimately remove some pairs, but Freqtrade must not apply its own ranking cutoff (`number_assets`) below Hunter's count. Hunter never pads the list with lower-quality pairs just to hit an exact count; when fewer than 20 eligible candidates exist, the shorter list is published as-is.
+
+> **Historical note:** Hunter originally published a surplus of 30 candidates (`publish_candidates = 30`) and relied on Freqtrade's `RemotePairList.number_assets = 20` to trim the list. That surplus-publication policy (SPEC-074) has been superseded by the exact-target policy: publish the intended ranked target (20) and let Freqtrade apply eligibility filters only.
 
 ## Why Freqtrade May End With Fewer Pairs
 

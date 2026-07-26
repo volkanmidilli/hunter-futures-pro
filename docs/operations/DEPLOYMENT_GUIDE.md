@@ -24,7 +24,7 @@ Emits (verified exact output):
       "method": "RemotePairList",
       "mode": "whitelist",
       "pairlist_url": "file:///home/freqtrade/user_data/pairlists/hunter-pairs.json",
-      "number_assets": 30,
+      "number_assets": 50,
       "refresh_period": 3600,
       "keep_pairlist_on_failure": true,
       "save_to_file": "user_data/pairlists/hunter-pairs-snapshot.json"

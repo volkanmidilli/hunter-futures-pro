@@ -133,17 +133,24 @@ class PairlistExportSafetyFlags:
 class PairlistRankingConfig:
     """Deterministic configuration for daily pairlist ranking and publishing.
 
-    Defaults match the SPEC-074 decisions:
-    - Hunter publishes up to 30 candidates.
-    - Freqtrade native filters may reduce to ~20.
+    Defaults match the exact-target publication policy (superseding the
+    original SPEC-074 surplus-candidate policy):
+    - Hunter publishes the top ``target_final_pairs`` (20) ranked eligible
+      pairs — Hunter is the single authority for the published pair count.
+    - Freqtrade may apply eligibility filters, but must not perform an
+      independent ranking cutoff.
     - Minimum 5 pairs required for safety.
-    - Maximum 50 pairs (reject oversized lists).
+    - Maximum 50 pairs (independent fail-closed safety gate; unchanged).
     - RemotePairList refresh_period: 3600 seconds.
+
+    Historical note: SPEC-074 originally published a surplus of
+    ``publish_candidates = 30`` candidates and let Freqtrade trim to ~20.
+    That policy is superseded; ``target_final_pairs`` is now the single
+    canonical selection cutoff.
     """
 
     min_pairs: int = 5
     target_final_pairs: int = 20
-    publish_candidates: int = 30
     max_pairs: int = 50
     refresh_period: int = 3600
 
@@ -157,10 +164,10 @@ class PairlistRankingConfig:
             raise ValueError("min_pairs must be >= 1")
         if self.max_pairs < self.min_pairs:
             raise ValueError("max_pairs must be >= min_pairs")
-        if self.publish_candidates < self.min_pairs:
-            raise ValueError("publish_candidates must be >= min_pairs")
-        if self.publish_candidates > self.max_pairs:
-            raise ValueError("publish_candidates must be <= max_pairs")
+        if self.target_final_pairs < self.min_pairs:
+            raise ValueError("target_final_pairs must be >= min_pairs")
+        if self.target_final_pairs > self.max_pairs:
+            raise ValueError("target_final_pairs must be <= max_pairs")
         if self.refresh_period < 60:
             raise ValueError("refresh_period must be >= 60")
 

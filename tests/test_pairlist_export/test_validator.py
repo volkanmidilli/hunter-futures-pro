@@ -38,7 +38,7 @@ def test_find_duplicate_pairs() -> None:
 
 
 def _config(**overrides) -> PairlistRankingConfig:
-    base = dict(min_pairs=2, publish_candidates=5, max_pairs=5)
+    base = dict(min_pairs=2, target_final_pairs=5, max_pairs=5)
     base.update(overrides)
     return PairlistRankingConfig(**base)
 
@@ -52,7 +52,7 @@ def test_gate_rejects_empty_selection() -> None:
 
 
 def test_gate_rejects_below_min_pairs() -> None:
-    config = _config(min_pairs=3, publish_candidates=5, max_pairs=5)
+    config = _config(min_pairs=3, target_final_pairs=5, max_pairs=5)
     ranked = rank_pairs(
         config,
         ("BTC/USDT:USDT", "ETH/USDT:USDT"),
@@ -66,9 +66,9 @@ def test_gate_rejects_below_min_pairs() -> None:
 
 def test_gate_rejects_above_max_pairs_even_if_ranking_adapter_selected_them() -> None:
     # Hand-build ranked pairs bypassing the ranking adapter's own
-    # publish_candidates cap, so the gate's own max_pairs check is exercised
+    # target_final_pairs cap, so the gate's own max_pairs check is exercised
     # independently as the safety-net it's meant to be.
-    config = PairlistRankingConfig(min_pairs=1, publish_candidates=3, max_pairs=3)
+    config = PairlistRankingConfig(min_pairs=1, target_final_pairs=3, max_pairs=3)
     ranked = tuple(
         RankedPair(pair=f"COIN{i}/USDT:USDT", rank=i + 1, selected=True)
         for i in range(4)
@@ -116,7 +116,7 @@ def test_gate_independently_rejects_selected_pair_with_incomplete_evidence() -> 
 
 
 def test_gate_success_builds_pairlist_output_with_fingerprints() -> None:
-    config = _config(min_pairs=1, publish_candidates=5, max_pairs=5)
+    config = _config(min_pairs=1, target_final_pairs=5, max_pairs=5)
     ranked = rank_pairs(
         config,
         ("BTC/USDT:USDT", "ETH/USDT:USDT"),
@@ -148,7 +148,7 @@ def test_validate_published_pairlist_rejects_bad_schema() -> None:
 
 def test_validate_published_pairlist_enforces_config_thresholds() -> None:
     payload = {"pairs": ["BTC/USDT:USDT"], "refresh_period": 3600}
-    config = PairlistRankingConfig(min_pairs=5, publish_candidates=30, max_pairs=50)
+    config = PairlistRankingConfig(min_pairs=5, target_final_pairs=30, max_pairs=50)
     is_valid, reason_codes = validate_published_pairlist(payload, config=config)
     assert is_valid is False
     assert REASON_BELOW_MIN_PAIRS in reason_codes

@@ -45,7 +45,7 @@ def test_single_pair_fails_below_min_pairs_with_default_config() -> None:
 
 
 def test_single_pair_passes_with_relaxed_min_pairs() -> None:
-    config = PairlistRankingConfig(min_pairs=1, publish_candidates=1, max_pairs=10)
+    config = PairlistRankingConfig(min_pairs=1, target_final_pairs=1, max_pairs=10)
     ranked = _ranked_single_pair(config)
 
     result = run_publish_gate_v2(
@@ -76,7 +76,7 @@ def test_single_pair_passes_with_relaxed_min_pairs() -> None:
 def test_v2_audit_record_to_dict_includes_v2_fields() -> None:
     from hunter.pairlist_export.audit import audit_record_to_dict
 
-    config = PairlistRankingConfig(min_pairs=1, publish_candidates=1, max_pairs=10)
+    config = PairlistRankingConfig(min_pairs=1, target_final_pairs=1, max_pairs=10)
     ranked = _ranked_single_pair(config)
     result = run_publish_gate_v2(
         config=config,

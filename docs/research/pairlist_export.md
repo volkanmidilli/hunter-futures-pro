@@ -82,12 +82,13 @@ On rejection, `allow_publish=False` and no write is attempted — the previously
 ```text
 min_pairs = 5
 target_final_pairs = 20
-publish_candidates = 30
 max_pairs = 50
 refresh_period = 3600
 ```
 
-Hunter publishes up to `publish_candidates` (default 30) ranked pairs; Freqtrade's native filters are expected to reduce the final whitelist to roughly `target_final_pairs` (default 20), and may legitimately produce fewer. Hunter never pads the list with lower-quality pairs to force an exact count.
+Hunter publishes up to `target_final_pairs` (default 20) ranked pairs — Hunter is the single authority for the published pair count. Freqtrade may apply its native eligibility filters (age, delisting, spread, blacklist) after consuming the list and may legitimately produce fewer, but it must not perform an independent ranking cutoff. Hunter never pads the list with lower-quality pairs to force an exact count; when fewer than 20 eligible candidates exist, the underfilled list is published as-is (subject to the `min_pairs` gate).
+
+> **Historical note (superseded SPEC-074 policy):** SPEC-074 originally shipped `publish_candidates = 30` as the selection cutoff — Hunter deliberately published a surplus and relied on Freqtrade's `RemotePairList.number_assets = 20` to trim the final whitelist. That produced a mismatch between Hunter outcome cohorts (~26 pairs) and the execution universe (20 pairs). The surplus-publication policy is superseded by the exact-target policy above; the `publish_candidates` field no longer exists and `target_final_pairs` is the canonical source of truth. `max_pairs = 50` is unchanged as an independent fail-closed safety gate.
 
 ## Atomic publish and previous-good preservation
 
@@ -185,7 +186,7 @@ For eligible pairs, completed hourly candles are resampled to one close per UTC 
       "method": "RemotePairList",
       "mode": "whitelist",
       "pairlist_url": "file:///home/freqtrade/user_data/pairlists/hunter-pairs.json",
-      "number_assets": 30,
+      "number_assets": 50,
       "refresh_period": 3600,
       "keep_pairlist_on_failure": true,
       "save_to_file": "user_data/pairlists/hunter-pairs-snapshot.json"

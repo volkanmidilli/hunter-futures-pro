@@ -2,6 +2,18 @@
 
 All important project changes will be recorded in this file.
 
+## Unreleased — Publication Policy: Exact Target Pair Count (supersedes SPEC-074 surplus publication)
+
+### Changed
+
+- Publication policy changed from surplus candidate publication to exact target publication of 20 ranked pairs.
+- Hunter is the pair-count authority. Freqtrade `number_assets` is expected to act only as a shared safety ceiling matching Hunter `max_pairs=50`.
+- The `PairlistRankingConfig.publish_candidates` field (default 30, the former selection cutoff) is removed; the pre-existing `target_final_pairs` (default 20) is now the single canonical selection cutoff for both `rank_pairs` and `rank_pairs_v2`. No second target-count concept was introduced.
+- `max_pairs = 50` is unchanged and remains an independent fail-closed safety gate (`ABOVE_MAX_PAIRS`); the construction invariant `min_pairs <= target_final_pairs <= max_pairs` makes a target above the gate impossible to construct.
+- Hunter-emitted deployment profiles (`deployment_profiles.py`) now recommend `RemotePairList.number_assets: 50` (shared safety ceiling) instead of `30` (the former surplus-trimming cutoff). Freqtrade-side configuration changes are intentionally outside this change.
+- Underfilled publication, deterministic tie-break ordering, immutable dated snapshots, and audit/fingerprint behavior are unchanged — only the selection cutoff moved.
+- Outcome `cohort_size` is expected to transition from approximately 26 to 20 for snapshots produced after deployment.
+
 ## Unreleased — SPEC-075: Freqtrade Feather Ranking-Input Automation
 
 - **New: read-only Feather-to-ranking-input adapter.** `hunter pairlist feather-input`/`from-feather` convert local Freqtrade `BASE_USDT_USDT-1h-futures.feather` OHLCV files directly into a `ranking-input.json` v2 artifact (and, for `from-feather`, straight through the existing SPEC-074 rank/gate/publish/snapshot pipeline) — closing the "producing ranking-input.json from live reports is a separate, not-yet-built glue step" gap noted in `docs/research/pairlist_export.md` for the local-Feather source.

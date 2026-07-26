@@ -154,7 +154,7 @@ class TestRankPairsV2DataQuality:
 
     def test_v2_rs_liquidity_tie_break_order_preserved(self) -> None:
         """Tie-break: -rs, -liquidity, -data_quality, pair_asc."""
-        config = PairlistRankingConfig(min_pairs=1, publish_candidates=10)
+        config = PairlistRankingConfig(min_pairs=1, target_final_pairs=10)
         ranked = rank_pairs_v2(
             config,
             RankingProfile.V2_RS_LIQUIDITY,
@@ -169,7 +169,7 @@ class TestRankPairsV2DataQuality:
 
     def test_v2_rs_oi_liquidity_tie_break_order_preserved(self) -> None:
         """Tie-break: -rs, -oi, -liquidity, -data_quality, pair_asc."""
-        config = PairlistRankingConfig(min_pairs=1, publish_candidates=10)
+        config = PairlistRankingConfig(min_pairs=1, target_final_pairs=10)
         ranked = rank_pairs_v2(
             config,
             RankingProfile.V2_RS_OI_LIQUIDITY,
@@ -190,7 +190,7 @@ class TestPublishGateV2DataQuality:
 
     def _gate_args(self, ranked: tuple[RankedPair, ...], profile: RankingProfile) -> dict:
         return {
-            "config": PairlistRankingConfig(min_pairs=1, publish_candidates=10),
+            "config": PairlistRankingConfig(min_pairs=1, target_final_pairs=10),
             "as_of_date": "2026-07-21",
             "universe_total": len(ranked),
             "ranked_pairs": ranked,
@@ -283,7 +283,7 @@ class TestAuditDimensions:
     """Audit active_score_dimensions must reflect every ranking/evidence dimension."""
 
     def test_v2_rs_liquidity_active_dimensions_exact(self) -> None:
-        config = PairlistRankingConfig(min_pairs=1, publish_candidates=1, max_pairs=10)
+        config = PairlistRankingConfig(min_pairs=1, target_final_pairs=1, max_pairs=10)
         ranked = rank_pairs_v2(
             config,
             RankingProfile.V2_RS_LIQUIDITY,
@@ -308,7 +308,7 @@ class TestAuditDimensions:
         assert result.pairlist_output.audit.ignored_score_dimensions == ()
 
     def test_v2_rs_oi_liquidity_active_dimensions_exact(self) -> None:
-        config = PairlistRankingConfig(min_pairs=1, publish_candidates=1, max_pairs=10)
+        config = PairlistRankingConfig(min_pairs=1, target_final_pairs=1, max_pairs=10)
         ranked = rank_pairs_v2(
             config,
             RankingProfile.V2_RS_OI_LIQUIDITY,

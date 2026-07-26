@@ -25,7 +25,7 @@ def test_v1_profile_rejected() -> None:
 
 
 def test_v2_rs_liquidity_tie_break_order() -> None:
-    config = PairlistRankingConfig(min_pairs=1, publish_candidates=3, max_pairs=10)
+    config = PairlistRankingConfig(min_pairs=1, target_final_pairs=3, max_pairs=10)
     eligible = ("A/USDT:USDT", "B/USDT:USDT", "C/USDT:USDT")
     rs = {"A/USDT:USDT": Decimal("80"), "B/USDT:USDT": Decimal("80"), "C/USDT:USDT": Decimal("60")}
     liquidity = {"A/USDT:USDT": Decimal("90"), "B/USDT:USDT": Decimal("70"), "C/USDT:USDT": Decimal("99")}
@@ -39,7 +39,7 @@ def test_v2_rs_liquidity_tie_break_order() -> None:
 
 
 def test_v2_rs_oi_liquidity_tie_break_order() -> None:
-    config = PairlistRankingConfig(min_pairs=1, publish_candidates=3, max_pairs=10)
+    config = PairlistRankingConfig(min_pairs=1, target_final_pairs=3, max_pairs=10)
     eligible = ("A/USDT:USDT", "B/USDT:USDT")
     rs = {"A/USDT:USDT": Decimal("80"), "B/USDT:USDT": Decimal("80")}
     liquidity = {"A/USDT:USDT": Decimal("50"), "B/USDT:USDT": Decimal("50")}
@@ -68,8 +68,8 @@ def test_rank_pairs_v2_propagates_profile_field_mismatch() -> None:
         )
 
 
-def test_rank_pairs_v2_selection_cutoff_at_publish_candidates() -> None:
-    config = PairlistRankingConfig(min_pairs=1, publish_candidates=1, max_pairs=10)
+def test_rank_pairs_v2_selection_cutoff_at_target_final_pairs() -> None:
+    config = PairlistRankingConfig(min_pairs=1, target_final_pairs=1, max_pairs=10)
     eligible = ("A/USDT:USDT", "B/USDT:USDT")
     rs = {"A/USDT:USDT": Decimal("80"), "B/USDT:USDT": Decimal("60")}
     liquidity = {"A/USDT:USDT": Decimal("90"), "B/USDT:USDT": Decimal("70")}
@@ -82,7 +82,7 @@ def test_rank_pairs_v2_selection_cutoff_at_publish_candidates() -> None:
 
 
 def test_rank_pairs_v2_fingerprint_includes_liquidity() -> None:
-    config = PairlistRankingConfig(min_pairs=1, publish_candidates=2, max_pairs=10)
+    config = PairlistRankingConfig(min_pairs=1, target_final_pairs=2, max_pairs=10)
     eligible = ("A/USDT:USDT",)
     rs = {"A/USDT:USDT": Decimal("80")}
     dq = {"A/USDT:USDT": Decimal("100")}

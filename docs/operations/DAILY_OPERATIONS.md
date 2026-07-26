@@ -145,7 +145,7 @@ whitelist if it can't read/parse the file — check Freqtrade's own logs if you 
 Freqtrade's actual trading whitelist (after `AgeFilter`/`DelistFilter`/`SpreadFilter` reduce Hunter's
 published list) is visible via Freqtrade's own tooling (its logs, or `freqtrade test-pairlist` — network-
 dependent, see `docs/user/TROUBLESHOOTING.md`), not via any Hunter command. Hunter's own `hunter-pairs.json`
-shows what it *published* (up to 30 by default), not what Freqtrade ultimately trades (target ~20, may be
+shows what it *published* (up to 20 by default), not what Freqtrade ultimately trades (target 20, may be
 fewer).
 
 ## Incident Escalation

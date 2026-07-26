@@ -177,7 +177,7 @@ if (no candidate has sufficient evidence?) then (yes)
   :raise PairlistRankingError;
   stop
 endif
-:mark top publish_candidates (default 30) selected=True;
+:mark top target_final_pairs (default 20) selected=True;
 :validator.run_publish_gate()\naccumulate ALL reason codes, no short-circuit;
 if (EMPTY_UNIVERSE / INSUFFICIENT_EVIDENCE\n/ INVALID_PAIR_FORMAT / DUPLICATE_PAIR\n/ BELOW_MIN_PAIRS / ABOVE_MAX_PAIRS ?) then (any triggered)
   :allow_publish=False;

@@ -73,8 +73,8 @@ def test_raises_on_wrong_config_type() -> None:
         rank_pairs(object(), ("BTC/USDT:USDT",), rs_scores={}, oi_scores={})  # type: ignore[arg-type]
 
 
-def test_selection_capped_at_publish_candidates() -> None:
-    config = PairlistRankingConfig(min_pairs=1, publish_candidates=2, max_pairs=10)
+def test_selection_capped_at_target_final_pairs() -> None:
+    config = PairlistRankingConfig(min_pairs=1, target_final_pairs=2, max_pairs=10)
     eligible = tuple(f"COIN{i}/USDT:USDT" for i in range(5))
     rs_scores = {pair: Decimal(100 - i) for i, pair in enumerate(eligible)}
     oi_scores = {pair: Decimal("50") for pair in eligible}

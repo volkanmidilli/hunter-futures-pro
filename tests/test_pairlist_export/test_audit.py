@@ -14,7 +14,7 @@ from hunter.pairlist_export.ranking_adapter import rank_pairs
 
 
 def _ranked_pairs():
-    config = PairlistRankingConfig(min_pairs=1, publish_candidates=2, max_pairs=10)
+    config = PairlistRankingConfig(min_pairs=1, target_final_pairs=2, max_pairs=10)
     eligible = ("BTC/USDT:USDT", "ETH/USDT:USDT", "XYZ/USDT:USDT")
     rs_scores = {"BTC/USDT:USDT": Decimal("80"), "ETH/USDT:USDT": Decimal("60")}
     oi_scores = {"BTC/USDT:USDT": Decimal("50"), "ETH/USDT:USDT": Decimal("40")}

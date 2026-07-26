@@ -50,9 +50,11 @@ def test_default_ranking_config_matches_spec_074_defaults() -> None:
     config = PairlistRankingConfig()
     assert config.min_pairs == 5
     assert config.target_final_pairs == 20
-    assert config.publish_candidates == 30
     assert config.max_pairs == 50
     assert config.refresh_period == 3600
+    # The surplus-publication knob was removed; target_final_pairs is the
+    # single canonical selection cutoff.
+    assert not hasattr(config, "publish_candidates")
 
 
 @pytest.mark.parametrize(
@@ -60,8 +62,8 @@ def test_default_ranking_config_matches_spec_074_defaults() -> None:
     [
         {"min_pairs": 0},
         {"max_pairs": 4, "min_pairs": 5},
-        {"publish_candidates": 4, "min_pairs": 5},
-        {"publish_candidates": 60, "max_pairs": 50},
+        {"target_final_pairs": 4, "min_pairs": 5},
+        {"target_final_pairs": 60, "max_pairs": 50},
         {"refresh_period": 30},
     ],
 )

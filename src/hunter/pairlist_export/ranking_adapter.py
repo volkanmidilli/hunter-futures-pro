@@ -130,12 +130,12 @@ def rank_pairs(
             "no eligible pairs have sufficient evidence (RS and/or OI data)"
         )
 
-    # Assign ranks and mark selected up to publish_candidates.
+    # Assign ranks and mark selected up to target_final_pairs.
     ranked: list[RankedPair] = []
     for idx, score in enumerate(sorted_candidates):
         rank = idx + 1
         selected = (
-            rank <= config.publish_candidates
+            rank <= config.target_final_pairs
             and REASON_INSUFFICIENT_EVIDENCE not in score.reason_codes
         )
 
@@ -190,7 +190,7 @@ def rank_pairs_v2(
     One profile applies to the whole artifact; the profile is never
     switched or downgraded per pair. Tie-break order is profile-specific
     (see :data:`hunter.pairlist_export.ranking_input_v2.PROFILE_TIE_BREAK_DIMENSIONS`).
-    The surrounding shape (selection cutoff at ``publish_candidates``,
+    The surrounding shape (selection cutoff at ``target_final_pairs``,
     fingerprinting per pair) mirrors :func:`rank_pairs`.
 
     Raises:
@@ -277,7 +277,7 @@ def rank_pairs_v2(
     ranked: list[RankedPair] = []
     for idx, score in enumerate(sorted_candidates):
         rank = idx + 1
-        selected = rank <= config.publish_candidates and REASON_PROFILE_EVIDENCE_INCOMPLETE not in score.reason_codes
+        selected = rank <= config.target_final_pairs and REASON_PROFILE_EVIDENCE_INCOMPLETE not in score.reason_codes
 
         fingerprint = compute_pair_fingerprint_v2(
             pair=score.pair,
