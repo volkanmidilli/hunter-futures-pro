@@ -30,6 +30,14 @@ Store state repaired: the reconstructed 2026-07-21 re-run was deleted and replac
 
 Tests: 24 new (test_provenance.py, test_legacy.py, CLI import tests) → 147 focused passed; full suite 10,969 passed, 3 skipped. Docs: SPEC-078 amendment, CHANGELOG amendment, CLI_REFERENCE import section.
 
+### SPEC-078 follow-up — First-class run identity (2026-07-27)
+
+Explainability is now a first-class output of every run: the publish gate derives a shared deterministic `run_id` (`<as_of>__<profile>__<audit_fingerprint[:12]>`, `pairlist_export.audit.derive_run_id`, computed after fingerprinting so it never feeds back) and stamps it on `AuditRecord.run_id` / `PairlistOutput.run_id`; it is embedded in the native `hunter-pairs.json` payload, the audit JSON (live + snapshot), and the explainability manifest/records. The recorder consumes the gate's id via `PairlistRunObservation.run_id` — decision records are generated during the actual run, no import step. Publish stage now records `min_pairs`/`max_pairs` thresholds.
+
+Demonstrated with a fresh `hunter daily-pairlist` run (`examples/ranking-input-v1.json`, as-of 2026-07-27): run `2026-07-27__V1_RS_OI__4a8da10c3a8b`, identical run_id across pairlist/audit/snapshots/manifest/candidates/pointer, provenance ORIGINAL, fresh ORIGINAL run automatically superseded the RECONSTRUCTED legacy pointer, and `hunter explain BTC`/`hunter explain ETH` worked immediately (BTC rank 1/5, ETH rank 2/5, both selected+published). Regression: published pairlist/audit/snapshots byte-identical (including run_id) with and without recording.
+
+Tests: 4 new shared-run-id integration tests + regression assertion → 151 focused passed; full suite 10,973 passed, 3 skipped. Docs: CHANGELOG amendment, CLI_REFERENCE run_id note.
+
 ---
 
 ### SPEC-075 — Freqtrade Feather Ranking-Input Automation

@@ -88,6 +88,12 @@ class PairlistRunObservation:
     gate_allowed: bool
     gate_reason_codes: tuple[str, ...]
     published: bool
+    # Shared run id stamped by the publish gate (derived from the audit
+    # fingerprint).  When set, the recorder uses it verbatim so the
+    # pairlist payload, audit, and explainability artifacts of one run all
+    # share the same id.  Gate-rejected runs have no audit and fall back
+    # to the recorder's own deterministic digest.
+    run_id: str | None = None
     # The real observed data-quality scores supplied to the ranker.  v1
     # ``RankedPair`` does not carry ``data_quality_pct`` (the pipeline
     # itself drops it), so this map is the fallback source for the genuine
@@ -264,6 +270,10 @@ def _build_stages(
             stage_order=6,
             status=STAGE_PASS,
             reason_codes=(GATE_OK,),
+            thresholds={
+                "min_pairs": observation.min_pairs,
+                "max_pairs": observation.max_pairs,
+            },
             metadata={"selected": True, "published": True},
         )
     else:
@@ -272,6 +282,10 @@ def _build_stages(
             stage_order=6,
             status=STAGE_FAIL,
             reason_codes=(REASON_PUBLISH_BLOCKED, *observation.gate_reason_codes),
+            thresholds={
+                "min_pairs": observation.min_pairs,
+                "max_pairs": observation.max_pairs,
+            },
             metadata={"selected": True, "published": False},
         )
 
@@ -342,7 +356,7 @@ def build_run_records(
     inject a fixed value for determinism.
     """
     completed_at = completed_at or _utc_now_iso()
-    run_id = build_run_id(observation)
+    run_id = observation.run_id or build_run_id(observation)
     records = tuple(
         build_candidate_record(pair, observation, run_id=run_id, completed_at=completed_at)
         for pair in observation.ranked_pairs

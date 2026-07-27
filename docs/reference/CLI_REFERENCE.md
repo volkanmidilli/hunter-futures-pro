@@ -156,9 +156,12 @@ the same `_build_and_publish` function).
   `--explainability-dir <dir>` (SPEC-078 artifact root; defaults to `HUNTER_EXPLAINABILITY_DIR` or
   `<repo>/explainability/`). Explainability recording is auxiliary and never changes the published
   outputs or exit codes.
-- **Output files** (in `--output-dir`): `hunter-pairs.json` (native RemotePairList), `hunter-pairs-audit.json`
+- **Output files** (in `--output-dir`): `hunter-pairs.json` (native RemotePairList, plus a shared
+  `run_id` key since SPEC-078), `hunter-pairs-audit.json`
   (audit/explain), plus `hunter-pairs.json.previous-good` / `hunter-pairs-audit.json.previous-good` if a prior
   publish existed. In `--snapshot-dir`: `hunter-pairs-YYYYMMDD.json` / `hunter-pairs-YYYYMMDD-audit.json`.
+  All of them, plus the SPEC-078 explainability artifacts, carry the same deterministic
+  `run_id` (`<as_of>__<profile>__<audit_fingerprint[:12]>`).
 - **Verified example**: 8-pair synthetic fixture → `Published 8 pairs:` followed by the four output paths,
   exit 0.
 - **Exit codes**: `0` on success. `1` with `Publish gate rejected pairlist: <REASON_CODE[, REASON_CODE...]>`

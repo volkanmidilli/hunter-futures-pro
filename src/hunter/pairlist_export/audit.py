@@ -98,6 +98,17 @@ def build_audit_record(
     )
 
 
+def derive_run_id(as_of_date: str, ranking_profile: str, audit_fingerprint: str) -> str:
+    """Derive the shared run id from the audit's own fingerprint.
+
+    Deterministic and content-bound: an identical rerun produces the same
+    id (idempotent snapshots stay no-ops), and different pipeline output
+    never collides.  The fingerprint input is fixed *before* derivation,
+    so the run id never feeds back into the fingerprint itself.
+    """
+    return f"{as_of_date}__{ranking_profile}__{audit_fingerprint[:12]}"
+
+
 def _pair_to_dict(pair: RankedPair) -> dict:
     payload = {
         "pair": pair.pair,
@@ -143,6 +154,7 @@ def audit_record_to_dict(audit: AuditRecord) -> dict:
         "oi_available": audit.oi_available,
         "source_metadata": dict(audit.source_metadata),
         "per_pair_evidence": {k: list(v) for k, v in audit.per_pair_evidence.items()},
+        "run_id": audit.run_id,
     }
 
 

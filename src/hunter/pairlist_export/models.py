@@ -217,6 +217,10 @@ class PairlistOutput:
     audit/explain record.  Preservation of the previously published
     artifact is a filesystem-level concern handled by the publisher
     (``*.previous-good`` copies), not a field on this model.
+
+    ``run_id`` is the shared identifier of the run that produced this
+    output; the same id is embedded in the audit JSON, the native
+    pairlist payload, and the SPEC-078 explainability artifacts.
     """
 
     pairs: tuple[str, ...]
@@ -224,6 +228,7 @@ class PairlistOutput:
     audit: AuditRecord
     fingerprint: str
     audit_fingerprint: str
+    run_id: str = ""
     safety_flags: PairlistExportSafetyFlags = field(
         default_factory=PairlistExportSafetyFlags
     )
@@ -265,6 +270,10 @@ class AuditRecord:
     oi_available: bool | None = None
     source_metadata: Mapping[str, Any] = field(default_factory=dict)
     per_pair_evidence: Mapping[str, tuple[str, ...]] = field(default_factory=dict)
+    # Shared run identifier (SPEC-078): derived from this audit's own
+    # fingerprint by the publish gate; identical content always yields the
+    # same id.  Empty for AuditRecords built outside the publish gate.
+    run_id: str = ""
 
 
 @dataclass(frozen=True)

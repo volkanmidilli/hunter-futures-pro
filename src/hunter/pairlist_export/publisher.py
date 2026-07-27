@@ -80,8 +80,16 @@ def _previous_good_path(path: Path) -> Path:
 
 
 def pairlist_payload_dict(output: PairlistOutput) -> dict:
-    """Build the native RemotePairList JSON payload from a PairlistOutput."""
-    return {"pairs": list(output.pairs), "refresh_period": output.refresh_period}
+    """Build the native RemotePairList JSON payload from a PairlistOutput.
+
+    ``run_id`` (when set by the publish gate) links the payload to the
+    audit and explainability artifacts of the same run; it is omitted for
+    outputs built outside the gate so pre-existing shapes are unchanged.
+    """
+    payload = {"pairs": list(output.pairs), "refresh_period": output.refresh_period}
+    if output.run_id:
+        payload["run_id"] = output.run_id
+    return payload
 
 
 def publish_pairlist(

@@ -207,6 +207,110 @@ class TestGateRejectedRun:
         assert "NO_SUCCESSFUL_RUN" in capsys.readouterr().err
 
 
+class TestSharedRunId:
+    def test_all_run_artifacts_share_one_run_id(self, tmp_path: Path) -> None:
+        """hunter-pairs.json, audit, snapshots, and explainability artifacts
+        of one run must all carry the same run_id."""
+        assert _build(tmp_path) == 0
+
+        pairlist = json.loads((tmp_path / "out" / "hunter-pairs.json").read_text(encoding="utf-8"))
+        audit = json.loads((tmp_path / "out" / "hunter-pairs-audit.json").read_text(encoding="utf-8"))
+        snap_pairlist = json.loads(
+            (tmp_path / "out" / "hunter-pairs-20260727.json").read_text(encoding="utf-8")
+        )
+        snap_audit = json.loads(
+            (tmp_path / "out" / "hunter-pairs-20260727-audit.json").read_text(encoding="utf-8")
+        )
+        latest = json.loads((tmp_path / "expl" / "latest.json").read_text(encoding="utf-8"))
+        run_dir = tmp_path / "expl" / "runs" / latest["run_id"]
+        manifest = json.loads((run_dir / "manifest.json").read_text(encoding="utf-8"))
+        candidate = json.loads(
+            (run_dir / "candidates" / "BTC_USDT_USDT.json").read_text(encoding="utf-8")
+        )
+
+        run_id = pairlist["run_id"]
+        assert run_id  # non-empty
+        assert audit["run_id"] == run_id
+        assert snap_pairlist["run_id"] == run_id
+        assert snap_audit["run_id"] == run_id
+        assert manifest["run_id"] == run_id
+        assert candidate["run_id"] == run_id
+        assert latest["run_id"] == run_id
+        # Derived from the audit fingerprint the pipeline itself computed.
+        assert run_id == f"2026-07-27__V1_RS_OI__{audit['fingerprint'][:12]}"
+        assert manifest["provenance_type"] == "ORIGINAL"
+        assert candidate["provenance_type"] == "ORIGINAL"
+
+    def test_run_id_is_deterministic_across_identical_reruns(self, tmp_path: Path) -> None:
+        assert _build(tmp_path) == 0
+        first = json.loads((tmp_path / "out" / "hunter-pairs.json").read_text(encoding="utf-8"))[
+            "run_id"
+        ]
+        rerun = tmp_path / "rerun"
+        rerun.mkdir()
+        _write_ranking_input(rerun / "ranking_input.json")
+        rc = pairlist_cli_main(
+            [
+                "pairlist", "build",
+                "--as-of", "2026-07-27",
+                "--input", str(rerun / "ranking_input.json"),
+                "--output-dir", str(rerun / "out"),
+                "--explainability-dir", str(rerun / "expl"),
+            ]
+        )
+        assert rc == 0
+        second = json.loads((rerun / "out" / "hunter-pairs.json").read_text(encoding="utf-8"))[
+            "run_id"
+        ]
+        assert first == second
+
+    def test_original_run_supersedes_legacy_import_pointer(self, tmp_path: Path) -> None:
+        """A fresh ORIGINAL run replaces a RECONSTRUCTED latest pointer."""
+        from hunter.explainability.legacy import import_legacy_run
+
+        # Seed a legacy import (older production publish).
+        src = tmp_path / "legacy"
+        src.mkdir()
+        (src / "hunter-pairs.json").write_text(json.dumps({"pairs": ["SOL/USDT:USDT"], "refresh_period": 3600}))
+        (src / "hunter-pairs-audit.json").write_text(json.dumps({
+            "as_of_date": "2026-07-21",
+            "universe_total": 300,
+            "eligible_count": 1,
+            "selected_count": 1,
+            "rejected_count": 0,
+            "selected": [{
+                "pair": "SOL/USDT:USDT", "rank": 1, "selected": True,
+                "rs_score": "80", "oi_score": "50",
+                "reason_codes": ["RS_SCORE", "OI_LIQUIDITY"], "fingerprint": "fp",
+            }],
+            "rejected": [],
+            "reason_code_summary": {},
+            "fingerprint": "c" * 64,
+        }))
+        result = import_legacy_run(
+            tmp_path / "expl",
+            pairlist_path=src / "hunter-pairs.json",
+            audit_path=src / "hunter-pairs-audit.json",
+        )
+        assert result.pointer_advanced is True
+
+        # A fresh instrumented run must take the pointer over as ORIGINAL.
+        assert _build(tmp_path) == 0
+        latest = json.loads((tmp_path / "expl" / "latest.json").read_text(encoding="utf-8"))
+        assert latest["provenance_type"] == "ORIGINAL"
+        assert latest["as_of_date"] == "2026-07-27"
+
+    def test_explain_immediately_after_successful_run(self, tmp_path: Path, capsys) -> None:
+        """No import step: explain works right after daily-pairlist."""
+        assert _build(tmp_path) == 0
+        capsys.readouterr()
+        rc = core_main(["explain", "BTC", "--explainability-dir", str(tmp_path / "expl")])
+        assert rc == 0
+        out = capsys.readouterr().out
+        assert "PROVENANCE          ORIGINAL" in out
+        assert "SELECTED            YES" in out
+
+
 class TestNoBehaviorChangeRegression:
     def test_published_outputs_identical_with_and_without_recording(self, tmp_path: Path) -> None:
         """Explainability recording must not change any existing artifact."""
@@ -241,6 +345,15 @@ class TestNoBehaviorChangeRegression:
             plain = (tmp_path / "out_plain" / name).read_text(encoding="utf-8")
             recorded = (tmp_path / "out_recorded" / name).read_text(encoding="utf-8")
             assert plain == recorded, f"{name} differs with explainability enabled"
+
+        # Both carry the same shared run_id derived from run content.
+        plain_pairlist = json.loads(
+            (tmp_path / "out_plain" / "hunter-pairs.json").read_text(encoding="utf-8")
+        )
+        recorded_pairlist = json.loads(
+            (tmp_path / "out_recorded" / "hunter-pairs.json").read_text(encoding="utf-8")
+        )
+        assert plain_pairlist["run_id"] == recorded_pairlist["run_id"]
 
     def test_pipeline_determinism_with_recording(self, tmp_path: Path) -> None:
         """Two identical recorded runs yield identical pairlists and run ids."""

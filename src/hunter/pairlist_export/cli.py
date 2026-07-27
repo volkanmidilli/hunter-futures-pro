@@ -147,6 +147,7 @@ def _record_explainability_run(
     gate_reason_codes: tuple[str, ...],
     published: bool,
     data_quality_scores: Mapping[str, Decimal | None] | None = None,
+    run_id: str | None = None,
 ) -> None:
     """Record SPEC-078 explainability artifacts for a selection run.
 
@@ -170,6 +171,7 @@ def _record_explainability_run(
             gate_reason_codes=gate_reason_codes,
             published=published,
             data_quality_scores=data_quality_scores,
+            run_id=run_id,
         )
         manifest, records = build_run_records(observation)
         write_run(
@@ -298,6 +300,7 @@ def _build_and_publish(args: argparse.Namespace) -> int:
         gate_reason_codes=tuple(gate_result.reason_codes),
         published=True,
         data_quality_scores=_to_decimal_map(payload.get("data_quality")),
+        run_id=output.run_id,
     )
 
     print(f"Published {len(output.pairs)} pairs:")
@@ -411,6 +414,7 @@ def cmd_pairlist_from_feather(args: argparse.Namespace) -> int:
         gate_reason_codes=tuple(gate_result.reason_codes),
         published=True,
         data_quality_scores=dict(ranking_input.data_quality),
+        run_id=output.run_id,
     )
 
     print(f"Published {len(output.pairs)} pairs ({profile.value}):")

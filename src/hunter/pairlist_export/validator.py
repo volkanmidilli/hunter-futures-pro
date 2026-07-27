@@ -11,9 +11,10 @@ pair format -- matching the SPEC-074 daily gate exactly.
 from __future__ import annotations
 
 import re
+from dataclasses import replace
 from typing import Any, Mapping
 
-from hunter.pairlist_export.audit import build_audit_record, build_audit_record_v2
+from hunter.pairlist_export.audit import build_audit_record, build_audit_record_v2, derive_run_id
 from hunter.pairlist_export.fingerprint import compute_pairlist_fingerprint
 from hunter.pairlist_export.models import (
     REASON_ABOVE_MAX_PAIRS,
@@ -124,6 +125,8 @@ def run_publish_gate(
         universe_total=universe_total,
         ranked_pairs=ranked_pairs,
     )
+    run_id = derive_run_id(as_of_date, "V1_RS_OI", audit.fingerprint)
+    audit = replace(audit, run_id=run_id)
 
     pairlist_fingerprint = compute_pairlist_fingerprint(
         pairs=pair_strings, refresh_period=config.refresh_period
@@ -135,6 +138,7 @@ def run_publish_gate(
         audit=audit,
         fingerprint=pairlist_fingerprint,
         audit_fingerprint=audit.fingerprint,
+        run_id=run_id,
         safety_flags=PairlistExportSafetyFlags(),
     )
 
@@ -220,6 +224,8 @@ def run_publish_gate_v2(
         source_metadata=source_metadata,
         per_pair_evidence=per_pair_evidence,
     )
+    run_id = derive_run_id(as_of_date, ranking_profile.value, audit.fingerprint)
+    audit = replace(audit, run_id=run_id)
 
     pairlist_fingerprint = compute_pairlist_fingerprint(pairs=pair_strings, refresh_period=config.refresh_period)
 
@@ -229,6 +235,7 @@ def run_publish_gate_v2(
         audit=audit,
         fingerprint=pairlist_fingerprint,
         audit_fingerprint=audit.fingerprint,
+        run_id=run_id,
         safety_flags=PairlistExportSafetyFlags(),
     )
 

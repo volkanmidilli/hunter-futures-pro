@@ -76,6 +76,26 @@ All important project changes will be recorded in this file.
   records are incomplete and every lookup returns `LEGACY_RUN_INCOMPLETE` instead of guessing.
 - 24 new tests (provenance defaults/policy, legacy import, pointer discipline, CLI import).
 
+### First-class run identity (2026-07-27 amendment)
+
+- **Shared `run_id` across all run artifacts.** The publish gate now derives a deterministic,
+  content-bound run id (`<as_of>__<profile>__<audit_fingerprint[:12]>`, via
+  `pairlist_export.audit.derive_run_id`) and stamps it on `AuditRecord.run_id` and
+  `PairlistOutput.run_id`. It is embedded in the native `hunter-pairs.json` payload (`run_id` key,
+  omitted only for outputs built outside the gate), the audit JSON (live and snapshot), and the
+  SPEC-078 explainability manifest and candidate records — one id per run, everywhere. The id is
+  derived from the audit fingerprint *after* fingerprint computation, so it never feeds back into
+  any fingerprint, and identical reruns produce the same id (snapshots stay idempotent).
+- **Recorder consumes the gate's run id.** `PairlistRunObservation.run_id` is used verbatim when
+  present, so decision records are generated *during* the pipeline run with the same identity as the
+  published artifacts — no import step and no after-the-fact reconstruction for new runs.
+  Gate-rejected runs (no audit) keep the recorder's own deterministic digest.
+- The publish stage now also records the gate's `min_pairs`/`max_pairs` thresholds.
+- New tests: shared run id across pairlist/audit/snapshots/manifest/candidate/pointer, run-id
+  determinism across reruns, ORIGINAL run superseding a RECONSTRUCTED pointer, explain working
+  immediately after a successful run with no import, and the published pairlist being byte-identical
+  (including `run_id`) with and without recording.
+
 ## Unreleased — Publication Policy: Exact Target Pair Count (supersedes SPEC-074 surplus publication)
 
 ### Changed
