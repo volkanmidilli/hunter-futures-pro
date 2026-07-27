@@ -145,13 +145,17 @@ step. See `docs/user/INPUT_FORMAT.md` for the `--input` ranking-input JSON contr
 usage: hunter pairlist build [-h] --as-of AS_OF --input INPUT
                              --output-dir OUTPUT_DIR
                              [--snapshot-dir SNAPSHOT_DIR]
+                             [--explainability-dir EXPLAINABILITY_DIR]
 ```
 
 Ranks, gates, atomically publishes, and snapshots. Equivalent to `hunter daily-pairlist` (both dispatch to
 the same `_build_and_publish` function).
 
 - **Required**: `--as-of YYYY-MM-DD`, `--input <ranking_input.json>`, `--output-dir <dir>`.
-- **Optional**: `--snapshot-dir <dir>` (defaults to `--output-dir` if omitted).
+- **Optional**: `--snapshot-dir <dir>` (defaults to `--output-dir` if omitted);
+  `--explainability-dir <dir>` (SPEC-078 artifact root; defaults to `HUNTER_EXPLAINABILITY_DIR` or
+  `<repo>/explainability/`). Explainability recording is auxiliary and never changes the published
+  outputs or exit codes.
 - **Output files** (in `--output-dir`): `hunter-pairs.json` (native RemotePairList), `hunter-pairs-audit.json`
   (audit/explain), plus `hunter-pairs.json.previous-good` / `hunter-pairs-audit.json.previous-good` if a prior
   publish existed. In `--snapshot-dir`: `hunter-pairs-YYYYMMDD.json` / `hunter-pairs-YYYYMMDD-audit.json`.
@@ -292,6 +296,36 @@ rank/gate/publish/snapshot pipeline (`rank_pairs_v2` → `run_publish_gate_v2` �
 - **Exit codes**: same family as `hunter pairlist build` (`BELOW_MIN_PAIRS`, `ABOVE_MAX_PAIRS`,
   `DUPLICATE_PAIR`, `INVALID_PAIR_FORMAT`, `EMPTY_UNIVERSE`), plus `PROFILE_FIELD_MISMATCH` if the
   underlying ranking-input violates its own declared profile's field rules.
+
+## `hunter explain <SYMBOL>` (SPEC-078)
+
+```text
+usage: hunter explain [-h] [--json] [--explainability-dir EXPLAINABILITY_DIR] symbol
+```
+
+Explains why a pair was or was not selected by the **latest successful** Hunter selection run, using
+only the recorded explainability artifacts — the command never recomputes selection decisions. The
+symbol is normalized to the Binance USDT perpetual Freqtrade form (`BTC` → `BTC/USDT:USDT`;
+`BTC/USDT` and the full form are also accepted). Records are written automatically (atomically) by
+`hunter pairlist build`, `hunter pairlist from-feather`, and `hunter daily-pairlist` under
+`<explainability-dir>/runs/<run_id>/` with a `latest.json` pointer that only a successful
+(gate-passed, published) run advances. Default artifact root: `HUNTER_EXPLAINABILITY_DIR` or
+`<repo>/explainability/` (Git-ignored runtime artifacts). The build commands accept
+`--explainability-dir <dir>` to override the root.
+
+- **Required**: positional `symbol` (e.g. `BTC`, `BTC/USDT`, `BTC/USDT:USDT`).
+- **Optional**: `--json` (emit the canonical structured record in a lookup envelope), and
+  `--explainability-dir <dir>` (artifact root override).
+- **Human output**: `PAIR`, `RUN`, `SELECTED`, `PUBLISHED`, `FINAL SCORE`, `FINAL RANK`, `TARGET`,
+  `FINAL REASON`, then a `STAGES` section (`universe`, `data_quality`, `liquidity`,
+  `relative_strength`, `ranking`, `publish`) with PASS/FAIL/SKIP/UNKNOWN plus the recorded metrics,
+  thresholds, and reason codes. Missing values are shown as `UNKNOWN` or `NOT_RECORDED`.
+- **Fail-closed states**: `NO_SUCCESSFUL_RUN` (no successful run recorded yet), `NOT_IN_UNIVERSE`
+  (pair was not in the latest run's eligible universe), `NOT_RECORDED` (eligible but no candidate
+  artifact), `ARTIFACT_INVALID` (corrupt artifact).
+- **Exit codes**: `0` when an explanation was rendered (including `NOT_IN_UNIVERSE`); `1` for
+  `NO_SUCCESSFUL_RUN`/`NOT_RECORDED`/`ARTIFACT_INVALID`; `2` for an invalid or unsafe symbol or
+  usage error.
 
 ## Invalid Command / Argument Behavior (verified)
 

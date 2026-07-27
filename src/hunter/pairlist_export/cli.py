@@ -52,12 +52,15 @@ from __future__ import annotations
 import argparse
 import json
 import sys
-from collections.abc import Sequence
+from collections.abc import Mapping, Sequence
 from decimal import Decimal
 from pathlib import Path
 from typing import Any
 
 from hunter.pairlist_export.deployment_profiles import DEPLOYMENT_PROFILES
+from hunter.explainability.recorder import PairlistRunObservation, build_run_records
+from hunter.explainability.service import resolve_explainability_dir
+from hunter.explainability.storage import write_run
 from hunter.pairlist_export.feather_adapter import build_ranking_input_v2_from_feather
 from hunter.pairlist_export.models import (
     PairlistExportError,
@@ -132,6 +135,53 @@ def _rank_from_payload(
     return ranked, universe_total
 
 
+def _record_explainability_run(
+    args: argparse.Namespace,
+    *,
+    as_of_date: str,
+    ranking_profile: str,
+    universe_total: int,
+    ranked: tuple[RankedPair, ...],
+    config: PairlistRankingConfig,
+    gate_allowed: bool,
+    gate_reason_codes: tuple[str, ...],
+    published: bool,
+    data_quality_scores: Mapping[str, Decimal | None] | None = None,
+) -> None:
+    """Record SPEC-078 explainability artifacts for a selection run.
+
+    Auxiliary and strictly post-hoc: it runs after all existing pipeline
+    outputs are final and never alters them.  Any recording failure is
+    reported as a stderr warning so the pipeline's exit code and published
+    artifacts are unaffected.  The latest-successful-run pointer advances
+    only when the gate allowed publishing and the publish completed.
+    """
+    try:
+        observation = PairlistRunObservation(
+            as_of_date=as_of_date,
+            ranking_profile=ranking_profile,
+            universe_total=universe_total,
+            eligible_pairs=tuple(p.pair for p in ranked),
+            ranked_pairs=ranked,
+            target_final_pairs=config.target_final_pairs,
+            min_pairs=config.min_pairs,
+            max_pairs=config.max_pairs,
+            gate_allowed=gate_allowed,
+            gate_reason_codes=gate_reason_codes,
+            published=published,
+            data_quality_scores=data_quality_scores,
+        )
+        manifest, records = build_run_records(observation)
+        write_run(
+            resolve_explainability_dir(getattr(args, "explainability_dir", None)),
+            manifest,
+            records,
+            update_latest=gate_allowed and published,
+        )
+    except Exception as exc:  # noqa: BLE001 -- explainability must never break the pipeline
+        print(f"Warning: explainability recording failed: {exc}", file=sys.stderr)
+
+
 def cmd_universe_refresh(args: argparse.Namespace) -> int:
     """Canonicalize a locally supplied universe file (sort, dedupe, format-check).
 
@@ -201,6 +251,20 @@ def _build_and_publish(args: argparse.Namespace) -> int:
     )
 
     if not gate_result.allow_publish:
+        # Gate-rejected run: record for forensics, but the failed run must
+        # never replace the latest-successful-run pointer.
+        _record_explainability_run(
+            args,
+            as_of_date=args.as_of,
+            ranking_profile="V1_RS_OI",
+            universe_total=universe_total,
+            ranked=ranked,
+            config=config,
+            gate_allowed=False,
+            gate_reason_codes=tuple(gate_result.reason_codes),
+            published=False,
+            data_quality_scores=_to_decimal_map(payload.get("data_quality")),
+        )
         print(
             f"Publish gate rejected pairlist: {', '.join(gate_result.reason_codes)}",
             file=sys.stderr,
@@ -222,6 +286,19 @@ def _build_and_publish(args: argparse.Namespace) -> int:
     # other publish-gate rejection. See docs/technical/PAIRLIST_PIPELINE.md.
     snapshot_paths = write_snapshot(output, snapshot_dir)
     pairlist_path, audit_path = publish_pairlist(output, output_dir)
+
+    _record_explainability_run(
+        args,
+        as_of_date=args.as_of,
+        ranking_profile="V1_RS_OI",
+        universe_total=universe_total,
+        ranked=ranked,
+        config=config,
+        gate_allowed=True,
+        gate_reason_codes=tuple(gate_result.reason_codes),
+        published=True,
+        data_quality_scores=_to_decimal_map(payload.get("data_quality")),
+    )
 
     print(f"Published {len(output.pairs)} pairs:")
     print(f"  pairlist:       {pairlist_path}")
@@ -294,6 +371,20 @@ def cmd_pairlist_from_feather(args: argparse.Namespace) -> int:
     )
 
     if not gate_result.allow_publish:
+        # Gate-rejected run: record for forensics, but the failed run must
+        # never replace the latest-successful-run pointer.
+        _record_explainability_run(
+            args,
+            as_of_date=args.as_of,
+            ranking_profile=profile.value,
+            universe_total=ranking_input.universe_total,
+            ranked=ranked,
+            config=config,
+            gate_allowed=False,
+            gate_reason_codes=tuple(gate_result.reason_codes),
+            published=False,
+            data_quality_scores=dict(ranking_input.data_quality),
+        )
         print(
             f"Publish gate rejected pairlist: {', '.join(gate_result.reason_codes)}",
             file=sys.stderr,
@@ -308,6 +399,19 @@ def cmd_pairlist_from_feather(args: argparse.Namespace) -> int:
 
     snapshot_paths = write_snapshot(output, snapshot_dir)
     pairlist_path, audit_path = publish_pairlist(output, output_dir)
+
+    _record_explainability_run(
+        args,
+        as_of_date=args.as_of,
+        ranking_profile=profile.value,
+        universe_total=ranking_input.universe_total,
+        ranked=ranked,
+        config=config,
+        gate_allowed=True,
+        gate_reason_codes=tuple(gate_result.reason_codes),
+        published=True,
+        data_quality_scores=dict(ranking_input.data_quality),
+    )
 
     print(f"Published {len(output.pairs)} pairs ({profile.value}):")
     print(f"  pairlist:       {pairlist_path}")
@@ -396,6 +500,7 @@ def _build_parser() -> argparse.ArgumentParser:
     build.add_argument("--input", required=True)
     build.add_argument("--output-dir", required=True, dest="output_dir")
     build.add_argument("--snapshot-dir", dest="snapshot_dir", default=None)
+    build.add_argument("--explainability-dir", dest="explainability_dir", default=None)
     build.set_defaults(func=cmd_pairlist_build)
 
     validate = pairlist_sub.add_parser("validate", help="Validate a published pairlist JSON.")
@@ -433,6 +538,7 @@ def _build_parser() -> argparse.ArgumentParser:
     from_feather.add_argument("--output-dir", required=True, dest="output_dir")
     from_feather.add_argument("--snapshot-dir", dest="snapshot_dir", default=None)
     from_feather.add_argument("--as-of", required=True, dest="as_of")
+    from_feather.add_argument("--explainability-dir", dest="explainability_dir", default=None)
     from_feather.set_defaults(func=cmd_pairlist_from_feather)
 
     daily = subparsers.add_parser(
@@ -442,6 +548,7 @@ def _build_parser() -> argparse.ArgumentParser:
     daily.add_argument("--input", required=True)
     daily.add_argument("--output-dir", required=True, dest="output_dir")
     daily.add_argument("--snapshot-dir", dest="snapshot_dir", default=None)
+    daily.add_argument("--explainability-dir", dest="explainability_dir", default=None)
     daily.set_defaults(func=cmd_daily_pairlist)
 
     return parser

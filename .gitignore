@@ -28,6 +28,7 @@ logs/
 *.sqlite3
 data/
 reports/
+/explainability/
 backtest_result.json
 hunter-pairs*.json
 !examples/hunter-pairs.json

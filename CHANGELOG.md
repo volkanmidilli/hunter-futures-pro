@@ -2,6 +2,61 @@
 
 All important project changes will be recorded in this file.
 
+## Unreleased — SPEC-078: Hunter Candidate Explainability
+
+### Added
+
+- **New: `hunter explain <SYMBOL>` CLI.** Explains why a pair was or was not selected by the latest
+  *successful* Hunter selection run (`hunter explain BTC`, `hunter explain BTC/USDT:USDT`,
+  `hunter explain ETH --json`). Short symbols normalize to the Binance USDT perpetual Freqtrade form
+  (`BTC` → `BTC/USDT:USDT`); invalid or unsafe symbols are rejected fail-closed (exit 2). The
+  command reads only recorded artifacts — it never recomputes selection decisions. Exit codes:
+  `0` when an explanation is rendered (including `NOT_IN_UNIVERSE`), `1` for `NO_SUCCESSFUL_RUN` /
+  `NOT_RECORDED` / `ARTIFACT_INVALID`, `2` for invalid/unsafe symbols or usage errors.
+- **New package `src/hunter/explainability/`** (`models.py`, `recorder.py`, `storage.py`,
+  `service.py`, `formatter.py`, `cli.py`):
+  - Immutable canonical models `CandidateStageDecision` and `CandidateExplanationRecord` (frozen
+    dataclasses, `MappingProxyType` coercion, deterministic `to_dict`/`from_dict`), plus an
+    `ExplainabilityRunManifest` per run.
+  - The recorder translates the *actual* pipeline outputs (`RankedPair` sequence from
+    `rank_pairs`/`rank_pairs_v2`, the publish-gate result, the ranking config thresholds, and the
+    observed data-quality input map) into six ordered stage records per candidate — `universe`,
+    `data_quality`, `liquidity`, `relative_strength`, `ranking`, `publish` — reusing the pipeline's
+    own reason codes (`INSUFFICIENT_EVIDENCE`, `PROFILE_EVIDENCE_INCOMPLETE`, `RS_SCORE`,
+    `OI_LIQUIDITY`, `LIQUIDITY_SCORE`, `DATA_SUFFICIENCY`, gate codes) and adding only the codes the
+    pipeline has no owner for (`OUTSIDE_TARGET_FINAL_PAIRS`, `PUBLISH_BLOCKED`, and the lookup states
+    `NO_SUCCESSFUL_RUN`, `NOT_IN_UNIVERSE`, `NOT_RECORDED`, `ARTIFACT_INVALID`).
+  - Atomic artifact storage reusing the SPEC-074 `atomic_write_text` /
+    `reject_forbidden_output_dir` discipline, with snapshot immutability semantics and an atomic
+    `latest.json` pointer that only a gate-passed, published run advances — a failed or incomplete
+    run never replaces the latest successful run.
+  - Layout: `explainability/runs/<run_id>/manifest.json` + `candidates/<BASE>_USDT_USDT.json`, with
+    `explainability/latest.json`; root resolved via `--explainability-dir` >
+    `HUNTER_EXPLAINABILITY_DIR` > `<repo>/explainability/` (Git-ignored runtime artifacts).
+- **Pipeline integration (auxiliary, warn-only).** `hunter pairlist build`, `hunter daily-pairlist`,
+  and `hunter pairlist from-feather` record a run after the publish gate (rejected runs persist
+  artifacts but never touch the latest pointer) and after a successful publish (pointer advances).
+  Recording failures print a stderr warning and never change pipeline outputs or exit codes.
+  Regression tests prove the published pairlist, audit, and snapshots are byte-identical with
+  explainability enabled or disabled.
+- **`--json`** emits the canonical `CandidateExplanationRecord` inside a small lookup envelope
+  (`schema_version`, `status`, `reason_codes`, `pair`, `run_id`, `record`) — the same model the
+  human output renders, suitable for a future read-only dashboard/API.
+- New spec: `specs/SPEC-078-Hunter-Candidate-Explainability.md`. CLI documented in
+  `docs/reference/CLI_REFERENCE.md`.
+- Tests: 123 focused tests under `tests/test_explainability/` covering symbol normalization,
+  immutable models, deterministic serialization, stage ordering/statuses, metrics preservation,
+  storage atomicity/immutability/pointer discipline, fail-closed lookups, formatters, CLI exit
+  codes, pipeline integration, determinism, and no-behavior-change regressions.
+
+### Known limitations
+
+- The pipeline has no single composite per-pair score (ranking is a deterministic compound sort
+  key), so `final_score` is always `null` (`UNKNOWN` in human output); `score_components` carries
+  the real per-dimension scores.
+- MVP scope is latest-successful-run lookup only: no `--run-id`, `--date`, historical comparisons,
+  dashboard, or web API. `hunter coins rank` (rank-only) does not record artifacts.
+
 ## Unreleased — Publication Policy: Exact Target Pair Count (supersedes SPEC-074 surplus publication)
 
 ### Changed

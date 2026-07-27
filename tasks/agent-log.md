@@ -1,5 +1,27 @@
 ---
 
+### SPEC-078 — Hunter Candidate Explainability
+
+Date: 2026-07-27
+
+Agent: WrongStack (Kimi)
+
+Task: Implement SPEC-078 exactly as requested — a candidate explainability layer (`hunter explain <SYMBOL> [--json]`) that answers why a pair was or was not selected by the latest successful Hunter selection run, using only recorded artifacts and never recomputing selection decisions.
+
+Architecture analysis performed first: read `src/hunter/core/cli.py` (group dispatch), `src/hunter/pairlist_export/{cli,models,ranking_adapter,validator,audit,publisher,snapshot}.py` (the real rank → gate → snapshot → publish pipeline, reason codes, atomic writers), `src/hunter/research_outcome_evaluation/{writer,cli}.py` (SPEC-076 store conventions), `src/hunter/research_market_data/symbol_normalizer.py`, `docs/reference/CLI_REFERENCE.md`, and existing test layout. Key findings: ranking has **no composite per-pair score** (deterministic compound sort key); v1 `RankedPair` drops `data_quality_pct` (so the recorder takes the observed DQ map as an explicit observation field); `atomic_write_text` + `reject_forbidden_output_dir` are the shared write discipline; frozen dataclasses + `to_dict` + `json.dumps(sort_keys=True)` are the immutable-model convention.
+
+New files: `src/hunter/explainability/{__init__,models,recorder,storage,service,formatter,cli}.py`; `tests/test_explainability/{__init__,test_symbols,test_models,test_recorder,test_storage,test_service,test_formatter,test_cli,test_pipeline_integration}.py` (123 tests); `tests/conftest.py` (session-scoped redirect of `HUNTER_EXPLAINABILITY_DIR` to a temp dir so test runs never pollute the repo root); `specs/SPEC-078-Hunter-Candidate-Explainability.md`.
+
+Modified files: `src/hunter/pairlist_export/cli.py` (warn-only `_record_explainability_run` calls in `_build_and_publish` and `cmd_pairlist_from_feather`, `--explainability-dir` on build/daily-pairlist/from-feather), `src/hunter/core/cli.py` (`explain` token routing + unified help), `.gitignore` (root-anchored `/explainability/` so the runtime artifact root is ignored but the `src/hunter/explainability/` source package is not), `CHANGELOG.md`, `docs/reference/CLI_REFERENCE.md`, `tasks/agent-log.md`.
+
+Design: six ordered stages per candidate (`universe`, `data_quality`, `liquidity`, `relative_strength`, `ranking`, `publish`) recorded from the pipeline's own outputs — `RankedPair` reason codes/scores, profile active dimensions, config thresholds, gate result. New codes only where no owner exists (`OUTSIDE_TARGET_FINAL_PAIRS`, `PUBLISH_BLOCKED`, `NO_SUCCESSFUL_RUN`, `NOT_IN_UNIVERSE`, `NOT_RECORDED`, `ARTIFACT_INVALID`). Run id is deterministic (`<as_of>__<profile>__<digest12>` over ranked-pair fingerprints). `latest.json` pointer advances only on gate-passed + published runs; rejected runs persist artifacts but never replace the pointer. Fail-closed lookup: no inference, `UNKNOWN`/`NOT_RECORDED` rendering. `--json` emits the canonical record inside a lookup envelope.
+
+Test results: focused `tests/test_explainability` → **123 passed**; ranking/publishing regression (`test_pairlist_export`, `test_core`, `test_research_outcome_evaluation`) → 420 passed, 1 skipped; full suite → **10,945 passed, 3 skipped** (pre-change spot baseline `tests/test_pairlist_export` 217 passed / 1 skipped was captured before coding; zero regressions — all pre-existing tests pass unchanged). Regression tests prove published pairlist/audit/snapshots are byte-identical with explainability enabled vs disabled, pipeline determinism is preserved (identical rerun → identical pairlist and run id), and a recording failure never changes pipeline exit codes.
+
+Docs updated: `specs/SPEC-078-Hunter-Candidate-Explainability.md`, `CHANGELOG.md` (new Unreleased section), `docs/reference/CLI_REFERENCE.md` (new `hunter explain` section + `--explainability-dir` on build). No `data/`/`reports/` access anywhere in the new code (enforced via the shared `reject_forbidden_output_dir` guard, with tests). No network, scheduler, server, or execution behavior added; `research_only` posture untouched.
+
+---
+
 ### SPEC-075 — Freqtrade Feather Ranking-Input Automation
 
 Date: 2026-07-21
