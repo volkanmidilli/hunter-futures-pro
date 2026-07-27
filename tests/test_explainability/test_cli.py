@@ -118,3 +118,74 @@ class TestCoreDispatch:
         rc = main(["explain", "BTC", "--explainability-dir", str(tmp_path)])
         assert rc == 0
         assert "BTC/USDT:USDT" in capsys.readouterr().out
+
+
+class TestImportCommand:
+    def _write_production(self, directory: Path) -> tuple[Path, Path]:
+        pairs = ["SOL/USDT:USDT", "DOGE/USDT:USDT"]
+        pairlist = directory / "hunter-pairs.json"
+        pairlist.write_text(json.dumps({"pairs": pairs, "refresh_period": 3600}))
+        audit = directory / "hunter-pairs-audit.json"
+        audit.write_text(
+            json.dumps(
+                {
+                    "as_of_date": "2026-07-27",
+                    "universe_total": 300,
+                    "eligible_count": 2,
+                    "selected_count": 2,
+                    "rejected_count": 0,
+                    "selected": [
+                        {
+                            "pair": p,
+                            "rank": i + 1,
+                            "selected": True,
+                            "rs_score": "80",
+                            "oi_score": "50",
+                            "reason_codes": ["RS_SCORE", "OI_LIQUIDITY"],
+                            "fingerprint": f"fp-{i}",
+                        }
+                        for i, p in enumerate(pairs)
+                    ],
+                    "rejected": [],
+                    "reason_code_summary": {},
+                    "fingerprint": "b" * 64,
+                }
+            )
+        )
+        return pairlist, audit
+
+    def test_import_then_explain_not_in_universe(self, tmp_path: Path, capsys) -> None:
+        from hunter.core.cli import main
+
+        src = tmp_path / "prod"
+        src.mkdir()
+        pairlist, audit = self._write_production(src)
+        store = tmp_path / "expl"
+
+        rc = main(
+            [
+                "explain", "import",
+                "--pairlist", str(pairlist),
+                "--audit", str(audit),
+                "--explainability-dir", str(store),
+            ]
+        )
+        assert rc == 0
+        out = capsys.readouterr().out
+        assert "RECONSTRUCTED" in out
+        assert "latest pointer advanced:    True" in out
+
+        rc = main(["explain", "BTC", "--explainability-dir", str(store)])
+        assert rc == 0
+        out = capsys.readouterr().out
+        assert "PROVENANCE          RECONSTRUCTED" in out
+        assert "NOT_IN_UNIVERSE" in out
+        assert "2026-07-27" in out
+
+    def test_import_missing_pairlist_exits_1(self, tmp_path: Path, capsys) -> None:
+        rc = explain_cli_main(
+            ["import", "--pairlist", str(tmp_path / "nope.json"),
+             "--explainability-dir", str(tmp_path / "expl")]
+        )
+        assert rc == 1
+        assert "Error" in capsys.readouterr().err

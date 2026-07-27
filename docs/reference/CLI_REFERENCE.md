@@ -316,16 +316,34 @@ symbol is normalized to the Binance USDT perpetual Freqtrade form (`BTC` → `BT
 - **Required**: positional `symbol` (e.g. `BTC`, `BTC/USDT`, `BTC/USDT:USDT`).
 - **Optional**: `--json` (emit the canonical structured record in a lookup envelope), and
   `--explainability-dir <dir>` (artifact root override).
-- **Human output**: `PAIR`, `RUN`, `SELECTED`, `PUBLISHED`, `FINAL SCORE`, `FINAL RANK`, `TARGET`,
-  `FINAL REASON`, then a `STAGES` section (`universe`, `data_quality`, `liquidity`,
-  `relative_strength`, `ranking`, `publish`) with PASS/FAIL/SKIP/UNKNOWN plus the recorded metrics,
-  thresholds, and reason codes. Missing values are shown as `UNKNOWN` or `NOT_RECORDED`.
+- **Human output**: `PAIR`, `RUN`, `PROVENANCE` (`ORIGINAL`/`RECONSTRUCTED`), `SELECTED`,
+  `PUBLISHED`, `FINAL SCORE`, `FINAL RANK`, `TARGET`, `FINAL REASON`, then a `STAGES` section
+  (`universe`, `data_quality`, `liquidity`, `relative_strength`, `ranking`, `publish`) with
+  PASS/FAIL/SKIP/UNKNOWN plus the recorded metrics, thresholds, and reason codes. Missing values are
+  shown as `UNKNOWN` or `NOT_RECORDED`.
 - **Fail-closed states**: `NO_SUCCESSFUL_RUN` (no successful run recorded yet), `NOT_IN_UNIVERSE`
   (pair was not in the latest run's eligible universe), `NOT_RECORDED` (eligible but no candidate
-  artifact), `ARTIFACT_INVALID` (corrupt artifact).
+  artifact), `LEGACY_RUN_INCOMPLETE` (the resolved run's original decision records are incomplete),
+  `ARTIFACT_INVALID` (corrupt artifact).
 - **Exit codes**: `0` when an explanation was rendered (including `NOT_IN_UNIVERSE`); `1` for
-  `NO_SUCCESSFUL_RUN`/`NOT_RECORDED`/`ARTIFACT_INVALID`; `2` for an invalid or unsafe symbol or
-  usage error.
+  `NO_SUCCESSFUL_RUN`/`NOT_RECORDED`/`LEGACY_RUN_INCOMPLETE`/`ARTIFACT_INVALID`; `2` for an invalid
+  or unsafe symbol or usage error.
+
+## `hunter explain import` (SPEC-078, legacy migration)
+
+```text
+usage: hunter explain import --pairlist PAIRLIST [--audit AUDIT] [--notes NOTES]
+                             [--explainability-dir EXPLAINABILITY_DIR]
+```
+
+Migrates a real pre-SPEC-078 published pairlist/audit into the explainability store as a
+`RECONSTRUCTED`-provenance run — it never reruns ranking and never invents criteria: values the
+source artifacts did not record stay `UNKNOWN` and are stated in `reconstruction_notes`. The
+`latest.json` pointer advances only per the provenance policy: a RECONSTRUCTED import never replaces
+an ORIGINAL latest pointer, and among reconstructed runs only a strictly newer production publish
+(by `as_of_date`) advances it. Without `--audit`, the run imports with
+`decision_records_complete=False` and lookups fail closed with `LEGACY_RUN_INCOMPLETE`. Exit codes:
+`0` on import, `1` on unreadable/inconsistent artifacts.
 
 ## Invalid Command / Argument Behavior (verified)
 

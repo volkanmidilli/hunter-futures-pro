@@ -97,6 +97,29 @@ owns that criterion.
   evidence codes are used instead.
 - `hunter coins rank` (rank-only, no publish) does not record explainability artifacts in the MVP.
 
+## Provenance and legacy runs (2026-07-27 amendment)
+
+Pre-SPEC-078 production runs have no runtime explainability records. To make them explainable
+without ever rerunning ranking or inventing criteria:
+
+- `hunter explain import --pairlist <hunter-pairs.json> [--audit <hunter-pairs-audit.json>]
+  [--notes "..."]` migrates a *real* published pairlist/audit into the store. Every value comes from
+  the source artifacts; anything they did not record (data-quality values, the exact
+  `target_final_pairs` threshold) stays UNKNOWN and is stated in `reconstruction_notes`.
+- Migrated runs and records carry `provenance_type=RECONSTRUCTED`, `source_run_id`,
+  `source_artifact_paths`, and `reconstruction_notes`. Runtime-recorded runs carry
+  `provenance_type=ORIGINAL`. Artifacts written before provenance tracking deserialize as
+  RECONSTRUCTED (fail-closed — never an implied original).
+- Without an audit artifact the run imports with `decision_records_complete=False`; every lookup
+  fails closed with `LEGACY_RUN_INCOMPLETE` instead of guessing universe membership.
+- Pointer policy: the default resolution always prefers the latest ORIGINAL successful run — a
+  RECONSTRUCTED import never replaces an ORIGINAL pointer. Among reconstructed runs, only a strictly
+  newer production publish (by `as_of_date`) advances the pointer, so a reconstructed historical run
+  is never silently preferred over a newer production publish. Any future instrumented pipeline run
+  automatically supersedes all imports.
+- Human and JSON output display `PROVENANCE` / `provenance_type` so reconstructed records can never
+  be mistaken for original production records.
+
 ## Acceptance criteria
 
 1. `hunter explain BTC` after a successful build renders the real run id, selection/publish status,

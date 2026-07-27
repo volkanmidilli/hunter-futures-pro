@@ -22,6 +22,7 @@ from hunter.explainability.models import (
     ExplainabilityStorageError,
     ExplainabilitySymbolError,
     REASON_ARTIFACT_INVALID,
+    REASON_LEGACY_RUN_INCOMPLETE,
     REASON_NO_SUCCESSFUL_RUN,
     REASON_NOT_IN_UNIVERSE,
     REASON_NOT_RECORDED,
@@ -126,6 +127,16 @@ def explain_candidate(
             status=REASON_ARTIFACT_INVALID,
             reason_codes=(REASON_ARTIFACT_INVALID,),
             pair=pair,
+        )
+
+    if not manifest.decision_records_complete:
+        # The run is identified, but the original run did not record enough
+        # information to explain any candidate. Fail closed -- never guess.
+        return ExplainLookupResult(
+            status=REASON_LEGACY_RUN_INCOMPLETE,
+            reason_codes=(REASON_LEGACY_RUN_INCOMPLETE,),
+            pair=pair,
+            manifest=manifest,
         )
 
     if pair not in manifest.eligible_pairs:

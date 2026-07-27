@@ -54,6 +54,7 @@ def _record_lines(record: CandidateExplanationRecord) -> list[str]:
     lines = [
         f"{'PAIR':<20}{record.pair}",
         f"{'RUN':<20}{record.run_id}",
+        f"{'PROVENANCE':<20}{record.provenance_type}",
         f"{'SELECTED':<20}{_bool_text(record.selected)}",
         f"{'PUBLISHED':<20}{_bool_text(record.published)}",
         f"{'FINAL SCORE':<20}{_number_text(record.final_score)}",
@@ -79,11 +80,13 @@ def format_human(result: ExplainLookupResult) -> str:
 
     # Fail-closed states: print only what is genuinely known.
     run_id = result.manifest.run_id if result.manifest is not None else UNKNOWN
+    provenance = result.manifest.provenance_type if result.manifest is not None else UNKNOWN
     reason = ", ".join(result.reason_codes) if result.reason_codes else UNKNOWN
     record_state = NOT_RECORDED
     lines = [
         f"{'PAIR':<20}{result.pair}",
         f"{'RUN':<20}{run_id}",
+        f"{'PROVENANCE':<20}{provenance}",
         f"{'SELECTED':<20}{record_state}",
         f"{'PUBLISHED':<20}{record_state}",
         f"{'FINAL SCORE':<20}{UNKNOWN}",
@@ -106,6 +109,9 @@ def lookup_result_to_dict(result: ExplainLookupResult) -> dict[str, Any]:
         "reason_codes": list(result.reason_codes),
         "pair": result.pair,
         "run_id": result.manifest.run_id if result.manifest is not None else None,
+        "provenance_type": (
+            result.manifest.provenance_type if result.manifest is not None else None
+        ),
         "record": result.record.to_dict() if result.record is not None else None,
     }
 

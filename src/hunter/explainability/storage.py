@@ -135,14 +135,50 @@ def write_run(
     _write_immutable(target / MANIFEST_FILENAME, manifest.to_dict())
 
     if update_latest:
-        pointer = {
-            "schema_version": manifest.schema_version,
-            "run_id": manifest.run_id,
-            "completed_at": manifest.completed_at,
-        }
-        atomic_write_text(explainability_dir / LATEST_FILENAME, _canonical(pointer))
+        write_latest_pointer(explainability_dir, manifest)
 
     return target
+
+
+def write_latest_pointer(explainability_dir: Path, manifest: ExplainabilityRunManifest) -> None:
+    """Atomically write the latest-run pointer for ``manifest``."""
+    pointer = {
+        "schema_version": manifest.schema_version,
+        "run_id": manifest.run_id,
+        "completed_at": manifest.completed_at,
+        "as_of_date": manifest.as_of_date,
+        "provenance_type": manifest.provenance_type,
+    }
+    atomic_write_text(Path(explainability_dir) / LATEST_FILENAME, _canonical(pointer))
+
+
+def should_advance_reconstructed_pointer(
+    explainability_dir: Path, *, new_as_of_date: str
+) -> bool:
+    """Pointer policy for RECONSTRUCTED (migrated legacy) runs.
+
+    A reconstructed run never replaces an ORIGINAL latest pointer -- the
+    default explain resolution must always prefer the latest original
+    successful run.  Among reconstructed runs, only a strictly newer
+    production publish (by ``as_of_date``) advances the pointer, so a
+    reconstructed historical run is never silently preferred over a newer
+    production publish.  A missing or corrupt pointer is advanced (the
+    next ORIGINAL runtime run will supersede it anyway).
+    """
+    try:
+        pointer = read_latest_pointer(explainability_dir)
+    except ExplainabilityStorageError:
+        return True
+    if pointer is None:
+        return True
+    if pointer.get("provenance_type") == "ORIGINAL":
+        return False
+    current_as_of = pointer.get("as_of_date")
+    if not isinstance(current_as_of, str) or not current_as_of:
+        # Pre-provenance pointer: treat as reconstructable historical state;
+        # any dated production publish is at least as authoritative.
+        return True
+    return new_as_of_date > current_as_of
 
 
 # ---------------------------------------------------------------------------

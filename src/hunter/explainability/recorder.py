@@ -30,6 +30,7 @@ from typing import Any, Mapping
 
 from hunter.explainability.models import (
     EXPLAINABILITY_SCHEMA_VERSION,
+    PROVENANCE_ORIGINAL,
     REASON_OUTSIDE_TARGET_FINAL_PAIRS,
     REASON_PUBLISH_BLOCKED,
     STAGE_FAIL,
@@ -325,6 +326,8 @@ def build_candidate_record(
         selected=pair.selected,
         published=pair.selected and observation.gate_allowed and observation.published,
         final_reason_codes=_final_reason_codes(pair, observation),
+        provenance_type=PROVENANCE_ORIGINAL,
+        source_run_id=None,
     )
 
 
@@ -361,5 +364,10 @@ def build_run_records(
         gate_reason_codes=tuple(observation.gate_reason_codes),
         published=observation.published,
         eligible_pairs=tuple(sorted(observation.eligible_pairs)),
+        provenance_type=PROVENANCE_ORIGINAL,
+        source_run_id=None,
+        source_artifact_paths=(),
+        reconstruction_notes="",
+        decision_records_complete=True,
     )
     return manifest, records

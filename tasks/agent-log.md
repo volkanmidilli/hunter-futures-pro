@@ -20,6 +20,16 @@ Test results: focused `tests/test_explainability` → **123 passed**; ranking/pu
 
 Docs updated: `specs/SPEC-078-Hunter-Candidate-Explainability.md`, `CHANGELOG.md` (new Unreleased section), `docs/reference/CLI_REFERENCE.md` (new `hunter explain` section + `--explainability-dir` on build). No `data/`/`reports/` access anywhere in the new code (enforced via the shared `reject_forbidden_output_dir` guard, with tests). No network, scheduler, server, or execution behavior added; `research_only` posture untouched.
 
+### SPEC-078 follow-up — Provenance and legacy-run migration (2026-07-27)
+
+Operator correction: the first verification had recorded a *reconstructed* 2026-07-21 re-run and pointed `latest.json` at it; that must never be treated as the latest real decision. Additionally the operator-referenced live snapshot `/opt/freqtrade-v16/user_data/pairlists/hunter-pairs.json` (2026-07-27) is **not accessible from this machine** (no `freqtrade-v16` anywhere on the filesystem); the only reachable live publish is `/home/volkan/freqtrade/user_data/pairlists/` (mtime 2026-07-21 10:35, sha256 `7081cef4…cb3a`).
+
+Changes: provenance fields on manifests and records (`provenance_type` ORIGINAL/RECONSTRUCTED, `source_run_id`, `source_artifact_paths`, `reconstruction_notes`, `decision_records_complete`; missing field deserializes as RECONSTRUCTED — never an implied original); new `hunter.explainability.legacy` module + `hunter explain import` CLI migrating real published pairlist/audit artifacts without reranking or inventing criteria (unrecorded values stay UNKNOWN); pointer policy `should_advance_reconstructed_pointer` (RECONSTRUCTED never replaces ORIGINAL; only strictly newer production publish advances among reconstructed; pointer now carries `as_of_date` + `provenance_type`); new fail-closed code `LEGACY_RUN_INCOMPLETE` for runs imported without an audit; `PROVENANCE` line in human output and `provenance_type` in the JSON envelope; manifest count fields nullable for unknown legacy values.
+
+Store state repaired: the reconstructed 2026-07-21 re-run was deleted and replaced by `hunter explain import` of the actual reachable production publish (run `2026-07-21__legacy__6d1ee9021550`, derived from the production audit's own fingerprint). `hunter explain BTC`/`ETH` now resolve that run with explicit RECONSTRUCTED provenance (BTC rank 1/25, ETH rank 2/25, both selected+published per the original audit; DQ stage UNKNOWN; TARGET UNKNOWN — not recorded in the legacy audit).
+
+Tests: 24 new (test_provenance.py, test_legacy.py, CLI import tests) → 147 focused passed; full suite 10,969 passed, 3 skipped. Docs: SPEC-078 amendment, CHANGELOG amendment, CLI_REFERENCE import section.
+
 ---
 
 ### SPEC-075 — Freqtrade Feather Ranking-Input Automation

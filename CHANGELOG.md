@@ -57,6 +57,25 @@ All important project changes will be recorded in this file.
 - MVP scope is latest-successful-run lookup only: no `--run-id`, `--date`, historical comparisons,
   dashboard, or web API. `hunter coins rank` (rank-only) does not record artifacts.
 
+### Provenance and legacy runs (2026-07-27 amendment)
+
+- **New: `hunter explain import --pairlist <path> [--audit <path>] [--notes "..."]`.** Migrates a
+  real pre-SPEC-078 published pairlist/audit into the explainability store without rerunning ranking
+  or inventing criteria: unrecorded values (data-quality, the exact `target_final_pairs` threshold)
+  stay UNKNOWN and are stated in `reconstruction_notes`.
+- **Provenance fields on manifests and records**: `provenance_type` (`ORIGINAL` for runtime-recorded
+  runs, `RECONSTRUCTED` for migrated ones), `source_run_id`, `source_artifact_paths`,
+  `reconstruction_notes`, and `decision_records_complete`. Pre-provenance artifacts deserialize as
+  RECONSTRUCTED (fail-closed). Human output shows a `PROVENANCE` line; the JSON envelope carries
+  `provenance_type`.
+- **Pointer policy**: default resolution always prefers the latest ORIGINAL successful run — a
+  RECONSTRUCTED import never replaces an ORIGINAL pointer; among reconstructed runs only a strictly
+  newer production publish (by `as_of_date`) advances it. The `latest.json` pointer now records
+  `as_of_date` and `provenance_type`.
+- **New fail-closed code `LEGACY_RUN_INCOMPLETE`**: imported without an audit, a run's decision
+  records are incomplete and every lookup returns `LEGACY_RUN_INCOMPLETE` instead of guessing.
+- 24 new tests (provenance defaults/policy, legacy import, pointer discipline, CLI import).
+
 ## Unreleased — Publication Policy: Exact Target Pair Count (supersedes SPEC-074 surplus publication)
 
 ### Changed

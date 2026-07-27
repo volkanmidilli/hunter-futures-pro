@@ -48,6 +48,7 @@ REASON_NOT_RECORDED = "NOT_RECORDED"
 REASON_ARTIFACT_INVALID = "ARTIFACT_INVALID"
 REASON_OUTSIDE_TARGET_FINAL_PAIRS = "OUTSIDE_TARGET_FINAL_PAIRS"
 REASON_PUBLISH_BLOCKED = "PUBLISH_BLOCKED"
+REASON_LEGACY_RUN_INCOMPLETE = "LEGACY_RUN_INCOMPLETE"
 
 EXPLAINABILITY_REASON_CODES: frozenset[str] = frozenset(
     {
@@ -57,7 +58,26 @@ EXPLAINABILITY_REASON_CODES: frozenset[str] = frozenset(
         REASON_ARTIFACT_INVALID,
         REASON_OUTSIDE_TARGET_FINAL_PAIRS,
         REASON_PUBLISH_BLOCKED,
+        REASON_LEGACY_RUN_INCOMPLETE,
     }
+)
+
+# ---------------------------------------------------------------------------
+# Provenance
+#
+# ORIGINAL      -- recorded at runtime by the instrumented selection pipeline.
+# RECONSTRUCTED -- migrated from pre-SPEC-078 artifacts (a published audit /
+#                  pairlist) after the fact; stage data is limited to what the
+#                  original artifacts recorded, everything else is UNKNOWN.
+# Fail-closed default: artifacts written before provenance tracking existed
+# (no provenance field) always deserialize as RECONSTRUCTED -- a record may
+# never silently imply it is an original production record.
+# ---------------------------------------------------------------------------
+
+PROVENANCE_ORIGINAL = "ORIGINAL"
+PROVENANCE_RECONSTRUCTED = "RECONSTRUCTED"
+PROVENANCE_TYPES: frozenset[str] = frozenset(
+    {PROVENANCE_ORIGINAL, PROVENANCE_RECONSTRUCTED}
 )
 
 # ---------------------------------------------------------------------------
@@ -127,6 +147,14 @@ def _coerce_stages(
     if len(set(orders)) != len(orders):
         raise ExplainabilityModelError("stage_order values must be unique")
     return stages
+
+
+def _validate_provenance(value: str) -> str:
+    if value not in PROVENANCE_TYPES:
+        raise ExplainabilityModelError(
+            f"provenance_type must be one of {sorted(PROVENANCE_TYPES)}, got {value!r}"
+        )
+    return value
 
 
 # ---------------------------------------------------------------------------
@@ -219,6 +247,8 @@ class CandidateExplanationRecord:
     selected: bool | None = None
     published: bool | None = None
     final_reason_codes: tuple[str, ...] = ()
+    provenance_type: str = PROVENANCE_ORIGINAL
+    source_run_id: str | None = None
 
     def __post_init__(self) -> None:
         if not isinstance(self.schema_version, str) or not self.schema_version:
@@ -229,6 +259,9 @@ class CandidateExplanationRecord:
             raise ExplainabilityModelError("completed_at must be a non-empty string")
         if not isinstance(self.pair, str) or not self.pair:
             raise ExplainabilityModelError("pair must be a non-empty string")
+        _validate_provenance(self.provenance_type)
+        if self.source_run_id is not None and not isinstance(self.source_run_id, str):
+            raise ExplainabilityModelError("source_run_id must be a string or None")
         object.__setattr__(self, "stages", _coerce_stages(self.stages))
         object.__setattr__(
             self, "score_components", _coerce_mapping(self.score_components, "score_components")
@@ -264,6 +297,8 @@ class CandidateExplanationRecord:
             "selected": self.selected,
             "published": self.published,
             "final_reason_codes": list(self.final_reason_codes),
+            "provenance_type": self.provenance_type,
+            "source_run_id": self.source_run_id,
         }
 
     @classmethod
@@ -288,6 +323,10 @@ class CandidateExplanationRecord:
                 selected=payload.get("selected"),
                 published=payload.get("published"),
                 final_reason_codes=payload.get("final_reason_codes"),
+                # Fail-closed: pre-provenance artifacts deserialize as
+                # RECONSTRUCTED, never as implied originals.
+                provenance_type=payload.get("provenance_type", PROVENANCE_RECONSTRUCTED),
+                source_run_id=payload.get("source_run_id"),
             )
         except KeyError as exc:
             raise ExplainabilityModelError(f"record payload missing field: {exc}") from exc
@@ -311,16 +350,21 @@ class ExplainabilityRunManifest:
     completed_at: str
     as_of_date: str
     ranking_profile: str
-    universe_total: int
-    eligible_count: int
-    selected_count: int
-    target_final_pairs: int
-    min_pairs: int
-    max_pairs: int
+    universe_total: int | None
+    eligible_count: int | None
+    selected_count: int | None
+    target_final_pairs: int | None
+    min_pairs: int | None
+    max_pairs: int | None
     gate_allowed: bool
     gate_reason_codes: tuple[str, ...] = ()
     published: bool = False
     eligible_pairs: tuple[str, ...] = ()
+    provenance_type: str = PROVENANCE_ORIGINAL
+    source_run_id: str | None = None
+    source_artifact_paths: tuple[str, ...] = ()
+    reconstruction_notes: str = ""
+    decision_records_complete: bool = True
 
     def __post_init__(self) -> None:
         for name in ("schema_version", "run_id", "completed_at", "as_of_date", "ranking_profile"):
@@ -335,15 +379,27 @@ class ExplainabilityRunManifest:
             "max_pairs",
         ):
             value = getattr(self, name)
-            if not isinstance(value, int) or isinstance(value, bool):
-                raise ExplainabilityModelError(f"{name} must be an int")
+            if value is not None and (not isinstance(value, int) or isinstance(value, bool)):
+                raise ExplainabilityModelError(f"{name} must be an int or None")
         if not isinstance(self.gate_allowed, bool) or not isinstance(self.published, bool):
             raise ExplainabilityModelError("gate_allowed and published must be bools")
+        if not isinstance(self.decision_records_complete, bool):
+            raise ExplainabilityModelError("decision_records_complete must be a bool")
+        _validate_provenance(self.provenance_type)
+        if self.source_run_id is not None and not isinstance(self.source_run_id, str):
+            raise ExplainabilityModelError("source_run_id must be a string or None")
+        if not isinstance(self.reconstruction_notes, str):
+            raise ExplainabilityModelError("reconstruction_notes must be a string")
         object.__setattr__(
             self, "gate_reason_codes", _coerce_codes(self.gate_reason_codes, "gate_reason_codes")
         )
         object.__setattr__(
             self, "eligible_pairs", _coerce_codes(self.eligible_pairs, "eligible_pairs")
+        )
+        object.__setattr__(
+            self,
+            "source_artifact_paths",
+            _coerce_codes(self.source_artifact_paths, "source_artifact_paths"),
         )
 
     def to_dict(self) -> dict[str, Any]:
@@ -363,6 +419,11 @@ class ExplainabilityRunManifest:
             "gate_reason_codes": list(self.gate_reason_codes),
             "published": self.published,
             "eligible_pairs": list(self.eligible_pairs),
+            "provenance_type": self.provenance_type,
+            "source_run_id": self.source_run_id,
+            "source_artifact_paths": list(self.source_artifact_paths),
+            "reconstruction_notes": self.reconstruction_notes,
+            "decision_records_complete": self.decision_records_complete,
         }
 
     @classmethod
@@ -386,6 +447,13 @@ class ExplainabilityRunManifest:
                 gate_reason_codes=payload.get("gate_reason_codes"),
                 published=payload.get("published", False),
                 eligible_pairs=payload.get("eligible_pairs"),
+                # Fail-closed: pre-provenance artifacts deserialize as
+                # RECONSTRUCTED, never as implied originals.
+                provenance_type=payload.get("provenance_type", PROVENANCE_RECONSTRUCTED),
+                source_run_id=payload.get("source_run_id"),
+                source_artifact_paths=payload.get("source_artifact_paths"),
+                reconstruction_notes=payload.get("reconstruction_notes", ""),
+                decision_records_complete=payload.get("decision_records_complete", True),
             )
         except KeyError as exc:
             raise ExplainabilityModelError(f"manifest payload missing field: {exc}") from exc
